@@ -1,21 +1,20 @@
-Panda.js
+Panda.js HTML5 game engine
 ========
 
-HTML5 game engine
-
-# Features
+## Features
 
 - Pixi.js renderer
-- Web Audio
-- Page Visibility
+- Mobile support
+- Web Audio support
 - Web Storage
 - Retina / HiRes
 - Object pooling
 - Tween engine
-- Simple physics engine
+- Physics engine
+- Page Visibility
+- Module system
+- Device and browser detection
+- JSHint valid
 - Mobile compatible
 - CocoonJS compatible
 - Windows Phone 8 compatible
-- Module system with versioning
-- Device and browser detection
-- JSHint valid
