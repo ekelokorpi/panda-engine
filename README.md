@@ -1,9 +1,9 @@
+![logo](https://raw.github.com/ekelokorpi/panda.js/master/media/logo.png)
+
 Panda.js HTML5 game engine
 ==========================
 
-![logo](https://raw.github.com/ekelokorpi/panda.js/master/media/logo.png)
-
-## Features
+### Features
 
 - Pixi.js renderer
 - Mobile support
