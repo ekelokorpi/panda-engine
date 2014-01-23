@@ -17,3 +17,5 @@ Panda.js HTML5 game engine
 - JSHint valid
 - CocoonJS compatible
 - Windows Phone 8 compatible
+
+[![Analytics](https://ga-beacon.appspot.com/UA-42024756-3/panda.js/index)](https://github.com/igrigorik/ga-beacon)
