@@ -1,4 +1,4 @@
-![logo](https://raw.github.com/ekelokorpi/panda.js/master/media/logo.png)
+![logo](https://raw.github.com/ekelokorpi/panda.js/master/media/pandajs.gif)
 
 Panda.js HTML5 game engine
 ==========================
