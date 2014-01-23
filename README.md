@@ -18,4 +18,8 @@ Panda.js HTML5 game engine
 - CocoonJS compatible
 - Windows Phone 8 compatible
 
+Panda.js is released under the [MIT License](http://opensource.org/licenses/MIT).
+
+Sponsored by [Yle](http://en.wikipedia.org/wiki/Yle)
+
 [![Analytics](https://ga-beacon.appspot.com/UA-42024756-3/panda.js/index)](https://github.com/igrigorik/ga-beacon)
