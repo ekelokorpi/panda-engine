@@ -1,20 +1,19 @@
 Panda.js HTML5 game engine
-========
+==========================
+
+![logo](https://raw.github.com/ekelokorpi/panda.js/master/media/logo.png)
 
 ## Features
 
 - Pixi.js renderer
 - Mobile support
-- Web Audio support
+- Retina / HiRes support
+- Web Audio API
 - Web Storage
-- Retina / HiRes
 - Object pooling
 - Tween engine
 - Physics engine
-- Page Visibility
-- Module system
-- Device and browser detection
+- Page Visibility API
 - JSHint valid
-- Mobile compatible
 - CocoonJS compatible
 - Windows Phone 8 compatible
