@@ -22,6 +22,8 @@ Panda.js HTML5 game engine
 
 [Panda.js documentation](http://ekelokorpi.github.io/panda.js/docs/)
 
+### License
+
 Panda.js is released under the [MIT License](http://opensource.org/licenses/MIT).
 
 Sponsored by [Yle](http://en.wikipedia.org/wiki/Yle)
