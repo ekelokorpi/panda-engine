@@ -7,24 +7,65 @@ game.module(
 )
 .body(function(){ 'use strict';
 
+/**
+ * Automatically created at `game.system`
+ * @class System
+ */
 game.System = game.Class.extend({
+    /**
+     * Width of the game screen.
+     * @property {Number} width
+     */
     width: null,
+    /**
+     * Height of the game screen.
+     * @property {Number} height
+     */
     height: null,
+    /**
+     * Current delta-time.
+     * @property {Number} delta
+     */
+    delta: 0,
     tick: 0,
-    animationId: 0,
+    gameLoopId: 0,
     newSceneClass: null,
     running: false,
+    /**
+     * Current game scene class.
+     * @property {Class} scene
+     */
     scene: null,
     clock: null,
+    /**
+     * Canvas element.
+     * @property {HTMLCanvasElement} canvas
+     */
     canvas: null,
-    context: null,
+    /**
+     * Id of canvas element.
+     * @property {String} canvasId
+     * @default canvas
+     */
     canvasId: 'canvas',
+    /**
+     * Is engine paused.
+     * @property {Boolean} paused
+     */
     paused: false,
+    /**
+     * Is engine in HiRes mode.
+     * @property {Boolean} hires
+     */
     hires: false,
+    /**
+     * Is engine in Retina mode.
+     * @property {Boolean} retina
+     */
     retina: false,
 
     init: function(width, height, canvasId) {
-        if(game.System.hires && window.innerWidth >= width * game.System.hiresLimit && window.innerHeight >= height * game.System.hiresLimit) {
+        if(game.System.hires && window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
             this.hires = true;
         }
         if(game.System.retina && game.ua.pixelRatio === 2) {
@@ -90,18 +131,31 @@ game.System = game.Class.extend({
         if(!navigator.isCocoonJS) this.initResize();
     },
 
+    /**
+     * Pause game engine.
+     * @method pause
+     */
     pause: function() {
         if(this.paused) return;
         this.paused = true;
         if(game.scene) game.scene.pause();
     },
 
+    /**
+     * Resume paused game engine.
+     * @method unpause
+     */
     unpause: function() {
         if(!this.paused) return;
         this.paused = false;
         if(game.scene) game.scene.unpause();
     },
-    
+
+    /**
+     * Change current scene.
+     * @method setScene
+     * @param  {Class} sceneClass
+     */
     setScene: function(sceneClass) {
         if(this.running) this.newSceneClass = sceneClass;
         else this.setSceneNow(sceneClass);
@@ -113,13 +167,13 @@ game.System = game.Class.extend({
     },
     
     startRunLoop: function() {
-        if(this.animationId) this.stopRunLoop();
-        this.animationId = game.setGameLoop(this.run.bind(this), this.canvas);
+        if(this.gameLoopId) this.stopRunLoop();
+        this.gameLoopId = game.setGameLoop(this.run.bind(this), this.canvas);
         this.running = true;
     },
 
     stopRunLoop: function() {
-        game.clearGameLoop(this.animationId);
+        game.clearGameLoop(this.gameLoopId);
         this.running = false;
     },
     
@@ -129,7 +183,7 @@ game.System = game.Class.extend({
         if(game.debug) game.debug.stats.begin();
 
         game.Timer.step();
-        this.tick = this.clock.tick();
+        this.delta = this.tick = this.clock.tick();
         
         game.scene.run();
         
@@ -258,37 +312,117 @@ game.System = game.Class.extend({
     }
 });
 
-game.System.minWidth = 'auto';
-game.System.minHeight = 'auto';
-game.System.maxWidth = 'auto';
-game.System.maxHeight = 'auto';
-
-// CocoonJS settings
-game.System.idtkScale = 'ScaleAspectFit';
-game.System.screenCanvas = true;
-
-// Retina / HiRes support
-game.System.hires = false;
-game.System.hiresLimit = 1.5;
-game.System.retina = false;
-
-// Page Visibility
-game.System.pauseOnHide = true;
-
-// Mobile
+game.System.rotateScreen = false;
 game.System.PORTRAIT = 0;
 game.System.LANDSCAPE = 1;
+
+/**
+ * Minimum width for canvas.
+ * @attribute {Number} minWidth
+ * @default auto
+ */
+game.System.minWidth = 'auto';
+/**
+ * Minimum height for canvas.
+ * @attribute {Number} minHeight
+ * @default auto
+ */
+game.System.minHeight = 'auto';
+/**
+ * Maximum width for canvas.
+ * @attribute {Number} maxWidth
+ * @default auto
+ */
+game.System.maxWidth = 'auto';
+/**
+ * Maximum height for canvas.
+ * @attribute {Number} maxHeight
+ * @default auto
+ */
+game.System.maxHeight = 'auto';
+/**
+ * Scaling method for CocoonJS.
+ * @attribute {ScaleToFill|ScaleAspectFit|ScaleAspectFill} idtkScale
+ * @default ScaleAspectFit
+ */
+game.System.idtkScale = 'ScaleAspectFit';
+/**
+ * Use ScreenCanvas on CocoonJS.
+ * http://support.ludei.com/hc/en-us/articles/201810268-ScreenCanvas
+ * @attribute {Boolean} screenCanvas
+ * @default true
+ */
+game.System.screenCanvas = true;
+/**
+ * Use HiRes mode.
+ * @attribute {Boolean} hires
+ * @default false
+ */
+game.System.hires = false;
+/**
+ * System width/height factor, when to use HiRes mode.
+ * @attribute {Number} hiresFactor
+ * @default 1.5
+ */
+game.System.hiresFactor = 1.5;
+/**
+ * Use Retina mode.
+ * @attribute {Boolean} retina
+ * @default false
+ */
+game.System.retina = false;
+/**
+ * Pause game engine, when page is hidden.
+ * @attribute {Boolean} pauseOnHide
+ * @default true
+ */
+game.System.pauseOnHide = true;
+/**
+ * Mobile orientation for the game.
+ * @attribute {game.System.LANDSCAPE|game.System.PORTRAIT} orientation
+ * @default game.System.LANDSCAPE
+ */
 game.System.orientation = game.System.LANDSCAPE;
 game.System.backgroundColor = {
+    /**
+     * Background color for game screen.
+     * @attribute backgroundColor.game
+     * @type {String}
+     */
     game: '#000000',
+    /**
+     * Background color for rotate screen.
+     * @attribute backgroundColor.rotate
+     * @type {String}
+     */
     rotate: '#ffffff'
 };
 game.System.backgroundImage = {
+    /**
+     * Background image for game screen.
+     * @attribute backgroundImage.game
+     * @type {URL}
+     */
     game: null,
+    /**
+     * Background image for rotate screen.
+     * @attribute backgroundImage.rotate
+     * @type {URL}
+     */
     rotate: null
 };
+/**
+ * Rotate message for mobile.
+ * 
+ * @attribute {String} rotateMsg
+ * @default Please rotate your device
+ */
 game.System.rotateMsg = 'Please rotate your device';
+/**
+ * Rotate image for mobile.
+ * @attribute {URL} rotateImg
+ * @default null
+ */
 game.System.rotateImg = null;
-game.System.rotateScreen = false;
 
 });

@@ -1,0 +1,11 @@
+{
+    "name": "Panda.js",
+    "description": "HTML5 game engine",
+    "version": "1.0.0",
+    "url": "https://github.com/ekelokorpi/panda.js",
+    "logo": "../media/logo_small2.png",
+    "options": {
+        "outdir": "docs",
+        "exclude": "renderer.js,particle.js"
+    }
+}

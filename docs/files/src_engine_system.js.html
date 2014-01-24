@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/engine/system.js - Panda.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../../media/logo_small2.png" title="Panda.js"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/Core.html">Core</a></li>
+            
+                <li><a href="../classes/System.html">System</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/game.html">game</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: src/engine/system.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+game.module(
+    &#x27;engine.system&#x27;,
+    &#x27;1.0.0&#x27;
+)
+.require(
+    &#x27;engine.timer&#x27;
+)
+.body(function(){ &#x27;use strict&#x27;;
+
+/**
+ * Automatically created at &#x60;game.system&#x60;
+ * @class System
+ */
+game.System = game.Class.extend({
+    /**
+     * Width of the game screen.
+     * @property {Number} width
+     */
+    width: null,
+    /**
+     * Height of the game screen.
+     * @property {Number} height
+     */
+    height: null,
+    /**
+     * Current delta-time.
+     * @property {Number} delta
+     */
+    delta: 0,
+    tick: 0,
+    gameLoopId: 0,
+    newSceneClass: null,
+    running: false,
+    /**
+     * Current game scene class.
+     * @property {Class} scene
+     */
+    scene: null,
+    clock: null,
+    /**
+     * Canvas element.
+     * @property {HTMLCanvasElement} canvas
+     */
+    canvas: null,
+    /**
+     * Id of canvas element.
+     * @property {String} canvasId
+     * @default canvas
+     */
+    canvasId: &#x27;canvas&#x27;,
+    /**
+     * Is engine paused.
+     * @property {Boolean} paused
+     */
+    paused: false,
+    /**
+     * Is engine in HiRes mode.
+     * @property {Boolean} hires
+     */
+    hires: false,
+    /**
+     * Is engine in Retina mode.
+     * @property {Boolean} retina
+     */
+    retina: false,
+
+    init: function(width, height, canvasId) {
+        if(game.System.hires &amp;&amp; window.innerWidth &gt;= width * game.System.hiresFactor &amp;&amp; window.innerHeight &gt;= height * game.System.hiresFactor) {
+            this.hires = true;
+        }
+        if(game.System.retina &amp;&amp; game.ua.pixelRatio === 2) {
+            this.retina = true;
+        }
+        if(this.hires || this.retina) {
+            width *= 2;
+            height *= 2;
+            game.scale = 2;
+        }
+
+        this.width = width;
+        this.height = height;
+        this.canvasId = canvasId || this.canvasId;
+        this.clock = new game.Timer();
+
+        if(!document.getElementById(this.canvasId)) {
+            var canvas = document.createElement((navigator.isCocoonJS &amp;&amp; game.System.screenCanvas) ? &#x27;screencanvas&#x27; : &#x27;canvas&#x27;);
+            canvas.id = this.canvasId;
+            document.body.appendChild(canvas);
+        }
+
+        if(game.Renderer.canvas) this.renderer = new PIXI.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.Renderer.transparent);
+        else this.renderer = new PIXI.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.Renderer.transparent, game.Renderer.antialias);
+        
+        this.view = this.renderer.view;
+        this.canvas = this.renderer.view;
+        this.stage = new PIXI.Stage(width,height);
+
+        document.body.style.margin = 0;
+
+        if(this.retina) {
+            this.canvas.style.width = width / 2 + &#x27;px&#x27;;
+            this.canvas.style.height = height / 2 + &#x27;px&#x27;;
+        } else {
+            this.canvas.style.width = width + &#x27;px&#x27;;
+            this.canvas.style.height = height + &#x27;px&#x27;;
+        }
+
+        if(!navigator.isCocoonJS) {
+            var visibilityChange;
+            if (typeof document.hidden !== &#x27;undefined&#x27;) {
+                visibilityChange = &#x27;visibilitychange&#x27;;
+            } else if (typeof document.mozHidden !== &#x27;undefined&#x27;) {
+                visibilityChange = &#x27;mozvisibilitychange&#x27;;
+            } else if (typeof document.msHidden !== &#x27;undefined&#x27;) {
+                visibilityChange = &#x27;msvisibilitychange&#x27;;
+            } else if (typeof document.webkitHidden !== &#x27;undefined&#x27;) {
+                visibilityChange = &#x27;webkitvisibilitychange&#x27;;
+            }
+
+            document.addEventListener(visibilityChange, function() {
+                var hidden = !!game.getVendorAttribute(document, &#x27;hidden&#x27;);
+                if(hidden &amp;&amp; game.System.pauseOnHide) game.system.pause();
+                if(!hidden &amp;&amp; game.System.pauseOnHide) game.system.unpause();
+            }, false);
+        }
+        
+        if(navigator.isCocoonJS) this.canvas.style.cssText=&#x27;idtkscale:&#x27;+game.System.idtkScale+&#x27;;&#x27;;
+        
+        game.renderer = this.renderer;
+
+        if(!navigator.isCocoonJS) this.initResize();
+    },
+
+    /**
+     * Pause game engine.
+     * @method pause
+     */
+    pause: function() {
+        if(this.paused) return;
+        this.paused = true;
+        if(game.scene) game.scene.pause();
+    },
+
+    /**
+     * Resume paused game engine.
+     * @method unpause
+     */
+    unpause: function() {
+        if(!this.paused) return;
+        this.paused = false;
+        if(game.scene) game.scene.unpause();
+    },
+
+    /**
+     * Change current scene.
+     * @method setScene
+     * @param  {Class} sceneClass
+     */
+    setScene: function(sceneClass) {
+        if(this.running) this.newSceneClass = sceneClass;
+        else this.setSceneNow(sceneClass);
+    },
+    
+    setSceneNow: function(SceneClass) {
+        game.scene = new (SceneClass)();
+        this.startRunLoop();
+    },
+    
+    startRunLoop: function() {
+        if(this.gameLoopId) this.stopRunLoop();
+        this.gameLoopId = game.setGameLoop(this.run.bind(this), this.canvas);
+        this.running = true;
+    },
+
+    stopRunLoop: function() {
+        game.clearGameLoop(this.gameLoopId);
+        this.running = false;
+    },
+    
+    run: function() {
+        if(this.paused) return;
+
+        if(game.debug) game.debug.stats.begin();
+
+        game.Timer.step();
+        this.delta = this.tick = this.clock.tick();
+        
+        game.scene.run();
+        
+        if(game.debug) game.debug.stats.end();
+
+        if(this.newSceneClass) {
+            this.setSceneNow(this.newSceneClass);
+            this.newSceneClass = null;
+        }
+    },
+
+    initResize: function() {
+        this.ratio = game.System.orientation === game.System.LANDSCAPE ? this.width / this.height : this.height / this.width;
+        
+        this.canvas.style.margin = &#x27;auto&#x27;;
+
+        if(game.ua.mobile) {
+            document.addEventListener(&#x27;touchstart&#x27;, function(e) { e.preventDefault(); }, false);
+
+            var div = document.createElement(&#x27;div&#x27;);
+            div.innerHTML = game.System.rotateImg ? &#x27;&#x27; : game.System.rotateMsg;
+            div.id = &#x27;ig_rotateMsg&#x27;;
+            div.style.position = &#x27;absolute&#x27;;
+            div.style.height = &#x27;12px&#x27;;
+            div.style.textAlign = &#x27;center&#x27;;
+            div.style.left = 0;
+            div.style.right = 0;
+            div.style.top = 0;
+            div.style.bottom = 0;
+            div.style.margin = &#x27;auto&#x27;;
+            div.style.display = &#x27;none&#x27;;
+            game.System.rotateDiv = div;
+            document.body.appendChild(game.System.rotateDiv);
+
+            if(game.System.rotateImg) {
+                var img = new Image();
+                var me = this;
+                img.onload = function(e) {
+                    div.image = e.target;
+                    div.appendChild(e.target);
+                    div.style.height = e.target.height+&#x27;px&#x27;;
+                    me.resizeRotateImage();
+                };
+                img.src = game.System.rotateImg;
+                img.style.position = &#x27;relative&#x27;;
+            }
+        } else {
+            // Desktop center
+            this.canvas.style.position = &#x27;absolute&#x27;;
+            this.canvas.style.top = 0;
+            this.canvas.style.left = 0;
+            this.canvas.style.bottom = 0;
+            this.canvas.style.right = 0;
+            // Desktop resize
+            var minWidth = game.System.minWidth === &#x27;auto&#x27; ? this.retina ? this.width / 4 : this.width / 2 : game.System.minWidth;
+            var minHeight = game.System.minHeight === &#x27;auto&#x27; ? this.retina ? this.height / 4 : this.height / 2 : game.System.minHeight;
+            var maxWidth = game.System.maxWidth === &#x27;auto&#x27; ? this.retina ? this.width / 2 : this.width : game.System.maxWidth;
+            var maxHeight = game.System.maxHeight === &#x27;auto&#x27; ? this.retina ? this.height / 2 : this.height : game.System.maxHeight;
+            if(game.System.minWidth) this.canvas.style.minWidth = minWidth + &#x27;px&#x27;;
+            if(game.System.minHeight) this.canvas.style.minHeight = minHeight + &#x27;px&#x27;;
+            if(game.System.maxWidth) this.canvas.style.maxWidth = maxWidth + &#x27;px&#x27;;
+            if(game.System.maxHeight) this.canvas.style.maxHeight = maxHeight + &#x27;px&#x27;;
+        }
+
+        window.onresize = this.onResize.bind(this);
+        this.onResize();
+    },
+
+    checkOrientation: function() {
+        this.orientation = window.innerWidth &lt; window.innerHeight ? game.System.PORTRAIT : game.System.LANDSCAPE;
+        game.System.rotateScreen = game.System.orientation !== this.orientation ? true : false;
+
+        this.canvas.style.display = game.System.rotateScreen ? &#x27;none&#x27; : &#x27;block&#x27;;
+        game.System.rotateDiv.style.display = game.System.rotateScreen ? &#x27;block&#x27; : &#x27;none&#x27;;
+
+        if(game.System.rotateScreen &amp;&amp; game.System.backgroundColor.rotate) document.body.style.backgroundColor = game.System.backgroundColor.rotate;
+        if(!game.System.rotateScreen &amp;&amp; game.System.backgroundColor.game) document.body.style.backgroundColor = game.System.backgroundColor.game;
+
+        if(game.System.rotateScreen) document.body.style.backgroundImage = game.System.backgroundImage.rotate ? &#x27;url(&#x27; + game.System.backgroundImage.rotate + &#x27;)&#x27; : &#x27;none&#x27;;
+        if(!game.System.rotateScreen) document.body.style.backgroundImage = game.System.backgroundImage.game ? &#x27;url(&#x27; + game.System.backgroundImage.game + &#x27;)&#x27; : &#x27;none&#x27;;
+
+        if(game.System.rotateScreen &amp;&amp; game.system &amp;&amp; typeof(game.system.pause) === &#x27;function&#x27;) game.system.pause();
+        if(!game.System.rotateScreen &amp;&amp; game.system &amp;&amp; typeof(game.system.unpause) === &#x27;function&#x27;) game.system.unpause();
+
+        if(game.System.rotateScreen) this.resizeRotateImage();
+    },
+
+    resizeRotateImage: function() {
+        if(game.System.rotateScreen &amp;&amp; game.System.rotateDiv.image) {
+            if(window.innerHeight &lt; game.System.rotateDiv.image.height) {
+                game.System.rotateDiv.image.style.height = window.innerHeight + &#x27;px&#x27;;
+                game.System.rotateDiv.image.style.width = &#x27;auto&#x27;;
+                game.System.rotateDiv.style.height = window.innerHeight + &#x27;px&#x27;;
+                game.System.rotateDiv.style.bottom = &#x27;auto&#x27;;
+            }
+        }
+    },
+
+    onResize: function() {
+        if(game.ua.mobile) {
+            // Mobile resize
+            this.checkOrientation();
+
+            if(game.System.orientation === game.System.LANDSCAPE) {
+                this.canvas.style.height = window.innerHeight + &#x27;px&#x27;;
+                this.canvas.style.width = window.innerHeight * this.ratio + &#x27;px&#x27;;
+            } else {
+                this.canvas.style.width = window.innerWidth + &#x27;px&#x27;;
+                this.canvas.style.height = window.innerWidth * this.ratio + &#x27;px&#x27;;
+            }
+
+            window.scroll(0,1);
+        } else {
+            // Desktop resize
+            if(window.innerWidth &lt; this.width || window.innerHeight &lt; this.height) {
+                if(window.innerWidth / this.width &lt; window.innerHeight / this.height) {
+                    this.canvas.style.width = &#x27;100%&#x27;;
+                    this.canvas.style.height = &#x27;auto&#x27;;
+                }
+                else {
+                    this.canvas.style.width = &#x27;auto&#x27;;
+                    this.canvas.style.height = &#x27;100%&#x27;;
+                }
+            }
+        }
+    }
+});
+
+game.System.rotateScreen = false;
+game.System.PORTRAIT = 0;
+game.System.LANDSCAPE = 1;
+
+/**
+ * Minimum width for canvas.
+ * @attribute {Number} minWidth
+ * @default auto
+ */
+game.System.minWidth = &#x27;auto&#x27;;
+/**
+ * Minimum height for canvas.
+ * @attribute {Number} minHeight
+ * @default auto
+ */
+game.System.minHeight = &#x27;auto&#x27;;
+/**
+ * Maximum width for canvas.
+ * @attribute {Number} maxWidth
+ * @default auto
+ */
+game.System.maxWidth = &#x27;auto&#x27;;
+/**
+ * Maximum height for canvas.
+ * @attribute {Number} maxHeight
+ * @default auto
+ */
+game.System.maxHeight = &#x27;auto&#x27;;
+/**
+ * Scaling method for CocoonJS.
+ * @attribute {ScaleToFill|ScaleAspectFit|ScaleAspectFill} idtkScale
+ * @default ScaleAspectFit
+ */
+game.System.idtkScale = &#x27;ScaleAspectFit&#x27;;
+/**
+ * Use ScreenCanvas on CocoonJS.
+ * http://support.ludei.com/hc/en-us/articles/201810268-ScreenCanvas
+ * @attribute {Boolean} screenCanvas
+ * @default true
+ */
+game.System.screenCanvas = true;
+/**
+ * Use HiRes mode.
+ * @attribute {Boolean} hires
+ * @default false
+ */
+game.System.hires = false;
+/**
+ * System width/height factor, when to use HiRes mode.
+ * @attribute {Number} hiresFactor
+ * @default 1.5
+ */
+game.System.hiresFactor = 1.5;
+/**
+ * Use Retina mode.
+ * @attribute {Boolean} retina
+ * @default false
+ */
+game.System.retina = false;
+/**
+ * Pause game engine, when page is hidden.
+ * @attribute {Boolean} pauseOnHide
+ * @default true
+ */
+game.System.pauseOnHide = true;
+/**
+ * Mobile orientation for the game.
+ * @attribute {game.System.LANDSCAPE|game.System.PORTRAIT} orientation
+ * @default game.System.LANDSCAPE
+ */
+game.System.orientation = game.System.LANDSCAPE;
+game.System.backgroundColor = {
+    /**
+     * Background color for game screen.
+     * @attribute backgroundColor.game
+     * @type {String}
+     */
+    game: &#x27;#000000&#x27;,
+    /**
+     * Background color for rotate screen.
+     * @attribute backgroundColor.rotate
+     * @type {String}
+     */
+    rotate: &#x27;#ffffff&#x27;
+};
+game.System.backgroundImage = {
+    /**
+     * Background image for game screen.
+     * @attribute backgroundImage.game
+     * @type {URL}
+     */
+    game: null,
+    /**
+     * Background image for rotate screen.
+     * @attribute backgroundImage.rotate
+     * @type {URL}
+     */
+    rotate: null
+};
+/**
+ * Rotate message for mobile.
+ * 
+ * @attribute {String} rotateMsg
+ * @default Please rotate your device
+ */
+game.System.rotateMsg = &#x27;Please rotate your device&#x27;;
+/**
+ * Rotate image for mobile.
+ * @attribute {URL} rotateImg
+ * @default null
+ */
+game.System.rotateImg = null;
+
+});
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

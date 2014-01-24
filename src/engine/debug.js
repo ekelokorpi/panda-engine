@@ -6,10 +6,6 @@ game.module(
 
 game.Debug = game.Class.extend({
     init: function() {
-        /**
-         * @author mrdoob / http://mrdoob.com/
-         */
-
         var Stats = function () {
 
             var startTime = Date.now(), prevTime = startTime;
