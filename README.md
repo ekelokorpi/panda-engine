@@ -1,7 +1,5 @@
-![logo](https://raw.github.com/ekelokorpi/panda.js/master/media/pandajs.gif)
-
-Panda.js HTML5 game engine
-==========================
+![logo](https://raw.github.com/ekelokorpi/panda.js/master/media/logo_small.gif)
+## Panda.js HTML5 game engine
 
 ### Features
 
