@@ -54,6 +54,15 @@ game.Scene.inject({
     }
 });
 
+/**
+    @class Tween
+    @constructor
+    @param {Object} obj
+    @param {Object} properties
+    @param {Number} duration Duration in seconds.
+    @param {Object} [settings]
+        @param [settings.loop] {game.Tween.Loop.Reverse|game.Tween.Loop.Revert}
+**/
 game.Tween = game.Class.extend({
     _object: null,
     valuesStart: {},

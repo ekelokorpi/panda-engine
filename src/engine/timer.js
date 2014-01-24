@@ -4,6 +4,17 @@ game.module(
 )
 .body(function(){ 'use strict';
 
+/**
+    Example:
+
+        var timer = new game.Timer(2);
+        if(timer.delta() >= 0) {
+            timer.set(2);
+        }
+    @class Timer
+    @constructor
+    @param {Number} seconds
+**/
 game.Timer = game.Class.extend({
     target: 0,
     base: 0,
@@ -15,12 +26,19 @@ game.Timer = game.Class.extend({
         this.set(seconds);
     },
     
+    /**
+        @method set
+        @param {Number} seconds
+    **/
     set: function(seconds) {
         if(typeof(seconds) !== 'number') seconds = 0;
         this.target = seconds || 0;
         this.reset();
     },
     
+    /**
+        @method reset
+    **/
     reset: function() {
         this.base = game.Timer.time;
         this.pausedAt = 0;
@@ -36,10 +54,18 @@ game.Timer = game.Class.extend({
         return (this.pausedAt || game.Timer.time) - this.base - this.target;
     },
 
+    /**
+        Pause timer.
+        @method pause
+    **/
     pause: function() {
         if(!this.pausedAt) this.pausedAt = game.Timer.time;
     },
 
+    /**
+        Resume paused timer.
+        @method unpause
+    **/
     unpause: function() {
         if(this.pausedAt) {
             this.base += game.Timer.time - this.pausedAt;

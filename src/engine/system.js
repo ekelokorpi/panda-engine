@@ -8,60 +8,59 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
- * Automatically created at `game.system`
- * @class System
- */
+    Automatically created at `game.system`
+    @class System
+**/
 game.System = game.Class.extend({
     /**
-     * Width of the game screen.
-     * @property {Number} width
-     */
+        Width of the game screen.
+        @property {Number} width
+    **/
     width: null,
     /**
-     * Height of the game screen.
-     * @property {Number} height
-     */
+        Height of the game screen.
+        @property {Number} height
+    **/
     height: null,
     /**
-     * Current delta-time.
-     * @property {Number} delta
-     */
+        Current delta-time.
+        @property {Number} delta
+    **/
     delta: 0,
     tick: 0,
     gameLoopId: 0,
     newSceneClass: null,
     running: false,
     /**
-     * Current game scene class.
-     * @property {Class} scene
-     */
-    scene: null,
-    clock: null,
+        Main game timer.
+        @property {Timer} timer
+    **/
+    timer: null,
     /**
-     * Canvas element.
-     * @property {HTMLCanvasElement} canvas
-     */
+        Canvas element.
+        @property {HTMLCanvasElement} canvas
+    **/
     canvas: null,
     /**
-     * Id of canvas element.
-     * @property {String} canvasId
-     * @default canvas
-     */
+        Id of canvas element.
+        @property {String} canvasId
+        @default canvas
+    **/
     canvasId: 'canvas',
     /**
-     * Is engine paused.
-     * @property {Boolean} paused
-     */
+        Is engine paused.
+        @property {Boolean} paused
+    **/
     paused: false,
     /**
-     * Is engine in HiRes mode.
-     * @property {Boolean} hires
-     */
+        Is engine in HiRes mode.
+        @property {Boolean} hires
+    **/
     hires: false,
     /**
-     * Is engine in Retina mode.
-     * @property {Boolean} retina
-     */
+        Is engine in Retina mode.
+        @property {Boolean} retina
+    **/
     retina: false,
 
     init: function(width, height, canvasId) {
@@ -80,7 +79,7 @@ game.System = game.Class.extend({
         this.width = width;
         this.height = height;
         this.canvasId = canvasId || this.canvasId;
-        this.clock = new game.Timer();
+        this.timer = new game.Timer();
 
         if(!document.getElementById(this.canvasId)) {
             var canvas = document.createElement((navigator.isCocoonJS && game.System.screenCanvas) ? 'screencanvas' : 'canvas');
@@ -132,9 +131,9 @@ game.System = game.Class.extend({
     },
 
     /**
-     * Pause game engine.
-     * @method pause
-     */
+        Pause game engine.
+        @method pause
+    **/
     pause: function() {
         if(this.paused) return;
         this.paused = true;
@@ -142,9 +141,9 @@ game.System = game.Class.extend({
     },
 
     /**
-     * Resume paused game engine.
-     * @method unpause
-     */
+        Resume paused game engine.
+        @method unpause
+    **/
     unpause: function() {
         if(!this.paused) return;
         this.paused = false;
@@ -152,10 +151,10 @@ game.System = game.Class.extend({
     },
 
     /**
-     * Change current scene.
-     * @method setScene
-     * @param  {Class} sceneClass
-     */
+        Change current scene.
+        @method setScene
+        @param  {Class} sceneClass
+    **/
     setScene: function(sceneClass) {
         if(this.running) this.newSceneClass = sceneClass;
         else this.setSceneNow(sceneClass);
@@ -183,7 +182,7 @@ game.System = game.Class.extend({
         if(game.debug) game.debug.stats.begin();
 
         game.Timer.step();
-        this.delta = this.tick = this.clock.tick();
+        this.delta = this.tick = this.timer.tick();
         
         game.scene.run();
         
@@ -317,112 +316,111 @@ game.System.PORTRAIT = 0;
 game.System.LANDSCAPE = 1;
 
 /**
- * Minimum width for canvas.
- * @attribute {Number} minWidth
- * @default auto
- */
+    Minimum width for canvas.
+    @attribute {Number} minWidth
+    @default auto
+**/
 game.System.minWidth = 'auto';
 /**
- * Minimum height for canvas.
- * @attribute {Number} minHeight
- * @default auto
- */
+    Minimum height for canvas.
+    @attribute {Number} minHeight
+    @default auto
+**/
 game.System.minHeight = 'auto';
 /**
- * Maximum width for canvas.
- * @attribute {Number} maxWidth
- * @default auto
- */
+    Maximum width for canvas.
+    @attribute {Number} maxWidth
+    @default auto
+**/
 game.System.maxWidth = 'auto';
 /**
- * Maximum height for canvas.
- * @attribute {Number} maxHeight
- * @default auto
- */
+    Maximum height for canvas.
+    @attribute {Number} maxHeight
+    @default auto
+**/
 game.System.maxHeight = 'auto';
 /**
- * Scaling method for CocoonJS.
- * @attribute {ScaleToFill|ScaleAspectFit|ScaleAspectFill} idtkScale
- * @default ScaleAspectFit
- */
+    Scaling method for CocoonJS.
+    @attribute {ScaleToFill|ScaleAspectFit|ScaleAspectFill} idtkScale
+    @default ScaleAspectFit
+**/
 game.System.idtkScale = 'ScaleAspectFit';
 /**
- * Use ScreenCanvas on CocoonJS.
- * http://support.ludei.com/hc/en-us/articles/201810268-ScreenCanvas
- * @attribute {Boolean} screenCanvas
- * @default true
- */
+    Use ScreenCanvas on CocoonJS.
+    http://support.ludei.com/hc/en-us/articles/201810268-ScreenCanvas
+    @attribute {Boolean} screenCanvas
+    @default true
+**/
 game.System.screenCanvas = true;
 /**
- * Use HiRes mode.
- * @attribute {Boolean} hires
- * @default false
- */
+    Use HiRes mode.
+    @attribute {Boolean} hires
+    @default false
+**/
 game.System.hires = false;
 /**
- * System width/height factor, when to use HiRes mode.
- * @attribute {Number} hiresFactor
- * @default 1.5
- */
+    System width/height factor, when to use HiRes mode.
+    @attribute {Number} hiresFactor
+    @default 1.5
+**/
 game.System.hiresFactor = 1.5;
 /**
- * Use Retina mode.
- * @attribute {Boolean} retina
- * @default false
- */
+    Use Retina mode.
+    @attribute {Boolean} retina
+    @default false
+**/
 game.System.retina = false;
 /**
- * Pause game engine, when page is hidden.
- * @attribute {Boolean} pauseOnHide
- * @default true
- */
+    Pause game engine, when page is hidden.
+    @attribute {Boolean} pauseOnHide
+    @default true
+**/
 game.System.pauseOnHide = true;
 /**
- * Mobile orientation for the game.
- * @attribute {game.System.LANDSCAPE|game.System.PORTRAIT} orientation
- * @default game.System.LANDSCAPE
- */
+    Mobile orientation for the game.
+    @attribute {game.System.LANDSCAPE|game.System.PORTRAIT} orientation
+    @default game.System.LANDSCAPE
+**/
 game.System.orientation = game.System.LANDSCAPE;
 game.System.backgroundColor = {
     /**
-     * Background color for game screen.
-     * @attribute backgroundColor.game
-     * @type {String}
-     */
+        Background color for game screen.
+        @attribute backgroundColor.game
+        @type {String}
+    **/
     game: '#000000',
     /**
-     * Background color for rotate screen.
-     * @attribute backgroundColor.rotate
-     * @type {String}
-     */
+        Background color for rotate screen.
+        @attribute backgroundColor.rotate
+        @type {String}
+    **/
     rotate: '#ffffff'
 };
 game.System.backgroundImage = {
     /**
-     * Background image for game screen.
-     * @attribute backgroundImage.game
-     * @type {URL}
-     */
+        Background image for game screen.
+        @attribute backgroundImage.game
+        @type {URL}
+    **/
     game: null,
     /**
-     * Background image for rotate screen.
-     * @attribute backgroundImage.rotate
-     * @type {URL}
-     */
+        Background image for rotate screen.
+        @attribute backgroundImage.rotate
+        @type {URL}
+    **/
     rotate: null
 };
 /**
- * Rotate message for mobile.
- * 
- * @attribute {String} rotateMsg
- * @default Please rotate your device
- */
+    Rotate message for mobile.
+    @attribute {String} rotateMsg
+    @default Please rotate your device
+**/
 game.System.rotateMsg = 'Please rotate your device';
 /**
- * Rotate image for mobile.
- * @attribute {URL} rotateImg
- * @default null
- */
+    Rotate image for mobile.
+    @attribute {URL} rotateImg
+    @default null
+**/
 game.System.rotateImg = null;
 
 });

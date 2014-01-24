@@ -4,7 +4,14 @@ game.module(
 )
 .body(function(){ 'use strict';
 
+/**
+    @class Scene
+**/
 game.Scene = game.Class.extend({
+    /**
+        Background color of scene.
+        @property {Number} clearColor
+    **/
     clearColor: 0x000000,
     sprites: [],
     timers: [],
@@ -46,6 +53,12 @@ game.Scene = game.Class.extend({
         }
     },
 
+    /**
+        Add timer to game scene.
+        @method addTimer
+        @param {Number} time Time in seconds
+        @param {Function} callback Callback function to run, when timer ends.
+    **/
     addTimer: function(time, callback) {
         var timer = new game.Timer(time);
         timer.callback = callback;
@@ -64,13 +77,42 @@ game.Scene = game.Class.extend({
         game.sound.unmuteAll();
     },
 
+    /**
+        Callback for mouse click and touch tap on the scene stage.
+        @method click
+        @param {InteractionData} InteractionData
+    **/
     click: function() {},
+    /**
+        Callback for mousedown and touchstart on the scene stage.
+        @method mousedown
+        @param {InteractionData} InteractionData
+    **/
     mousedown: function() {},
+    /**
+        Callback for mouseup and touchend on the scene stage.
+        @method mouseup
+        @param {InteractionData} InteractionData
+    **/
     mouseup: function() {},
+    /**
+        Callback for mousemove and touchmove on the scene stage.
+        @method mousemove
+        @param {InteractionData} InteractionData
+    **/
     mousemove: function() {},
+    /**
+        Callback for mouseout on the scene stage.
+        @method mouseout
+        @param {InteractionData} InteractionData
+    **/
     mouseout: function() {},
 });
 
+/**
+    Main stage for scene.
+    @property {Class} stage
+**/
 Object.defineProperty(game.Scene.prototype, 'stage', {
     get: function() {
         if(!this._stage) {
