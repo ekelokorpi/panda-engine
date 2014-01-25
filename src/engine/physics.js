@@ -1,3 +1,9 @@
+/**
+    Physics engine.
+
+    @module physics
+    @namespace game
+**/
 game.module(
 	'engine.physics',
     '1.0.0'
@@ -7,7 +13,7 @@ game.module(
 /**
     Physics world.
     @class World
-    @extends Class
+    @extends game.Class
     @constructor
     @param {Number} x Velocity x
     @param {Number} y Velocity y
@@ -113,7 +119,7 @@ game.World = game.Class.extend({
 /**
     Physics collision solver.
     @class CollisionSolver
-    @extends Class
+    @extends game.Class
 **/
 game.CollisionSolver = game.Class.extend({
     hitTestData: [],
@@ -353,7 +359,7 @@ game.CollisionSolver = game.Class.extend({
 /**
     Physics body.
     @class Body
-    @extends Class
+    @extends game.Class
     @constructor
     @param {Object} [settings]
 **/
@@ -447,7 +453,7 @@ game.Body = game.Class.extend({
 
 /**
     @class Rectangle
-    @extends Class
+    @extends game.Class
     @constructor
     @param {Number} width
     @param {Number} height
@@ -472,7 +478,7 @@ game.Rectangle = game.Class.extend({
 
 /**
     @class Circle
-    @extends Class
+    @extends game.Class
     @constructor
     @param {Number} radius
 **/
@@ -490,7 +496,7 @@ game.Circle = game.Class.extend({
 
 /**
     @class Line
-    @extends Class
+    @extends game.Class
     @constructor
     @param {Number} length
     @param {Number} rotation
@@ -515,7 +521,7 @@ game.Line = game.Class.extend({
 
 /**
     @class Vector
-    @extends Class
+    @extends game.Class
     @constructor
     @param {Number} x
     @param {Number} y

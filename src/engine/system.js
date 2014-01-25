@@ -1,3 +1,7 @@
+/**
+    @module system
+    @namespace game
+**/
 game.module(
     'engine.system',
     '1.0.0'
@@ -8,9 +12,9 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
-    Instance automatically created at {{#crossLink "Core"}}{{/crossLink}}
+    Instance automatically created at {{#crossLink "game.Core"}}{{/crossLink}}
     @class System
-    @extends Class
+    @extends game.Class
 **/
 game.System = game.Class.extend({
     /**

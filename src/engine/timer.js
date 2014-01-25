@@ -1,3 +1,7 @@
+/**
+    @module timer
+    @namespace game
+**/
 game.module(
     'engine.timer',
     '1.0.0'
@@ -14,7 +18,7 @@ game.module(
             timer.set(2);
         }
     @class Timer
-    @extends Class
+    @extends game.Class
     @constructor
     @param {Number} seconds
 **/

@@ -25,7 +25,8 @@
 (function(window){ 'use strict';
 
 /**
-    @module game
+    @module core
+    @namespace game
 **/
 /**
     Instance automatically created at `game`
@@ -38,33 +39,33 @@ var core = {
     **/
     scale: 1,
     /**
-        Instance of current {{#crossLink "Scene"}}{{/crossLink}}.
-        @property {Scene} scene
+        Instance of current {{#crossLink "game.Scene"}}{{/crossLink}}.
+        @property {game.Scene} scene
     **/
     scene: null,
     /**
-        Instance of {{#crossLink "Debug"}}{{/crossLink}}.
-        @property {Debug} debug
+        Instance of {{#crossLink "game.Debug"}}{{/crossLink}}.
+        @property {game.Debug} debug
     **/
     debug: null,
     /**
-        Instance of {{#crossLink "System"}}{{/crossLink}}.
-        @property {System} system
+        Instance of {{#crossLink "game.System"}}{{/crossLink}}.
+        @property {game.System} system
     **/
     system: null,
     /**
-        Instance of {{#crossLink "SoundManager"}}{{/crossLink}}.
-        @property {SoundManager} sound
+        Instance of {{#crossLink "game.SoundManager"}}{{/crossLink}}.
+        @property {game.SoundManager} sound
     **/
     sound: null,
     /**
-        Instance of {{#crossLink "Pool"}}{{/crossLink}}.
-        @property {Pool} pool
+        Instance of {{#crossLink "game.Pool"}}{{/crossLink}}.
+        @property {game.Pool} pool
     **/
     pool: null,
     /**
-        Instance of {{#crossLink "Storage"}}{{/crossLink}}.
-        @property {Storage} storage
+        Instance of {{#crossLink "game.Storage"}}{{/crossLink}}.
+        @property {game.Storage} storage
     **/
     storage: null,
     renderer: null,

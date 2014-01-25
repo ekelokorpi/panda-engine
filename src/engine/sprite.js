@@ -1,3 +1,7 @@
+/**
+    @module sprite
+    @namespace game
+**/
 game.module(
     'engine.sprite',
     '1.0.0'
@@ -10,7 +14,7 @@ game.module(
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite%E2%84%A2.html
     @class Sprite
-    @extends Class
+    @extends game.Class
     @constructor
     @param {Number} x
     @param {Number} y

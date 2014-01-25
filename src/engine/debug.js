@@ -1,3 +1,7 @@
+/**
+    @module debug
+    @namespace game
+**/
 game.module(
     'engine.debug',
     '1.0.0'
@@ -5,9 +9,9 @@ game.module(
 .body(function() { 'use strict';
 
 /**
-    Instance automatically created at {{#crossLink "Core"}}{{/crossLink}}, if URL contains `?debug`.
+    Instance automatically created at {{#crossLink "game.Core"}}{{/crossLink}}, if URL contains `?debug`.
     @class Debug
-    @extends Class
+    @extends game.Class
 **/
 game.Debug = game.Class.extend({
     init: function() {

@@ -1,3 +1,7 @@
+/**
+    @module loader
+    @namespace game
+**/
 game.module(
     'engine.loader',
     '1.0.0'
@@ -6,7 +10,7 @@ game.module(
 
 /**
     @class Loader
-    @extends Class
+    @extends game.Class
 **/
 game.Loader = game.Class.extend({
     resources: [],

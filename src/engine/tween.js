@@ -1,3 +1,9 @@
+/**
+    Tween engine.
+    
+    @module tween
+    @namespace game
+**/
 game.module(
     'engine.tween',
     '1.0.0'
@@ -5,10 +11,10 @@ game.module(
 .body(function() { 'use strict';
 
 /**
-    __Hint__: Use {{#crossLink "Scene/addTween:method"}}{{/crossLink}}
+    __Hint__: Use {{#crossLink "game.Scene/addTween:method"}}{{/crossLink}}
 
     @class Tween
-    @extends Class
+    @extends game.Class
     @constructor
     @param {Object} obj
     @param {Object} properties
