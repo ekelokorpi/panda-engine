@@ -13,8 +13,18 @@ game.Scene = game.Class.extend({
         @property {Number} clearColor
     **/
     clearColor: 0x000000,
+    /**
+        @property {Array} sprites
+    **/
     sprites: [],
+    /**
+        @property {Array} timers
+    **/
     timers: [],
+    /**
+        @property {Array} tweens
+    **/
+    tweens: [],
     interactive: true,
     
     staticInit: function() {
@@ -34,11 +44,10 @@ game.Scene = game.Class.extend({
         }
     },
     
-    run: function() {
-        this.update();
-        this.render();
-    },
-    
+    /**
+        This is called every frame.
+        @method update
+    **/
     update: function(){
         var i;
         if(this.world) this.world.update();
@@ -54,6 +63,61 @@ game.Scene = game.Class.extend({
     },
 
     /**
+        @method addTween
+        @param {Object} obj
+        @param {Object} props
+        @param {Number} duration
+        @param {Object} [settings]
+    **/
+    addTween: function(obj, props, duration, settings) {
+        var tween = new game.Tween(obj, props, duration, settings);
+        this.tweens.push(tween);
+        return tween;
+    },
+
+    /**
+        @method getTween
+        @param {Object} obj
+    **/
+    getTween: function(obj) {
+        for (var i = 0; i < this.tweens.length; i++) {
+            if(this.tweens[i]._object === obj) return this.tweens[i];
+        }
+        return false;
+    },
+
+    /**
+        @method stopTweens
+        @param {Object} [obj]
+        @param {Boolean} [doComplete]
+    **/
+    stopTweens: function(obj, doComplete) {
+        for (var i = 0; i < this.tweens.length; i++) {
+            if(obj && this.tweens[i]._object === obj || !obj) this.tweens[i].stop(doComplete);
+        }
+    },
+
+    /**
+        @method pauseTweens
+        @param {Object} [obj]
+    **/
+    pauseTweens: function(obj) {
+        for ( var i = 0; i < this.tweens.length; i++ ) {
+            if(obj && this.tweens[i]._object === obj || !obj) this.tweens[i].pause();
+        }
+    },
+
+    /**
+        @method resumeTweens
+        @param {Object} [obj]
+    **/
+    resumeTweens: function (obj) {
+        for ( var i = 0; i < this.tweens.length; i++ ) {
+            if(obj && this.tweens[i]._object === obj || !obj) this.tweens[i].resume();
+        }
+    },
+
+    /**
         Add timer to game scene.
         @method addTimer
         @param {Number} time Time in seconds
@@ -65,6 +129,47 @@ game.Scene = game.Class.extend({
         this.timers.push(timer);
     },
     
+    /**
+        Callback for mouse click and touch tap on the scene stage.
+        @method click
+        @param {InteractionData} InteractionData
+    **/
+    click: function() {},
+
+    /**
+        Callback for mousedown and touchstart on the scene stage.
+        @method mousedown
+        @param {InteractionData} InteractionData
+    **/
+    mousedown: function() {},
+
+    /**
+        Callback for mouseup and touchend on the scene stage.
+        @method mouseup
+        @param {InteractionData} InteractionData
+    **/
+    mouseup: function() {},
+
+    /**
+        Callback for mousemove and touchmove on the scene stage.
+        @method mousemove
+        @param {InteractionData} InteractionData
+    **/
+    mousemove: function() {},
+
+    /**
+        Callback for mouseout on the scene stage.
+        @method mouseout
+        @param {InteractionData} InteractionData
+    **/
+    mouseout: function() {},
+
+    run: function() {
+        this.updateTweens();
+        this.update();
+        this.render();
+    },
+
     render: function(){
         game.renderer.render(game.system.stage);
     },
@@ -77,40 +182,17 @@ game.Scene = game.Class.extend({
         game.sound.unmuteAll();
     },
 
-    /**
-        Callback for mouse click and touch tap on the scene stage.
-        @method click
-        @param {InteractionData} InteractionData
-    **/
-    click: function() {},
-    /**
-        Callback for mousedown and touchstart on the scene stage.
-        @method mousedown
-        @param {InteractionData} InteractionData
-    **/
-    mousedown: function() {},
-    /**
-        Callback for mouseup and touchend on the scene stage.
-        @method mouseup
-        @param {InteractionData} InteractionData
-    **/
-    mouseup: function() {},
-    /**
-        Callback for mousemove and touchmove on the scene stage.
-        @method mousemove
-        @param {InteractionData} InteractionData
-    **/
-    mousemove: function() {},
-    /**
-        Callback for mouseout on the scene stage.
-        @method mouseout
-        @param {InteractionData} InteractionData
-    **/
-    mouseout: function() {},
+    updateTweens: function() {
+        for (var i = this.tweens.length - 1; i >= 0; i--) {
+            this.tweens[i].update();
+            if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
+        }
+    }
 });
 
 /**
     Main stage for scene.
+    http://www.goodboydigital.com/pixijs/docs/classes/Stage.html
     @property {Class} stage
 **/
 Object.defineProperty(game.Scene.prototype, 'stage', {

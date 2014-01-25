@@ -4,6 +4,10 @@ game.module(
 )
 .body(function() { 'use strict';
 
+/**
+    Debug is enabled if url contains `?debug`.
+    @class Debug
+**/
 game.Debug = game.Class.extend({
     init: function() {
         var Stats = function () {
@@ -167,7 +171,15 @@ game.Debug = game.Class.extend({
 });
 
 game.Debug.backgroundColor = {
+    /**
+        @attribute {String} backgroundColor.canvas
+        @default '#ff0000'
+    **/
     canvas: '#ff0000',
+    /**
+        @attribute {String} backgroundColor.webGL
+        @default '#0000ff'
+    **/
     webGL: '#0000ff'
 };
 
@@ -191,7 +203,15 @@ game.Debug.POSITION = {
 };
 
 game.Debug.position = {
+    /**
+        @attribute {TOPLEFT|BOTTOMLEFT|TOPRIGHT|BOTTOMRIGHT} position.desktop
+        @default game.Debug.POSITION.TOPLEFT
+    **/
     desktop: game.Debug.POSITION.TOPLEFT,
+    /**
+        @attribute {TOPLEFT|BOTTOMLEFT|TOPRIGHT|BOTTOMRIGHT} position.mobile
+        @default game.Debug.POSITION.TOPLEFT
+    **/
     mobile: game.Debug.POSITION.TOPLEFT
 };
 

@@ -5,7 +5,9 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
-    Example:
+    Basic timer.
+    
+    __Example__
 
         var timer = new game.Timer(2);
         if(timer.delta() >= 0) {

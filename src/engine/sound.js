@@ -3,7 +3,11 @@ game.module(
     '1.0.0'
 )
 .body(function(){ 'use strict';
-    
+
+/**
+    Automatically created at `game.sound`
+    @class SoundManager
+**/
 game.SoundManager = game.Class.extend({
     clips: {},
     loopedSounds: [],
@@ -13,29 +17,37 @@ game.SoundManager = game.Class.extend({
     _muteMusic: false,
     _muteSound: false,
     currentMusic: null,
+    /**
+        @property {Number} soundVolume
+        @default 1.0
+    **/
     soundVolume: 1.0,
-    musicVolume: 0.5,
+    /**
+        @property {Number} musicVolume
+        @default 1.0
+    **/
+    musicVolume: 1.0,
 
     init: function(){
-        if(game.ua.wp) game.Sound.enabled = false;
+        if(game.ua.wp) game.SoundManager.enabled = false;
         
-        if(!game.Sound.enabled) game.Sound.webAudio = false;
+        if(!game.SoundManager.enabled) game.SoundManager.webAudio = false;
 
-        if(game.Sound.webAudio) {
+        if(game.SoundManager.webAudio) {
             if(!window.webkitAudioContext && !window.AudioContext) {
-                game.Sound.webAudio = false;
+                game.SoundManager.webAudio = false;
             }
         }
 
         if(!navigator.onLine && game.ua.mobile) {
-            game.Sound.webAudio = game.Sound.enabled = false;
+            game.SoundManager.webAudio = game.SoundManager.enabled = false;
         }
 
-        if(game.Sound.enabled && !game.Sound.webAudio && !window.Audio ) {
-            game.Sound.enabled = false;
+        if(game.SoundManager.enabled && !game.SoundManager.webAudio && !window.Audio ) {
+            game.SoundManager.enabled = false;
         }
 
-        if(game.Sound.webAudio && game.Sound.enabled) {
+        if(game.SoundManager.webAudio && game.SoundManager.enabled) {
             game.normalizeVendorAttribute(window, 'AudioContext');
 
             if(window.AudioContext) {
@@ -44,29 +56,25 @@ game.SoundManager = game.Class.extend({
                 else if(this.context.createGainNode) this.gainNode = this.context.createGainNode();
                 this.gainNode.connect(this.context.destination);
             } else {
-                game.Sound.webAudio = false;
+                game.SoundManager.webAudio = false;
             }
         }
 
-        if(game.Sound.enabled) {
-            // Probe sound formats and determine the file extension to load
+        if(game.SoundManager.enabled) {
             var probe = new Audio();
-            for(var i = 0; i < game.Sound.use.length; i++) {
-                var format = game.Sound.use[i];
+            for(var i = 0; i < game.SoundManager.format.length; i++) {
+                var format = game.SoundManager.format[i];
                 if(probe.canPlayType(format.mime)) {
                     this.format = format;
                     break;
                 }
             }
-            
-            // No compatible format found? -> Disable sound
             if(!this.format) {
-                game.Sound.enabled = false;
+                game.SoundManager.enabled = false;
             }
         }
         
-        if(!game.Sound.enabled) {
-            // clean game.SoundCache and game.MusicCache
+        if(!game.SoundManager.enabled) {
             game.SoundCache = {};
             game.MusicCache = {};
         }
@@ -139,12 +147,9 @@ game.SoundManager = game.Class.extend({
             return;
         }
 
-        // Sound file already loaded?
         if(this.clips[path]) {
-            
-            // Only loaded as single channel and now requested as multichannel?
-            if(multiChannel && this.clips[path].length < game.Sound.channels) {
-                for(i = this.clips[path].length; i < game.Sound.channels; i++ ) {
+            if(multiChannel && this.clips[path].length < game.SoundManager.channels) {
+                for(i = this.clips[path].length; i < game.SoundManager.channels; i++ ) {
                     a = new Audio(realPath);
                     a.load();
                     this.clips[path].push(a);
@@ -155,11 +160,6 @@ game.SoundManager = game.Class.extend({
         
         var clip = new Audio(realPath);
         if(loadCallback) {
-            
-            // The canplaythrough event is dispatched when the browser determines
-            // that the sound can be played without interuption, provided the
-            // download rate doesn't change.
-            // FIXME: Mobile Safari doesn't seem to dispatch this event at all?
             clip.addEventListener('canplaythrough', function cb(ev){
                 clip.removeEventListener('canplaythrough', cb, false);
                 loadCallback(path, true, ev);
@@ -171,11 +171,10 @@ game.SoundManager = game.Class.extend({
         }
         clip.preload = 'auto';
         clip.load();
-        
-        
+                
         this.clips[path] = [clip];
         if(multiChannel) {
-            for(i = 1; i < game.Sound.channels; i++ ) {
+            for(i = 1; i < game.SoundManager.channels; i++ ) {
                 a = new Audio(realPath);
                 a.load();
                 this.clips[path].push(a);
@@ -185,14 +184,25 @@ game.SoundManager = game.Class.extend({
         return clip;
     },
 
+    /**
+        @method playSound
+        @param {String} name
+        @param {Boolean} [loop]
+        @param {Number} [delay]
+    **/
     playSound: function(name, loop, delay) {
-        if(!game.Sound.enabled || game.sound._muteSound || typeof(game.SoundCache[name]) === 'undefined') return;
+        if(!game.SoundManager.enabled || game.sound._muteSound || typeof(game.SoundCache[name]) === 'undefined') return;
         game.SoundCache[name].play(!!loop, delay);
         if(loop) this.loopedSounds.push(game.SoundCache[name]);
     },
 
+    /**
+        Stop sound. If name is not defined, stops all sounds.
+        @method stopSound
+        @param {String} [name]
+    **/
     stopSound: function(name) {
-        if(!game.Sound.enabled) return;
+        if(!game.SoundManager.enabled) return;
 
         if(name) {
             if(typeof(game.SoundCache[name]) === 'undefined') return;
@@ -208,6 +218,9 @@ game.SoundManager = game.Class.extend({
         }
     },
 
+    /**
+        @method muteSound
+    **/
     muteSound: function() {
         if(this._muteSound) return;
         this._muteSound = true;
@@ -216,6 +229,9 @@ game.SoundManager = game.Class.extend({
         }
     },
 
+    /**
+        @method unmuteSound
+    **/
     unmuteSound: function() {
         if(!this._muteSound) return;
         this._muteSound = false;
@@ -224,22 +240,32 @@ game.SoundManager = game.Class.extend({
         }
     },
 
+    /**
+        @method toggleSound
+    **/
     toggleSound: function() {
         this._muteSound = !this._muteSound;
         if(this._muteSound) this.muteSound();
         else this.unmuteSound();
     },
 
+    /**
+        @method playMusic
+        @param {String} name
+    **/
     playMusic: function(name) {
-        if(!game.Sound.enabled || this._muteMusic || typeof(game.MusicCache[name]) === 'undefined') return;
+        if(!game.SoundManager.enabled || this._muteMusic || typeof(game.MusicCache[name]) === 'undefined') return;
         
         if(this.currentMusic && this.currentMusic.playing) this.currentMusic.stop();
         game.MusicCache[name].play();
         this.currentMusic = game.MusicCache[name];
     },
 
+    /**
+        @method stopMusic
+    **/
     stopMusic: function() {
-        if(!game.Sound.enabled) return;
+        if(!game.SoundManager.enabled) return;
 
         if(this.currentMusic) {
             if(navigator.isCocoonJS) {
@@ -253,39 +279,75 @@ game.SoundManager = game.Class.extend({
         }
     },
 
+    /**
+        @method muteMusic
+    **/
     muteMusic: function() {
         if(this._muteMusic) return;
         this._muteMusic = true;
         if(this.currentMusic) this.currentMusic.stop();
     },
 
+    /**
+        @method unmuteMusic
+    **/
     unmuteMusic: function() {
         if(!this._muteMusic) return;
         this._muteMusic = false;
         if(this.currentMusic) this.currentMusic.play();
     },
 
+    /**
+        @method toggleMusic
+    **/
     toggleMusic: function() {
         this._muteMusic = !this._muteMusic;
         if(this._muteMusic) this.muteMusic();
         else this.unmuteMusic();
     },
 
+    /**
+        Stops all sounds and music.
+        @method stopAll
+    **/
     stopAll: function() {
         this.stopSound();
         this.stopMusic();
     },
 
+    /**
+        @method muteAll
+    **/
     muteAll: function() {
         this.muteSound();
         this.muteMusic();
     },
 
+    /**
+        @method unmuteAll
+    **/
     unmuteAll: function() {
         this.unmuteSound();
         this.unmuteMusic();
     }
 });
+
+game.SoundManager.FORMAT = {
+    MP3: {ext: 'mp3', mime: 'audio/mpeg'},
+    M4A: {ext: 'm4a', mime: 'audio/mp4; codecs=mp4a'},
+    OGG: {ext: 'ogg', mime: 'audio/ogg; codecs=vorbis'},
+    WEBM: {ext: 'webm', mime: 'audio/webm; codecs=vorbis'},
+    CAF: {ext: 'caf', mime: 'audio/x-caf'}
+};
+
+game.SoundManager.format = [game.SoundManager.FORMAT.OGG, game.SoundManager.FORMAT.M4A];
+game.SoundManager.channels = 4;
+game.SoundManager.enabled = true;
+/**
+    Use Web Audio API.
+    @attribute {Boolean} webAudio
+**/
+game.SoundManager.webAudio = true;
 
 game.Sound = game.Class.extend({
     path: '',
@@ -294,6 +356,7 @@ game.Sound = game.Class.extend({
     multiChannel: true,
     gainNode: null,
     playbackRate: 1,
+    channels: 4,
     loop: false,
     
     init: function(path, multiChannel) {
@@ -312,7 +375,7 @@ game.Sound = game.Class.extend({
             }
         }
 
-        if(!game.Sound.enabled) {
+        if(!game.SoundManager.enabled) {
             if(loadCallback) {
                 loadCallback(this.path, true);
             }
@@ -326,7 +389,7 @@ game.Sound = game.Class.extend({
             game.audioResources.push(this);
         }
 
-        if(game.ready && game.sound && !game.Sound.webAudio && game.Sound.enabled) {
+        if(game.ready && game.sound && !game.SoundManager.webAudio && game.SoundManager.enabled) {
             this.currentClip = game.sound.get(this.path);
             this.currentClip.addEventListener('ended', this.ended.bind(this), false);
         }
@@ -344,7 +407,7 @@ game.Sound = game.Class.extend({
     },
 
     play: function(loop, delay) {
-        if(!game.Sound.enabled) return;
+        if(!game.SoundManager.enabled) return;
         
         if(!this.prePlay(loop)) return;
 
@@ -373,7 +436,7 @@ game.Sound = game.Class.extend({
     },
 
     setPlaybackRate: function(value) {
-        if(!game.Sound.enabled || !game.Sound.webAudio) return;
+        if(!game.SoundManager.enabled || !game.SoundManager.webAudio) return;
 
         this.playbackRate = value;
         this.currentClip = game.sound.getWebAudio(this.path);
@@ -387,7 +450,7 @@ game.Sound = game.Class.extend({
     },
 
     setVolume: function(value) {
-        if(!game.Sound.enabled || !game.Sound.webAudio) {
+        if(!game.SoundManager.enabled || !game.SoundManager.webAudio) {
             if(this.currentClip) this.currentClip.volume = value;
             return;
         }
@@ -398,7 +461,7 @@ game.Sound = game.Class.extend({
     },
 
     stop: function() {
-        if(!game.Sound.enabled) return;
+        if(!game.SoundManager.enabled) return;
 
         this.playing = false;
 
@@ -428,18 +491,5 @@ game.Music = game.Sound.extend({
 
 game.SoundCache = {};
 game.MusicCache = {};
-
-game.Sound.FORMAT = {
-    MP3: {ext: 'mp3', mime: 'audio/mpeg'},
-    M4A: {ext: 'm4a', mime: 'audio/mp4; codecs=mp4a'},
-    OGG: {ext: 'ogg', mime: 'audio/ogg; codecs=vorbis'},
-    WEBM: {ext: 'webm', mime: 'audio/webm; codecs=vorbis'},
-    CAF: {ext: 'caf', mime: 'audio/x-caf'}
-};
-
-game.Sound.use = [game.Sound.FORMAT.OGG, game.Sound.FORMAT.M4A];
-game.Sound.channels = 4;
-game.Sound.enabled = true;
-game.Sound.webAudio = true;
 
 });

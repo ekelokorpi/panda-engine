@@ -4,6 +4,9 @@ game.module(
 )
 .body(function(){ 'use strict';
 
+/**
+    @class Loader
+**/
 game.Loader = game.Class.extend({
     resources: [],
     
@@ -178,6 +181,13 @@ game.Loader = game.Class.extend({
     }
 });
 
+/**
+    Minimum time to show preloader. In milliseconds.
+    @attribute {Number} timeout
+    @default 500
+    @example
+        game.Loader.timeout = 1000;
+**/
 game.Loader.timeout = 500;
 
 });

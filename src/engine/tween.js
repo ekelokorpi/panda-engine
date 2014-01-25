@@ -2,68 +2,40 @@ game.module(
     'engine.tween',
     '1.0.0'
 )
-.require(
-    'engine.scene'
-)
 .body(function() { 'use strict';
 
-game.Scene.inject({
-    tweens: [],
-
-    run: function() {
-        this.updateTweens();
-        this.parent();
-    },
-
-    updateTweens: function() {
-        for (var i = this.tweens.length - 1; i >= 0; i--) {
-            this.tweens[i].update();
-            if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
-        }
-    },
-
-    addTween: function(obj, props, duration, settings) {
-        var tween = new game.Tween(obj, props, duration, settings);
-        this.tweens.push(tween);
-        return tween;
-    },
-
-    getTween: function(obj) {
-        for (var i = 0; i < this.tweens.length; i++) {
-            if(this.tweens[i]._object === obj) return this.tweens[i];
-        }
-        return false;
-    },
-
-    stopTweens: function(obj, doComplete) {
-        for (var i = 0; i < this.tweens.length; i++) {
-            if(obj && this.tweens[i]._object === obj || !obj) this.tweens[i].stop(doComplete);
-        }
-    },
-
-    pauseTweens: function(obj) {
-        for ( var i = 0; i < this.tweens.length; i++ ) {
-            if(obj && this.tweens[i]._object === obj || !obj) this.tweens[i].pause();
-        }
-    },
-
-    resumeTweens: function (obj) {
-        for ( var i = 0; i < this.tweens.length; i++ ) {
-            if(obj && this.tweens[i]._object === obj || !obj) this.tweens[i].resume();
-        }
-    }
-});
-
 /**
+    __Hint__: Use {{#crossLink "Scene/addTween:method"}}{{/crossLink}}
+
     @class Tween
     @constructor
     @param {Object} obj
     @param {Object} properties
-    @param {Number} duration Duration in seconds.
+    @param {Number} duration
     @param {Object} [settings]
-        @param [settings.loop] {game.Tween.Loop.Reverse|game.Tween.Loop.Revert}
 **/
 game.Tween = game.Class.extend({
+    /**
+        @property {Easing} easing
+    **/
+    easing: null,
+    /**
+        @property {Loop} loop
+    **/
+    loop: 0,
+    /**
+        @property {Number} delay
+    **/
+    delay: 0,
+    /**
+        @property {Function} onComplete
+    **/
+    onComplete: false,
+    /**
+        @property {Function} onStart
+    **/
+    onStart: false,
+
     _object: null,
     valuesStart: {},
     valuesEnd: {},
@@ -73,15 +45,9 @@ game.Tween = game.Class.extend({
     started: false,
     _props: null,
     _chained: false,
-
     duration: 1,
     complete: false,
     paused: false,
-    easing: null,
-    onComplete: false,
-    onStart: false,
-    delay: 0,
-    loop: 0,
     loopCount: -1,
     loopNum: null,
 
@@ -94,6 +60,61 @@ game.Tween = game.Class.extend({
         this.loopNum = this.loopCount;
     },
 
+    /**
+        @method start
+    **/
+    start: function() {
+        this.complete = false;
+        this.paused = false;
+        this.loopNum = this.loopCount;
+        this._elapsed = 0;
+        if (this._object.tweens && this._object.tweens.indexOf(this) === -1 ) this._object.tweens.push(this);
+        this.started = true;
+        this.timer = new game.Timer();
+        for ( var property in this._props ) {
+            this.initEnd(property, this._props, this.valuesEnd);
+        }
+        for ( property in this.valuesEnd ) {
+            this.initStart(property, this.valuesEnd, this._object, this.valuesStart);
+            this.initDelta(property, this.valuesDelta, this._object, this.valuesEnd);
+        }
+    },
+
+    /**
+        @method pause
+    **/
+    pause: function() {
+        this.paused = true;
+        if(this.timer) this._elapsed += this.timer.delta();
+    },
+
+    /**
+        @method resume
+    **/
+    resume: function() {
+        this.paused = false;
+        if(this.timer) this.timer.reset();
+    },
+
+    /**
+        @method stop
+        @param {Boolean} doComplete
+    **/
+    stop: function(doComplete) {
+        if ( doComplete ) {
+            this.paused = false;
+            this.complete = false;
+            this.loop = false;
+            this._elapsed += this.duration;
+            this.update();
+        }
+        this.complete = true;
+    },
+
+    /**
+        @method chain
+        @param {Tween} chainObj
+    **/
     chain: function(chainObj) {
         this._chained = chainObj;
     },
@@ -117,23 +138,6 @@ game.Tween = game.Class.extend({
                 if ( !to[prop] ) to[prop] = {};
                 if ( typeof(end[prop]) !== 'undefined' ) this.initStart( subprop, end[prop], from[prop], to[prop] );
             }
-        }
-    },
-
-    start: function() {
-        this.complete = false;
-        this.paused = false;
-        this.loopNum = this.loopCount;
-        this._elapsed = 0;
-        if (this._object.tweens && this._object.tweens.indexOf(this) === -1 ) this._object.tweens.push(this);
-        this.started = true;
-        this.timer = new game.Timer();
-        for ( var property in this._props ) {
-            this.initEnd(property, this._props, this.valuesEnd);
-        }
-        for ( property in this.valuesEnd ) {
-            this.initStart(property, this.valuesEnd, this._object, this.valuesStart);
-            this.initDelta(property, this.valuesDelta, this._object, this.valuesEnd);
         }
     },
 
@@ -223,32 +227,18 @@ game.Tween = game.Class.extend({
                 if ( this.loopNum !== -1 ) this.loopNum--;
             }
         }
-    },
-
-    pause: function() {
-        this.paused = true;
-        if(this.timer) this._elapsed += this.timer.delta();
-    },
-
-    resume: function() {
-        this.paused = false;
-        if(this.timer) this.timer.reset();
-    },
-
-    stop: function(doComplete) {
-        if ( doComplete ) {
-            this.paused = false;
-            this.complete = false;
-            this.loop = false;
-            this._elapsed += this.duration;
-            this.update();
-        }
-        this.complete = true;
     }
 });
 
+/**
+    @attribute {Revert|Reverse} Loop
+**/
 game.Tween.Loop = { Revert: 1, Reverse: 2 };
 
+/**
+    Easing types: `In`, `Out` and `InOut`.
+    @attribute {Linear|Quadratic|Cubic|Quartic|Quintic|Sinusoidal|Exponential|Circular|Elastic|Back|Bounce} Easing
+**/
 game.Tween.Easing = { Linear: {}, Quadratic: {}, Cubic: {}, Quartic: {}, Quintic: {}, Sinusoidal: {}, Exponential: {}, Circular: {}, Elastic: {}, Back: {}, Bounce: {} };
 
 game.Tween.Easing.Linear.None = function ( k ) {

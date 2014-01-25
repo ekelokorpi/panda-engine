@@ -25,29 +25,45 @@
 (function(window){ 'use strict';
 
 /**
- * @module game
- */
+    @module game
+**/
 /**
- * Automatically created at `game` and `game.core`
- * @class Core
- */
+    Automatically created at `game` and `game.core`.
+    @class Core
+**/
 var core = {
-    _current: null,
-    _loadQueue: [],
-    _waitForLoad: 0,
-    _DOMLoaded: false,
     /**
-     * Current scene.
-     * @property {Scene} scene
-     */
+        Scale factor for game engine (used in Retina and HiRes mode). 
+        @property {Number} scale
+    **/
+    scale: 1,
+    /**
+        Instance of current scene.
+        @property {Scene} scene
+    **/
     scene: null,
+    /**
+        @property {Debug} debug
+    **/
     debug: null,
+    /**
+        @property {System} system
+    **/
     system: null,
+    /**
+        Instance of SoundManager.
+        @property {SoundManager} sound
+    **/
     sound: null,
+    /**
+        @property {Pool} pool
+    **/
     pool: null,
-    renderer: null,
+    /**
+        @property {Storage} storage
+    **/
     storage: null,
-    window: window,
+    renderer: null,
     modules: {},
     resources: [],
     audioResources: [],
@@ -55,11 +71,10 @@ var core = {
     baked: false, // ???
     nocache: '',
     ua: {},
-    /**
-     * Scale factor for game engine. (Used in Retina and HiRes mode.)
-     * @property {Number} scale
-     */
-    scale: 1,
+    _current: null,
+    _loadQueue: [],
+    _waitForLoad: 0,
+    _DOMLoaded: false,
         
     copy: function(object) {
         var l,c,i;
@@ -137,31 +152,31 @@ var core = {
     },
 
     /**
-     * Add asset to preloader.
-     * @method addAsset
-     * @param {String} path
-     */
+        Add asset to preloader.
+        @method addAsset
+        @param {String} path
+    **/
     addAsset: function(path) {
         this.resources.push(path);
     },
 
     /**
-     * Add sound to preloader.
-     * @method addSound
-     * @param {String} path
-     * @param {String} [name]
-     */
+        Add sound to preloader.
+        @method addSound
+        @param {String} path
+        @param {String} [name]
+    **/
     addSound: function(path, name) {
         name = name || path;
         this.SoundCache[name] = new game.Sound(path);
     },
 
     /**
-     * Add music to preloader.
-     * @method addMusic
-     * @param {String} path
-     * @param {String} [name]
-     */
+        Add music to preloader.
+        @method addMusic
+        @param {String} path
+        @param {String} [name]
+    **/
     addMusic: function(path, name) {
         name = name || path;
         this.MusicCache[name] = new game.Music(path);
@@ -172,11 +187,11 @@ var core = {
     },
 
     /**
-     * Define new module.
-     * @method module
-     * @param {String} name
-     * @param {String} [version]
-     */
+        Define new module.
+        @method module
+        @param {String} name
+        @param {String} [version]
+    **/
     module: function(name, version) {
         if(this._current) throw('Module ' + this._current.name + ' has no body');
         if(this.modules[name] && this.modules[name].body) throw('Module ' + name + ' is already defined');
@@ -188,10 +203,10 @@ var core = {
     },
 
     /**
-     * Require modules for module.
-     * @method require
-     * @param {Array} modules
-     */
+        Require modules for module.
+        @method require
+        @param {Array} modules
+    **/
     require: function() {
         var i, modules = Array.prototype.slice.call(arguments);
         for (i = 0; i < modules.length; i++) {
@@ -201,9 +216,9 @@ var core = {
     },
 
     /**
-     * Define body for module.
-     * @method body
-     */
+        Define body for module.
+        @method body
+    **/
     body: function(body) {
         this._current.body = body;
         this._current = null;
@@ -436,7 +451,14 @@ else {
 var initializing = false;
 var fnTest = /xyz/.test(function(){ var xyz; return xyz; }) ? /\bparent\b/ : /[\D|\d]*/;
 
+/**
+    @class Class
+**/
 core.Class = function() {};
+/**
+    @method extend
+    @return {Class}
+**/
 core.Class.extend = function(prop) {
     var parent = this.prototype;
     initializing = true;
@@ -469,6 +491,10 @@ core.Class.extend = function(prop) {
     function Class() {
         if(!initializing) {
             if(this.staticInit) {
+                /**
+                    If Class has `staticInit` function, it is called before `init` function.
+                    @property {Function} staticInit
+                **/
                 var obj = this.staticInit.apply(this, arguments);
                 if(obj) {
                     return obj;
@@ -476,10 +502,14 @@ core.Class.extend = function(prop) {
             }
             for(var p in this) {
                 if(typeof(this[p]) === 'object') {
-                    this[p] = game.copy(this[p]); // deep copy!
+                    this[p] = game.copy(this[p]);
                 }
             }
             if(this.init) {
+                /**
+                    Automatically called, when creating new class.
+                    @property {Function} init
+                **/
                 this.init.apply(this, arguments);
             }
         }
@@ -489,6 +519,9 @@ core.Class.extend = function(prop) {
     Class.prototype = prototype;
     Class.prototype.constructor = Class;
     Class.extend = window.game.Class.extend;
+    /**
+        @method inject
+    **/
     Class.inject = function(prop) {
         var proto = this.prototype;
         var parent = {};
