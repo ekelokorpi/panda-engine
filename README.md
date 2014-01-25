@@ -3,18 +3,24 @@
 
 ### Features
 
-- Pixi.js renderer
-- Mobile support
-- Retina / HiRes support
+- Canvas/WebGL renderer ([Pixi.js](http://www.pixijs.com))
+- Preloader
+- Sprites/sprite sheets
+- Flash animations
+- Spine animations
+- Tweening
+- Mouse/touch events
 - Web Audio API
-- Web Storage
+- Particles
+- Bitmap fonts
+- Module system
+- Retina/HiRes support
 - Object pooling
-- Tween engine
-- Physics engine
+- Local storage
 - Page Visibility API
-- JSHint valid
 - CocoonJS compatible
 - Windows Phone 8 compatible
+- OUYA compatible
 
 ### Documentation
 
