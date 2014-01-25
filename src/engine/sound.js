@@ -7,6 +7,7 @@ game.module(
 /**
     Automatically created at `game.sound`
     @class SoundManager
+    @extends Class
 **/
 game.SoundManager = game.Class.extend({
     clips: {},

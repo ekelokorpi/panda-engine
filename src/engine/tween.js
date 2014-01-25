@@ -8,6 +8,7 @@ game.module(
     __Hint__: Use {{#crossLink "Scene/addTween:method"}}{{/crossLink}}
 
     @class Tween
+    @extends Class
     @constructor
     @param {Object} obj
     @param {Object} properties

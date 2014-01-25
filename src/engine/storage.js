@@ -12,6 +12,7 @@ game.module(
         game.storage.set('highScore', 1000);
         var highScore = game.storage.get('highscore');
     @class Storage
+    @extends Class
 **/
 game.Storage = game.Class.extend({
     id: null,

@@ -10,6 +10,7 @@ game.module(
 /**
     Automatically created at `game.system`
     @class System
+    @extends Class
 **/
 game.System = game.Class.extend({
     /**

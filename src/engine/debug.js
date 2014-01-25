@@ -7,6 +7,7 @@ game.module(
 /**
     Debug is enabled if url contains `?debug`.
     @class Debug
+    @extends Class
 **/
 game.Debug = game.Class.extend({
     init: function() {

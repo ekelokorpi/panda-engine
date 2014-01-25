@@ -14,6 +14,7 @@ game.module(
             timer.set(2);
         }
     @class Timer
+    @extends Class
     @constructor
     @param {Number} seconds
 **/

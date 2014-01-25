@@ -6,6 +6,7 @@ game.module(
 
 /**
     @class Scene
+    @extends Class
 **/
 game.Scene = game.Class.extend({
     /**

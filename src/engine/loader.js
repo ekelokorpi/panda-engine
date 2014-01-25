@@ -6,6 +6,7 @@ game.module(
 
 /**
     @class Loader
+    @extends Class
 **/
 game.Loader = game.Class.extend({
     resources: [],
