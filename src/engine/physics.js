@@ -4,10 +4,30 @@ game.module(
 )
 .body(function() { 'use strict';
 
+/**
+    Physics world.
+    @class World
+    @extends Class
+    @constructor
+    @param {Number} x Velocity x
+    @param {Number} y Velocity y
+**/
 game.World = game.Class.extend({
+    /**
+        @property {Vector} gravity
+    **/
     gravity: null,
+    /**
+        @property {CollisionSolver} solver
+    **/
     solver: null,
+    /**
+        @property {Array} bodies
+    **/
     bodies: [],
+    /**
+        @property {Array} collisionGroups
+    **/
     collisionGroups: [],
 
     init: function(x, y) {
@@ -17,6 +37,11 @@ game.World = game.Class.extend({
         this.solver = new game.CollisionSolver();
     },
 
+    /**
+        Add body to world.
+        @method addBody
+        @param {Body} body
+    **/
     addBody: function(body) {
         body.world = this;
         this.bodies.push(body);
@@ -26,19 +51,37 @@ game.World = game.Class.extend({
         }
     },
 
+    /**
+        @method removeBody
+        @param {Body} body
+    **/
     removeBody: function(body) {
         this.removeBodyCollision(body);
         this.bodies.erase(body);
     },
 
+    /**
+        Remove body from it's collision group.
+        @method removeBodyCollision
+        @param {Body} body
+    **/
     removeBodyCollision: function(body) {
         this.collisionGroups[body.collisionGroup].erase(body);
     },
 
+    /**
+        Remove collision group from world.
+        @method removeCollisionGroup
+        @param {Number} i
+    **/
     removeCollisionGroup: function(i) {
         this.collisionGroups.erase(this.collisionGroups[i]);
     },
 
+    /**
+        @method collide
+        @param {Body} a
+    **/
     collide: function(a) {
         if(!this.collisionGroups[a.collideAgainst]) return;
 
@@ -49,6 +92,9 @@ game.World = game.Class.extend({
         }
     },
 
+    /**
+        @method update
+    **/
     update: function() {
         var i, j;
         for (i = this.bodies.length - 1; i >= 0; i--) {
@@ -64,15 +110,32 @@ game.World = game.Class.extend({
     }
 });
 
+/**
+    Physics collision solver.
+    @class CollisionSolver
+    @extends Class
+**/
 game.CollisionSolver = game.Class.extend({
     hitTestData: [],
 
+    /**
+        Solve collision a versus b.
+        @method solve
+        @param {Body} a
+        @param {Body} b
+    **/
     solve: function(a, b) {
         this.hitTestData.length = 0;
         if(!this.hitTest(a, b)) return;
         if(!this.hitResponse(a, b)) return;
     },
 
+    /**
+        @method hitTest
+        @param {Body} a
+        @param {Body} b
+        @return {Boolean}
+    **/
     hitTest: function(a, b) {
         if(a.shape instanceof game.Rectangle && b.shape instanceof game.Rectangle) {
             return !(
@@ -181,6 +244,12 @@ game.CollisionSolver = game.Class.extend({
         return false;
     },
 
+    /**
+        @method hitResponse
+        @param {Body} a
+        @param {Body} b
+        @return {Boolean}
+    **/
     hitResponse: function(a, b) {
         if(a.shape instanceof game.Rectangle && b.shape instanceof game.Rectangle) {
             // 0 = up, 1 = down, 2 = left, 3 = right
@@ -281,17 +350,57 @@ game.CollisionSolver = game.Class.extend({
     }
 });
 
+/**
+    Physics body.
+    @class Body
+    @extends Class
+    @constructor
+    @param {Object} [settings]
+**/
 game.Body = game.Class.extend({
+    /**
+        @property {World} world
+    **/
     world: null,
+    /**
+        @property {Shape} shape
+    **/
     shape: null,
+    /**
+        @property {Vector} position
+    **/
     position: null,
+    /**
+        @property {Vector} last
+    **/
     last: null,
+    /**
+        @property {Vector} velocity
+    **/
     velocity: null,
+    /**
+        @property {Vector} velocityLimit
+    **/
     velocityLimit: null,
+    /**
+        @property {Number} mass
+        @default 0
+    **/
     mass: 0,
+    /**
+        @property {Number} collisionGroup
+        @default 0
+    **/
     collisionGroup: 0,
+    /**
+        @property {Number} collideAgainst
+        @default 0
+    **/
     collideAgainst: 0,
-    friction: 0,
+    /**
+        @property {Number} rotation
+        @default 0
+    **/
     rotation: 0,
 
     init: function(settings) {
@@ -303,14 +412,27 @@ game.Body = game.Class.extend({
         game.merge(this, settings);
     },
 
+    /**
+        Add shape to body.
+        @method addShape
+        @param {Shape} shape
+    **/
     addShape: function(shape) {
         this.shape = shape;
     },
 
+    /**
+        Callback for collision.
+        @method collide
+        @return {Boolean} Return true, to call hit response.
+    **/
     collide: function() {
         return true;
     },
 
+    /**
+        @method update
+    **/
     update: function() {
         this.last.copy(this.position);
 
@@ -323,8 +445,23 @@ game.Body = game.Class.extend({
     }
 });
 
+/**
+    @class Rectangle
+    @extends Class
+    @constructor
+    @param {Number} width
+    @param {Number} height
+**/
 game.Rectangle = game.Class.extend({
+    /**
+        @property {Number} width
+        @default 50
+    **/
     width: 50,
+    /**
+        @property {Number} height
+        @default 50
+    **/
     height: 50,
 
     init: function(width, height) {
@@ -333,7 +470,17 @@ game.Rectangle = game.Class.extend({
     }
 });
 
+/**
+    @class Circle
+    @extends Class
+    @constructor
+    @param {Number} radius
+**/
 game.Circle = game.Class.extend({
+    /**
+        @property {Number} radius
+        @default 50
+    **/
     radius: 50,
 
     init: function(radius) {
@@ -341,8 +488,23 @@ game.Circle = game.Class.extend({
     }
 });
 
+/**
+    @class Line
+    @extends Class
+    @constructor
+    @param {Number} length
+    @param {Number} rotation
+**/
 game.Line = game.Class.extend({
+    /**
+        @property {Number} length
+        @default 50
+    **/
     length: 50,
+    /**
+        @property {Number} rotation
+        @default 0
+    **/
     rotation: 0,
 
     init: function(length, rotation) {
@@ -351,6 +513,13 @@ game.Line = game.Class.extend({
     }
 });
 
+/**
+    @class Vector
+    @extends Class
+    @constructor
+    @param {Number} x
+    @param {Number} y
+**/
 game.Vector = game.Class.extend({
     value: null,
 
@@ -360,90 +529,156 @@ game.Vector = game.Class.extend({
         this.y = y || 0;
     },
 
+    /**
+        @method set
+        @param {Number} x
+        @param {Number} y
+        @return {Vector}
+    **/
     set: function(x, y) {
         this.x = x;
         this.y = y;
         return this;
     },
 
+    /**
+        @method clone
+        @return {Vector}
+    **/
     clone: function() {
         return new game.Vector(this.x, this.y);
     },
 
+    /**
+        @method copy
+        @param {Vector} v
+        @return {Vector}
+    **/
     copy: function(v) {
         this.x = v.x;
         this.y = v.y;
         return this;
     },
 
-    add: function(x, y) {
-        this.x += x instanceof game.Vector ? x.x : x;
-        this.y += x instanceof game.Vector ? x.y : y || x;
+    /**
+        @method add
+        @param {Vector} target
+        @param {Number|Vector} x
+        @param {Number} [y]
+        @return {Vector}
+    **/
+    add: function(target, x, y) {
+        target.x += x instanceof game.Vector ? x.x : x;
+        target.y += x instanceof game.Vector ? x.y : y || x;
         return this;
     },
 
-    subtract: function(x, y) {
-        this.x -= x instanceof game.Vector ? x.x : x;
-        this.y -= x instanceof game.Vector ? x.y : y || x;
+    /**
+        @method subtract
+        @param {Vector} target
+        @param {Number|Vector} x
+        @param {Number} [y]
+        @return {Vector}
+    **/
+    subtract: function(target, x, y) {
+        target.x -= x instanceof game.Vector ? x.x : x;
+        target.y -= x instanceof game.Vector ? x.y : y || x;
         return this;
     },
 
-    multiply: function(x, y) {
-        this.x *= x instanceof game.Vector ? x.x : x;
-        this.y *= x instanceof game.Vector ? x.y : y || x;
+    /**
+        @method multiply
+        @param {Vector} target
+        @param {Number|Vector} x
+        @param {Number} [y]
+        @return {Vector}
+    **/
+    multiply: function(target, x, y) {
+        target.x *= x instanceof game.Vector ? x.x : x;
+        target.y *= x instanceof game.Vector ? x.y : y || x;
         return this;
     },
 
-    divide: function(x, y) {
-        this.x /= x instanceof game.Vector ? x.x : x;
-        this.y /= x instanceof game.Vector ? x.y : y || x;
+    /**
+        @method divide
+        @param {Vector} target
+        @param {Number|Vector} x
+        @param {Number} [y]
+        @return {Vector}
+    **/
+    divide: function(target, x, y) {
+        target.x /= x instanceof game.Vector ? x.x : x;
+        target.y /= x instanceof game.Vector ? x.y : y || x;
         return this;
     },
 
-    multiplyAdd: function(v, m) {
-        this.x += v instanceof game.Vector ? v.x * m : v * m;
-        this.y += v instanceof game.Vector ? v.y * m : v * m;
-        return this;
-    },
-
-    distance: function(v) {
-        var x = v.x - this.x;
-        var y = v.y - this.y;
+    /**
+        @method distance
+        @param {Vector} vector
+        @return {Number}
+    **/
+    distance: function(vector) {
+        var x = vector.x - this.x;
+        var y = vector.y - this.y;
         return Math.sqrt(x * x + y * y);
     },
 
+    /**
+        @method length
+        @return {Number}
+    **/
     length: function() {
         return Math.sqrt(this.dot());
     },
 
-    dot: function(v) {
-        if(v instanceof game.Vector) return this.x * v.x + this.y * v.y;
+    /**
+        @method dot
+        @param {Vector} [vector]
+        @return {Number}
+    **/
+    dot: function(vector) {
+        if(vector instanceof game.Vector) return this.x * vector.x + this.y * vector.y;
         else return this.x * this.x + this.y * this.y;
     },
 
-    dotNormalized: function(v) {
+    /**
+        @method dotNormalized
+        @param {Vector} [vector]
+        @return {Number}
+    **/
+    dotNormalized: function(vector) {
         var len1 = this.length();
         var x1 = this.x / len1;
         var y1 = this.y / len1;
 
-        if(v instanceof game.Vector) {
-            var len2 = v.length();
-            var x2 = v.x / len2;
-            var y2 = v.y / len2;
+        if(vector instanceof game.Vector) {
+            var len2 = vector.length();
+            var x2 = vector.x / len2;
+            var y2 = vector.y / len2;
             return x1 * x2 + y1 * y2;
         } else return x1 * x1 + y1 * y1;
     },
 
-    rotate: function(angle) {
+    /**
+        @method rotate
+        @param {Vector} target
+        @param {Number} angle
+        @return {Vector}
+    **/
+    rotate: function(target, angle) {
         var c = Math.cos(angle);
         var s = Math.sin(angle);
-        var x = this.x * c - this.y * s;
-        var y = this.y * c + this.x * s;
-        this.x = x;
-        this.y = y;
+        var x = target.x * c - target.y * s;
+        var y = target.y * c + target.x * s;
+        target.x = x;
+        target.y = y;
         return this;
     },
 
+    /**
+        @method normalize
+        @return {Vector}
+    **/
     normalize: function() {
         var len = this.length();
         this.x /= len;
@@ -451,23 +686,42 @@ game.Vector = game.Class.extend({
         return this;
     },
 
-    limit: function(v) {
-        this.x = Math.min(v.x, Math.max(-v.x, this.x));
-        this.y = Math.min(v.y, Math.max(-v.y, this.y));
+    /**
+        @method limit
+        @param {Vector} target
+        @param {Vector} vector
+        @return {Vector}
+    **/
+    limit: function(target, vector) {
+        target.x = Math.min(vector.x, Math.max(-vector.x, target.x));
+        target.y = Math.min(vector.y, Math.max(-vector.y, target.y));
         return this;
     },
 
-    angle: function(v) {
-        return Math.atan2(v.y - this.y, v.x - this.x);
+    /**
+        @method angle
+        @param {Vector} vector
+        @return {Number}
+    **/
+    angle: function(vector) {
+        return Math.atan2(vector.y - this.y, vector.x - this.x);
     },
 
-    round: function() {
-        this.x = Math.round(this.x);
-        this.y = Math.round(this.y);
+    /**
+        @method round
+        @param {Vector} target
+        @return {Vector}
+    **/
+    round: function(target) {
+        target.x = Math.round(target.x);
+        target.y = Math.round(target.y);
         return this;
     }
 });
 
+/**
+    @property {Number} x
+**/
 Object.defineProperty(game.Vector.prototype, 'x', {
     get: function() {
         return this.value[0];
@@ -477,6 +731,9 @@ Object.defineProperty(game.Vector.prototype, 'x', {
     }
 });
 
+/**
+    @property {Number} y
+**/
 Object.defineProperty(game.Vector.prototype, 'y', {
     get: function() {
         return this.value[1];
@@ -485,10 +742,6 @@ Object.defineProperty(game.Vector.prototype, 'y', {
         this.value[1] = value;
     }
 });
-
-game.Vector.clone = function(v) {
-    return new game.Vector(v.x, v.y);
-};
 
 game.BodySprite = game.Class.extend({
     collisionGroup: 0,
