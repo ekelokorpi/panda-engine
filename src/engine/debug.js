@@ -5,7 +5,7 @@ game.module(
 .body(function() { 'use strict';
 
 /**
-    Debug is enabled if url contains `?debug`.
+    Instance automatically created at {{#crossLink "Core"}}{{/crossLink}}, if URL contains `?debug`.
     @class Debug
     @extends Class
 **/

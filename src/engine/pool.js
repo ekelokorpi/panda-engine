@@ -5,7 +5,7 @@ game.module(
 .body(function() { 'use strict';
 
 /**
-    Automatically created at `game.pool`
+    Instance automatically created at {{#crossLink "Core"}}{{/crossLink}}
     @class Pool
     @extends Class
 **/

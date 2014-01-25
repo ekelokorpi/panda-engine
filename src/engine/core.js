@@ -28,38 +28,42 @@
     @module game
 **/
 /**
-    Automatically created at `game` and `game.core`.
+    Instance automatically created at `game`
     @class Core
 **/
 var core = {
     /**
-        Scale factor for game engine (used in Retina and HiRes mode). 
+        Scale factor for Retina and HiRes mode.
         @property {Number} scale
     **/
     scale: 1,
     /**
-        Instance of current scene.
+        Instance of current {{#crossLink "Scene"}}{{/crossLink}}.
         @property {Scene} scene
     **/
     scene: null,
     /**
+        Instance of {{#crossLink "Debug"}}{{/crossLink}}.
         @property {Debug} debug
     **/
     debug: null,
     /**
+        Instance of {{#crossLink "System"}}{{/crossLink}}.
         @property {System} system
     **/
     system: null,
     /**
-        Instance of SoundManager.
+        Instance of {{#crossLink "SoundManager"}}{{/crossLink}}.
         @property {SoundManager} sound
     **/
     sound: null,
     /**
+        Instance of {{#crossLink "Pool"}}{{/crossLink}}.
         @property {Pool} pool
     **/
     pool: null,
     /**
+        Instance of {{#crossLink "Storage"}}{{/crossLink}}.
         @property {Storage} storage
     **/
     storage: null,
@@ -155,6 +159,8 @@ var core = {
         Add asset to preloader.
         @method addAsset
         @param {String} path
+        @example
+            game.addAsset('media/logo.png');
     **/
     addAsset: function(path) {
         this.resources.push(path);
@@ -165,6 +171,8 @@ var core = {
         @method addSound
         @param {String} path
         @param {String} [name]
+        @example
+            game.addSound('media/sound/jump.m4a', 'jump');
     **/
     addSound: function(path, name) {
         name = name || path;
@@ -191,6 +199,10 @@ var core = {
         @method module
         @param {String} name
         @param {String} [version]
+        @example
+            game.module('game.mymodule').body(function() {
+                // body of new module
+            });
     **/
     module: function(name, version) {
         if(this._current) throw('Module ' + this._current.name + ' has no body');
@@ -359,7 +371,6 @@ var core = {
 };
 
 window.game = core;
-window.game.core = core;
 
 Number.prototype.limit = function(min, max) {
     var i = this;

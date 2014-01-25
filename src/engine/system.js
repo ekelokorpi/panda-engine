@@ -8,7 +8,7 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
-    Automatically created at `game.system`
+    Instance automatically created at {{#crossLink "Core"}}{{/crossLink}}
     @class System
     @extends Class
 **/

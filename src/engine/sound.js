@@ -5,7 +5,7 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
-    Automatically created at `game.sound`
+    Instance automatically created at {{#crossLink "Core"}}{{/crossLink}}
     @class SoundManager
     @extends Class
 **/
