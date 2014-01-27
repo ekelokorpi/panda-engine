@@ -67,6 +67,10 @@ game.Scene = game.Class.extend({
                 this.timers.erase(this.timers[i]);
             }
         }
+        for (i = this.tweens.length - 1; i >= 0; i--) {
+            this.tweens[i].update();
+            if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
+        }
         for (i = this.sprites.length - 1; i >= 0; i--) {
             this.sprites[i].update();
         }
@@ -176,7 +180,6 @@ game.Scene = game.Class.extend({
     mouseout: function() {},
 
     run: function() {
-        this.updateTweens();
         this.update();
         this.render();
     },
@@ -189,15 +192,8 @@ game.Scene = game.Class.extend({
         game.sound.muteAll();
     },
 
-    unpause: function() {
+    resume: function() {
         game.sound.unmuteAll();
-    },
-
-    updateTweens: function() {
-        for (var i = this.tweens.length - 1; i >= 0; i--) {
-            this.tweens[i].update();
-            if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
-        }
     }
 });
 

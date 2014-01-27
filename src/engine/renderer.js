@@ -12446,6 +12446,7 @@ PIXI.extend = function(prop) {
         };
     };
 
+    // optimize ?
     for(name in proto) {
         if(typeof(proto[name]) === 'function') {
             Class.prototype[name] = makeFn(name, proto[name]);
@@ -12484,7 +12485,6 @@ game.MovieClip = PIXI.MovieClip;
 game.FlashClip = PIXI.FlashClip;
 game.BitmapText = PIXI.BitmapText;
 game.Spine = PIXI.Spine;
-game.Container = game.DisplayObjectContainer = PIXI.DisplayObjectContainer;
 game.Graphics = PIXI.Graphics;
 game.HitRectangle = PIXI.Rectangle;
 game.HitCircle = PIXI.Circle;

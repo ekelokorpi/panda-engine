@@ -239,6 +239,30 @@ var core = {
         this._current = null;
         if(this._initDOMReady) this._initDOMReady();
     },
+
+    /**
+        Start the game engine.
+        @method start
+        @param {game.Scene} scene
+        @param {Number} width
+        @param {Number} height
+        @param {String} canvasId
+    **/
+    start: function(scene, width, height, canvasId) {
+        width = width || (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
+        height = height || (game.System.orientation === game.System.PORTRAIT ? 927 : 671);
+
+        this.system = new game.System(width, height, canvasId);
+        this.sound = new game.SoundManager();
+        this.pool = new game.Pool();
+        if(game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
+        if(game.Storage.id) this.storage = new game.Storage(game.Storage.id);
+
+        this.ready = true;
+        
+        var loader = new game.Loader(scene || SceneTitle, this.resources, this.audioResources);
+        loader.start();
+    },
     
     _loadScript: function(name, requiredFrom) {
         this.modules[name] = true;
@@ -591,21 +615,5 @@ game.module(
     'engine.pool'
 )
 .body(function(){ 'use strict';
-
-game.start = function(scene, width, height, canvasId) {
-    width = width || (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
-    height = height || (game.System.orientation === game.System.PORTRAIT ? 927 : 671);
-
-    game.system = new game.System(width, height, canvasId);
-    game.sound = new game.SoundManager();
-    game.pool = new game.Pool();
-    if(game.Debug.enabled && !navigator.isCocoonJS) game.debug = new game.Debug();
-    if(game.Storage.id) game.storage = new game.Storage(game.Storage.id);
-
-    game.ready = true;
-    
-    var loader = new game.Loader(scene || SceneTitle, game.resources, game.audioResources);
-    loader.start();
-};
 
 });

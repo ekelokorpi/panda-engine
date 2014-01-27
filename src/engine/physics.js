@@ -539,7 +539,7 @@ game.Vector = game.Class.extend({
         @method set
         @param {Number} x
         @param {Number} y
-        @return {Vector}
+        @return {game.Vector}
     **/
     set: function(x, y) {
         this.x = x;
@@ -549,7 +549,7 @@ game.Vector = game.Class.extend({
 
     /**
         @method clone
-        @return {Vector}
+        @return {game.Vector}
     **/
     clone: function() {
         return new game.Vector(this.x, this.y);
@@ -558,7 +558,7 @@ game.Vector = game.Class.extend({
     /**
         @method copy
         @param {Vector} v
-        @return {Vector}
+        @return {game.Vector}
     **/
     copy: function(v) {
         this.x = v.x;
@@ -568,53 +568,61 @@ game.Vector = game.Class.extend({
 
     /**
         @method add
-        @param {Vector} target
-        @param {Number|Vector} x
+        @param {Number|game.Vector} x
         @param {Number} [y]
-        @return {Vector}
+        @return {game.Vector}
     **/
-    add: function(target, x, y) {
-        target.x += x instanceof game.Vector ? x.x : x;
-        target.y += x instanceof game.Vector ? x.y : y || x;
+    add: function(x, y) {
+        this.x += x instanceof game.Vector ? x.x : x;
+        this.y += x instanceof game.Vector ? x.y : y || x;
         return this;
     },
 
     /**
         @method subtract
-        @param {Vector} target
-        @param {Number|Vector} x
+        @param {Number|game.Vector} x
         @param {Number} [y]
-        @return {Vector}
+        @return {game.Vector}
     **/
-    subtract: function(target, x, y) {
-        target.x -= x instanceof game.Vector ? x.x : x;
-        target.y -= x instanceof game.Vector ? x.y : y || x;
+    subtract: function(x, y) {
+        this.x -= x instanceof game.Vector ? x.x : x;
+        this.y -= x instanceof game.Vector ? x.y : y || x;
         return this;
     },
 
     /**
         @method multiply
-        @param {Vector} target
-        @param {Number|Vector} x
+        @param {Number|game.Vector} x
         @param {Number} [y]
-        @return {Vector}
+        @return {game.Vector}
     **/
-    multiply: function(target, x, y) {
-        target.x *= x instanceof game.Vector ? x.x : x;
-        target.y *= x instanceof game.Vector ? x.y : y || x;
+    multiply: function(x, y) {
+        this.x *= x instanceof game.Vector ? x.x : x;
+        this.y *= x instanceof game.Vector ? x.y : y || x;
+        return this;
+    },
+
+    /**
+        @method multiplyAdd
+        @param {Number|game.Vector} x
+        @param {Number} [y]
+        @return {game.Vector}
+    **/
+    multiplyAdd: function(x, y) {
+        this.x += x instanceof game.Vector ? x.x * y : x * y;
+        this.y += x instanceof game.Vector ? x.y * y : x * y;
         return this;
     },
 
     /**
         @method divide
-        @param {Vector} target
-        @param {Number|Vector} x
+        @param {Number|game.Vector} x
         @param {Number} [y]
-        @return {Vector}
+        @return {game.Vector}
     **/
-    divide: function(target, x, y) {
-        target.x /= x instanceof game.Vector ? x.x : x;
-        target.y /= x instanceof game.Vector ? x.y : y || x;
+    divide: function(x, y) {
+        this.x /= x instanceof game.Vector ? x.x : x;
+        this.y /= x instanceof game.Vector ? x.y : y || x;
         return this;
     },
 
@@ -667,23 +675,22 @@ game.Vector = game.Class.extend({
 
     /**
         @method rotate
-        @param {Vector} target
         @param {Number} angle
-        @return {Vector}
+        @return {game.Vector}
     **/
-    rotate: function(target, angle) {
+    rotate: function(angle) {
         var c = Math.cos(angle);
         var s = Math.sin(angle);
-        var x = target.x * c - target.y * s;
-        var y = target.y * c + target.x * s;
-        target.x = x;
-        target.y = y;
+        var x = this.x * c - this.y * s;
+        var y = this.y * c + this.x * s;
+        this.x = x;
+        this.y = y;
         return this;
     },
 
     /**
         @method normalize
-        @return {Vector}
+        @return {game.Vector}
     **/
     normalize: function() {
         var len = this.length();
@@ -694,13 +701,12 @@ game.Vector = game.Class.extend({
 
     /**
         @method limit
-        @param {Vector} target
         @param {Vector} vector
-        @return {Vector}
+        @return {game.Vector}
     **/
-    limit: function(target, vector) {
-        target.x = Math.min(vector.x, Math.max(-vector.x, target.x));
-        target.y = Math.min(vector.y, Math.max(-vector.y, target.y));
+    limit: function(vector) {
+        this.x = Math.min(vector.x, Math.max(-vector.x, this.x));
+        this.y = Math.min(vector.y, Math.max(-vector.y, this.y));
         return this;
     },
 
@@ -715,12 +721,11 @@ game.Vector = game.Class.extend({
 
     /**
         @method round
-        @param {Vector} target
-        @return {Vector}
+        @return {game.Vector}
     **/
     round: function(target) {
-        target.x = Math.round(target.x);
-        target.y = Math.round(target.y);
+        this.x = Math.round(this.x);
+        this.y = Math.round(this.y);
         return this;
     }
 });

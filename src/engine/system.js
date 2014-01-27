@@ -124,7 +124,7 @@ game.System = game.Class.extend({
             document.addEventListener(visibilityChange, function() {
                 var hidden = !!game.getVendorAttribute(document, 'hidden');
                 if(hidden && game.System.pauseOnHide) game.system.pause();
-                if(!hidden && game.System.pauseOnHide) game.system.unpause();
+                if(!hidden && game.System.pauseOnHide) game.system.resume();
             }, false);
         }
         
@@ -147,12 +147,12 @@ game.System = game.Class.extend({
 
     /**
         Resume paused game engine.
-        @method unpause
+        @method resume
     **/
-    unpause: function() {
+    resume: function() {
         if(!this.paused) return;
         this.paused = false;
-        if(game.scene) game.scene.unpause();
+        if(game.scene) game.scene.resume();
     },
 
     /**
@@ -270,7 +270,7 @@ game.System = game.Class.extend({
         if(!game.System.rotateScreen) document.body.style.backgroundImage = game.System.backgroundImage.game ? 'url(' + game.System.backgroundImage.game + ')' : 'none';
 
         if(game.System.rotateScreen && game.system && typeof(game.system.pause) === 'function') game.system.pause();
-        if(!game.System.rotateScreen && game.system && typeof(game.system.unpause) === 'function') game.system.unpause();
+        if(!game.System.rotateScreen && game.system && typeof(game.system.resume) === 'function') game.system.resume();
 
         if(game.System.rotateScreen) this.resizeRotateImage();
     },
