@@ -14,10 +14,9 @@ game.module(
 **/
 game.Scene = game.Class.extend({
     /**
-        Background color of scene.
-        @property {Number} clearColor
+        @property {Number} backgroundColor
     **/
-    clearColor: 0x000000,
+    backgroundColor: 0x000000,
     /**
         @property {Array} sprites
     **/
@@ -30,7 +29,6 @@ game.Scene = game.Class.extend({
         @property {Array} tweens
     **/
     tweens: [],
-    interactive: true,
     
     staticInit: function() {
         game.scene = this;
@@ -39,16 +37,13 @@ game.Scene = game.Class.extend({
             game.system.stage.removeChild(game.system.stage.children[i]);
         }
 
-        game.system.stage.setBackgroundColor(this.clearColor);
-        game.system.stage.setInteractive(!!this.interactive);
+        game.system.stage.setBackgroundColor(this.clearColor || this.backgroundColor);
 
-        if(this.interactive) {
-            game.system.stage.mousemove = game.system.stage.touchmove = this.mousemove.bind(this);
-            game.system.stage.click = game.system.stage.tap = this.click.bind(this);
-            game.system.stage.mousedown = game.system.stage.touchstart = this.mousedown.bind(this);
-            game.system.stage.mouseup = game.system.stage.mouseupoutside = game.system.stage.touchend = game.system.stage.touchendoutside = this.mouseup.bind(this);
-            game.system.stage.mouseout = this.mouseout.bind(this);
-        }
+        game.system.stage.mousemove = game.system.stage.touchmove = this.mousemove.bind(this);
+        game.system.stage.click = game.system.stage.tap = this.click.bind(this);
+        game.system.stage.mousedown = game.system.stage.touchstart = this.mousedown.bind(this);
+        game.system.stage.mouseup = game.system.stage.mouseupoutside = game.system.stage.touchend = game.system.stage.touchendoutside = this.mouseup.bind(this);
+        game.system.stage.mouseout = this.mouseout.bind(this);
     },
     
     /**
@@ -70,6 +65,7 @@ game.Scene = game.Class.extend({
     },
 
     /**
+        Helper function for {{#crossLink "game.Tween"}}{{/crossLink}}
         @method addTween
         @param {Object} obj
         @param {Object} props
