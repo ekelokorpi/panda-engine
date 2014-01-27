@@ -12415,6 +12415,69 @@ window.PIXI_WindowsPhone_fix = function() {
     return false;
 };
 
+PIXI.extend = function(prop) {
+    var name;
+    var proto = this.prototype;
+    var base = this.prototype.base || this;
+
+    function Class() {
+        if(this.init) this.init.apply(this, arguments);
+        else this.base.apply(this, arguments);
+
+        for(name in proto) {
+            if(typeof(proto[name]) !== 'function') this[name] = proto[name];
+        }
+        for(name in prop) {
+            if(typeof(prop[name]) !== 'function') this[name] = prop[name];
+        }
+    }
+
+    Class.prototype = Object.create(base.prototype);
+
+    var makeFn = function(name, fn){
+        var from = proto[name];
+        if(name === 'init' && !from) from = base;
+        return function() {
+            var tmp = this.super;
+            this.super = from;
+            var ret = fn.apply(this, arguments);
+            this.super = tmp;
+            return ret;
+        };
+    };
+
+    for(name in proto) {
+        if(typeof(proto[name]) === 'function') {
+            Class.prototype[name] = makeFn(name, proto[name]);
+        }
+        else {
+            Class.prototype[name] = proto[name];
+        }
+    }
+
+    for(name in prop) {
+        if(typeof(prop[name]) === 'function') {
+            Class.prototype[name] = makeFn(name, prop[name]);
+        }
+        else {
+            Class.prototype[name] = prop[name];
+        }
+    }
+
+    Class.prototype.constructor = Class;
+    Class.prototype.base = base;
+    
+    Class.extend = PIXI.extend;
+
+    return Class;
+};
+
+for(var i in PIXI) {
+    if(PIXI[i].prototype instanceof Object) {
+        PIXI[i].extend = PIXI.extend;
+    }
+}
+
 game.AssetLoader = PIXI.AssetLoader;
 game.Text = PIXI.Text;
 game.MovieClip = PIXI.MovieClip;
