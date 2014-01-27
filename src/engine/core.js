@@ -461,7 +461,7 @@ else {
 
 // http://ejohn.org/blog/simple-javascript-inheritance/
 var initializing = false;
-var fnTest = /xyz/.test(function(){ var xyz; return xyz; }) ? /\bparent\b/ : /[\D|\d]*/;
+var fnTest = /xyz/.test(function(){ var xyz; return xyz; }) ? /\bsuper\b/ : /[\D|\d]*/;
 
 /**
     @class Class
@@ -479,10 +479,15 @@ core.Class.extend = function(prop) {
  
     var makeFn = function(name, fn){
         return function() {
-            var tmp = this.parent;
-            this.parent = parent[name];
+            /**
+                Call functions parent function.
+
+                @method super
+            **/
+            var tmp = this.super;
+            this.super = parent[name];
             var ret = fn.apply(this, arguments);
-            this.parent = tmp;
+            this.super = tmp;
             return ret;
         };
     };
