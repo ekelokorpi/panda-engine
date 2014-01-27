@@ -9,62 +9,50 @@ game.module(
 .require(
     'engine.renderer'
 )
-.body(function() { 'use strict';
+.body(function() {
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite%E2%84%A2.html
+
+    __Example__
+
+        var sprite = new game.Sprite(100, 200, 'media/logo.png');
+        game.scene.stage.addChild(sprite);
     @class Sprite
-    @extends game.Class
+    @extends PIXI.Sprite
     @constructor
     @param {Number} x
     @param {Number} y
+    @param {String} path
     @param {Object} [settings]
 **/
-game.Sprite = game.Class.extend({
-    /**
-        @property {String} image
-    **/
-    image: null,
+game.Sprite = PIXI.Sprite.extend({
+    init: function(x, y, path, settings) {
+        var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
+        this.super(texture);
+        game.merge(this, settings);
 
-    staticInit: function(x, y, settings) {
-        settings = settings || {};
-        var sprite = game.Sprite.fromFrame(settings.image || this.image);
-        sprite.position.x = this.x || x;
-        sprite.position.y = this.y || y;
-
-        // merge from class
-        for(var i in this) {
-            if(i !== 'staticInit' && i !== 'constructor') {
-                if(typeof(this[i]) === 'function') sprite[i] = this[i].bind(sprite);
-                else sprite[i] = this[i];
-            }
-        }
-
-        game.merge(sprite, settings);
-
-        sprite.tap = sprite.click;
-        sprite.touchstart = sprite.mousedown;
-        sprite.mouseupoutside = sprite.touchend = sprite.touchendoutside = sprite.mouseup;
-        sprite.touchmove = sprite.mousemove;
-
-        return sprite;
+        this.position.x = x;
+        this.position.y = y;
     },
 
     /**
+        Remove sprite from it's container.
+
         @method remove
     **/
     remove: function() {
         if(this.parent) this.parent.removeChild(this);
         game.scene.sprites.erase(this);
-    },
-
-    click: function() {},
-    mousedown: function() {},
-    mouseup: function() {},
-    mousemove: function() {}
+    }
 });
 
-game.Sprite.fromImage = PIXI.Sprite.fromImage;
-game.Sprite.fromFrame = PIXI.Sprite.fromFrame;
+/**
+    Sprite container.
+    
+    @class Container
+**/
+game.Container = PIXI.DisplayObjectContainer.extend({
+});
 
 });
