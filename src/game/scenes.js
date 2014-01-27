@@ -7,11 +7,10 @@ game.module(
 .body(function() {
 
 SceneTitle = game.Scene.extend({
-    clearColor: 0x808080,
+    backgroundColor: 0x808080,
 
     init: function() {
-        var logo = new game.Sprite(game.system.width / 2, game.system.height / 2, {
-            image: 'media/logo.png',
+        var logo = new game.Sprite(game.system.width / 2, game.system.height / 2, 'media/logo.png', {
             anchor: {x:0.5, y:0.5}
         });
         this.stage.addChild(logo);
