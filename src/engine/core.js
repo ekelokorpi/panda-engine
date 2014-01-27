@@ -86,7 +86,8 @@ var core = {
         if(
             !object || typeof(object) !== 'object' ||
             object instanceof HTMLElement ||
-            object instanceof game.Class
+            object instanceof game.Class ||
+            object instanceof game.Container
         ) {
             return object;
         }
@@ -112,7 +113,8 @@ var core = {
             if(
                 typeof(ext) !== 'object' ||
                 ext instanceof HTMLElement ||
-                ext instanceof game.Class
+                ext instanceof game.Class ||
+                ext instanceof game.Container
             ) {
                 original[key] = ext;
             }

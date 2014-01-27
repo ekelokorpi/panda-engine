@@ -29,6 +29,11 @@ game.Scene = game.Class.extend({
         @property {Array} tweens
     **/
     tweens: [],
+    /**
+        Main container for scene.
+        @property {game.Container} stage
+    **/
+    stage: null,
     
     staticInit: function() {
         game.scene = this;
@@ -44,6 +49,9 @@ game.Scene = game.Class.extend({
         game.system.stage.mousedown = game.system.stage.touchstart = this.mousedown.bind(this);
         game.system.stage.mouseup = game.system.stage.mouseupoutside = game.system.stage.touchend = game.system.stage.touchendoutside = this.mouseup.bind(this);
         game.system.stage.mouseout = this.mouseout.bind(this);
+
+        this.stage = new game.Container();
+        game.system.stage.addChild(this.stage);
     },
     
     /**
@@ -190,21 +198,6 @@ game.Scene = game.Class.extend({
             this.tweens[i].update();
             if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
         }
-    }
-});
-
-/**
-    Main stage for scene.
-    http://www.goodboydigital.com/pixijs/docs/classes/Stage.html
-    @property {Class} stage
-**/
-Object.defineProperty(game.Scene.prototype, 'stage', {
-    get: function() {
-        if(!this._stage) {
-            this._stage = new PIXI.DisplayObjectContainer();
-            game.system.stage.addChild(this._stage);
-        }
-        return this._stage;
     }
 });
 
