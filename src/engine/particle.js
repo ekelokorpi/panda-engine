@@ -30,10 +30,15 @@ game.Particle = game.Class.extend({
         @property {game.Sprite} sprite
     **/
     sprite: null,
+    /**
+        @property {game.Vector} accel
+    **/
+    accel: null,
 
     init: function() {
         this.position = new game.Vector();
         this.velocity = new game.Vector();
+        this.accel = new game.Vector();
     },
 
     /**
@@ -43,12 +48,22 @@ game.Particle = game.Class.extend({
     **/
     setVeloctity: function(angle, speed) {
         this.velocity.x = Math.cos(angle) * speed;
-        this.velocity.y = -Math.sin(angle) * speed;
+        this.velocity.y = Math.sin(angle) * speed;
+    },
+
+    /**
+        @method setAccel
+        @param {Number} angle
+        @param {Number} speed
+    **/
+    setAccel: function(angle, speed) {
+        this.accel.x = Math.cos(angle) * speed;
+        this.accel.y = Math.sin(angle) * speed;
     }
 });
 
 /**
-    Particle emitter. Uses pool named `emitter`.
+    Particle emitter.
 
     __Example__
 
@@ -65,110 +80,15 @@ game.Particle = game.Class.extend({
 **/
 game.Emitter = game.Class.extend({
     /**
+        Pool name for particles.
+        @property {String} poolName
+        @default emitter
+    **/
+    poolName: 'emitter',
+    /**
         @property {Array} particles
     **/
     particles: [],
-    /**
-        @property {game.Vector} gravity
-    **/
-    gravity: null,
-    /**
-        @property {game.Vector} position
-    **/
-    position: null,
-    /**
-        @property {game.Vector} positionVar
-    **/
-    positionVar: null,
-    /**
-        @property {Number} angle
-    **/
-    angle: 0,
-    /**
-        @property {Number} angle
-    **/
-    angleVar: Math.PI,
-    /**
-        @property {Number} speed
-    **/
-    speed: 200,
-    /**
-        @property {Number} speedVar
-    **/
-    speedVar: 0,
-    /**
-        Particle's life in seconds.
-        @property {Number} life
-    **/
-    life: 3,
-    /**
-        Particle's life variance.
-        @property {Number} lifeVar
-    **/
-    lifeVar: 0,
-    /**
-        Emitter duration in seconds. 0 = forever
-        @property {Number} duration
-    **/
-    duration: 0,
-    elapsed: 0, // timer for duration
-    /**
-        Emitter rate.
-        @property {Number} rate
-    **/
-    rate: 0.1,
-    counter: 0, // timer for rate
-    /**
-        Emit count.
-        @property {Number} count
-    **/
-    count: 10, // how many particles to emit
-    /**
-        @property {Boolean} active
-    **/
-    active: true,
-    /**
-        Particle's velocity rotation speed.
-        @property {Number} velRotate
-    **/
-    velRotate: 0,
-    /**
-        @property {Number} velRotateVar
-    **/
-    velRotateVar: 0,
-    /**
-        Particle's sprite rotation speed.
-        @property {Number} rotate
-    **/
-    rotate: 0,
-    /**
-        @property {Number} rotateVar
-    **/
-    rotateVar: 0,
-    /**
-        @property {Number} startAlpha
-    **/
-    startAlpha: 1,
-    /**
-        @property {Number} endAlpha
-    **/
-    endAlpha: 1,
-    /**
-        @property {Number} startScale
-    **/
-    startScale: 1,
-    /**
-        @property {Number} startScaleVar
-    **/
-    startScaleVar: 0,
-    /**
-        @property {Number} endScale
-    **/
-    endScale: 0.5,
-    /**
-        @property {Number} endScaleVar
-    **/
-    endScaleVar: 0,
     /**
         List of texture paths.
         @property {Array} textures
@@ -179,40 +99,225 @@ game.Emitter = game.Class.extend({
         @property {game.Container} container
     **/
     container: null,
+    /**
+        @property {game.Vector} position
+    **/
+    position: null,
+    /**
+        @property {game.Vector} positionVar
+    **/
+    positionVar: null,
+    /**
+        Emit angle in radians.
+        @property {Number} angle
+        @default 0
+    **/
+    angle: 0,
+    /**
+        @property {Number} angleVar
+        @default Math.PI
+    **/
+    angleVar: Math.PI,
+    /**
+        @property {Number} speed
+        @default 100
+    **/
+    speed: 100,
+    /**
+        @property {Number} speedVar
+        @default 0
+    **/
+    speedVar: 0,
+    /**
+        Particle's life in seconds.
+        @property {Number} life
+        @default 2
+    **/
+    life: 2,
+    /**
+        Particle's life variance.
+        @property {Number} lifeVar
+        @default 0
+    **/
+    lifeVar: 0,
+    /**
+        Emitter duration in seconds. 0 = forever
+        @property {Number} duration
+        @default 0
+    **/
+    duration: 0,
+    durationTimer: 0,
+    /**
+        Emitter rate.
+        @property {Number} rate
+        @default 0.1
+    **/
+    rate: 0.1,
+    rateTimer: 0,
+    /**
+        Emit count.
+        @property {Number} count
+        @default 10
+    **/
+    count: 10,
+    /**
+        @property {Boolean} active
+        @default true
+    **/
+    active: true,
+    /**
+        Particle's velocity rotation speed.
+        @property {Number} velRotate
+        @default 0
+    **/
+    velRotate: 0,
+    /**
+        @property {Number} velRotateVar
+        @default 0
+    **/
+    velRotateVar: 0,
+    /**
+        Particle's sprite rotation speed.
+        @property {Number} rotate
+        @default 0
+    **/
+    rotate: 0,
+    /**
+        @property {Number} rotateVar
+        @default 0
+    **/
+    rotateVar: 0,
+    /**
+        @property {Number} startAlpha
+        @default 1
+    **/
+    startAlpha: 1,
+    /**
+        @property {Number} endAlpha
+        @default 0
+    **/
+    endAlpha: 0,
+    /**
+        @property {Number} startScale
+        @default 1
+    **/
+    startScale: 1,
+    /**
+        @property {Number} startScaleVar
+        @default 0
+    **/
+    startScaleVar: 0,
+    /**
+        @property {Number} endScale
+        @default 1
+    **/
+    endScale: 1,
+    /**
+        @property {Number} endScaleVar
+        @default 0
+    **/
+    endScaleVar: 0,
+    /**
+        Target position for particles.
+        @property {game.Vector} target
+    **/
     target: null,
+    /**
+        Target positions force.
+        @property {Number} targetForce
+        @default 0
+    **/
+    targetForce: 0,
+    /**
+        Acceleration angle in radians.
+        @property {Number} accelAngle
+        @default Math.PI / 2
+    **/
+    accelAngle: Math.PI / 2,
+    /**
+        @property {Number} accelAngleVar
+        @default 0
+    **/
+    accelAngleVar: 0,
+    /**
+        Acceleration speed.
+        @property {Number} accelSpeed
+        @default 0
+    **/
+    accelSpeed: 0,
+    /**
+        @property {Number} accelSpeedVar
+        @default 0
+    **/
+    accelSpeedVar: 0,
+    /**
+        Settings to apply on particle sprite.
+        @property {Object} spriteSettings
+    **/
+    spriteSettings: {
+        anchor: {x: 0.5, y: 0.5},
+    },
 
     init: function(settings) {
-        game.pool.create('emitter');
-        this.gravity = new game.Vector();
+        game.pool.create(this.poolName);
         this.position = new game.Vector();
         this.positionVar = new game.Vector();
-        this.target = new game.Vector(400, game.system.height / 2);
+        this.target = new game.Vector();
 
         game.merge(this, settings);
     },
 
+    /**
+        Reset emitter values to defaults.
+        @method reset
+        @param {Boolean} resetVec Reset vector values.
+    **/
+    reset: function(resetVec) {
+        for(var name in this) {
+            if(typeof this[name] === 'number') {
+                this[name] = game.Emitter.prototype[name];
+            }
+            if(this[name] instanceof game.Vector && resetVec) {
+                this[name].set(0, 0);
+            }
+        }
+    },
+
+    /**
+        @method getVariance
+        @return {Number}
+    **/
     getVariance: function(value) {
         return (Math.random() * value) * (Math.random() > 0.5 ? -1 : 1);
     },
 
+    /**
+        @method addParticle 
+    **/
     addParticle: function() {
-        var particle = game.pool.get('emitter');
+        var particle = game.pool.get(this.poolName);
         if(!particle) particle = new game.Particle();
 
         particle.position.x = this.position.x + this.getVariance(this.positionVar.x);
         particle.position.y = this.position.y + this.getVariance(this.positionVar.y);
 
-        var angle = this.angle + this.getVariance(this.angleVar);
+        var angleVar = this.getVariance(this.angleVar);
+        var angle = this.angle + angleVar;
         var speed = this.speed + this.getVariance(this.speedVar);
 
         particle.setVeloctity(angle, speed);
 
+        if(this.angleVar != this.accelAngleVar) angleVar = this.getVariance(this.accelAngleVar);
+
+        angle = this.accelAngle + angleVar;
+        speed = this.accelSpeed + this.getVariance(this.accelSpeedVar);
+
+        particle.setAccel(angle, speed);
+
         particle.life = Math.max(0, this.life + this.getVariance(this.lifeVar));
 
         if(!particle.sprite) {
-            particle.sprite = new game.Sprite(particle.position.x, particle.position.y, this.textures.random(), {
-                anchor: {x: 0.5, y: 0.5}
-            });
+            particle.sprite = new game.Sprite(particle.position.x, particle.position.y, this.textures.random(), this.spriteSettings);
         } else {
             particle.sprite.setTexture(game.TextureCache[this.textures.random()]);
         }
@@ -234,33 +339,38 @@ game.Emitter = game.Class.extend({
         this.particles.push(particle);
     },
 
+    /**
+        @method updateParticle
+    **/
     updateParticle: function(particle) {
         if(particle.life > 0) {
-            // friction
-            // particle.velocity.multiplyAdd(particle.velocity.clone().rotate(Math.PI), game.system.delta);
-            // particle.velocity.multiply(1 - (game.system.delta));
-
-            particle.velocity.rotate(particle.velRotate * game.system.delta);
-            particle.velocity.multiplyAdd(this.gravity, game.system.delta);
-
-            particle.position.multiplyAdd(particle.velocity, game.scale * game.system.delta);
-
             particle.life -= game.system.delta;
+
+            if(this.targetForce > 0) {
+                particle.accel.set(this.target.x - particle.position.x, this.target.y - particle.position.y);
+                particle.accel.normalize().multiply(this.targetForce);
+            }
+
+            particle.velocity.multiplyAdd(particle.accel, game.system.delta);
+            particle.velocity.rotate(particle.velRotate * game.system.delta);
+            particle.position.multiplyAdd(particle.velocity, game.scale * game.system.delta);
 
             particle.sprite.alpha = Math.max(0, particle.sprite.alpha + particle.deltaAlpha * game.system.delta);
             particle.sprite.scale.x = particle.sprite.scale.y += particle.deltaScale * game.system.delta;
-
             particle.sprite.rotation += particle.rotate * game.system.delta;
-
             particle.sprite.position.x = particle.position.x;
             particle.sprite.position.y = particle.position.y;
         } else {
             if(particle.sprite.parent) particle.sprite.parent.removeChild(particle.sprite);
-            game.pool.put('emitter' + this.id, particle);
+            game.pool.put(this.poolName, particle);
             this.particles.erase(particle);
         }
     },
 
+    /**
+        @method emit
+        @param {Number} count
+    **/
     emit: function(count) {
         count = count || 1;
         for (var i = 0; i < count; i++) {
@@ -268,14 +378,17 @@ game.Emitter = game.Class.extend({
         }
     },
 
+    /**
+        @method update
+    **/
     update: function() {
-        this.elapsed += game.system.delta;
-        if(this.duration > 0) this.active = this.elapsed < this.duration;
+        this.durationTimer += game.system.delta;
+        if(this.duration > 0) this.active = this.durationTimer < this.duration;
 
         if(this.rate && this.active) {
-            this.counter += game.system.delta;
-            if(this.counter >= this.rate) {
-                this.counter = 0;
+            this.rateTimer += game.system.delta;
+            if(this.rateTimer >= this.rate) {
+                this.rateTimer = 0;
                 this.emit(this.count);
             }
         }

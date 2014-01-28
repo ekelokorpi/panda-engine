@@ -694,8 +694,8 @@ game.Vector = game.Class.extend({
     **/
     normalize: function() {
         var len = this.length();
-        this.x /= len;
-        this.y /= len;
+        this.x /= len || 1;
+        this.y /= len || 1;
         return this;
     },
 
