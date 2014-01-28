@@ -250,7 +250,7 @@ var core = {
     **/
     start: function(scene, width, height, canvasId) {
         width = width || (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
-        height = height || (game.System.orientation === game.System.PORTRAIT ? 927 : 671);
+        height = height || (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
         this.system = new game.System(width, height, canvasId);
         this.sound = new game.SoundManager();
@@ -571,10 +571,10 @@ core.Class.extend = function(prop) {
 
         var makeFn = function(name, fn){
             return function() {
-                var tmp = this.parent;
-                this.parent = parent[name];
+                var tmp = this.super;
+                this.super = parent[name];
                 var ret = fn.apply(this, arguments);
-                this.parent = tmp;
+                this.super = tmp;
                 return ret;
             };
         };

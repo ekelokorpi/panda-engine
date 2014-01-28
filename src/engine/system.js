@@ -32,10 +32,6 @@ game.System = game.Class.extend({
         @property {Number} delta
     **/
     delta: 0,
-    tick: 0,
-    gameLoopId: 0,
-    newSceneClass: null,
-    running: false,
     /**
         Main game timer.
         @property {Timer} timer
@@ -67,6 +63,9 @@ game.System = game.Class.extend({
         @property {Boolean} retina
     **/
     retina: false,
+    gameLoopId: 0,
+    newSceneClass: null,
+    running: false,
 
     init: function(width, height, canvasId) {
         if(game.System.hires && window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
@@ -95,7 +94,6 @@ game.System = game.Class.extend({
         if(game.Renderer.canvas) this.renderer = new PIXI.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.Renderer.transparent);
         else this.renderer = new PIXI.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.Renderer.transparent, game.Renderer.antialias);
         
-        this.view = this.renderer.view;
         this.canvas = this.renderer.view;
         this.stage = new PIXI.Stage(width,height);
 
@@ -187,7 +185,7 @@ game.System = game.Class.extend({
         if(game.debug) game.debug.stats.begin();
 
         game.Timer.step();
-        this.delta = this.tick = this.timer.tick();
+        this.delta = this.timer.tick();
         
         game.scene.run();
         
@@ -291,12 +289,18 @@ game.System = game.Class.extend({
             // Mobile resize
             this.checkOrientation();
 
+            var width = window.innerWidth;
+            var height = window.innerHeight;
+            
+            // iPad iOS 7 landscape innerHeight bugfix
+            if(game.ua.iPad && height === 671 && this.orientation === game.System.LANDSCAPE) height = 672;
+
             if(game.System.orientation === game.System.LANDSCAPE) {
-                this.canvas.style.height = window.innerHeight + 'px';
-                this.canvas.style.width = window.innerHeight * this.ratio + 'px';
+                this.canvas.style.height = height + 'px';
+                this.canvas.style.width = height * this.ratio + 'px';
             } else {
-                this.canvas.style.width = window.innerWidth + 'px';
-                this.canvas.style.height = window.innerWidth * this.ratio + 'px';
+                this.canvas.style.width = width + 'px';
+                this.canvas.style.height = width * this.ratio + 'px';
             }
 
             window.scroll(0,1);
@@ -389,27 +393,27 @@ game.System.pauseOnHide = true;
 game.System.orientation = game.System.LANDSCAPE;
 game.System.backgroundColor = {
     /**
-        Background color for game screen.
+        Background color for game screen on mobile.
         @attribute backgroundColor.game
         @type {String}
     **/
-    game: '#000000',
+    game: null,
     /**
-        Background color for rotate screen.
+        Background color for rotate screen on mobile.
         @attribute backgroundColor.rotate
         @type {String}
     **/
-    rotate: '#ffffff'
+    rotate: null
 };
 game.System.backgroundImage = {
     /**
-        Background image for game screen.
+        Background image for game screen on mobile.
         @attribute backgroundImage.game
         @type {URL}
     **/
     game: null,
     /**
-        Background image for rotate screen.
+        Background image for rotate screen on mobile.
         @attribute backgroundImage.rotate
         @type {URL}
     **/

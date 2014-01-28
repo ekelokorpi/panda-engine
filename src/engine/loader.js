@@ -13,65 +13,63 @@ game.module(
     @extends game.Class
 **/
 game.Loader = game.Class.extend({
-    resources: [],
-    
-    gameClass: null,
-    status: 0,
+    /**
+        Game scene to start, when loader is finished.
+        @property {game.Scene} gameScene
+    **/
+    gameScene: null,
+    /**
+        Number of files loaded.
+        @property {Number} loaded
+    **/
+    loaded: 0,
+    /**
+        Percent of files loaded.
+        @property {Number} percent
+    **/
+    percent: 0,
     done: false,
-    
-    _unloaded: [],
-    _drawStatus: 0,
-    _intervalId: 0,
-    _loadCallbackBound: null,
-    _loaded: 0,
-
+    timerId: 0,
     assets: [],
     audioAssets: [],
-    audioUnloaded: [],
-    percent: 0,
+    audioUnloaded: 0,
     startTime: null,
     endTime: null,
+    tweens: [],
 
-    init: function( gameClass, resources, audioResources ) {
-        if(this.clearColor) {
+    init: function(gameScene, resources, audioResources) {
+        if(this.backgroundColor) {
             var bg = new game.Graphics();
-            bg.beginFill(this.clearColor);
-            bg.drawRect(0,0,game.system.width,game.system.height);
+            bg.beginFill(this.backgroundColor);
+            bg.drawRect(0, 0, game.system.width, game.system.height);
             game.system.stage.addChild(bg);
         }
 
-        this.gameClass = gameClass;
+        this.gameScene = gameScene;
+        this.timer = new game.Timer();
 
-        for (var i = 0; i < resources.length; i++) {
-            var path = this.getPath(resources[i]);
+        var i, path;
+        for (i = 0; i < resources.length; i++) {
+            path = this.getPath(resources[i]);
             this.assets.push(path);
         }
 
         for (i = 0; i < audioResources.length; i++) {
             this.audioAssets.push(audioResources[i]);
-            this.audioUnloaded.push(audioResources[i].path);
         }
+        this.audioUnloaded = this.audioAssets.length;
 
         this.loader = new game.AssetLoader(this.assets);
         this.loader.onProgress = this.progress.bind(this);
         this.loader.onComplete = this.complete.bind(this);
         this.loader.onError = this.error.bind(this);
 
-        if(this.assets.length === 0) this.percent = 100;
+        if(this.assets.length === 0 && this.audioAssets.length === 0) this.percent = 100;
 
         this.initStage();
 
-        if(this.assets.length === 0) this.ready();
+        if(this.assets.length === 0 && this.audioAssets.length === 0) this.ready();
         else this.startTime = Date.now();
-    },
-
-    getPath: function(path) {
-        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@2x.') : path;
-    },
-
-    start: function() {
-        this.loader.load();
-        this._intervalId = setInterval( this.render.bind(this), 16 );
     },
 
     initStage: function() {
@@ -86,22 +84,14 @@ game.Loader = game.Class.extend({
         game.system.stage.addChild(this.symbol);
     },
 
-    loadResource: function( res ) {
-        res.load( this._loadCallbackBound );
+    getPath: function(path) {
+        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@2x.') : path;
     },
 
-    _loadCallback: function( path, status ) {
-        if( status ) {
-            this._unloaded.erase( path );
-        }
-        else {
-            throw( 'Failed to load resource: ' + path );
-        }
-        
-        this.status = 1 - (this._unloaded.length / this.resources.length);
-        if( this._unloaded.length === 0 ) { // all done?
-            setTimeout( this.end.bind(this), 250 );
-        }
+    start: function() {
+        this.loader.load();
+        // this.timerId = setInterval(this.run.bind(this), 16);
+        this.loopId = game.setGameLoop(this.run.bind(this), game.system.canvas);
     },
 
     error: function() {
@@ -112,9 +102,8 @@ game.Loader = game.Class.extend({
     },
 
     progress: function() {
-        this._loaded++;
-        this.status = this._loaded / (this.assets.length + this.audioAssets.length);
-        this.percent = Math.round(this._loaded / (this.assets.length + this.audioAssets.length) * 100);
+        this.loaded++;
+        this.percent = Math.round(this.loaded / (this.assets.length + this.audioAssets.length) * 100);
         this.onPercentChange();
     },
 
@@ -139,38 +128,46 @@ game.Loader = game.Class.extend({
         this.progress();
 
         if(status) {
-            this.audioUnloaded.erase(path);
+            this.audioUnloaded--;
         }
         else {
             if(this.text) this.text.setText('ERR');
-            throw( 'Failed to load resource: ' + path );
+            throw('Failed to load audio: ' + path);
         }
 
-        if(this.audioUnloaded.length === 0) this.ready();
+        if(this.audioUnloaded === 0) this.ready();
     },
 
-    draw: function() {
-        this.symbol.rotation += 0.2;
+    run: function() {
+        game.Timer.step();
+        this.delta = this.timer.tick();
+        this.update();
+        this.render();
+    },
+
+    update: function() {
+        for (var i = this.tweens.length - 1; i >= 0; i--) {
+            this.tweens[i].update();
+            if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
+        }
+        this.symbol.rotation += 10 * this.delta;
     },
 
     render: function() {
-        this.draw();
         game.system.renderer.render(game.system.stage);
     },
 
     ready: function() {
-        var timeout = game.Loader.timeout;
+        if(this.done) return;
+        this.done = true;
+
+        var timeout = game.Loader.timeout * 1000;
         if(this.startTime) {
             this.endTime = Date.now();
             timeout -= this.endTime - this.startTime;
         }
         if(timeout < 100) timeout = 100;
-        setTimeout(this.end.bind(this), timeout);
-    },
 
-    end: function() {
-        if( this.done ) { return; }
-        
         // remove @2x from TextureCache
         for(var i in game.TextureCache) {
             if(i.indexOf('@2x') !== -1) {
@@ -179,19 +176,28 @@ game.Loader = game.Class.extend({
             }
         }
 
-        this.done = true;
-        clearInterval( this._intervalId );
-        game.system.setScene( this.gameClass );
+        setTimeout(this.preEnd.bind(this), timeout);
+    },
+
+    preEnd: function() {
+        this.end();
+    },
+
+    end: function() {
+        game.Timer.time = Number.MIN_VALUE;
+        // clearInterval(this.timerId);
+        game.clearGameLoop(this.loopId);
+        game.system.setScene(this.gameScene);
     }
 });
 
 /**
-    Minimum time to show preloader. In milliseconds.
+    Minimum time to show preloader, in seconds.
     @attribute {Number} timeout
-    @default 500
+    @default 0.5
     @example
-        game.Loader.timeout = 1000;
+        game.Loader.timeout = 1;
 **/
-game.Loader.timeout = 500;
+game.Loader.timeout = 0.5;
 
 });

@@ -75,7 +75,8 @@ game.Tween = game.Class.extend({
         this.paused = false;
         this.loopNum = this.loopCount;
         this._elapsed = 0;
-        if (this._object.tweens && this._object.tweens.indexOf(this) === -1 ) this._object.tweens.push(this);
+        // what is this ???
+        // if (this._object.tweens && this._object.tweens.indexOf(this) === -1 ) this._object.tweens.push(this);
         this.started = true;
         this.timer = new game.Timer();
         for ( var property in this._props ) {
