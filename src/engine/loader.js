@@ -95,6 +95,7 @@ game.Loader = game.Class.extend({
     },
 
     error: function() {
+        if(!this.text) return;
         this.text.setText('ERR');
         this.text.updateTransform();
         this.text.position.x = game.system.width / 2 - this.text.width / 2;
@@ -108,6 +109,7 @@ game.Loader = game.Class.extend({
     },
 
     onPercentChange: function() {
+        if(!this.text) return;
         this.text.setText(this.percent+'%');
         this.text.updateTransform();
         this.text.position.x = game.system.width / 2 - this.text.width / 2;
@@ -150,7 +152,7 @@ game.Loader = game.Class.extend({
             this.tweens[i].update();
             if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
         }
-        this.symbol.rotation += 10 * this.delta;
+        if(this.symbol) this.symbol.rotation += 10 * this.delta;
     },
 
     render: function() {
