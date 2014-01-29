@@ -249,6 +249,8 @@ var core = {
         @param {String} canvasId
     **/
     start: function(scene, width, height, canvasId) {
+        if(this._loadQueue.length > 0) throw 'Engine modules not ready.';
+        
         width = width || (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         height = height || (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
@@ -262,6 +264,23 @@ var core = {
         
         var loader = new game.Loader(scene || SceneTitle, this.resources, this.audioResources);
         loader.start();
+    },
+
+    Math: {
+        /**
+            Distance between two points.
+            @method Math.distance
+            @param {Number} x
+            @param {Number} y
+            @param {Number} x2
+            @param {Number} y2
+            @return {Number}
+        **/
+        distance: function(x, y, x2, y2) {
+            x = x2 - x;
+            y = y2 - y;
+            return Math.sqrt(x * x + y * y);
+        }
     },
     
     _loadScript: function(name, requiredFrom) {
@@ -507,7 +526,6 @@ core.Class.extend = function(prop) {
         return function() {
             /**
                 Call functions parent function.
-
                 @method super
             **/
             var tmp = this.super;
@@ -614,6 +632,6 @@ game.module(
     'engine.tween',
     'engine.pool'
 )
-.body(function(){ 'use strict';
-
+.body(function(){
+    // ready to start engine
 });
