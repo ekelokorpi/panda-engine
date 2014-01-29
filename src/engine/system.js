@@ -321,8 +321,8 @@ game.System = game.Class.extend({
 });
 
 game.System.rotateScreen = false;
-game.System.PORTRAIT = 0;
-game.System.LANDSCAPE = 1;
+game.System.LANDSCAPE = 0;
+game.System.PORTRAIT = 1;
 
 /**
     Minimum width for canvas.
@@ -368,7 +368,7 @@ game.System.screenCanvas = true;
 **/
 game.System.hires = false;
 /**
-    System width/height factor, when to use HiRes mode.
+    Canvas width/height factor, when to enable HiRes mode.
     @attribute {Number} hiresFactor
     @default 1.5
 **/
@@ -387,7 +387,7 @@ game.System.retina = false;
 game.System.pauseOnHide = true;
 /**
     Mobile orientation for the game.
-    @attribute {game.System.LANDSCAPE|game.System.PORTRAIT} orientation
+    @attribute {LANDSCAPE|PORTRAIT} orientation
     @default game.System.LANDSCAPE
 **/
 game.System.orientation = game.System.LANDSCAPE;

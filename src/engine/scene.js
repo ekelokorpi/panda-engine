@@ -30,6 +30,10 @@ game.Scene = game.Class.extend({
     **/
     tweens: [],
     /**
+        @property {Array} emitters
+    **/
+    emitters: [],
+    /**
         Main container for scene.
         @property {game.Container} stage
     **/
@@ -67,12 +71,17 @@ game.Scene = game.Class.extend({
                 this.timers.erase(this.timers[i]);
             }
         }
+        for (i = this.emitters.length - 1; i >= 0; i--) {
+            this.emitters[i].update();
+            if(this.emitters[i]._remove) this.emitters.erase(this.emitters[i]);
+        }
         for (i = this.tweens.length - 1; i >= 0; i--) {
             this.tweens[i].update();
             if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
         }
         for (i = this.sprites.length - 1; i >= 0; i--) {
             this.sprites[i].update();
+            if(this.sprites[i]._remove) this.sprites.erase(this.sprites[i]);
         }
     },
 

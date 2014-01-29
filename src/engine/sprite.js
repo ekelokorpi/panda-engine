@@ -44,12 +44,12 @@ game.Sprite = PIXI.Sprite.extend({
     },
 
     /**
-        Remove sprite from it's container.
+        Remove sprite from scene.
         @method remove
     **/
     remove: function() {
         if(this.parent) this.parent.removeChild(this);
-        game.scene.sprites.erase(this);
+        this._remove = true;
     }
 });
 

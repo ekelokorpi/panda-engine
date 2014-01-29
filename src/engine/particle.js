@@ -72,6 +72,7 @@ game.Particle = game.Class.extend({
         emitter.textures.push('media/particle.png');
         emitter.position.x = game.system.width / 2;
         emitter.position.y = game.system.height / 2;
+        game.scene.emitters.push(emitter);
 
     @class Emitter
     @extends game.Class
@@ -396,6 +397,14 @@ game.Emitter = game.Class.extend({
         for (var i = this.particles.length - 1; i >= 0; i--) {
             this.updateParticle(this.particles[i]);
         }
+    },
+
+    /**
+        Remove emitter from scene.
+        @method remove
+    **/
+    remove: function() {
+        this._remove = true;
     }
 });
 
