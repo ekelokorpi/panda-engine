@@ -97,6 +97,9 @@ game.System = game.Class.extend({
         this.canvas = this.renderer.view;
         this.stage = new PIXI.Stage(width,height);
 
+        game.normalizeVendorAttribute(this.canvas, 'requestFullscreen');
+        game.normalizeVendorAttribute(this.canvas, 'requestFullScreen');
+
         document.body.style.margin = 0;
 
         if(this.retina) {

@@ -44,12 +44,11 @@ game.Sprite = PIXI.Sprite.extend({
     },
 
     /**
-        Remove sprite from scene.
+        Remove sprite from it's parent.
         @method remove
     **/
     remove: function() {
         if(this.parent) this.parent.removeChild(this);
-        this._remove = true;
     }
 });
 
@@ -58,9 +57,30 @@ game.Sprite = PIXI.Sprite.extend({
     @class Container
 **/
 game.Container = PIXI.DisplayObjectContainer.extend({
+    remove: function() {
+        if(this.parent) this.parent.removeChild(this);
+    }
 });
 
 game.Texture = PIXI.Texture.extend();
 game.Texture.fromImage = PIXI.Texture.fromImage;
+
+game.TilingSprite = PIXI.TilingSprite.extend({
+    speed: {x: 0, y: 0},
+
+    init: function(x, y, path, width, height, settings) {
+        var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
+        this.super(texture, width || texture.width, height || texture.height);
+        game.merge(this, settings);
+
+        this.position.x = x;
+        this.position.y = y;
+    },
+
+    update: function() {
+        this.tilePosition.x += this.speed.x * game.system.delta;
+        this.tilePosition.y += this.speed.y * game.system.delta;
+    }
+});
 
 });

@@ -258,11 +258,17 @@ game.Emitter = game.Class.extend({
     spriteSettings: {
         anchor: {x: 0.5, y: 0.5},
     },
+    /**
+        @property {game.Vector} velocityLimit
+        @default 100
+    **/
+    velocityLimit: null,
 
     init: function(settings) {
         game.pool.create(this.poolName);
         this.position = new game.Vector();
         this.positionVar = new game.Vector();
+        this.velocityLimit = new game.Vector(100, 100);
         this.target = new game.Vector();
 
         game.merge(this, settings);
@@ -353,6 +359,7 @@ game.Emitter = game.Class.extend({
             }
 
             particle.velocity.multiplyAdd(particle.accel, game.system.delta);
+            particle.velocity.limit(this.velocityLimit);
             particle.velocity.rotate(particle.velRotate * game.system.delta);
             particle.position.multiplyAdd(particle.velocity, game.scale * game.system.delta);
 

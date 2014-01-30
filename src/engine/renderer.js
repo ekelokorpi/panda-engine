@@ -12425,10 +12425,10 @@ PIXI.extend = function(prop) {
         else this.base.apply(this, arguments);
 
         for(name in proto) {
-            if(typeof(proto[name]) !== 'function') this[name] = proto[name];
+            if(typeof(proto[name]) !== 'function') this[name] = game.copy(proto[name]);
         }
         for(name in prop) {
-            if(typeof(prop[name]) !== 'function') this[name] = prop[name];
+            if(typeof(prop[name]) !== 'function') this[name] = game.copy(prop[name]);
         }
     }
 

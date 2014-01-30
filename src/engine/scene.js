@@ -18,9 +18,9 @@ game.Scene = game.Class.extend({
     **/
     backgroundColor: 0x000000,
     /**
-        @property {Array} sprites
+        @property {Array} objects
     **/
-    sprites: [],
+    objects: [],
     /**
         @property {Array} timers
     **/
@@ -79,10 +79,18 @@ game.Scene = game.Class.extend({
             this.tweens[i].update();
             if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
         }
-        for (i = this.sprites.length - 1; i >= 0; i--) {
-            this.sprites[i].update();
-            if(this.sprites[i]._remove) this.sprites.erase(this.sprites[i]);
+        for (i = this.objects.length - 1; i >= 0; i--) {
+            this.objects[i].update();
+            if(this.objects[i]._remove) this.objects.erase(this.objects[i]);
         }
+    },
+
+    addObject: function(object) {
+        this.objects.push(object);
+    },
+
+    removeObject: function(object) {
+        object._remove = true;
     },
 
     /**

@@ -159,6 +159,23 @@ var core = {
     },
 
     /**
+        Request fullscreen mode.
+        @method fullscreen
+    **/
+    fullscreen: function() {
+        if(game.system.canvas.requestFullscreen) game.system.canvas.requestFullscreen();
+        if(game.system.canvas.requestFullScreen) game.system.canvas.requestFullScreen();
+    },
+
+    /**
+        @method fullscreenSupport
+        @return {Boolean} Return true, if browser supports fullscreen mode.
+    **/
+    fullscreenSupport: function() {
+        return !!(game.system.canvas.requestFullscreen || game.system.canvas.requestFullScreen);
+    },
+
+    /**
         Add asset to preloader.
         @method addAsset
         @param {String} path
