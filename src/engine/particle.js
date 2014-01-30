@@ -332,8 +332,11 @@ game.Emitter = game.Class.extend({
         particle.rotate = this.rotate + this.getVariance(this.rotateVar);
         particle.velRotate = this.velRotate + this.getVariance(this.velRotateVar);
 
-        particle.deltaAlpha = this.endAlpha - this.startAlpha;
-        particle.deltaAlpha /= particle.life;
+        if(this.startAlpha != this.endAlpha) {
+            particle.deltaAlpha = this.endAlpha - this.startAlpha;
+            particle.deltaAlpha /= particle.life;
+        }
+
         particle.sprite.alpha = this.startAlpha;
 
         var startScale = this.startScale + this.getVariance(this.startScaleVar);
@@ -360,10 +363,10 @@ game.Emitter = game.Class.extend({
 
             particle.velocity.multiplyAdd(particle.accel, game.system.delta);
             particle.velocity.limit(this.velocityLimit);
-            particle.velocity.rotate(particle.velRotate * game.system.delta);
+            if(particle.velRotate) particle.velocity.rotate(particle.velRotate * game.system.delta);
             particle.position.multiplyAdd(particle.velocity, game.scale * game.system.delta);
 
-            particle.sprite.alpha = Math.max(0, particle.sprite.alpha + particle.deltaAlpha * game.system.delta);
+            if(particle.deltaAlpha) particle.sprite.alpha = Math.max(0, particle.sprite.alpha + particle.deltaAlpha * game.system.delta);
             particle.sprite.scale.x = particle.sprite.scale.y += particle.deltaScale * game.system.delta;
             particle.sprite.rotation += particle.rotate * game.system.delta;
             particle.sprite.position.x = particle.position.x;

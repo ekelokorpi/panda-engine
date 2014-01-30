@@ -705,8 +705,8 @@ game.Vector = game.Class.extend({
         @return {game.Vector}
     **/
     limit: function(vector) {
-        this.x = Math.min(vector.x, Math.max(-vector.x, this.x));
-        this.y = Math.min(vector.y, Math.max(-vector.y, this.y));
+        this.x = this.x.limit(-vector.x, vector.x);
+        this.y = this.y.limit(-vector.y, vector.y);
         return this;
     },
 
