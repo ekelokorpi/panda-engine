@@ -397,8 +397,10 @@ var core = {
         this.ua.wp8 = (this.ua.wp && /Windows Phone 8/i.test(navigator.userAgent));
         this.ua.wpApp = (this.ua.wp && typeof(window.external) !== 'undefined' && typeof(window.external.notify) !== 'undefined');
 
+        // TODO add ie9 detection
         this.ua.ie10 = /MSIE 10/i.test(navigator.userAgent);
         this.ua.ie11 = /rv:11.0/i.test(navigator.userAgent);
+        this.ua.ie = this.ua.ie10 || this.ua.ie11;
         
         this.ua.opera = /Opera/i.test(navigator.userAgent);
         this.ua.crosswalk = /Crosswalk/i.test(navigator.userAgent);

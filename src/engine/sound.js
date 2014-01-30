@@ -169,7 +169,7 @@ game.SoundManager = game.Class.extend({
             }, false);
             
             clip.addEventListener('error', function(ev){
-                loadCallback(path, false, ev);
+                loadCallback(realPath, false, ev);
             }, false);
         }
         clip.preload = 'auto';
@@ -356,7 +356,7 @@ game.Sound = game.Class.extend({
     path: '',
     volume: 1,
     currentClip: null,
-    multiChannel: true,
+    multiChannel: false,
     gainNode: null,
     playbackRate: 1,
     channels: 4,
@@ -364,8 +364,7 @@ game.Sound = game.Class.extend({
     
     init: function(path, multiChannel) {
         this.path = path;
-        this.multiChannel = (multiChannel !== false);
-        
+        this.multiChannel = !!multiChannel;
         this.load();
     },
 
