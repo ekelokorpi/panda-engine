@@ -38,6 +38,10 @@ game.Scene = game.Class.extend({
         @property {game.Container} stage
     **/
     stage: null,
+    /**
+        @property {game.DebugDraw} debugDraw
+    **/
+    debugDraw: null,
     
     staticInit: function() {
         game.scene = this;
@@ -198,6 +202,7 @@ game.Scene = game.Class.extend({
 
     run: function() {
         this.update();
+        if(this.debugDraw) this.debugDraw.update();
         this.render();
     },
 

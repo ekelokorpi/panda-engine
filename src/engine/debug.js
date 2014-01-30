@@ -9,6 +9,106 @@ game.module(
 .body(function() { 'use strict';
 
 /**
+    DebugDraw will draw all interactive sprite hit areas and physic shapes.
+    Automatically enabled, if URL contains `?debugdraw`.
+    @class DebugDraw
+**/
+game.DebugDraw = game.Class.extend({
+    sprites: [],
+    shapes: [],
+
+    init: function() {
+        var i, sprite, shape;
+
+        this.getSprites(game.scene.stage);
+
+        this.container = new game.Container();
+        game.system.stage.addChild(this.container);
+
+        for (i = 0; i < this.sprites.length; i++) {
+            sprite = new game.Graphics();
+            sprite.beginFill(game.DebugDraw.spriteColor);
+
+            // TODO add support for game.HitEllipse and game.HitPolygon
+            if(this.sprites[i].hitArea) {
+                if(this.sprites[i].hitArea instanceof game.HitRectangle) sprite.drawRect(this.sprites[i].hitArea.x, this.sprites[i].hitArea.y, this.sprites[i].hitArea.width, this.sprites[i].hitArea.height);
+                if(this.sprites[i].hitArea instanceof game.HitCircle) sprite.drawCircle(this.sprites[i].hitArea.x, this.sprites[i].hitArea.y, this.sprites[i].hitArea.radius);
+            }
+            else sprite.drawRect(-this.sprites[i].width * this.sprites[i].anchor.x, -this.sprites[i].height * this.sprites[i].anchor.y, this.sprites[i].width, this.sprites[i].height);
+
+            sprite.target = this.sprites[i];
+            sprite.alpha = game.DebugDraw.spriteAlpha;
+            this.container.addChild(sprite);
+        }
+
+        if(game.scene.world) {
+            for (i = 0; i < game.scene.world.bodies.length; i++) {
+                shape = game.scene.world.bodies[i].shape;
+                if(shape) {
+                    sprite = new game.Graphics();
+                    sprite.beginFill(game.DebugDraw.shapeColor);
+
+                    // TODO add support for game.Circle and game.Line
+                    if(shape instanceof game.Rectangle) {
+                        sprite.drawRect(-shape.width/2, -shape.height/2, shape.width, shape.height);
+                    }
+
+                    sprite.target = game.scene.world.bodies[i];
+                    sprite.alpha = game.DebugDraw.shapeAlpha;
+                    this.container.addChild(sprite);
+                }
+            }
+        }
+    },
+
+    getSprites: function(container) {
+        for (var i = 0; i < container.children.length; i++) {
+            if(container.children[i] instanceof game.Container) this.getSprites(container.children[i]);
+            if(container.children[i].texture && container.children[i].interactive) this.sprites.push(container.children[i]);
+        }
+    },
+
+    update: function() {
+        for (var i = 0; i < this.container.children.length; i++) {
+            if(this.container.children[i].target instanceof game.Body) {
+                this.container.children[i].position.x = this.container.children[i].target.position.x + game.scene.stage.position.x;
+                this.container.children[i].position.y = this.container.children[i].target.position.y + game.scene.stage.position.y;
+            } else {
+                this.container.children[i].position.x = this.container.children[i].target.worldTransform[2];
+                this.container.children[i].position.y = this.container.children[i].target.worldTransform[5];
+            }
+
+            this.container.children[i].rotation = this.container.children[i].target.rotation;
+        }
+    }
+});
+
+/**
+    @attribute {Number} spriteColor
+    @default 0xff0000
+**/
+game.DebugDraw.spriteColor = 0xff0000;
+/**
+    @attribute {Number} spriteAlpha
+    @default 0.3
+**/
+game.DebugDraw.spriteAlpha = 0.3;
+/**
+    @attribute {Number} shapeColor
+    @default 0x0000ff
+**/
+game.DebugDraw.shapeColor = 0x0000ff;
+/**
+    @attribute {Number} shapeAlpha
+    @default 0.3
+**/
+game.DebugDraw.shapeAlpha = 0.3;
+/**
+    @attribute {Boolean} enabled
+**/
+game.DebugDraw.enabled = document.location.href.match(/\?debugdraw/) ? true : false;
+
+/**
     Instance automatically created at {{#crossLink "game.Core"}}{{/crossLink}}, if URL contains `?debug`.
     @class Debug
     @extends game.Class
@@ -220,6 +320,9 @@ game.Debug.position = {
     mobile: game.Debug.POSITION.TOPLEFT
 };
 
+/**
+    @attribute {Boolean} enabled
+**/
 game.Debug.enabled = document.location.href.match(/\?debug/) ? true : false;
 
 });

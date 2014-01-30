@@ -39,7 +39,7 @@ game.World = game.Class.extend({
     init: function(x, y) {
         this.gravity = new game.Vector();
         this.gravity.x = typeof(x) === 'number' ? x : 0;
-        this.gravity.y = typeof(y) === 'number' ? y : -980;
+        this.gravity.y = typeof(y) === 'number' ? y : 980;
         this.solver = new game.CollisionSolver();
     },
 
@@ -443,11 +443,11 @@ game.Body = game.Class.extend({
         this.last.copy(this.position);
 
         if(this.mass > 0) {
-            this.velocity.multiplyAdd(this.world.gravity, game.system.tick);
+            this.velocity.multiplyAdd(this.world.gravity, game.system.delta);
             this.velocity.limit(this.velocityLimit);
         }
 
-        this.position.multiplyAdd(this.velocity, game.scale * game.system.tick);
+        this.position.multiplyAdd(this.velocity, game.scale * game.system.delta);
     }
 });
 
