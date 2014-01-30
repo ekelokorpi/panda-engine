@@ -73,9 +73,16 @@ game.DebugDraw = game.Class.extend({
             if(this.container.children[i].target instanceof game.Body) {
                 this.container.children[i].position.x = this.container.children[i].target.position.x + game.scene.stage.position.x;
                 this.container.children[i].position.y = this.container.children[i].target.position.y + game.scene.stage.position.y;
+                if(!this.container.children[i].target.world) {
+                    this.container.removeChild(this.container.children[i]);
+                }
             } else {
+                if(this.container.children[i].target.parent) this.container.children[i].target.updateTransform();
                 this.container.children[i].position.x = this.container.children[i].target.worldTransform[2];
                 this.container.children[i].position.y = this.container.children[i].target.worldTransform[5];
+                if(!this.container.children[i].target.parent) {
+                    this.container.removeChild(this.container.children[i]);
+                }
             }
 
             this.container.children[i].rotation = this.container.children[i].target.rotation;

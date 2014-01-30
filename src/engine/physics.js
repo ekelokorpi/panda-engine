@@ -62,6 +62,7 @@ game.World = game.Class.extend({
         @param {Body} body
     **/
     removeBody: function(body) {
+        body.world = null;
         this.removeBodyCollision(body);
         this.bodies.erase(body);
     },
@@ -400,9 +401,9 @@ game.Body = game.Class.extend({
     collisionGroup: 0,
     /**
         @property {Number} collideAgainst
-        @default 0
+        @default null
     **/
-    collideAgainst: 0,
+    collideAgainst: null,
     /**
         @property {Number} rotation
         @default 0
