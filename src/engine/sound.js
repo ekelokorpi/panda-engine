@@ -86,7 +86,6 @@ game.SoundManager = game.Class.extend({
     },
         
     get: function(path) {
-        // Find and return a channel that is not currently playing
         var channels = this.clips[path];
         for(var i = 0, clip; clip = channels[i++];) {
             if(clip.paused || clip.ended) {
@@ -97,7 +96,6 @@ game.SoundManager = game.Class.extend({
             }
         }
         
-        // Still here? Pause and rewind the first channel
         channels[0].pause();
         channels[0].currentTime = 0;
         return channels[0];
@@ -202,9 +200,9 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
-        Stop sound. If name is not defined, stops all sounds.
+        Stop sound.
         @method stopSound
-        @param {String} [name]
+        @param {String} [name] If not defined, stops all sounds.
     **/
     stopSound: function(name) {
         if(!game.SoundManager.enabled) return;
@@ -217,7 +215,7 @@ game.SoundManager = game.Class.extend({
             }
         } else {
             for(var sound in game.SoundCache) {
-                game.SoundCache[sound].stop();
+                if(game.SoundCache[sound].playing) game.SoundCache[sound].stop();
             }
             this.loopedSounds.length = 0;
         }
@@ -278,7 +276,7 @@ game.SoundManager = game.Class.extend({
                 // CocoonJS drops ~5fps when stopping music (but not when stopping sound, filesize?)
                 this.currentMusic.currentClip.volume = 0;
             } else {
-                this.currentMusic.stop();
+                if(this.currentMusic.playing) this.currentMusic.stop();
             }
             this.currentMusic = null;
         }
@@ -372,22 +370,17 @@ game.Sound = game.Class.extend({
     },
 
     load: function(loadCallback) {
+        if(!game.SoundManager.enabled) {
+            if(loadCallback) loadCallback(this.path, true);
+            return;
+        }
+        
         if(game.ready) {
             if(game.sound.context) {
                 if(game.sound.context.createGain) this.gainNode = game.sound.context.createGain();
                 else if(game.sound.context.createGainNode) this.gainNode = game.sound.context.createGainNode();
                 this.gainNode.connect(game.sound.gainNode);
             }
-        }
-
-        if(!game.SoundManager.enabled) {
-            if(loadCallback) {
-                loadCallback(this.path, true);
-            }
-            return;
-        }
-        
-        if(game.ready) {
             game.sound.load(this.path, this.multiChannel, loadCallback);
         }
         else {
@@ -468,6 +461,7 @@ game.Sound = game.Class.extend({
     stop: function() {
         if(!game.SoundManager.enabled) return;
 
+        if(!this.playing) return;
         this.playing = false;
 
         if(this.currentClip && game.sound.context) {
