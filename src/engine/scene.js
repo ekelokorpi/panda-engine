@@ -70,7 +70,8 @@ game.Scene = game.Class.extend({
         for (i = this.timers.length - 1; i >= 0; i--) {
             if(this.timers[i].delta() >= 0) {
                 if(typeof(this.timers[i].callback) === 'function') this.timers[i].callback();
-                this.timers.erase(this.timers[i]);
+                if(this.timers[i].repeat) this.timers[i].reset();
+                else this.timers.erase(this.timers[i]);
             }
         }
         for (i = this.emitters.length - 1; i >= 0; i--) {
@@ -156,13 +157,26 @@ game.Scene = game.Class.extend({
         @method addTimer
         @param {Number} time Time in seconds
         @param {Function} callback Callback function to run, when timer ends.
+        @param {Boolean} repeat
         @return {game.Timer}
     **/
-    addTimer: function(time, callback) {
+    addTimer: function(time, callback, repeat) {
         var timer = new game.Timer(time);
+        timer.repeat = !!repeat;
         timer.callback = callback;
         this.timers.push(timer);
         return timer;
+    },
+
+    /**
+        @method removeTimer
+        @param {game.Timer} timer
+        @param {Boolean} doCallback
+    **/
+    removeTimer: function(timer, doCallback) {
+        if(!doCallback) timer.callback = null;
+        timer.repeat = false;
+        timer.set(0);
     },
     
     /**
