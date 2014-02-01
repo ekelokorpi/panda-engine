@@ -55,6 +55,7 @@ game.World = game.Class.extend({
             this.collisionGroups[body.collisionGroup] = this.collisionGroups[body.collisionGroup] || [];
             this.collisionGroups[body.collisionGroup].push(body);
         }
+        if(game.debugDraw && body.shape) game.debugDraw.addBody(body);
     },
 
     /**
@@ -62,6 +63,7 @@ game.World = game.Class.extend({
         @param {Body} body
     **/
     removeBody: function(body) {
+        if(!body.world) return;
         body.world = null;
         this.removeBodyCollision(body);
         this.bodies.erase(body);
@@ -265,23 +267,23 @@ game.CollisionSolver = game.Class.extend({
                     a.position.y = b.position.y - b.shape.height / 2 - a.shape.height / 2;
                 }
             }
-            if(a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
+            else if(a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
                 if(a.collide(b, 1)) {
                     a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
                 }
             }
-            if(a.last.x + a.shape.width /2 <= b.last.x - b.shape.width / 2) {
+            else if(a.last.x + a.shape.width /2 <= b.last.x - b.shape.width / 2) {
                 if(a.collide(b, 2)) {
                     a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
                 }
             }
-            if(a.last.x - a.shape.width /2 >= b.last.x + b.shape.width / 2) {
+            else if(a.last.x - a.shape.width /2 >= b.last.x + b.shape.width / 2) {
                 if(a.collide(b, 3)) {
                     a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
                 }
             }
         }
-        if(a.shape instanceof game.Circle && b.shape instanceof game.Circle) {
+        else if(a.shape instanceof game.Circle && b.shape instanceof game.Circle) {
             if(a.collide(b)) {
                 var angle = Math.atan2(a.position.x - b.position.x, a.position.y - b.position.y);
                 var dist = a.shape.radius + b.shape.radius;
@@ -299,15 +301,12 @@ game.CollisionSolver = game.Class.extend({
                 b.velocity.y = Math.cos(angle + Math.PI) * aSpeed;
             }
         }
-        if(a.shape instanceof game.Rectangle && b.shape instanceof game.Circle) {
+        else if(a.shape instanceof game.Rectangle && b.shape instanceof game.Circle) {
             if(a.collide(b)) {
-                // collision response
-                return false;
             }
         }
-        if(a.shape instanceof game.Circle && b.shape instanceof game.Rectangle) {
+        else if(a.shape instanceof game.Circle && b.shape instanceof game.Rectangle) {
             if(a.collide(b)) {
-                // collision response
                 if(a.last.x - a.shape.radius < b.last.x + b.shape.width) {
                     var angle = Math.atan2(a.position.x - a.last.x, a.position.y - a.last.y);
                     var dist = this.distance(a.last.x, a.last.y, a.position.x, a.position.y);
@@ -322,13 +321,11 @@ game.CollisionSolver = game.Class.extend({
                 }
             }
         }
-        if(a.shape instanceof game.Line && b.shape instanceof game.Line) {
+        else if(a.shape instanceof game.Line && b.shape instanceof game.Line) {
             if(a.collide(b)) {
-                // collision response
-                return false;
             }
         }
-        if(a.shape instanceof game.Circle && b.shape instanceof game.Line) {
+        else if(a.shape instanceof game.Circle && b.shape instanceof game.Line) {
             if(a.collide(b)) {
                 var cx = this.hitTestData[0];
                 var cy = this.hitTestData[1];
@@ -348,10 +345,8 @@ game.CollisionSolver = game.Class.extend({
                 a.velocity.y -= ny * m * (1 + 1);
             }
         }
-        if(a.shape instanceof game.Line && b.shape instanceof game.Circle) {
+        else if(a.shape instanceof game.Line && b.shape instanceof game.Circle) {
             if(a.collide(b)) {
-                // collision response
-                return false;
             }
         }
     }

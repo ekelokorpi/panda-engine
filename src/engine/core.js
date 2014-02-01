@@ -275,6 +275,7 @@ var core = {
         this.sound = new game.SoundManager();
         this.pool = new game.Pool();
         if(game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
+        if(game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
         if(game.Storage.id) this.storage = new game.Storage(game.Storage.id);
 
         this.ready = true;
@@ -297,6 +298,16 @@ var core = {
             x = x2 - x;
             y = y2 - y;
             return Math.sqrt(x * x + y * y);
+        },
+
+        /**
+            Generate random number between `min` and `max`.
+            @method Math.random
+            @param {Number} min
+            @param {Number} max
+        **/
+        random: function(min, max) {
+            return Math.random() * (max - min) + min;
         }
     },
     

@@ -169,7 +169,6 @@ game.System = game.Class.extend({
     setSceneNow: function(SceneClass) {
         game.scene = new (SceneClass)();
         this.startRunLoop();
-        if(game.DebugDraw.enabled) game.scene.debugDraw = new game.DebugDraw();
     },
     
     startRunLoop: function() {

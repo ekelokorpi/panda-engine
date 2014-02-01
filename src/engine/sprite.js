@@ -59,6 +59,11 @@ game.Sprite = PIXI.Sprite.extend({
 game.Container = PIXI.DisplayObjectContainer.extend({
     remove: function() {
         if(this.parent) this.parent.removeChild(this);
+    },
+
+    addChild: function(obj) {
+        this.super(obj);
+        // add debugDraw
     }
 });
 

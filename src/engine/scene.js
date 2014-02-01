@@ -38,10 +38,6 @@ game.Scene = game.Class.extend({
         @property {game.Container} stage
     **/
     stage: null,
-    /**
-        @property {game.DebugDraw} debugDraw
-    **/
-    debugDraw: null,
     
     staticInit: function() {
         game.scene = this;
@@ -60,6 +56,8 @@ game.Scene = game.Class.extend({
 
         this.stage = new game.Container();
         game.system.stage.addChild(this.stage);
+
+        if(game.debugDraw) game.debugDraw.reset();
     },
     
     /**
@@ -158,11 +156,13 @@ game.Scene = game.Class.extend({
         @method addTimer
         @param {Number} time Time in seconds
         @param {Function} callback Callback function to run, when timer ends.
+        @return {game.Timer}
     **/
     addTimer: function(time, callback) {
         var timer = new game.Timer(time);
         timer.callback = callback;
         this.timers.push(timer);
+        return timer;
     },
     
     /**
@@ -202,7 +202,7 @@ game.Scene = game.Class.extend({
 
     run: function() {
         this.update();
-        if(this.debugDraw) this.debugDraw.update();
+        if(game.debugDraw) game.debugDraw.update();
         this.render();
     },
 

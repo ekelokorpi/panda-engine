@@ -14,62 +14,35 @@ game.module(
     @class DebugDraw
 **/
 game.DebugDraw = game.Class.extend({
-    sprites: [],
-    shapes: [],
+    container: null,
 
     init: function() {
-        var i, sprite, shape;
-
-        this.getSprites(game.scene.stage);
-
         this.container = new game.Container();
-        game.system.stage.addChild(this.container);
-
-        for (i = 0; i < this.sprites.length; i++) {
-            sprite = new game.Graphics();
-            sprite.beginFill(game.DebugDraw.spriteColor);
-
-            // TODO add support for game.HitEllipse and game.HitPolygon
-            if(this.sprites[i].hitArea) {
-                if(this.sprites[i].hitArea instanceof game.HitRectangle) sprite.drawRect(this.sprites[i].hitArea.x, this.sprites[i].hitArea.y, this.sprites[i].hitArea.width, this.sprites[i].hitArea.height);
-                if(this.sprites[i].hitArea instanceof game.HitCircle) sprite.drawCircle(this.sprites[i].hitArea.x, this.sprites[i].hitArea.y, this.sprites[i].hitArea.radius);
-            }
-            else sprite.drawRect(-this.sprites[i].width * this.sprites[i].anchor.x, -this.sprites[i].height * this.sprites[i].anchor.y, this.sprites[i].width, this.sprites[i].height);
-
-            sprite.target = this.sprites[i];
-            sprite.alpha = game.DebugDraw.spriteAlpha;
-            this.container.addChild(sprite);
-        }
-
-        if(game.scene.world) {
-            for (i = 0; i < game.scene.world.bodies.length; i++) {
-                shape = game.scene.world.bodies[i].shape;
-                if(shape) {
-                    sprite = new game.Graphics();
-                    sprite.beginFill(game.DebugDraw.shapeColor);
-
-                    // TODO add support for game.Circle and game.Line
-                    if(shape instanceof game.Rectangle) {
-                        sprite.drawRect(-shape.width/2, -shape.height/2, shape.width, shape.height);
-                    }
-
-                    sprite.target = game.scene.world.bodies[i];
-                    sprite.alpha = game.DebugDraw.shapeAlpha;
-                    this.container.addChild(sprite);
-                }
-            }
-        }
     },
 
-    getSprites: function(container) {
-        for (var i = 0; i < container.children.length; i++) {
-            if(container.children[i] instanceof game.Container) this.getSprites(container.children[i]);
-            if(container.children[i].texture && container.children[i].interactive) this.sprites.push(container.children[i]);
+    reset: function() {
+        for (var i = this.container.children.length - 1; i >= 0; i--) {
+            this.container.removeChild(this.container.children[i]);
         }
+        game.system.stage.addChild(this.container);
+    },
+
+    addBody: function(body) {
+        var sprite = new game.Graphics();
+        sprite.beginFill(game.DebugDraw.shapeColor);
+
+        // TODO add support for game.Circle and game.Line
+        if(body.shape instanceof game.Rectangle) {
+            sprite.drawRect(-body.shape.width/2, -body.shape.height/2, body.shape.width, body.shape.height);
+        }
+
+        sprite.target = body;
+        sprite.alpha = game.DebugDraw.shapeAlpha;
+        this.container.addChild(sprite);
     },
 
     update: function() {
-        for (var i = 0; i < this.container.children.length; i++) {
+        for (var i = this.container.children.length - 1; i >= 0; i--) {
             if(this.container.children[i].target instanceof game.Body) {
                 this.container.children[i].position.x = this.container.children[i].target.position.x + game.scene.stage.position.x;
                 this.container.children[i].position.y = this.container.children[i].target.position.y + game.scene.stage.position.y;
