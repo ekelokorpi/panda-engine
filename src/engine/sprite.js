@@ -63,7 +63,7 @@ game.Container = PIXI.DisplayObjectContainer.extend({
 
     addChild: function(obj) {
         this.super(obj);
-        // add debugDraw
+        if(game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
     }
 });
 

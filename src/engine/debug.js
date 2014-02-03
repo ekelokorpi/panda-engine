@@ -14,12 +14,18 @@ game.module(
     @class DebugDraw
 **/
 game.DebugDraw = game.Class.extend({
+    /**
+        @property {game.Container} container
+    **/
     container: null,
 
     init: function() {
         this.container = new game.Container();
     },
 
+    /**
+        @method reset
+    **/
     reset: function() {
         for (var i = this.container.children.length - 1; i >= 0; i--) {
             this.container.removeChild(this.container.children[i]);
@@ -27,6 +33,25 @@ game.DebugDraw = game.Class.extend({
         game.system.stage.addChild(this.container);
     },
 
+    /**
+        @method addSprite
+        @param {game.Sprite} sprite
+    **/
+    addSprite: function(sprite) {
+        var grap = new game.Graphics();
+        grap.beginFill(game.DebugDraw.spriteColor);
+
+        grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
+
+        grap.target = sprite;
+        grap.alpha = game.DebugDraw.spriteAlpha;
+        this.container.addChild(grap);
+    },
+
+    /**
+        @method addBody
+        @param {game.Body} body
+    **/
     addBody: function(body) {
         var sprite = new game.Graphics();
         sprite.beginFill(game.DebugDraw.shapeColor);
@@ -41,9 +66,14 @@ game.DebugDraw = game.Class.extend({
         this.container.addChild(sprite);
     },
 
+    /**
+        @method update
+    **/
     update: function() {
         for (var i = this.container.children.length - 1; i >= 0; i--) {
-            if(this.container.children[i].target instanceof game.Body) {
+            this.container.children[i].rotation = this.container.children[i].target.rotation;
+
+            if(game.modules['engine.physics'] && this.container.children[i].target instanceof game.Body) {
                 this.container.children[i].position.x = this.container.children[i].target.position.x + game.scene.stage.position.x;
                 this.container.children[i].position.y = this.container.children[i].target.position.y + game.scene.stage.position.y;
                 if(!this.container.children[i].target.world) {
@@ -53,12 +83,12 @@ game.DebugDraw = game.Class.extend({
                 if(this.container.children[i].target.parent) this.container.children[i].target.updateTransform();
                 this.container.children[i].position.x = this.container.children[i].target.worldTransform[2];
                 this.container.children[i].position.y = this.container.children[i].target.worldTransform[5];
+                this.container.children[i].scale.x = this.container.children[i].target.scale.x;
+                this.container.children[i].scale.y = this.container.children[i].target.scale.y;
                 if(!this.container.children[i].target.parent) {
                     this.container.removeChild(this.container.children[i]);
                 }
             }
-
-            this.container.children[i].rotation = this.container.children[i].target.rotation;
         }
     }
 });
