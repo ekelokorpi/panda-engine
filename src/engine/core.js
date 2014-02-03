@@ -22,8 +22,10 @@
 // inspired by Impact Game Engine
 // sponsored by Yle
 
+if(typeof(window) === 'undefined') window = {};
 (function(window){ 'use strict';
 
+if(typeof(global) !== 'undefined') return;
 /**
     @module core
     @namespace game
