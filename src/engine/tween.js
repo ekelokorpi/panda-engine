@@ -71,18 +71,17 @@ game.Tween = game.Class.extend({
         @method start
     **/
     start: function() {
+        var property;
         this.complete = false;
         this.paused = false;
         this.loopNum = this.loopCount;
         this._elapsed = 0;
-        // what is this ???
-        // if (this._object.tweens && this._object.tweens.indexOf(this) === -1 ) this._object.tweens.push(this);
         this.started = true;
         this.timer = new game.Timer();
-        for ( var property in this._props ) {
+        for (property in this._props) {
             this.initEnd(property, this._props, this.valuesEnd);
         }
-        for ( property in this.valuesEnd ) {
+        for (property in this.valuesEnd) {
             this.initStart(property, this.valuesEnd, this._object, this.valuesStart);
             this.initDelta(property, this.valuesDelta, this._object, this.valuesEnd);
         }
@@ -213,7 +212,7 @@ game.Tween = game.Class.extend({
                 if ( this._chained ) this._chained.start();
                 return false;
             } else if ( this.loop === game.Tween.Loop.Revert ) {
-                if ( this.onComplete ) this.onComplete();
+                // if ( this.onComplete ) this.onComplete();
                 for ( property in this.valuesStart ) {
                     this.propSet(property, this.valuesStart, this._object);
                 }
@@ -221,7 +220,7 @@ game.Tween = game.Class.extend({
                 this.timer.reset();
                 if ( this.loopNum !== -1 ) this.loopNum--;
             } else if ( this.loop === game.Tween.Loop.Reverse ) {
-                if ( this.onComplete ) this.onComplete();
+                // if ( this.onComplete ) this.onComplete();
                 var _start = {}, _end = {};
                 game.merge(_start, this.valuesEnd);
                 game.merge(_end, this.valuesStart);
