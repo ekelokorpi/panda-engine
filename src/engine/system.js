@@ -202,8 +202,8 @@ game.System = game.Class.extend({
 
     initResize: function() {
         this.ratio = game.System.orientation === game.System.LANDSCAPE ? this.width / this.height : this.height / this.width;
-        
-        this.canvas.style.margin = 'auto';
+
+        if(game.System.center) this.canvas.style.margin = 'auto';
 
         if(game.ua.mobile) {
             document.addEventListener('touchstart', function(e) { e.preventDefault(); }, false);
@@ -238,23 +238,33 @@ game.System = game.Class.extend({
         } else {
             // Desktop center
             this.canvas.style.position = 'absolute';
-            this.canvas.style.top = 0;
-            this.canvas.style.left = 0;
-            this.canvas.style.bottom = 0;
-            this.canvas.style.right = 0;
+            if(game.System.center) {
+                this.canvas.style.top = 0;
+                this.canvas.style.left = 0;
+                this.canvas.style.bottom = 0;
+                this.canvas.style.right = 0;
+            } else {
+                this.canvas.style.left = game.System.left + 'px';
+                this.canvas.style.top = game.System.top + 'px';
+            }
+
             // Desktop resize
-            var minWidth = game.System.minWidth === 'auto' ? this.retina ? this.width / 4 : this.width / 2 : game.System.minWidth;
-            var minHeight = game.System.minHeight === 'auto' ? this.retina ? this.height / 4 : this.height / 2 : game.System.minHeight;
-            var maxWidth = game.System.maxWidth === 'auto' ? this.retina ? this.width / 2 : this.width : game.System.maxWidth;
-            var maxHeight = game.System.maxHeight === 'auto' ? this.retina ? this.height / 2 : this.height : game.System.maxHeight;
-            if(game.System.minWidth) this.canvas.style.minWidth = minWidth + 'px';
-            if(game.System.minHeight) this.canvas.style.minHeight = minHeight + 'px';
-            if(game.System.maxWidth) this.canvas.style.maxWidth = maxWidth + 'px';
-            if(game.System.maxHeight) this.canvas.style.maxHeight = maxHeight + 'px';
+            if(game.System.resize) {
+                var minWidth = game.System.minWidth === 'auto' ? this.retina ? this.width / 4 : this.width / 2 : game.System.minWidth;
+                var minHeight = game.System.minHeight === 'auto' ? this.retina ? this.height / 4 : this.height / 2 : game.System.minHeight;
+                var maxWidth = game.System.maxWidth === 'auto' ? this.retina ? this.width / 2 : this.width : game.System.maxWidth;
+                var maxHeight = game.System.maxHeight === 'auto' ? this.retina ? this.height / 2 : this.height : game.System.maxHeight;
+                if(game.System.minWidth) this.canvas.style.minWidth = minWidth + 'px';
+                if(game.System.minHeight) this.canvas.style.minHeight = minHeight + 'px';
+                if(game.System.maxWidth) this.canvas.style.maxWidth = maxWidth + 'px';
+                if(game.System.maxHeight) this.canvas.style.maxHeight = maxHeight + 'px';
+            }
         }
 
-        window.onresize = this.onResize.bind(this);
-        this.onResize();
+        if(game.System.resize) {
+            window.onresize = this.onResize.bind(this);
+            this.onResize();
+        }
     },
 
     checkOrientation: function() {
@@ -326,6 +336,21 @@ game.System = game.Class.extend({
 game.System.rotateScreen = false;
 game.System.LANDSCAPE = 0;
 game.System.PORTRAIT = 1;
+
+/**
+    Turn canvas centering on/off.
+    @attribute {Boolean} center
+    @default true
+**/
+game.System.center = true;
+game.System.left = 0;
+game.System.top = 0;
+/**
+    Turn canvas resizing on/off.
+    @attribute {Boolean} resize
+    @default true
+**/
+game.System.resize = true;
 
 /**
     Minimum width for canvas.
