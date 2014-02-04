@@ -1,8 +1,9 @@
 var UglifyJS = require('uglify-js');
 var fs = require('fs');
-var i = 0, stats, size, result;
+var i, file, size, result;
 
 var outputFile = process.argv[2] || 'game.min.js';
+var outputDir = process.argv[3] || './';
 var header = '// Made with Panda.js';
 var totalSize = 0;
 var required = ['engine/core.js', 'game/main.js'];
@@ -20,7 +21,7 @@ game.require = function() {
         name = modules[i].replace(/\./g, '/') + '.js';
         if(game.modules.indexOf(name) === -1) {
             game.modules.push(name);
-            require('../' + name);
+            require(__dirname + '/../' + name);
         }
     }
     return game;
@@ -30,17 +31,15 @@ game.body = function() {};
 console.log('Building...');
 
 for (i = 0; i < required.length; i++) {
-    require('../' + required[i]);
+    require(__dirname + '/../' + required[i]);
 }
 
 for (i = 0; i < game.modules.length; i++) {
-    game.modules[i] = 'src/' + game.modules[i];
-
-    stats = fs.statSync(game.modules[i]);
-    size = stats['size'];
+    file = game.modules[i];
+    game.modules[i] = __dirname + '/../' + game.modules[i];
+    size = fs.statSync(game.modules[i]).size;
     totalSize += size;
-
-    console.log(game.modules[i] + ' ' + size + ' bytes');
+    console.log(file + ' ' + size + ' bytes');
 }
 
 console.log('Total ' + totalSize + ' bytes');
@@ -49,11 +48,10 @@ result = UglifyJS.minify(game.modules);
 
 result.code = header + '\n' + result.code;
 
-fs.writeFile(outputFile, result.code, function(err) {
+fs.writeFile(outputDir + outputFile, result.code, function(err) {
     if(err) console.log(err);
     else {
-        var stats = fs.statSync(outputFile);
-        var size = stats['size'];
+        var size = fs.statSync(outputDir + outputFile).size;
         var percent = Math.round((size / totalSize) * 100);
         console.log('Saved ' + outputFile + ' ' + size + ' bytes (' + percent + '%)');
     }
