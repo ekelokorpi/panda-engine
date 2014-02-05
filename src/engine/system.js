@@ -159,7 +159,7 @@ game.System = game.Class.extend({
     /**
         Change current scene.
         @method setScene
-        @param  {Class} sceneClass
+        @param  {game.Scene} sceneClass
     **/
     setScene: function(sceneClass) {
         if(this.running) this.newSceneClass = sceneClass;

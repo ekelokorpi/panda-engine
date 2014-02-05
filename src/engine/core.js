@@ -664,6 +664,7 @@ game.module(
     'engine.debug',
     'engine.storage',
     'engine.tween',
+    'engine.scene',
     'engine.pool'
 )
 .body(function(){
