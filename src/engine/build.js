@@ -4,7 +4,7 @@ var i, file, size, result;
 
 var outputFile = process.argv[2] || 'game.min.js';
 var outputDir = process.argv[3] || './';
-var header = '// Made with Panda.js';
+var header = '// Made with Panda.js - http://www.pandajs.net';
 var totalSize = 0;
 var include = ['engine/core.js', 'game/main.js'];
 var exclude = ['engine/debug.js'];
