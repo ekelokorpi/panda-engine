@@ -7,7 +7,7 @@ var outputDir = process.argv[3] || './';
 var header = '// Made with Panda.js';
 var totalSize = 0;
 var required = ['engine/core.js', 'game/main.js'];
-var dir = process.argv[1].replace('build.js', '');
+var dir = process.cwd() + '/src/';
 
 global['game'] = {};
 game.modules = [];
@@ -22,7 +22,7 @@ game.require = function() {
         name = modules[i].replace(/\./g, '/') + '.js';
         if(game.modules.indexOf(name) === -1) {
             game.modules.push(name);
-            require(dir + '/../' + name);
+            require(dir + name);
         }
     }
     return game;
@@ -32,12 +32,12 @@ game.body = function() {};
 console.log('Building...');
 
 for (i = 0; i < required.length; i++) {
-    require(dir + '/../' + required[i]);
+    require(dir + required[i]);
 }
 
 for (i = 0; i < game.modules.length; i++) {
     file = game.modules[i];
-    game.modules[i] = dir + '/../' + game.modules[i];
+    game.modules[i] = dir + game.modules[i];
     size = fs.statSync(game.modules[i]).size;
     totalSize += size;
     console.log(file + ' ' + size + ' bytes');
