@@ -75,7 +75,6 @@ var core = {
     resources: [],
     audioResources: [],
     ready: false,
-    baked: false, // ???
     nocache: '',
     ua: {},
     _current: null,
@@ -227,6 +226,8 @@ var core = {
             });
     **/
     module: function(name, version) {
+        if(name === 'engine.debug' && window.pandaMinified) return this;
+
         if(this._current) throw('Module ' + this._current.name + ' has no body');
         if(this.modules[name] && this.modules[name].body) throw('Module ' + name + ' is already defined');
         
@@ -244,6 +245,7 @@ var core = {
     require: function() {
         var i, modules = Array.prototype.slice.call(arguments);
         for (i = 0; i < modules.length; i++) {
+            if(modules[i] === 'engine.debug' && window.pandaMinified) continue;
             if(modules[i]) this._current.requires.push(modules[i]);
         }
         return this;
@@ -276,8 +278,8 @@ var core = {
         this.system = new game.System(width, height, canvasId);
         this.sound = new game.SoundManager();
         this.pool = new game.Pool();
-        if(game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
-        if(game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
+        if(game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
+        if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
         if(game.Storage.id) this.storage = new game.Storage(game.Storage.id);
 
         this.ready = true;
@@ -360,7 +362,7 @@ var core = {
         if(moduleLoaded && this._loadQueue.length > 0) {
             game._loadModules();
         }
-        else if(!game.baked && game._waitForLoad === 0 && game._loadQueue.length !== 0) {
+        else if(game._waitForLoad === 0 && game._loadQueue.length !== 0) {
             var unresolved = [];
             for(i = 0; i < game._loadQueue.length; i++ ) {
                 var unloaded = [];

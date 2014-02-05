@@ -6,7 +6,8 @@ var outputFile = process.argv[2] || 'game.min.js';
 var outputDir = process.argv[3] || './';
 var header = '// Made with Panda.js';
 var totalSize = 0;
-var required = ['engine/core.js', 'game/main.js'];
+var include = ['engine/core.js', 'game/main.js'];
+var exclude = ['engine/debug.js'];
 var dir = process.cwd() + '/src/';
 
 global['game'] = {};
@@ -31,9 +32,13 @@ game.body = function() {};
 
 console.log('Building...');
 
-for (i = 0; i < required.length; i++) {
-    require(dir + required[i]);
+for (i = 0; i < include.length; i++) {
+    require(dir + include[i]);
 }
+
+for (var i = game.modules.length - 1; i >= 0; i--) {
+    if(exclude.indexOf(game.modules[i]) !== -1) game.modules.splice(i, 1);
+};
 
 for (i = 0; i < game.modules.length; i++) {
     file = game.modules[i];
@@ -47,7 +52,7 @@ console.log('Total ' + totalSize + ' bytes');
 
 result = UglifyJS.minify(game.modules);
 
-result.code = header + '\n' + result.code;
+result.code = header + '\n' + 'window.pandaMinified = true;' + '\n' + result.code;
 
 fs.writeFile(outputDir + outputFile, result.code, function(err) {
     if(err) console.log(err);
