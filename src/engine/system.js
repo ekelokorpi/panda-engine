@@ -187,8 +187,8 @@ game.System = game.Class.extend({
 
         if(game.debug) game.debug.stats.begin();
 
-        game.Timer.step();
-        this.delta = this.timer.tick();
+        game.Timer.update();
+        this.delta = this.timer.delta();
         
         game.scene.run();
         

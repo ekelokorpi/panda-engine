@@ -51,13 +51,21 @@ game.Timer = game.Class.extend({
         this.pausedAt = 0;
     },
     
-    tick: function() {
+    /**
+        Get time since last delta.
+        @method delta
+    **/
+    delta: function() {
         var delta = game.Timer.time - this.last;
         this.last = game.Timer.time;
         return this.pausedAt ? 0 : delta;
     },
     
-    delta: function() {
+    /**
+        Get time since start.
+        @method delta
+    **/
+    time: function() {
         return (this.pausedAt || game.Timer.time) - this.base - this.target;
     },
 
@@ -86,7 +94,7 @@ game.Timer.time = Number.MIN_VALUE;
 game.Timer.speedFactor = 1;
 game.Timer.maxStep = 0.05;
 
-game.Timer.step = function() {
+game.Timer.update = function() {
     var current = Date.now();
     var delta = (current - game.Timer.last) / 1000;
     game.Timer.time += Math.min(delta, game.Timer.maxStep) * game.Timer.speedFactor;

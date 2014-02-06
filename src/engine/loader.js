@@ -145,8 +145,8 @@ game.Loader = game.Class.extend({
     },
 
     run: function() {
-        game.Timer.step();
-        this.delta = this.timer.tick();
+        game.Timer.update();
+        this.delta = this.timer.delta();
         this.update();
         this.render();
     },
