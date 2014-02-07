@@ -321,12 +321,12 @@ game.System = game.Class.extend({
             // Desktop resize
             if(window.innerWidth < this.width || window.innerHeight < this.height) {
                 if(window.innerWidth / this.width < window.innerHeight / this.height) {
-                    this.canvas.style.width = '100%';
-                    this.canvas.style.height = 'auto';
+                    this.canvas.style.width = window.innerWidth + 'px';
+                    this.canvas.style.height = window.innerWidth * (this.height / this.width) + 'px';
                 }
                 else {
-                    this.canvas.style.width = 'auto';
-                    this.canvas.style.height = '100%';
+                    this.canvas.style.height = window.innerHeight + 'px';
+                    this.canvas.style.width = window.innerHeight * (this.width / this.height) + 'px';
                 }
             }
         }
@@ -334,8 +334,8 @@ game.System = game.Class.extend({
 });
 
 game.System.rotateScreen = false;
-game.System.LANDSCAPE = 0;
-game.System.PORTRAIT = 1;
+game.System.PORTRAIT = 0;
+game.System.LANDSCAPE = 1;
 
 /**
     Turn canvas centering on/off.

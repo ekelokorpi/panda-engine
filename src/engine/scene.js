@@ -96,6 +96,14 @@ game.Scene = game.Class.extend({
         object._remove = true;
     },
 
+    addEmitter: function(emitter) {
+        this.emitters.push(emitter);
+    },
+
+    removeEmitter: function(emitter) {
+        emitter._remove = true;
+    },
+
     /**
         Helper function for {{#crossLink "game.Tween"}}{{/crossLink}}
         @method addTween

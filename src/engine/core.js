@@ -407,15 +407,15 @@ var core = {
         this.ua.android = /android/i.test(navigator.userAgent);
         this.ua.android2 = /android 2/i.test(navigator.userAgent);
 
-        this.ua.wp = /Windows Phone/i.test(navigator.userAgent);
         this.ua.wp7 = (this.ua.wp && /Windows Phone OS 7/i.test(navigator.userAgent));
         this.ua.wp8 = (this.ua.wp && /Windows Phone 8/i.test(navigator.userAgent));
         this.ua.wpApp = (this.ua.wp && typeof(window.external) !== 'undefined' && typeof(window.external.notify) !== 'undefined');
+        this.ua.wp = this.ua.wp7 || this.ua.wp8 || this.ua.wpApp;
 
-        // TODO add ie9 detection
+        this.ua.ie9 = /MSIE 9/i.test(navigator.userAgent);
         this.ua.ie10 = /MSIE 10/i.test(navigator.userAgent);
         this.ua.ie11 = /rv:11.0/i.test(navigator.userAgent);
-        this.ua.ie = this.ua.ie10 || this.ua.ie11;
+        this.ua.ie = this.ua.ie10 || this.ua.ie11 || this.ua.ie9;
         
         this.ua.opera = /Opera/i.test(navigator.userAgent);
         this.ua.crosswalk = /Crosswalk/i.test(navigator.userAgent);
