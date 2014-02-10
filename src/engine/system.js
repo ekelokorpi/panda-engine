@@ -91,8 +91,8 @@ game.System = game.Class.extend({
             document.body.appendChild(canvas);
         }
 
-        if(game.Renderer.canvas) this.renderer = new PIXI.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.Renderer.transparent);
-        else this.renderer = new PIXI.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.Renderer.transparent, game.Renderer.antialias);
+        if(game.System.canvas) this.renderer = new PIXI.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
+        else this.renderer = new PIXI.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
         
         this.canvas = this.renderer.view;
         this.stage = new PIXI.Stage(width,height);
@@ -459,5 +459,9 @@ game.System.rotateMsg = 'Please rotate your device';
     @default null
 **/
 game.System.rotateImg = null;
+
+game.System.canvas = true;
+game.System.transparent = false;
+game.System.antialias = false;
 
 });
