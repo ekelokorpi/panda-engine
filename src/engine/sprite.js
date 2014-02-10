@@ -69,6 +69,7 @@ game.Container = PIXI.DisplayObjectContainer.extend({
 
 game.Texture = PIXI.Texture.extend();
 game.Texture.fromImage = PIXI.Texture.fromImage;
+game.Texture.fromCanvas = PIXI.Texture.fromCanvas;
 
 game.TilingSprite = PIXI.TilingSprite.extend({
     speed: {x: 0, y: 0},
