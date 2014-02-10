@@ -70,13 +70,17 @@ var core = {
         @property {game.Storage} storage
     **/
     storage: null,
+    /**
+        Device / browser detection.
+        @property {Object} device
+    **/
+    device: {},
     renderer: null,
     modules: {},
     resources: [],
     audioResources: [],
     ready: false,
     nocache: '',
-    ua: {},
     _current: null,
     _loadQueue: [],
     _waitForLoad: 0,
@@ -386,49 +390,52 @@ var core = {
     _boot: function() {
         if(document.location.href.match(/\?nocache/)) this.setNocache();
 
-        this.ua.pixelRatio = window.devicePixelRatio || 1;
-        this.ua.screen = {
-            width: window.screen.availWidth * this.ua.pixelRatio,
-            height: window.screen.availHeight * this.ua.pixelRatio
+        this.device.pixelRatio = window.devicePixelRatio || 1;
+        this.device.screen = {
+            width: window.screen.availWidth * this.device.pixelRatio,
+            height: window.screen.availHeight * this.device.pixelRatio
         };
         
-        this.ua.iPhone = /iPhone/i.test(navigator.userAgent);
-        this.ua.iPhone4 = (this.ua.iPhone && this.ua.pixelRatio === 2);
-        this.ua.iPhone5 = (this.ua.iPhone && this.ua.pixelRatio === 2 && this.ua.screen.height === 1096);
+        this.device.iPhone = /iPhone/i.test(navigator.userAgent);
+        this.device.iPhone4 = (this.device.iPhone && this.device.pixelRatio === 2);
+        this.device.iPhone5 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 1096);
 
-        this.ua.iPad = /iPad/i.test(navigator.userAgent);
-        this.ua.iPadRetina = (this.ua.iPad && this.ua.pixelRatio === 2);
+        this.device.iPad = /iPad/i.test(navigator.userAgent);
+        this.device.iPadRetina = (this.device.iPad && this.device.pixelRatio === 2);
         
-        this.ua.iOS = this.ua.iPhone || this.ua.iPad;
-        this.ua.iOS5 = (this.ua.iOS && /OS 5/i.test(navigator.userAgent));
-        this.ua.iOS6 = (this.ua.iOS && /OS 6/i.test(navigator.userAgent));
-        this.ua.iOS7 = (this.ua.iOS && /OS 7/i.test(navigator.userAgent));
+        this.device.iOS = this.device.iPhone || this.device.iPad;
+        this.device.iOS5 = (this.device.iOS && /OS 5/i.test(navigator.userAgent));
+        this.device.iOS6 = (this.device.iOS && /OS 6/i.test(navigator.userAgent));
+        this.device.iOS7 = (this.device.iOS && /OS 7/i.test(navigator.userAgent));
 
-        this.ua.android = /android/i.test(navigator.userAgent);
-        this.ua.android2 = /android 2/i.test(navigator.userAgent);
+        this.device.android = /android/i.test(navigator.userAgent);
+        this.device.android2 = /android 2/i.test(navigator.userAgent);
 
-        this.ua.wp7 = (this.ua.wp && /Windows Phone OS 7/i.test(navigator.userAgent));
-        this.ua.wp8 = (this.ua.wp && /Windows Phone 8/i.test(navigator.userAgent));
-        this.ua.wpApp = (this.ua.wp && typeof(window.external) !== 'undefined' && typeof(window.external.notify) !== 'undefined');
-        this.ua.wp = this.ua.wp7 || this.ua.wp8 || this.ua.wpApp;
+        this.device.wp7 = (this.device.wp && /Windows Phone OS 7/i.test(navigator.userAgent));
+        this.device.wp8 = (this.device.wp && /Windows Phone 8/i.test(navigator.userAgent));
+        this.device.wpApp = (this.device.wp && typeof(window.external) !== 'undefined' && typeof(window.external.notify) !== 'undefined');
+        this.device.wp = this.device.wp7 || this.device.wp8 || this.device.wpApp;
 
-        this.ua.ie9 = /MSIE 9/i.test(navigator.userAgent);
-        this.ua.ie10 = /MSIE 10/i.test(navigator.userAgent);
-        this.ua.ie11 = /rv:11.0/i.test(navigator.userAgent);
-        this.ua.ie = this.ua.ie10 || this.ua.ie11 || this.ua.ie9;
+        this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
+        this.device.ie10 = /MSIE 10/i.test(navigator.userAgent);
+        this.device.ie11 = /rv:11.0/i.test(navigator.userAgent);
+        this.device.ie = this.device.ie10 || this.device.ie11 || this.device.ie9;
         
-        this.ua.opera = /Opera/i.test(navigator.userAgent);
-        this.ua.crosswalk = /Crosswalk/i.test(navigator.userAgent);
+        this.device.opera = /Opera/i.test(navigator.userAgent);
+        this.device.crosswalk = /Crosswalk/i.test(navigator.userAgent);
+        this.device.cocoonJS = !!navigator.isCocoonJS;
 
-        this.ua.mobile = this.ua.iOS || this.ua.android || this.ua.wp;
+        this.device.mobile = this.device.iOS || this.device.android || this.device.wp;
 
-        if(this.ua.wp) {
+        if(this.device.wp) {
             if (typeof(window.external.notify) !== 'undefined') {
                 window.console.log = function (message) {
                     window.external.notify(message);
                 };
             }
         }
+
+        this.ua = this.device; // support for deprecated game.ua
     },
 
     _DOMReady: function() {

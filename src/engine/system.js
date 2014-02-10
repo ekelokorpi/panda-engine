@@ -71,7 +71,7 @@ game.System = game.Class.extend({
         if(game.System.hires && window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
             this.hires = true;
         }
-        if(game.System.retina && game.ua.pixelRatio === 2) {
+        if(game.System.retina && game.device.pixelRatio === 2) {
             this.retina = true;
         }
         if(this.hires || this.retina) {
@@ -205,7 +205,7 @@ game.System = game.Class.extend({
 
         if(game.System.center) this.canvas.style.margin = 'auto';
 
-        if(game.ua.mobile) {
+        if(game.device.mobile) {
             document.addEventListener('touchstart', function(e) { e.preventDefault(); }, false);
 
             var div = document.createElement('div');
@@ -298,7 +298,7 @@ game.System = game.Class.extend({
     },
 
     onResize: function() {
-        if(game.ua.mobile) {
+        if(game.device.mobile) {
             // Mobile resize
             this.checkOrientation();
 
@@ -306,7 +306,7 @@ game.System = game.Class.extend({
             var height = window.innerHeight;
             
             // iPad iOS 7 landscape innerHeight bugfix
-            if(game.ua.iPad && height === 671 && this.orientation === game.System.LANDSCAPE) height = 672;
+            if(game.device.iPad && height === 671 && this.orientation === game.System.LANDSCAPE) height = 672;
 
             if(game.System.orientation === game.System.LANDSCAPE) {
                 this.canvas.style.height = height + 'px';
