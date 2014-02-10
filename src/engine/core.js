@@ -72,7 +72,33 @@ var core = {
     storage: null,
     /**
         Device / browser detection.
+        
+            game.device.iPhone
+            game.device.iPhone4
+            game.device.iPhone5
+            game.device.iPad
+            game.device.iPadRetina
+            game.device.iOS
+            game.device.iOS5
+            game.device.iOS6
+            game.device.iOS7
+            game.device.android
+            game.device.android2
+            game.device.wp7
+            game.device.wp8
+            game.device.wpApp
+            game.device.wp
+            game.device.ie9
+            game.device.ie10
+            game.device.ie11
+            game.device.ie
+            game.device.opera
+            game.device.crosswalk
+            game.device.cocoonJS
+            game.device.mobile
         @property {Object} device
+        @example
+            if(game.device.mobile) return;
     **/
     device: {},
     renderer: null,
