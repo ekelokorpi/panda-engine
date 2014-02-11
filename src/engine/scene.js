@@ -71,20 +71,20 @@ game.Scene = game.Class.extend({
             if(this.timers[i].time() >= 0) {
                 if(typeof(this.timers[i].callback) === 'function') this.timers[i].callback();
                 if(this.timers[i].repeat) this.timers[i].reset();
-                else this.timers.erase(this.timers[i]);
+                else this.timers.splice(i, 1);
             }
         }
         for (i = this.emitters.length - 1; i >= 0; i--) {
             this.emitters[i].update();
-            if(this.emitters[i]._remove) this.emitters.erase(this.emitters[i]);
+            if(this.emitters[i]._remove) this.emitters.splice(i, 1);
         }
         for (i = this.tweens.length - 1; i >= 0; i--) {
             this.tweens[i].update();
-            if(this.tweens[i].complete) this.tweens.erase(this.tweens[i]);
+            if(this.tweens[i].complete) this.tweens.splice(i, 1);
         }
         for (i = this.objects.length - 1; i >= 0; i--) {
             this.objects[i].update();
-            if(this.objects[i]._remove) this.objects.erase(this.objects[i]);
+            if(this.objects[i]._remove) this.objects.splice(i, 1);
         }
     },
 
