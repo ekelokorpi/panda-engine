@@ -38,7 +38,7 @@ for (i = 0; i < include.length; i++) {
 
 for (var i = game.modules.length - 1; i >= 0; i--) {
     if(exclude.indexOf(game.modules[i]) !== -1) game.modules.splice(i, 1);
-};
+}
 
 for (i = 0; i < game.modules.length; i++) {
     file = game.modules[i];

@@ -11,7 +11,7 @@ game.module(
 .require(
     'engine.physics'
 )
-.body(function() {
+.body(function() { 'use strict';
 
 /**
     @class Particle
@@ -314,7 +314,7 @@ game.Emitter = game.Class.extend({
 
         particle.setVeloctity(angle, speed);
 
-        if(this.angleVar != this.accelAngleVar) angleVar = this.getVariance(this.accelAngleVar);
+        if(this.angleVar !== this.accelAngleVar) angleVar = this.getVariance(this.accelAngleVar);
 
         angle = this.accelAngle + angleVar;
         speed = this.accelSpeed + this.getVariance(this.accelSpeedVar);
@@ -332,7 +332,7 @@ game.Emitter = game.Class.extend({
         particle.rotate = this.rotate + this.getVariance(this.rotateVar);
         particle.velRotate = this.velRotate + this.getVariance(this.velRotateVar);
 
-        if(this.startAlpha != this.endAlpha) {
+        if(this.startAlpha !== this.endAlpha) {
             particle.deltaAlpha = this.endAlpha - this.startAlpha;
             particle.deltaAlpha /= particle.life;
         } else particle.deltaAlpha = 0;
@@ -340,7 +340,7 @@ game.Emitter = game.Class.extend({
         particle.sprite.alpha = this.startAlpha;
 
         var startScale = this.startScale + this.getVariance(this.startScaleVar);
-        if(this.startScale != this.endScale) {
+        if(this.startScale !== this.endScale) {
             particle.deltaScale = (this.endScale + this.getVariance(this.endScaleVar)) - startScale;
             particle.deltaScale /= particle.life;
         } else particle.deltaScale = 0;
@@ -354,7 +354,7 @@ game.Emitter = game.Class.extend({
     /**
         @method updateParticle
     **/
-    updateParticle: function(particle) {        
+    updateParticle: function(particle) {
         if(particle.life > 0) {
             particle.life -= game.system.delta;
             if(particle.life <= 0) return this.removeParticle(particle);
