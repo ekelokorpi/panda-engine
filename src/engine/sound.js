@@ -426,6 +426,7 @@ game.Sound = game.Class.extend({
             else if(this.currentClip.source.noteOn) this.currentClip.source.noteOn(_delay);
         } else {
             // HTML5 Audio
+            this.currentClip.loop = !!this.loop;
             this.currentClip = game.sound.get(this.path);
             this.currentClip.volume = this._volume;
             this.currentClip.play();
