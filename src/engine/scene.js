@@ -121,7 +121,7 @@ game.Scene = game.Class.extend({
     **/
     getTween: function(obj) {
         for (var i = 0; i < this.tweens.length; i++) {
-            if(this.tweens[i]._object === obj) return this.tweens[i];
+            if(this.tweens[i].object === obj) return this.tweens[i];
         }
         return false;
     },
@@ -133,7 +133,7 @@ game.Scene = game.Class.extend({
     **/
     stopTweens: function(obj, doComplete) {
         for (var i = 0; i < this.tweens.length; i++) {
-            if(obj && this.tweens[i]._object === obj || !obj) this.tweens[i].stop(doComplete);
+            if(obj && this.tweens[i].object === obj || !obj) this.tweens[i].stop(doComplete);
         }
     },
 
@@ -143,7 +143,7 @@ game.Scene = game.Class.extend({
     **/
     pauseTweens: function(obj) {
         for ( var i = 0; i < this.tweens.length; i++ ) {
-            if(obj && this.tweens[i]._object === obj || !obj) this.tweens[i].pause();
+            if(obj && this.tweens[i].object === obj || !obj) this.tweens[i].pause();
         }
     },
 
@@ -153,7 +153,7 @@ game.Scene = game.Class.extend({
     **/
     resumeTweens: function (obj) {
         for ( var i = 0; i < this.tweens.length; i++ ) {
-            if(obj && this.tweens[i]._object === obj || !obj) this.tweens[i].resume();
+            if(obj && this.tweens[i].object === obj || !obj) this.tweens[i].resume();
         }
     },
 
