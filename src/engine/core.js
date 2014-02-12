@@ -511,13 +511,13 @@ Array.prototype.random = function() {
 
 // http://jsperf.com/array-shuffle-comparator/2
 Array.prototype.shuffle = function () {
-    var l = this.length + 1;
-    while (l--) {
-            var r = ~~(Math.random() * l),
-                    o = this[r];
-
-            this[r] = this[0];
-            this[0] = o;
+    var len = this.length;
+    var i = len;
+    while (i--) {
+        var p = parseInt(Math.random() * len);
+        var t = this[i];
+        this[i] = this[p];
+        this[p] = t;
     }
 
     return this;
