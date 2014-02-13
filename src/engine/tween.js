@@ -243,88 +243,6 @@ game.Tween = game.Class.extend({
 });
 
 /**
-    @class TweenGroup
-    @extends game.Class
-    @constructor
-    @param {Number} duration
-    @param {Function} [onComplete]
-    @param {Object} [settings]
-**/
-game.TweenGroup = game.Class.extend({
-    tweens: [],
-    settings: {},
-    duration: 1,
-    onComplete: null,
-
-    init: function(duration, onComplete, settings) {
-        this.duration = duration || this.duration;
-        this.onComplete = onComplete;
-        this.settings = settings;
-    },
-
-    /**
-        @method add
-        @param {Object} obj
-        @param {Object} props
-        @return {game.Tween} tween
-    **/
-    add: function(obj, props) {
-        var tween = new game.Tween(obj, props, this.duration, this.settings);
-        this.tweens.push(tween);
-        return tween;
-    },
-
-    /**
-        @method remove
-        @param {game.Tween} tween
-    **/
-    remove: function(tween) {
-        this.tweens.erase(tween);
-    },
-
-    /**
-        @method start
-    **/
-    start: function() {
-        if(this.tweens.length === 0) return;
-
-        this.tweens[0].onComplete = this.onComplete;
-        for (var i = 0; i < this.tweens.length; i++) {
-            game.scene.tweens.push(this.tweens[i]);
-            this.tweens[i].start();
-        }
-    },
-
-    /**
-        @method pause
-    **/
-    pause: function() {
-        for (var i = 0; i < this.tweens.length; i++) {
-            this.tweens[i].pause();
-        }
-    },
-
-    /**
-        @method resume
-    **/
-    resume: function() {
-        for (var i = 0; i < this.tweens.length; i++) {
-            this.tweens[i].resume();
-        }
-    },
-
-    /**
-        @method stop
-        @param {Boolean} doComplete
-    **/
-    stop: function(doComplete) {
-        for (var i = 0; i < this.tweens.length; i++) {
-            this.tweens[i].stop(doComplete);
-        }
-    }
-});
-
-/**
     @attribute {Revert|Reverse} Loop
 **/
 game.Tween.Loop = { Revert: 1, Reverse: 2 };
@@ -492,5 +410,87 @@ game.Tween.Easing.Bounce.InOut = function(k) {
     if(k < 0.5) return game.Tween.Easing.Bounce.In(k * 2) * 0.5;
     return game.Tween.Easing.Bounce.Out(k * 2 - 1) * 0.5 + 0.5;
 };
+
+/**
+    @class TweenGroup
+    @extends game.Class
+    @constructor
+    @param {Number} duration
+    @param {Function} [onComplete]
+    @param {Object} [settings]
+**/
+game.TweenGroup = game.Class.extend({
+    tweens: [],
+    settings: {},
+    duration: 1,
+    onComplete: null,
+
+    init: function(duration, onComplete, settings) {
+        this.duration = duration || this.duration;
+        this.onComplete = onComplete;
+        this.settings = settings;
+    },
+
+    /**
+        @method add
+        @param {Object} obj
+        @param {Object} props
+        @return {game.Tween} tween
+    **/
+    add: function(obj, props) {
+        var tween = new game.Tween(obj, props, this.duration, this.settings);
+        this.tweens.push(tween);
+        return tween;
+    },
+
+    /**
+        @method remove
+        @param {game.Tween} tween
+    **/
+    remove: function(tween) {
+        this.tweens.erase(tween);
+    },
+
+    /**
+        @method start
+    **/
+    start: function() {
+        if(this.tweens.length === 0) return;
+
+        this.tweens[0].onComplete = this.onComplete;
+        for (var i = 0; i < this.tweens.length; i++) {
+            game.scene.tweens.push(this.tweens[i]);
+            this.tweens[i].start();
+        }
+    },
+
+    /**
+        @method pause
+    **/
+    pause: function() {
+        for (var i = 0; i < this.tweens.length; i++) {
+            this.tweens[i].pause();
+        }
+    },
+
+    /**
+        @method resume
+    **/
+    resume: function() {
+        for (var i = 0; i < this.tweens.length; i++) {
+            this.tweens[i].resume();
+        }
+    },
+
+    /**
+        @method stop
+        @param {Boolean} doComplete
+    **/
+    stop: function(doComplete) {
+        for (var i = 0; i < this.tweens.length; i++) {
+            this.tweens[i].stop(doComplete);
+        }
+    }
+});
 
 });
