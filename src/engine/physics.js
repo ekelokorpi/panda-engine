@@ -439,7 +439,8 @@ game.Body = game.Class.extend({
         this.last.copy(this.position);
 
         if(this.mass > 0) {
-            this.velocity.multiplyAdd(this.world.gravity, game.system.delta);
+            this.velocity.x += this.world.gravity.x * this.mass * game.system.delta;
+            this.velocity.y += this.world.gravity.y * this.mass * game.system.delta;
             this.velocity.limit(this.velocityLimit);
         }
 
