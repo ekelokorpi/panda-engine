@@ -311,6 +311,7 @@ var core = {
         if(game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
         if(game.Storage.id) this.storage = new game.Storage(game.Storage.id);
+        if(game.Analytics.id) this.analytics = new game.Analytics(game.Analytics.id);
 
         this.ready = true;
         
@@ -698,7 +699,8 @@ game.module(
     'engine.storage',
     'engine.tween',
     'engine.scene',
-    'engine.pool'
+    'engine.pool',
+    'engine.analytics'
 )
 .body(function(){
     // ready to start engine
