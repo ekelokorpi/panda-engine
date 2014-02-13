@@ -5,8 +5,7 @@
     @namespace game
 **/
 game.module(
-    'engine.particle',
-    '1.0.0'
+    'engine.particle'
 )
 .require(
     'engine.physics'

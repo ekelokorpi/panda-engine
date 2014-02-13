@@ -5,8 +5,7 @@
     @namespace game
 **/
 game.module(
-	'engine.physics',
-    '1.0.0'
+	'engine.physics'
 )
 .body(function() { 'use strict';
 

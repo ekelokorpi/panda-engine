@@ -3,8 +3,7 @@
     @namespace game
 **/
 game.module(
-    'engine.loader',
-    '1.0.0'
+    'engine.loader'
 )
 .body(function(){ 'use strict';
 
@@ -181,11 +180,12 @@ game.Loader = game.Class.extend({
         }
         if(timeout < 100) timeout = 100;
 
-        // remove @2x from TextureCache
-        for(var i in game.TextureCache) {
-            if(i.indexOf('@2x') !== -1) {
-                game.TextureCache[i.replace('@2x', '')] = game.TextureCache[i];
-                delete game.TextureCache[i];
+        if(game.system.retina || game.system.hires) {
+            for(var i in game.TextureCache) {
+                if(i.indexOf('@2x') !== -1) {
+                    game.TextureCache[i.replace('@2x', '')] = game.TextureCache[i];
+                    delete game.TextureCache[i];
+                }
             }
         }
 

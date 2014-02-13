@@ -5,8 +5,7 @@
     @namespace game
 **/
 game.module(
-    'engine.pool',
-    '1.0.0'
+    'engine.pool'
 )
 .body(function() { 'use strict';
 

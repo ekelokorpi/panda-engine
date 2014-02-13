@@ -35,6 +35,7 @@ if(typeof(global) !== 'undefined') return;
     @class Core
 **/
 var core = {
+    version: '1.0.1',
     /**
         Scale factor for Retina and HiRes mode.
         @property {Number} scale
@@ -686,8 +687,7 @@ core.Class.extend = function(prop) {
 })(window);
 
 game.module(
-    'engine.core',
-    '1.0.0'
+    'engine.core'
 )
 .require(
     'engine.loader',
@@ -703,5 +703,4 @@ game.module(
     'engine.analytics'
 )
 .body(function(){
-    // ready to start engine
 });

@@ -1,6 +1,5 @@
 game.module(
-    'engine.renderer',
-    '1.0.0'
+    'engine.renderer'
 )
 .body(function() { 'use strict';
 

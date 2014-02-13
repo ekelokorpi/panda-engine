@@ -3,8 +3,7 @@
     @namespace game
 **/
 game.module(
-    'engine.sprite',
-    '1.0.0'
+    'engine.sprite'
 )
 .require(
     'engine.renderer'
