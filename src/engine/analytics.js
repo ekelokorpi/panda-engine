@@ -1,8 +1,19 @@
+/**
+    Google Analytics.
+
+    @module analytics
+    @namespace game
+**/
 game.module(
     'engine.analytics'
 )
 .body(function() {
-    
+
+/**
+    @class game.Analytics
+    @constructor
+    @param {String} id
+**/
 game.Analytics = game.Class.extend({
     init: function(id) {
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -14,11 +25,19 @@ game.Analytics = game.Class.extend({
         ga('send', 'pageview');
     },
 
+    /**
+        @method event
+        @param {String} category
+        @param {String} action
+    **/
     event: function(category, action) {
         ga('send', 'event', category, action);
     }
 });
 
+/**
+    @attribute {String} id
+**/
 game.Analytics.id = '';
 
 });
