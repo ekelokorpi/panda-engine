@@ -315,7 +315,7 @@ var core = {
 
         this.ready = true;
         
-        var loader = new game.Loader(scene || SceneTitle, this.resources, this.audioResources);
+        var loader = new game.Loader(scene || SceneGame, this.resources, this.audioResources);
         loader.start();
     },
 
