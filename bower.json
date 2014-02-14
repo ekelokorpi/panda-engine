@@ -1,0 +1,9 @@
+{
+  "name": "Panda.js",
+  "version": "1.0.2",
+  "main": "build/pandajs-1.0.0-min.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ekelokorpi/panda.js"
+  },
+}

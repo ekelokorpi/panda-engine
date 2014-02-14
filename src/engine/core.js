@@ -352,7 +352,7 @@ var core = {
         this.modules[name] = true;
         this._waitForLoad++;
         
-        var path = 'src/' + name.replace(/\./g, '/') + '.js' + this.nocache;
+        var path = name.replace(/\./g, '/') + '.js' + this.nocache;
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
