@@ -35,7 +35,7 @@ if(typeof(global) !== 'undefined') return;
     @class Core
 **/
 var core = {
-    version: '1.0.1',
+    version: '1.0.2',
     /**
         Scale factor for Retina and HiRes mode.
         @property {Number} scale
