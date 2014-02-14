@@ -187,6 +187,7 @@ var core = {
 
     normalizeVendorAttribute: function(el, attr) {
         var prefixedVal = this.getVendorAttribute(el, attr);
+        if(el[attr]) return;
         el[attr] = el[attr] || prefixedVal;
     },
 
