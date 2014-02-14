@@ -3,8 +3,7 @@
     @namespace game
 **/
 game.module(
-    'engine.scene',
-    '1.0.0'
+    'engine.scene'
 )
 .body(function(){ 'use strict';
 

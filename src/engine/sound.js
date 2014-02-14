@@ -3,8 +3,7 @@
     @namespace game
 **/
 game.module(
-    'engine.sound',
-    '1.0.0'
+    'engine.sound'
 )
 .body(function(){ 'use strict';
 

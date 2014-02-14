@@ -3,8 +3,7 @@
     @namespace game
 **/
 game.module(
-    'engine.system',
-    '1.0.0'
+    'engine.system'
 )
 .require(
     'engine.timer'

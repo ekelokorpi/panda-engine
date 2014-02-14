@@ -5,8 +5,7 @@
     @namespace game
 **/
 game.module(
-    'engine.storage',
-    '1.0.0'
+    'engine.storage'
 )
 .body(function() { 'use strict';
 

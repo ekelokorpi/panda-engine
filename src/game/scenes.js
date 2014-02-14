@@ -6,7 +6,7 @@ game.module(
 )
 .body(function() {
 
-SceneTitle = game.Scene.extend({
+SceneGame = game.Scene.extend({
     backgroundColor: 0x808080,
 
     init: function() {

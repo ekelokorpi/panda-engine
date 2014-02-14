@@ -3,8 +3,7 @@
     @namespace game
 **/
 game.module(
-    'engine.debug',
-    '1.0.0'
+    'engine.debug'
 )
 .body(function() { 'use strict';
 

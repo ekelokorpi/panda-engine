@@ -5,8 +5,7 @@
     @namespace game
 **/
 game.module(
-    'engine.tween',
-    '1.0.0'
+    'engine.tween'
 )
 .body(function() { 'use strict';
 

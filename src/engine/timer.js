@@ -3,8 +3,7 @@
     @namespace game
 **/
 game.module(
-    'engine.timer',
-    '1.0.0'
+    'engine.timer'
 )
 .body(function(){ 'use strict';
 

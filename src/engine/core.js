@@ -35,6 +35,7 @@ if(typeof(global) !== 'undefined') return;
     @class Core
 **/
 var core = {
+    version: '1.0.2',
     /**
         Scale factor for Retina and HiRes mode.
         @property {Number} scale
@@ -186,6 +187,7 @@ var core = {
 
     normalizeVendorAttribute: function(el, attr) {
         var prefixedVal = this.getVendorAttribute(el, attr);
+        if(el[attr]) return;
         el[attr] = el[attr] || prefixedVal;
     },
 
@@ -315,7 +317,7 @@ var core = {
 
         this.ready = true;
         
-        var loader = new game.Loader(scene || SceneTitle, this.resources, this.audioResources);
+        var loader = new game.Loader(scene || SceneGame, this.resources, this.audioResources);
         loader.start();
     },
 
@@ -686,8 +688,7 @@ core.Class.extend = function(prop) {
 })(window);
 
 game.module(
-    'engine.core',
-    '1.0.0'
+    'engine.core'
 )
 .require(
     'engine.loader',
@@ -703,5 +704,4 @@ game.module(
     'engine.analytics'
 )
 .body(function(){
-    // ready to start engine
 });

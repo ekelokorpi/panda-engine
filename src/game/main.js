@@ -1,6 +1,5 @@
 game.module(
-    'game.main',
-    '1.0.0'
+    'game.main'
 )
 .require(
     'engine.core',
