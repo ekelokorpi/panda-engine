@@ -419,6 +419,7 @@ game.Tween.Easing.Bounce.InOut = function(k) {
 game.TweenGroup = game.Class.extend({
     tweens: [],
     onComplete: null,
+    complete: false,
 
     init: function(onComplete) {
         this.onComplete = onComplete;
@@ -445,9 +446,11 @@ game.TweenGroup = game.Class.extend({
         @method tweenComplete
     **/
     tweenComplete: function() {
+        if(this.complete) return;
         for (var i = 0; i < this.tweens.length; i++) {
             if(!this.tweens[i].complete) return;
         }
+        this.complete = true;
         if(typeof(this.onComplete) === 'function') this.onComplete();
     },
 
@@ -463,8 +466,6 @@ game.TweenGroup = game.Class.extend({
         @method start
     **/
     start: function() {
-        if(this.tweens.length === 0) return;
-
         for (var i = 0; i < this.tweens.length; i++) {
             game.scene.tweens.push(this.tweens[i]);
             this.tweens[i].start();
@@ -491,12 +492,18 @@ game.TweenGroup = game.Class.extend({
 
     /**
         @method stop
-        @param {Boolean} doComplete
+        @param {Boolean} doComplete Call onComplete function
+        @param {Boolean} endTween Set started tweens to end values
     **/
-    stop: function(doComplete) {
+    stop: function(doComplete, endTween) {
+        if(this.complete) return;
+
         for (var i = 0; i < this.tweens.length; i++) {
-            this.tweens[i].stop(doComplete);
+            this.tweens[i].stop(endTween);
         }
+        
+        if(!this.complete && doComplete) this.tweenComplete();
+        this.complete = true;
     }
 });
 
