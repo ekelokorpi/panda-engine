@@ -72,6 +72,11 @@ var core = {
     **/
     storage: null,
     /**
+        Instance of {{#crossLink "game.Keyboard"}}{{/crossLink}}.
+        @property {game.Keyboard} keyboard
+    **/
+    keyboard: null,
+    /**
         Device / browser detection.
         
             game.device.iPhone
