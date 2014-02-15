@@ -124,8 +124,6 @@ game.World = game.Class.extend({
     @extends game.Class
 **/
 game.CollisionSolver = game.Class.extend({
-    hitTestData: [],
-
     /**
         Solve collision a versus b.
         @method solve
@@ -133,9 +131,7 @@ game.CollisionSolver = game.Class.extend({
         @param {Body} b
     **/
     solve: function(a, b) {
-        this.hitTestData.length = 0;
-        if(!this.hitTest(a, b)) return;
-        if(!this.hitResponse(a, b)) return;
+        if(this.hitTest(a, b)) this.hitResponse(a, b);
     },
 
     /**
@@ -154,7 +150,7 @@ game.CollisionSolver = game.Class.extend({
             );
         }
         if(a.shape instanceof game.Circle && b.shape instanceof game.Circle) {
-            return (a.shape.radius + b.shape.radius > this.distance(a.position.x, a.position.y, b.position.x, b.position.y));
+            return (a.shape.radius + b.shape.radius > a.position.distance(b.position));
         }
         if(
             a.shape instanceof game.Rectangle && b.shape instanceof game.Circle ||
@@ -216,36 +212,15 @@ game.CollisionSolver = game.Class.extend({
 
             if(t < 0) {
                 var d = Math.sqrt(px * px + py * py);
-                if(d < circle.shape.radius) {
-                    this.hitTestData[0] = a1x;
-                    this.hitTestData[1] = a1y;
-                    this.hitTestData[2] = d;
-                    this.hitTestData[3] = px / d;
-                    this.hitTestData[4] = py / d;
-                    return true;
-                }
+                if(d < circle.shape.radius) return true;
             }
             else if(t > 1) {
                 var d = this.distance(cx, cy, a2x, a2y);
-                if(d < circle.shape.radius) {
-                    this.hitTestData[0] = a2x;
-                    this.hitTestData[1] = a2y;
-                    this.hitTestData[2] = d;
-                    this.hitTestData[3] = (cx - a2x) / d;
-                    this.hitTestData[4] = (cy - a2y) / d;
-                    return true;
-                }
+                if(d < circle.shape.radius) return true;
             }
             else {
                 var d = this.distance(px, py, dx * t, dy * t);
-                if(d < circle.shape.radius) {
-                    this.hitTestData[0] = a1x + dx * t;
-                    this.hitTestData[1] = a1y + dy * t;
-                    this.hitTestData[2] = d;
-                    this.hitTestData[3] = (px - dx * t) / d;
-                    this.hitTestData[4] = (py - dy * t) / d;
-                    return true;
-                }
+                if(d < circle.shape.radius) return true;
             }
             return false;
         }
@@ -260,92 +235,65 @@ game.CollisionSolver = game.Class.extend({
     **/
     hitResponse: function(a, b) {
         if(a.shape instanceof game.Rectangle && b.shape instanceof game.Rectangle) {
-            // 0 = up, 1 = down, 2 = left, 3 = right
+            // TODO can this be optimized?
             if(a.last.y + a.shape.height / 2 <= b.last.y - b.shape.height / 2) {
-                if(a.collide(b, 0)) {
+                if(a.collide(b)) {
                     a.position.y = b.position.y - b.shape.height / 2 - a.shape.height / 2;
                 }
             }
             else if(a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
-                if(a.collide(b, 1)) {
+                if(a.collide(b)) {
                     a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
                 }
             }
             else if(a.last.x + a.shape.width /2 <= b.last.x - b.shape.width / 2) {
-                if(a.collide(b, 2)) {
+                if(a.collide(b)) {
                     a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
                 }
             }
             else if(a.last.x - a.shape.width /2 >= b.last.x + b.shape.width / 2) {
-                if(a.collide(b, 3)) {
+                if(a.collide(b)) {
                     a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
                 }
             }
         }
         else if(a.shape instanceof game.Circle && b.shape instanceof game.Circle) {
             if(a.collide(b)) {
-                var angle = Math.atan2(a.position.x - b.position.x, a.position.y - b.position.y);
+                var angle = b.position.angle(a.position);
                 var dist = a.shape.radius + b.shape.radius;
 
-                var aSpeed = Math.sqrt(Math.pow(a.velocity.x, 2) + Math.pow(a.velocity.y, 2));
-                var bSpeed = Math.sqrt(Math.pow(b.velocity.x, 2) + Math.pow(b.velocity.y, 2));
-
-                a.position.x = b.position.x + Math.sin(angle) * dist;
-                a.position.y = b.position.y + Math.cos(angle) * dist;
-
-                a.velocity.x = Math.sin(angle) * bSpeed;
-                a.velocity.y = Math.cos(angle) * bSpeed;
-
-                b.velocity.x = Math.sin(angle + Math.PI) * aSpeed;
-                b.velocity.y = Math.cos(angle + Math.PI) * aSpeed;
+                a.position.x = b.position.x + Math.cos(angle) * dist;
+                a.position.y = b.position.y + Math.sin(angle) * dist;
             }
         }
         else if(a.shape instanceof game.Rectangle && b.shape instanceof game.Circle) {
             if(a.collide(b)) {
+                // TODO                
+                return;
             }
         }
         else if(a.shape instanceof game.Circle && b.shape instanceof game.Rectangle) {
             if(a.collide(b)) {
-                if(a.last.x - a.shape.radius < b.last.x + b.shape.width) {
-                    var angle = Math.atan2(a.position.x - a.last.x, a.position.y - a.last.y);
-                    var dist = this.distance(a.last.x, a.last.y, a.position.x, a.position.y);
-
-                    // how much to push circle forward from last position ???
-                    var dist = 0;
-
-                    a.position.x = a.last.x + Math.sin(angle) * dist;
-                    a.position.y = a.last.y + Math.cos(angle) * dist;
-
-                    a.velocity.x *= -1;
-                }
+                // TODO                
+                return;
             }
         }
         else if(a.shape instanceof game.Line && b.shape instanceof game.Line) {
             if(a.collide(b)) {
+                // TODO                
+                return;
             }
         }
         else if(a.shape instanceof game.Circle && b.shape instanceof game.Line) {
             if(a.collide(b)) {
-                var cx = this.hitTestData[0];
-                var cy = this.hitTestData[1];
-                var d = this.hitTestData[2];
-                var nx = this.hitTestData[3];
-                var ny = this.hitTestData[4];
-
-                var x = a.position.x - cx;
-                var y = a.position.y - cy;
-
-                a.position.x = cx + a.shape.radius * x / d;
-                a.position.y = cy + a.shape.radius * y / d;
-
-                var m = a.velocity.x * nx + a.velocity.y * ny;
-
-                a.velocity.x -= nx * m * (1 + 1);
-                a.velocity.y -= ny * m * (1 + 1);
+                // TODO                
+                return;
             }
         }
         else if(a.shape instanceof game.Line && b.shape instanceof game.Circle) {
             if(a.collide(b)) {
+                // TODO
+                return;
             }
         }
     }
@@ -719,7 +667,7 @@ game.Vector = game.Class.extend({
         @method round
         @return {game.Vector}
     **/
-    round: function(target) {
+    round: function() {
         this.x = Math.round(this.x);
         this.y = Math.round(this.y);
         return this;
@@ -747,61 +695,6 @@ Object.defineProperty(game.Vector.prototype, 'y', {
     },
     set: function(value) {
         this.value[1] = value;
-    }
-});
-
-game.BodySprite = game.Class.extend({
-    collisionGroup: 0,
-    collideAgainst: null,
-    mass: 0,
-    velocity: {x:0, y:0},
-    color: 0xff0000,
-    type: 'Circle',
-    a: 50,
-    b: 50,
-
-    init: function(x, y, settings) {
-        game.merge(this, settings);
-
-        var shape = new game[this.type](this.a, this.b);
-
-        this.body = new game.Body({
-            position: {x: x, y: y},
-            velocity: {x: this.velocity.x, y: this.velocity.y},
-            collisionGroup: this.collisionGroup,
-            collideAgainst: this.collideAgainst,
-            mass: this.mass
-        });
-        this.body.addShape(shape);
-        this.body.collide = this.collide.bind(this);
-
-        this.sprite = new PIXI.Graphics();
-        this.sprite.beginFill(this.color);
-        if(this.type === 'Circle') {
-            this.sprite.drawCircle(0, 0, this.a);
-        }
-        if(this.type === 'Rectangle') {
-            this.sprite.drawRect(-this.a / 2, -this.b / 2, this.a, this.b);
-        }
-        if(this.type === 'Line') {
-            this.sprite.lineStyle(1, this.color);
-            this.sprite.moveTo(-Math.sin(this.b) * (this.a / 2), -Math.cos(this.b) * (this.a / 2));
-            this.sprite.lineTo(Math.sin(this.b) * (this.a / 2), Math.cos(this.b) * (this.a / 2));
-        }
-        this.sprite.position.x = x;
-        this.sprite.position.y = y;
-
-        game.scene.world.addBody(this.body);
-    },
-
-    collide: function() {
-        return true;
-    },
-
-    update: function() {
-        this.sprite.position.x = this.body.position.x;
-        this.sprite.position.y = this.body.position.y;
-        this.sprite.rotation = this.body.rotation;
     }
 });
 

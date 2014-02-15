@@ -218,6 +218,16 @@ game.Scene = game.Class.extend({
     **/
     mouseout: function() {},
 
+    /**
+        @method keydown
+    **/
+    keydown: function() {},
+
+    /**
+        @method keyup
+    **/
+    keyup: function() {},
+
     run: function() {
         this.update();
         if(game.debugDraw) game.debugDraw.update();
