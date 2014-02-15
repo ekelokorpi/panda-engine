@@ -52,7 +52,7 @@ output = header + '\n';
 
 if(sitelock) {
     var secret = 0;
-    for (var i = 0; i < sitelock.length; i++) {
+    for (i = 0; i < sitelock.length; i++) {
         secret += sitelock[i].charCodeAt(0);
     }
     var sitelockFunc = 'var s='+secret+',h=0,n=location.hostname;for(var i=0;i<n.length;i++)h+=n[i].charCodeAt(0);if(s!==h)throw 0;';
