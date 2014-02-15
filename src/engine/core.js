@@ -119,7 +119,7 @@ var core = {
             !object || typeof(object) !== 'object' ||
             object instanceof HTMLElement ||
             object instanceof game.Class ||
-            object instanceof game.Container
+            (game.Container && object instanceof game.Container)
         ) {
             return object;
         }
