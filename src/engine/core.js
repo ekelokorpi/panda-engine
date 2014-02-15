@@ -258,8 +258,6 @@ var core = {
             });
     **/
     module: function(name, version) {
-        if(name === 'engine.debug' && window.pandaMinified) return this;
-
         if(this._current) throw('Module ' + this._current.name + ' has no body');
         if(this.modules[name] && this.modules[name].body) throw('Module ' + name + ' is already defined');
         
@@ -277,7 +275,6 @@ var core = {
     require: function() {
         var i, modules = Array.prototype.slice.call(arguments);
         for (i = 0; i < modules.length; i++) {
-            if(modules[i] === 'engine.debug' && window.pandaMinified) continue;
             if(modules[i]) this._current.requires.push(modules[i]);
         }
         return this;
@@ -308,12 +305,12 @@ var core = {
         height = height || (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
         this.system = new game.System(width, height, canvasId);
-        this.sound = new game.SoundManager();
-        this.pool = new game.Pool();
+        if(game.SoundManager) this.sound = new game.SoundManager();
+        if(game.Pool) this.pool = new game.Pool();
         if(game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
-        if(game.Storage.id) this.storage = new game.Storage(game.Storage.id);
-        if(game.Analytics.id) this.analytics = new game.Analytics(game.Analytics.id);
+        if(game.Storage && game.Storage.id) this.storage = new game.Storage(game.Storage.id);
+        if(game.Analytics && game.Analytics.id) this.analytics = new game.Analytics(game.Analytics.id);
 
         this.ready = true;
         
