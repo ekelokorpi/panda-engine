@@ -1,0 +1,34 @@
+{
+  "name": "pandajs",
+  "version": "1.0.2",
+  "description": "Panda.js Game Engine",
+  "homepage": "http://www.pandajs.net/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ekelokorpi/panda.js"
+  },
+  "bugs": {
+    "url": "https://github.com/ekelokorpi/panda.js/issues"
+  },
+  "author": {
+    "name": "Eemeli Kelokorpi",
+    "email": "eemeli.kelokorpi@gmail.com"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-concat": "~0.2.0",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-nodeunit": "~0.1.2",
+    "grunt-replace": "~0.4.3"
+  },
+  "scripts": {
+    "install": "bower install;grunt",
+    "release": "grunt release"
+  }
+}
