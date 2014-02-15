@@ -1,9 +1,11 @@
+// Usage: node src/engine/build.js [sitelock-hostname]
 var UglifyJS = require('uglify-js');
 var fs = require('fs');
-var i, file, size, result, totalSize = 0;
+var i, file, size, result, output, totalSize = 0;
 
-var outputFile = process.argv[2] || 'game.min.js';
-var outputDir = process.argv[3] || './';
+var sitelock = process.argv[2];
+var outputFile = 'game.min.js';
+var outputDir = './';
 var header = '// Made with Panda.js - http://www.pandajs.net';
 var include = ['engine/core.js', 'game/main.js'];
 var dir = process.cwd() + '/src/';
@@ -46,9 +48,20 @@ console.log('Total ' + totalSize + ' bytes');
 
 result = UglifyJS.minify(game.modules);
 
-result.code = header + '\n' + result.code;
+output = header + '\n';
 
-fs.writeFile(outputDir + outputFile, result.code, function(err) {
+if(sitelock) {
+    var secret = 0;
+    for (var i = 0; i < sitelock.length; i++) {
+        secret += sitelock[i].charCodeAt(0);
+    }
+    var sitelockFunc = 'var s='+secret+',h=0,n=location.hostname;for(var i=0;i<n.length;i++)h+=n[i].charCodeAt(0);if(s!==h)throw 0;';
+    output += sitelockFunc;
+}
+
+output += result.code;
+
+fs.writeFile(outputDir + outputFile, output, function(err) {
     if(err) console.log(err);
     else {
         var size = fs.statSync(outputDir + outputFile).size;
