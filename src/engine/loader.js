@@ -87,12 +87,14 @@ game.Loader = game.Class.extend({
         });
         game.system.stage.addChild(this.symbol);
 
-        var tween = new game.Tween(this.symbol, {rotation: 0.1}, 0.5, {
-            easing: game.Tween.Easing.Cubic.InOut,
-            loop: game.Tween.Loop.Reverse
-        });
-        this.tweens.push(tween);
-        tween.start();
+        if(game.Tween) {
+            var tween = new game.Tween(this.symbol, {rotation: 0.1}, 0.5, {
+                easing: game.Tween.Easing.Cubic.InOut,
+                loop: game.Tween.Loop.Reverse
+            });
+            this.tweens.push(tween);
+            tween.start();
+        }
     },
 
     getPath: function(path) {
