@@ -414,32 +414,41 @@ game.Tween.Easing.Bounce.InOut = function(k) {
     @class TweenGroup
     @extends game.Class
     @constructor
-    @param {Number} duration
     @param {Function} [onComplete]
-    @param {Object} [settings]
 **/
 game.TweenGroup = game.Class.extend({
     tweens: [],
-    settings: {},
-    duration: 1,
     onComplete: null,
 
-    init: function(duration, onComplete, settings) {
-        this.duration = duration || this.duration;
+    init: function(onComplete) {
         this.onComplete = onComplete;
-        this.settings = settings;
     },
 
     /**
         @method add
         @param {Object} obj
         @param {Object} props
+        @param {Number} duration
+        @param {Object} settings
         @return {game.Tween} tween
     **/
-    add: function(obj, props) {
-        var tween = new game.Tween(obj, props, this.duration, this.settings);
+    add: function(obj, props, duration, settings) {
+        settings = settings || {};
+        settings.onComplete = this.tweenComplete.bind(this);
+
+        var tween = new game.Tween(obj, props, duration, settings);
         this.tweens.push(tween);
         return tween;
+    },
+
+    /**
+        @method tweenComplete
+    **/
+    tweenComplete: function() {
+        for (var i = 0; i < this.tweens.length; i++) {
+            if(!this.tweens[i].complete) return;
+        }
+        if(typeof(this.onComplete) === 'function') this.onComplete();
     },
 
     /**
@@ -456,7 +465,6 @@ game.TweenGroup = game.Class.extend({
     start: function() {
         if(this.tweens.length === 0) return;
 
-        this.tweens[0].onComplete = this.onComplete;
         for (var i = 0; i < this.tweens.length; i++) {
             game.scene.tweens.push(this.tweens[i]);
             this.tweens[i].start();
