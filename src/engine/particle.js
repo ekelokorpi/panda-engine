@@ -64,14 +64,7 @@ game.Particle = game.Class.extend({
 /**
     Particle emitter.
 
-    __Example__
-
-        var emitter = new game.Emitter();
-        emitter.container = game.scene.stage;
-        emitter.textures.push('media/particle.png');
-        emitter.position.x = game.system.width / 2;
-        emitter.position.y = game.system.height / 2;
-        game.scene.emitters.push(emitter);
+    Example: http://www.pandajs.net/tutorials/example-5/
 
     @class Emitter
     @extends game.Class
@@ -114,16 +107,19 @@ game.Emitter = game.Class.extend({
     **/
     angle: 0,
     /**
+        Variance of emit angle in radians.
         @property {Number} angleVar
         @default Math.PI
     **/
     angleVar: Math.PI,
     /**
+        Particle's initial speed.
         @property {Number} speed
         @default 100
     **/
     speed: 100,
     /**
+        Variance for particle's initial speed.
         @property {Number} speedVar
         @default 0
     **/
@@ -155,12 +151,13 @@ game.Emitter = game.Class.extend({
     rate: 0.1,
     rateTimer: 0,
     /**
-        Emit count.
+        Emit count of particles.
         @property {Number} count
         @default 10
     **/
     count: 10,
     /**
+        Is emitter active.
         @property {Boolean} active
         @default true
     **/
@@ -172,6 +169,7 @@ game.Emitter = game.Class.extend({
     **/
     velRotate: 0,
     /**
+        Variance for particle's velocity rotation speed.
         @property {Number} velRotateVar
         @default 0
     **/
@@ -183,21 +181,25 @@ game.Emitter = game.Class.extend({
     **/
     rotate: 0,
     /**
+        Variance for particle's sprite rotation speed.
         @property {Number} rotateVar
         @default 0
     **/
     rotateVar: 0,
     /**
+        Starting alpha for particle.
         @property {Number} startAlpha
         @default 1
     **/
     startAlpha: 1,
     /**
+        End alpha for particle.
         @property {Number} endAlpha
         @default 0
     **/
     endAlpha: 0,
     /**
+        Starting scale for particle.
         @property {Number} startScale
         @default 1
     **/
@@ -290,6 +292,8 @@ game.Emitter = game.Class.extend({
     },
 
     /**
+        Get value with variance.
+        Example: if you have value 100 with variance of 50, you will get value between 50 to 150.
         @method getVariance
         @return {Number}
     **/
@@ -298,6 +302,7 @@ game.Emitter = game.Class.extend({
     },
 
     /**
+        Add particle to emitter.
         @method addParticle 
     **/
     addParticle: function() {
@@ -353,6 +358,7 @@ game.Emitter = game.Class.extend({
     },
 
     /**
+        Update particle.
         @method updateParticle
     **/
     updateParticle: function(particle) {
@@ -378,6 +384,10 @@ game.Emitter = game.Class.extend({
         particle.sprite.position.y = particle.position.y;
     },
 
+    /**
+        Remove particle from emitter.
+        @method removeParticle
+    **/
     removeParticle: function(particle) {
         if(particle.sprite.parent) particle.sprite.parent.removeChild(particle.sprite);
         game.pool.put(this.poolName, particle);
@@ -385,6 +395,7 @@ game.Emitter = game.Class.extend({
     },
 
     /**
+        Emit particles to emitter.
         @method emit
         @param {Number} count
     **/
@@ -396,6 +407,7 @@ game.Emitter = game.Class.extend({
     },
 
     /**
+        Update particles.
         @method update
     **/
     update: function() {

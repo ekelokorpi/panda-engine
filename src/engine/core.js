@@ -27,6 +27,8 @@ if(typeof(window) === 'undefined') window = {};
 
 if(typeof(global) !== 'undefined') return;
 /**
+    Panda.js core.
+
     @module core
     @namespace game
 **/

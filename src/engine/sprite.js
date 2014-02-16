@@ -1,4 +1,6 @@
 /**
+    Game graphics.
+
     @module sprite
     @namespace game
 **/
@@ -56,10 +58,18 @@ game.Sprite = PIXI.Sprite.extend({
     @class Container
 **/
 game.Container = PIXI.DisplayObjectContainer.extend({
+    /**
+        Remove object from container.
+        @method remove
+    **/
     remove: function() {
         if(this.parent) this.parent.removeChild(this);
     },
 
+    /**
+        Add object to container.
+        @method addChild
+    **/
     addChild: function(obj) {
         this.super(obj);
         if(game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);

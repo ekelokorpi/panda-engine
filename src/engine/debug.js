@@ -1,4 +1,6 @@
 /**
+    Debugging.
+    
     @module debug
     @namespace game
 **/
@@ -23,6 +25,7 @@ game.DebugDraw = game.Class.extend({
     },
 
     /**
+        Remove all sprites from DebugDraw.
         @method reset
     **/
     reset: function() {
@@ -33,6 +36,7 @@ game.DebugDraw = game.Class.extend({
     },
 
     /**
+        Add sprite to DebugDraw.
         @method addSprite
         @param {game.Sprite} sprite
     **/
@@ -48,6 +52,7 @@ game.DebugDraw = game.Class.extend({
     },
 
     /**
+        Add body to DebugDraw.
         @method addBody
         @param {game.Body} body
     **/
@@ -69,6 +74,7 @@ game.DebugDraw = game.Class.extend({
     },
 
     /**
+        Update DebugDraw sprites.
         @method update
     **/
     update: function() {
@@ -96,26 +102,31 @@ game.DebugDraw = game.Class.extend({
 });
 
 /**
+    Color of DebugDraw sprites.
     @attribute {Number} spriteColor
     @default 0xff0000
 **/
 game.DebugDraw.spriteColor = 0xff0000;
 /**
+    Alpha of DebugDraw sprites.
     @attribute {Number} spriteAlpha
     @default 0.3
 **/
 game.DebugDraw.spriteAlpha = 0.3;
 /**
+    Color of DebugDraw shapes.
     @attribute {Number} shapeColor
     @default 0x0000ff
 **/
 game.DebugDraw.shapeColor = 0x0000ff;
 /**
+    Alpha of DebugDraw shapes.
     @attribute {Number} shapeAlpha
     @default 0.3
 **/
 game.DebugDraw.shapeAlpha = 0.3;
 /**
+    Enable DebugDraw.
     @attribute {Boolean} enabled
 **/
 game.DebugDraw.enabled = document.location.href.match(/\?debugdraw/) ? true : false;
@@ -289,11 +300,13 @@ game.Debug = game.Class.extend({
 
 game.Debug.backgroundColor = {
     /**
+        Background color of debug box, when using Canvas renderer.
         @attribute {String} backgroundColor.canvas
         @default '#ff0000'
     **/
     canvas: '#ff0000',
     /**
+        Background color of debug box, when using WebGL renderer.
         @attribute {String} backgroundColor.webGL
         @default '#0000ff'
     **/
@@ -321,11 +334,13 @@ game.Debug.POSITION = {
 
 game.Debug.position = {
     /**
+        Position of debug window on desktop.
         @attribute {TOPLEFT|BOTTOMLEFT|TOPRIGHT|BOTTOMRIGHT} position.desktop
         @default game.Debug.POSITION.TOPLEFT
     **/
     desktop: game.Debug.POSITION.TOPLEFT,
     /**
+        Position of debug window on mobile.
         @attribute {TOPLEFT|BOTTOMLEFT|TOPRIGHT|BOTTOMRIGHT} position.mobile
         @default game.Debug.POSITION.TOPLEFT
     **/
@@ -333,6 +348,7 @@ game.Debug.position = {
 };
 
 /**
+    Enable debug window (fps and render time).
     @attribute {Boolean} enabled
 **/
 game.Debug.enabled = document.location.href.match(/\?debug/) ? true : false;

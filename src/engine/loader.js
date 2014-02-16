@@ -1,4 +1,6 @@
 /**
+    Preloader for assets and sounds.
+    
     @module loader
     @namespace game
 **/
@@ -8,6 +10,7 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
+    Preloader.
     @class Loader
     @extends game.Class
 **/

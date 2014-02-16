@@ -1,4 +1,6 @@
 /**
+    Keyboard manager.
+    
     @module keyboard
     @namespace game
 **/

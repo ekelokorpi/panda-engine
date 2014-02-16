@@ -72,6 +72,7 @@ game.Tween = game.Class.extend({
     },
 
     /**
+        Start tween.
         @method start
     **/
     start: function() {
@@ -92,6 +93,7 @@ game.Tween = game.Class.extend({
     },
 
     /**
+        Pause tween.
         @method pause
     **/
     pause: function() {
@@ -108,6 +110,7 @@ game.Tween = game.Class.extend({
     },
 
     /**
+        Stop tween.
         @method stop
         @param {Boolean} doComplete
     **/
@@ -123,6 +126,7 @@ game.Tween = game.Class.extend({
     },
 
     /**
+        Chain tween to another tween.
         @method chain
         @param {game.Tween} tween
     **/
@@ -411,6 +415,7 @@ game.Tween.Easing.Bounce.InOut = function(k) {
 };
 
 /**
+    Group for tweens.
     @class TweenGroup
     @extends game.Class
     @constructor
@@ -426,6 +431,7 @@ game.TweenGroup = game.Class.extend({
     },
 
     /**
+        Add tween to group.
         @method add
         @param {Object} obj
         @param {Object} props
@@ -442,9 +448,6 @@ game.TweenGroup = game.Class.extend({
         return tween;
     },
 
-    /**
-        @method tweenComplete
-    **/
     tweenComplete: function() {
         if(this.complete) return;
         for (var i = 0; i < this.tweens.length; i++) {
@@ -455,6 +458,7 @@ game.TweenGroup = game.Class.extend({
     },
 
     /**
+        Remove tween from group.
         @method remove
         @param {game.Tween} tween
     **/
@@ -463,6 +467,7 @@ game.TweenGroup = game.Class.extend({
     },
 
     /**
+        Start tween group.
         @method start
     **/
     start: function() {
@@ -473,6 +478,7 @@ game.TweenGroup = game.Class.extend({
     },
 
     /**
+        Pause tween group.
         @method pause
     **/
     pause: function() {
@@ -482,6 +488,7 @@ game.TweenGroup = game.Class.extend({
     },
 
     /**
+        Resume tween group.
         @method resume
     **/
     resume: function() {
@@ -491,6 +498,7 @@ game.TweenGroup = game.Class.extend({
     },
 
     /**
+        Stop tween group.
         @method stop
         @param {Boolean} doComplete Call onComplete function
         @param {Boolean} endTween Set started tweens to end values

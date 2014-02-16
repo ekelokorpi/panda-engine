@@ -1,4 +1,6 @@
 /**
+    Scene manager.
+
     @module scene
     @namespace game
 **/
@@ -8,27 +10,33 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
+    Game scene.
     @class Scene
     @extends game.Class
 **/
 game.Scene = game.Class.extend({
     /**
+        Background color of scene.
         @property {Number} backgroundColor
     **/
     backgroundColor: 0x000000,
     /**
+        List of objects in scene.
         @property {Array} objects
     **/
     objects: [],
     /**
+        List of timers in scene.
         @property {Array} timers
     **/
     timers: [],
     /**
+        List of tweens in scene.
         @property {Array} tweens
     **/
     tweens: [],
     /**
+        List of particle emitters in scene.
         @property {Array} emitters
     **/
     emitters: [],
@@ -84,24 +92,44 @@ game.Scene = game.Class.extend({
         }
     },
 
+    /**
+        Add object to scene, so it's `update()` function get's called every frame.
+        @method addObject
+        @param {Object} object
+    **/
     addObject: function(object) {
         this.objects.push(object);
     },
 
+    /**
+        Remove object from scene.
+        @method removeObject
+        @param {Object} object
+    **/
     removeObject: function(object) {
         object._remove = true;
     },
 
+    /**
+        Add particle emitter to scene.
+        @method addEmitter
+        @param {game.Emitter} emitter
+    **/
     addEmitter: function(emitter) {
         this.emitters.push(emitter);
     },
 
+    /**
+        Remove emitter from scene.
+        @method removeEmitter
+        @param {game.Emitter} emitter
+    **/
     removeEmitter: function(emitter) {
         emitter._remove = true;
     },
 
     /**
-        Helper function for {{#crossLink "game.Tween"}}{{/crossLink}}
+        Add {{#crossLink "game.Tween"}}{{/crossLink}} to scene.
         @method addTween
         @param {Object} obj
         @param {Object} props
@@ -115,6 +143,7 @@ game.Scene = game.Class.extend({
     },
 
     /**
+        Get tween for object.
         @method getTween
         @param {Object} obj
     **/
@@ -126,6 +155,7 @@ game.Scene = game.Class.extend({
     },
 
     /**
+        Stop tweens for object.
         @method stopTweens
         @param {Object} [obj]
         @param {Boolean} [doComplete]
@@ -137,6 +167,7 @@ game.Scene = game.Class.extend({
     },
 
     /**
+        Pause tweens for object.
         @method pauseTweens
         @param {Object} [obj]
     **/
@@ -147,6 +178,7 @@ game.Scene = game.Class.extend({
     },
 
     /**
+        Resume tweens for object.
         @method resumeTweens
         @param {Object} [obj]
     **/
@@ -173,6 +205,7 @@ game.Scene = game.Class.extend({
     },
 
     /**
+        Remove timer from scene.
         @method removeTimer
         @param {game.Timer} timer
         @param {Boolean} doCallback
@@ -219,11 +252,13 @@ game.Scene = game.Class.extend({
     mouseout: function() {},
 
     /**
+        Callback for keydown.
         @method keydown
     **/
     keydown: function() {},
 
     /**
+        Callback for keyup.
         @method keyup
     **/
     keyup: function() {},

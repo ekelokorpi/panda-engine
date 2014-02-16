@@ -1,4 +1,6 @@
 /**
+    Timer engine.
+
     @module timer
     @namespace game
 **/
@@ -33,6 +35,7 @@ game.Timer = game.Class.extend({
     },
     
     /**
+        Set time for timer.
         @method set
         @param {Number} seconds
     **/
@@ -43,6 +46,7 @@ game.Timer = game.Class.extend({
     },
     
     /**
+        Reset timer.
         @method reset
     **/
     reset: function() {

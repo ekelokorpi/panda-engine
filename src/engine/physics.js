@@ -14,23 +14,27 @@ game.module(
     @class World
     @extends game.Class
     @constructor
-    @param {Number} x Velocity x
-    @param {Number} y Velocity y
+    @param {Number} x Gravity x
+    @param {Number} y Gravity y
 **/
 game.World = game.Class.extend({
     /**
-        @property {Vector} gravity
+        Gravity of physics world.
+        @property {game.Vector} gravity
+        @default 0,980
     **/
     gravity: null,
     /**
-        @property {CollisionSolver} solver
+        @property {game.CollisionSolver} solver
     **/
     solver: null,
     /**
+        List of bodies in world.
         @property {Array} bodies
     **/
     bodies: [],
     /**
+        List of collision groups.
         @property {Array} collisionGroups
     **/
     collisionGroups: [],
@@ -45,7 +49,7 @@ game.World = game.Class.extend({
     /**
         Add body to world.
         @method addBody
-        @param {Body} body
+        @param {game.Body} body
     **/
     addBody: function(body) {
         body.world = this;
@@ -58,8 +62,9 @@ game.World = game.Class.extend({
     },
 
     /**
+        Remove body from world.
         @method removeBody
-        @param {Body} body
+        @param {game.Body} body
     **/
     removeBody: function(body) {
         if(!body.world) return;
@@ -71,7 +76,7 @@ game.World = game.Class.extend({
     /**
         Remove body from it's collision group.
         @method removeBodyCollision
-        @param {Body} body
+        @param {game.Body} body
     **/
     removeBodyCollision: function(body) {
         this.collisionGroups[body.collisionGroup].erase(body);
@@ -87,20 +92,22 @@ game.World = game.Class.extend({
     },
 
     /**
+        Collide body against it's `collideAgainst` group.
         @method collide
-        @param {Body} a
+        @param {game.Body} body
     **/
-    collide: function(a) {
-        if(!this.collisionGroups[a.collideAgainst]) return;
+    collide: function(body) {
+        if(!this.collisionGroups[body.collideAgainst]) return;
 
         var i, b;
-        for (i = this.collisionGroups[a.collideAgainst].length - 1; i >= 0; i--) {
-            b = this.collisionGroups[a.collideAgainst][i];
-            if(a !== b) this.solver.solve(a, b);
+        for (i = this.collisionGroups[body.collideAgainst].length - 1; i >= 0; i--) {
+            b = this.collisionGroups[body.collideAgainst][i];
+            if(body !== b) this.solver.solve(body, b);
         }
     },
 
     /**
+        Update bodies.
         @method update
     **/
     update: function() {
@@ -127,17 +134,18 @@ game.CollisionSolver = game.Class.extend({
     /**
         Solve collision a versus b.
         @method solve
-        @param {Body} a
-        @param {Body} b
+        @param {game.Body} a
+        @param {game.Body} b
     **/
     solve: function(a, b) {
         if(this.hitTest(a, b)) this.hitResponse(a, b);
     },
 
     /**
+        Hit test a versus b.
         @method hitTest
-        @param {Body} a
-        @param {Body} b
+        @param {game.Body} a
+        @param {game.Body} b
         @return {Boolean}
     **/
     hitTest: function(a, b) {
@@ -228,9 +236,10 @@ game.CollisionSolver = game.Class.extend({
     },
 
     /**
+        Hit response a versus b.
         @method hitResponse
-        @param {Body} a
-        @param {Body} b
+        @param {game.Body} a
+        @param {game.Body} b
         @return {Boolean}
     **/
     hitResponse: function(a, b) {
@@ -308,45 +317,55 @@ game.CollisionSolver = game.Class.extend({
 **/
 game.Body = game.Class.extend({
     /**
-        @property {World} world
+        Body's physic world.
+        @property {game.World} world
     **/
     world: null,
     /**
-        @property {Shape} shape
+        Body's shape.
+        @property {game.Shape} shape
     **/
     shape: null,
     /**
-        @property {Vector} position
+        Position of body.
+        @property {game.Vector} position
     **/
     position: null,
     /**
-        @property {Vector} last
+        Last position of body.
+        @property {game.Vector} last
     **/
     last: null,
     /**
-        @property {Vector} velocity
+        Body's velocity.
+        @property {game.Vector} velocity
     **/
     velocity: null,
     /**
-        @property {Vector} velocityLimit
+        Body's maximum velocity.
+        @property {game.Vector} velocityLimit
     **/
     velocityLimit: null,
     /**
+        Body's mass.
         @property {Number} mass
         @default 0
     **/
     mass: 0,
     /**
+        Body's collision group.
         @property {Number} collisionGroup
         @default 0
     **/
     collisionGroup: 0,
     /**
+        Group number that body collides against.
         @property {Number} collideAgainst
         @default null
     **/
     collideAgainst: null,
     /**
+        Rotation of body.
         @property {Number} rotation
         @default 0
     **/
@@ -364,7 +383,7 @@ game.Body = game.Class.extend({
     /**
         Add shape to body.
         @method addShape
-        @param {Shape} shape
+        @param {game.Shape} shape
     **/
     addShape: function(shape) {
         this.shape = shape;
@@ -373,13 +392,14 @@ game.Body = game.Class.extend({
     /**
         Callback for collision.
         @method collide
-        @return {Boolean} Return true, to call hit response.
+        @return {Boolean} Return true, to apply hit response.
     **/
     collide: function() {
         return true;
     },
 
     /**
+        Update body's position and velocity.
         @method update
     **/
     update: function() {
@@ -396,6 +416,7 @@ game.Body = game.Class.extend({
 });
 
 /**
+    Rectangle shape for physic body.
     @class Rectangle
     @extends game.Class
     @constructor
@@ -404,11 +425,13 @@ game.Body = game.Class.extend({
 **/
 game.Rectangle = game.Class.extend({
     /**
+        Width of rectangle.
         @property {Number} width
         @default 50
     **/
     width: 50,
     /**
+        Height of rectangle.
         @property {Number} height
         @default 50
     **/
@@ -421,6 +444,7 @@ game.Rectangle = game.Class.extend({
 });
 
 /**
+    Circle shape for physic body.
     @class Circle
     @extends game.Class
     @constructor
@@ -428,6 +452,7 @@ game.Rectangle = game.Class.extend({
 **/
 game.Circle = game.Class.extend({
     /**
+        Radius of circle.
         @property {Number} radius
         @default 50
     **/
@@ -439,6 +464,7 @@ game.Circle = game.Class.extend({
 });
 
 /**
+    Line shape for physic body.
     @class Line
     @extends game.Class
     @constructor
@@ -447,11 +473,13 @@ game.Circle = game.Class.extend({
 **/
 game.Line = game.Class.extend({
     /**
+        Length of line.
         @property {Number} length
         @default 50
     **/
     length: 50,
     /**
+        Rotation of line.
         @property {Number} rotation
         @default 0
     **/
@@ -464,6 +492,7 @@ game.Line = game.Class.extend({
 });
 
 /**
+    Vector class.
     @class Vector
     @extends game.Class
     @constructor
@@ -480,6 +509,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Set vector values.
         @method set
         @param {Number} x
         @param {Number} y
@@ -492,6 +522,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Clone vector.
         @method clone
         @return {game.Vector}
     **/
@@ -500,8 +531,9 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Copy values from another vector.
         @method copy
-        @param {Vector} v
+        @param {game.Vector} v
         @return {game.Vector}
     **/
     copy: function(v) {
@@ -511,6 +543,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Add to vector values.
         @method add
         @param {Number|game.Vector} x
         @param {Number} [y]
@@ -523,6 +556,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Subtract from vector values.
         @method subtract
         @param {Number|game.Vector} x
         @param {Number} [y]
@@ -535,6 +569,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Multiply vector values.
         @method multiply
         @param {Number|game.Vector} x
         @param {Number} [y]
@@ -547,6 +582,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Multiply and add vector values.
         @method multiplyAdd
         @param {Number|game.Vector} x
         @param {Number} [y]
@@ -559,6 +595,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Divide vector values.
         @method divide
         @param {Number|game.Vector} x
         @param {Number} [y]
@@ -571,8 +608,9 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Get distance of two vectors.
         @method distance
-        @param {Vector} vector
+        @param {game.Vector} vector
         @return {Number}
     **/
     distance: function(vector) {
@@ -582,6 +620,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Get length of vector.
         @method length
         @return {Number}
     **/
@@ -590,8 +629,9 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Get dot of vector.
         @method dot
-        @param {Vector} [vector]
+        @param {game.Vector} [vector]
         @return {Number}
     **/
     dot: function(vector) {
@@ -600,8 +640,9 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Get normalized dot of vector.
         @method dotNormalized
-        @param {Vector} [vector]
+        @param {game.Vector} [vector]
         @return {Number}
     **/
     dotNormalized: function(vector) {
@@ -618,6 +659,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Rotate vector in radians.
         @method rotate
         @param {Number} angle
         @return {game.Vector}
@@ -633,6 +675,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Normalize vector.
         @method normalize
         @return {game.Vector}
     **/
@@ -644,8 +687,9 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Limit vector values.
         @method limit
-        @param {Vector} vector
+        @param {game.Vector} vector
         @return {game.Vector}
     **/
     limit: function(vector) {
@@ -655,8 +699,9 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Get angle between two vectors.
         @method angle
-        @param {Vector} vector
+        @param {game.Vector} vector
         @return {Number}
     **/
     angle: function(vector) {
@@ -664,6 +709,7 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Round vector values.
         @method round
         @return {game.Vector}
     **/

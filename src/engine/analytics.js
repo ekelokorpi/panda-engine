@@ -1,6 +1,6 @@
 /**
     Google Analytics.
-
+    
     @module analytics
     @namespace game
 **/
@@ -10,6 +10,8 @@ game.module(
 .body(function() {
 
 /**
+    Example: http://www.pandajs.net/tutorials/example-2/
+
     @class game.Analytics
     @constructor
     @param {String} id
@@ -26,6 +28,7 @@ game.Analytics = game.Class.extend({
     },
 
     /**
+        Send event to analytics.
         @method event
         @param {String} category
         @param {String} action
@@ -36,6 +39,7 @@ game.Analytics = game.Class.extend({
 });
 
 /**
+    Id for your Google Analytics accout, ie. UA-12345678-9
     @attribute {String} id
 **/
 game.Analytics.id = '';

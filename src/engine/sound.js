@@ -1,4 +1,6 @@
 /**
+    Sound manager.
+    
     @module sound
     @namespace game
 **/
@@ -22,11 +24,13 @@ game.SoundManager = game.Class.extend({
     _muteSound: false,
     currentMusic: null,
     /**
+        Main volume for sounds.
         @property {Number} soundVolume
         @default 1.0
     **/
     soundVolume: 1.0,
     /**
+        Main volume for music.
         @property {Number} musicVolume
         @default 1.0
     **/
@@ -187,6 +191,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Play sound.
         @method playSound
         @param {String} name
         @param {Boolean} [loop]
@@ -221,6 +226,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Mute sound.
         @method muteSound
     **/
     muteSound: function() {
@@ -232,6 +238,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Unmute sound.
         @method unmuteSound
     **/
     unmuteSound: function() {
@@ -243,6 +250,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Toggle sound mute.
         @method toggleSound
     **/
     toggleSound: function() {
@@ -252,6 +260,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Play music.
         @method playMusic
         @param {String} name
     **/
@@ -264,6 +273,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Stop music.
         @method stopMusic
     **/
     stopMusic: function() {
@@ -282,6 +292,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Mute music.
         @method muteMusic
     **/
     muteMusic: function() {
@@ -291,6 +302,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Unmute music.
         @method unmuteMusic
     **/
     unmuteMusic: function() {
@@ -300,6 +312,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Toggle music mute.
         @method toggleMusic
     **/
     toggleMusic: function() {
@@ -318,6 +331,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Mute all sounds and music.
         @method muteAll
     **/
     muteAll: function() {
@@ -326,6 +340,7 @@ game.SoundManager = game.Class.extend({
     },
 
     /**
+        Unmute all sounds and music.
         @method unmuteAll
     **/
     unmuteAll: function() {

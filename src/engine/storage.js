@@ -1,5 +1,5 @@
 /**
-    Local storage.
+    Local storage for saving data.
     
     @module storage
     @namespace game
