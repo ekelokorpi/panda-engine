@@ -300,9 +300,9 @@ var core = {
     /**
         Start the game engine.
         @method start
-        @param {game.Scene} scene
-        @param {Number} width
-        @param {Number} height
+        @param {game.Scene} scene Starting scene.
+        @param {Number} width Width of canvas.
+        @param {Number} height Height of canvas.
         @param {String} canvasId
     **/
     start: function(scene, width, height, canvasId) {
