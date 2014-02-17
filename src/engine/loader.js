@@ -136,10 +136,10 @@ game.Loader = game.Class.extend({
         @method progress
     **/
     progress: function(path, loaded) {
+        if(path && !loaded) this.error('Failed to load: ' + path);
         this.loaded++;
         this.percent = Math.round(this.loaded / (this.assets.length + this.sounds.length) * 100);
         this.onPercentChange();
-        if(path && !loaded) this.error('Failed to load: ' + path);
     },
 
     /**
