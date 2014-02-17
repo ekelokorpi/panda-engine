@@ -255,15 +255,17 @@ game.CollisionSolver = game.Class.extend({
                     a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
                 }
             }
-            else if(a.last.x + a.shape.width /2 <= b.last.x - b.shape.width / 2) {
+            else if(a.last.x + a.shape.width / 2 <= b.last.x - b.shape.width / 2) {
                 if(a.collide(b)) {
                     a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
                 }
             }
-            else if(a.last.x - a.shape.width /2 >= b.last.x + b.shape.width / 2) {
+            else if(a.last.x - a.shape.width / 2 >= b.last.x + b.shape.width / 2) {
                 if(a.collide(b)) {
                     a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
                 }
+            } else {
+                a.collide(b);
             }
         }
         else if(a.shape instanceof game.Circle && b.shape instanceof game.Circle) {
