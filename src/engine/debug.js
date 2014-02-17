@@ -68,6 +68,8 @@ game.DebugDraw = game.Class.extend({
         }
         // TODO add support for game.Line
 
+        sprite.position.x = body.position.x;
+        sprite.position.y = body.position.y;
         sprite.target = body;
         sprite.alpha = game.DebugDraw.shapeAlpha;
         this.container.addChild(sprite);
