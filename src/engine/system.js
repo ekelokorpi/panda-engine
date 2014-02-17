@@ -129,6 +129,10 @@ game.System = game.Class.extend({
                 if(!hidden && game.System.pauseOnHide) game.system.resume();
             }, false);
         }
+
+        window.addEventListener('devicemotion', function(event) {
+            game.accelerometer = game.accel = event.accelerationIncludingGravity;
+        }, false);
         
         if(navigator.isCocoonJS) this.canvas.style.cssText='idtkscale:'+game.System.idtkScale+';';
         
