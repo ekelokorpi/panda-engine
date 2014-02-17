@@ -7,9 +7,6 @@
 game.module(
     'engine.system'
 )
-.require(
-    'engine.timer'
-)
 .body(function(){ 'use strict';
 
 /**
