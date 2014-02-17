@@ -84,7 +84,6 @@ game.SoundManager = game.Class.extend({
         
         if(!game.SoundManager.enabled) {
             game.SoundCache = {};
-            game.MusicCache = {};
         }
     },
         
@@ -127,7 +126,7 @@ game.SoundManager = game.Class.extend({
             this.context.decodeAudioData(node, function(buffer) {
                 me.clips[path] = [];
                 me.clips[path].buffer = buffer;
-                if(loadCallback) loadCallback(path, true, buffer);
+                if(loadCallback) loadCallback(path, true);
             }, function() {
                 if(loadCallback) loadCallback(path, false);
             });
@@ -136,7 +135,7 @@ game.SoundManager = game.Class.extend({
         }
     },
 
-    load: function(path, multiChannel, loadCallback) {
+    load: function(path, loadCallback) {
         var a, i, realPath = path.replace(/[^\.]+$/, this.format.ext) + game.nocache;
 
         if(this.context) {
@@ -152,17 +151,6 @@ game.SoundManager = game.Class.extend({
             request.send();
             return;
         }
-
-        if(this.clips[path]) {
-            if(multiChannel && this.clips[path].length < game.SoundManager.channels) {
-                for(i = this.clips[path].length; i < game.SoundManager.channels; i++ ) {
-                    a = new Audio(realPath);
-                    a.load();
-                    this.clips[path].push(a);
-                }
-            }
-            return this.clips[path][0];
-        }
         
         var clip = new Audio(realPath);
         if(loadCallback) {
@@ -172,21 +160,13 @@ game.SoundManager = game.Class.extend({
             }, false);
             
             clip.addEventListener('error', function(ev){
-                loadCallback(realPath, false, ev);
+                loadCallback(path, false, ev);
             }, false);
         }
         clip.preload = 'auto';
         clip.load();
                 
         this.clips[path] = [clip];
-        if(multiChannel) {
-            for(i = 1; i < game.SoundManager.channels; i++ ) {
-                a = new Audio(realPath);
-                a.load();
-                this.clips[path].push(a);
-            }
-        }
-        
         return clip;
     },
 
@@ -265,11 +245,11 @@ game.SoundManager = game.Class.extend({
         @param {String} name
     **/
     playMusic: function(name) {
-        if(!game.SoundManager.enabled || this._muteMusic || typeof(game.MusicCache[name]) === 'undefined') return;
+        if(!game.SoundManager.enabled || this._muteMusic || typeof(game.SoundCache[name]) === 'undefined') return;
         
         if(this.currentMusic && this.currentMusic.playing) this.currentMusic.stop();
-        game.MusicCache[name].play();
-        this.currentMusic = game.MusicCache[name];
+        game.SoundCache[name].play();
+        this.currentMusic = game.SoundCache[name];
     },
 
     /**
@@ -375,11 +355,13 @@ game.Sound = game.Class.extend({
     playbackRate: 1,
     channels: 4,
     loop: false,
+    name: null,
     
-    init: function(path, multiChannel) {
+    init: function(path, name) {
         this.path = path;
-        this.multiChannel = !!multiChannel;
-        this.load();
+        this.name = name || path;
+        this.multiChannel = false; // TODO
+        game.audioResources.push(this);
     },
 
     load: function(loadCallback) {
@@ -389,15 +371,13 @@ game.Sound = game.Class.extend({
         }
         
         if(game.ready) {
+            game.SoundCache[this.name] = this;
             if(game.sound.context) {
                 if(game.sound.context.createGain) this.gainNode = game.sound.context.createGain();
                 else if(game.sound.context.createGainNode) this.gainNode = game.sound.context.createGainNode();
                 this.gainNode.connect(game.sound.gainNode);
             }
-            game.sound.load(this.path, this.multiChannel, loadCallback);
-        }
-        else {
-            game.audioResources.push(this);
+            game.sound.load(this.path, loadCallback);
         }
 
         if(game.ready && game.sound && !game.SoundManager.webAudio && game.SoundManager.enabled) {
@@ -503,6 +483,5 @@ game.Music = game.Sound.extend({
 });
 
 game.SoundCache = {};
-game.MusicCache = {};
 
 });

@@ -1,5 +1,5 @@
 /**
-    Preloader for assets and sounds.
+    Dynamic loader for assets and audio.
     
     @module loader
     @namespace game
@@ -10,7 +10,7 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
-    Preloader.
+    Loader.
     @class Loader
     @extends game.Class
 **/
@@ -52,24 +52,20 @@ game.Loader = game.Class.extend({
     **/
     sounds: [],
     
-    staticInit: function(scene, assets, sounds) {
+    init: function(scene) {
         var i;
-        if(this.backgroundColor) {
-            var bg = new game.Graphics();
-            bg.beginFill(this.backgroundColor);
-            bg.drawRect(0, 0, game.system.width, game.system.height);
-            game.system.stage.addChild(bg);
-        }
 
         this.scene = scene;
         this.timer = new game.Timer();
 
-        for (i = 0; i < assets.length; i++) {
-            this.assets.push(game.Loader.getPath(assets[i]));
+        for (i = 0; i < game.resources.length; i++) {
+            if(game.TextureCache[game.resources[i]]) continue;
+            this.assets.push(game.Loader.getPath(game.resources[i]));
         }
 
-        for (i = 0; i < sounds.length; i++) {
-            this.sounds.push(sounds[i]);
+        for (i = 0; i < game.audioResources.length; i++) {
+            if(game.SoundCache[game.audioResources[i].name]) continue;
+            this.sounds.push(game.audioResources[i]);
         }
 
         if(this.assets.length > 0) {
@@ -82,7 +78,14 @@ game.Loader = game.Class.extend({
         if(this.assets.length === 0 && this.sounds.length === 0) this.percent = 100;
     },
 
-    init: function() {
+    initStage: function() {
+        if(this.backgroundColor) {
+            var bg = new game.Graphics();
+            bg.beginFill(this.backgroundColor);
+            bg.drawRect(0, 0, game.system.width, game.system.height);
+            game.system.stage.addChild(bg);
+        }
+
         this.text = new game.Text(this.percent+'%',{font:'30px Arial',fill:'#ffffff'});
         this.text.position.x = game.system.width / 2 - this.text.width / 2;
         this.text.position.y = game.system.height/2 + 80;
@@ -107,13 +110,35 @@ game.Loader = game.Class.extend({
     },
 
     /**
-        Start preloader.
+        Start loader.
         @method start
     **/
     start: function() {
+        if(game.scene) {
+            for (var i = game.system.stage.children.length - 1; i >= 0; i--) {
+                game.system.stage.removeChild(game.system.stage.children[i]);
+            }
+            game.system.stage.setBackgroundColor(this.backgroundColor);
+
+            game.system.stage.interactive = false; // this is not working, bug?
+
+            game.system.stage.mousemove = game.system.stage.touchmove = null;
+            game.system.stage.click = game.system.stage.tap = null;
+            game.system.stage.mousedown = game.system.stage.touchstart = null;
+            game.system.stage.mouseup = game.system.stage.mouseupoutside = game.system.stage.touchend = game.system.stage.touchendoutside = null;
+            game.system.stage.mouseout = null;
+        }
+        if(game.sound) game.sound.stopAll();
+
+        this.initStage();
+
         if(this.assets.length > 0) this.loader.load();
         else this.loadAudio();
-        this.loopId = game.setGameLoop(this.run.bind(this), game.system.canvas);
+        
+        if(!game.scene) this.loopId = game.setGameLoop(this.run.bind(this), game.system.canvas);
+        else {
+            game.scene = this;
+        }
     },
 
     /**
@@ -135,8 +160,8 @@ game.Loader = game.Class.extend({
         File loaded.
         @method progress
     **/
-    progress: function(path, loaded) {
-        if(path && !loaded) this.error('Failed to load: ' + path);
+    progress: function(name, loaded) {
+        if(name && !loaded) this.error('Failed to load: ' + name);
         this.loaded++;
         this.percent = Math.round(this.loaded / (this.assets.length + this.sounds.length) * 100);
         this.onPercentChange();
@@ -168,14 +193,14 @@ game.Loader = game.Class.extend({
         @method ready
     **/
     ready: function() {
-        this.startGame();
+        this.setScene();
     },
 
     /**
-        Start the game.
-        @method startGame
+        Set scene.
+        @method setScene
     **/
-    startGame: function() {
+    setScene: function() {
         if(game.system.retina || game.system.hires) {
             for(var i in game.TextureCache) {
                 if(i.indexOf('@2x') !== -1) {
@@ -184,7 +209,8 @@ game.Loader = game.Class.extend({
                 }
             }
         }
-
+        game.resources.length = 0;
+        game.audioResources.length = 0;
         game.Timer.time = Number.MIN_VALUE;
         game.clearGameLoop(this.loopId);
         game.system.setScene(this.scene);
@@ -210,7 +236,7 @@ game.Loader = game.Class.extend({
 
     render: function() {
         game.system.renderer.render(game.system.stage);
-    },
+    }
 });
 
 /**

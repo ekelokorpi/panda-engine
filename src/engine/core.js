@@ -247,7 +247,7 @@ var core = {
     **/
     addSound: function(path, name) {
         name = name || path;
-        this.SoundCache[name] = new game.Sound(path);
+        var sound = new game.Sound(path, name);
     },
 
     /**
@@ -258,7 +258,7 @@ var core = {
     **/
     addMusic: function(path, name) {
         name = name || path;
-        this.MusicCache[name] = new game.Music(path);
+        var music = new game.Music(path, name);
     },
     
     setNocache: function() {

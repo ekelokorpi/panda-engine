@@ -49,7 +49,9 @@ game.Scene = game.Class.extend({
     staticInit: function() {
         game.scene = this;
 
-        game.system.stage.removeAll();
+        for (var i = game.system.stage.children.length - 1; i >= 0; i--) {
+            game.system.stage.removeChild(game.system.stage.children[i]);
+        }
         game.system.stage.setBackgroundColor(this.clearColor || this.backgroundColor);
 
         game.system.stage.mousemove = game.system.stage.touchmove = this.mousemove.bind(this);
