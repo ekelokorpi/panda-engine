@@ -3,6 +3,7 @@
 
     @module particle
     @namespace game
+    @requires physics
 **/
 game.module(
     'engine.particle'

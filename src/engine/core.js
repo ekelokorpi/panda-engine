@@ -31,6 +31,17 @@ if(typeof(global) !== 'undefined') return;
 
     @module core
     @namespace game
+    @requires loader
+    @requires timer
+    @requires system
+    @requires sound
+    @requires sprite
+    @requires debug
+    @requires storage
+    @requires tween
+    @requires scene
+    @requires pool
+    @requires analytics
 **/
 /**
     Instance automatically created at `game`
@@ -696,6 +707,7 @@ game.module(
 )
 .require(
     'engine.loader',
+    'engine.timer',
     'engine.system',
     'engine.sound',
     'engine.renderer',
