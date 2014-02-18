@@ -317,7 +317,7 @@ var core = {
         @param {String} canvasId
     **/
     start: function(scene, width, height, canvasId) {
-        if(this._loadQueue.length > 0) throw 'Engine modules not ready.';
+        if(this._loadQueue.length > 0) throw('Core not ready.');
         
         width = width || (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         height = height || (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
@@ -423,11 +423,7 @@ var core = {
                 }
                 unresolved.push(game._loadQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
             }
-            throw(
-                'Unresolved (circular?) dependencies. ' +
-                'Most likely there is a name/path mismatch for one of the listed modules:\n' +
-                unresolved.join('\n')
-            );
+            throw('Unresolved modules:\n' + unresolved.join('\n'));
         }
     },
     
@@ -478,8 +474,6 @@ var core = {
                 };
             }
         }
-
-        this.ua = this.device; // support for deprecated game.ua
     },
 
     _DOMReady: function() {
