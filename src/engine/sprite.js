@@ -98,4 +98,17 @@ game.TilingSprite = PIXI.TilingSprite.extend({
     }
 });
 
+game.Animation = PIXI.MovieClip.extend({
+    init: function() {
+        var frames = Array.prototype.slice.call(arguments);
+
+        var textures = [];
+        for (var i = 0; i < frames.length; i++) {
+            textures.push(game.Texture.fromImage(frames[i]));
+        }
+
+        this.super(textures);
+    }
+});
+
 });
