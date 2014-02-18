@@ -1,5 +1,7 @@
 ## Panda.js HTML5 game engine
 
+Free open source HTML5 game engine for mobile and desktop with Canvas and WebGL rendering.
+
 http://www.pandajs.net
 
 ### Forum
