@@ -58,21 +58,29 @@ game.DebugDraw = game.Class.extend({
     **/
     addBody: function(body) {
         var sprite = new game.Graphics();
-        sprite.beginFill(game.DebugDraw.shapeColor);
-
-        if(body.shape instanceof game.Rectangle) {
-            sprite.drawRect(-body.shape.width/2, -body.shape.height/2, body.shape.width, body.shape.height);
-        }
-        if(body.shape instanceof game.Circle) {
-            sprite.drawCircle(0, 0, body.shape.radius);
-        }
-        // TODO add support for game.Line
+        this.drawSprite(sprite, body);
 
         sprite.position.x = body.position.x;
         sprite.position.y = body.position.y;
         sprite.target = body;
         sprite.alpha = game.DebugDraw.shapeAlpha;
         this.container.addChild(sprite);
+    },
+
+    drawSprite: function(sprite, body) {
+        sprite.clear();
+        sprite.beginFill(game.DebugDraw.shapeColor);
+
+        if(body.shape instanceof game.Rectangle) {
+            sprite.drawRect(-body.shape.width/2, -body.shape.height/2, body.shape.width, body.shape.height);
+            sprite.width = body.shape.width;
+            sprite.height = body.shape.height;
+        }
+        if(body.shape instanceof game.Circle) {
+            sprite.drawCircle(0, 0, body.shape.radius);
+            sprite.radius = body.shape.radius;
+        }
+        // TODO add support for game.Line
     },
 
     /**
@@ -84,6 +92,14 @@ game.DebugDraw = game.Class.extend({
             this.container.children[i].rotation = this.container.children[i].target.rotation;
 
             if(game.modules['engine.physics'] && this.container.children[i].target instanceof game.Body) {
+                if(this.container.children[i].width !== this.container.children[i].target.shape.width ||
+                    this.container.children[i].height !== this.container.children[i].target.shape.height) {
+                    this.drawSprite(this.container.children[i], this.container.children[i].target);
+                }
+                if(this.container.children[i].radius !== this.container.children[i].target.shape.radius) {
+                    this.drawSprite(this.container.children[i], this.container.children[i].target);   
+                }
+
                 this.container.children[i].position.x = this.container.children[i].target.position.x + game.scene.stage.position.x;
                 this.container.children[i].position.y = this.container.children[i].target.position.y + game.scene.stage.position.y;
                 if(!this.container.children[i].target.world) {
