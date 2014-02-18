@@ -11,7 +11,7 @@ game.module(
 
 game.Audio = game.Class.extend({
     format: null,
-    clips: {},
+    sources: {},
 
     // Web Audio
     context: null,
@@ -70,7 +70,7 @@ game.Audio = game.Class.extend({
     decode: function(request, path, callback) {
         if(!this.context) return;
 
-        if(!request.response) throw('Error loading ' + path);
+        if(!request.response) throw('Error loading: ' + path);
 
         this.context.decodeAudioData(
             request.response,
@@ -105,10 +105,13 @@ game.Audio = game.Class.extend({
 
     // Audio loaded
     loaded: function(path, callback, audio) {
-        if(this.clips[game.Audio.resources[path]]) throw('Duplicate audio ' + game.Audio.resources[path]);
-        if(!game.Audio.resources[path]) throw('Cannot find cache for ' + path);
+        if(this.sources[game.Audio.resources[path]]) throw('Duplicate audio: ' + game.Audio.resources[path]);
+        if(!game.Audio.resources[path]) throw('Cannot find audio name: ' + path);
 
-        this.clips[game.Audio.resources[path]] = audio;
+        this.sources[game.Audio.resources[path]] = {
+            clips: [],
+            audio: audio
+        };
 
         if(audio instanceof Audio) audio.removeEventListener('canplaythrough', this.loaded, false);
 
@@ -117,7 +120,7 @@ game.Audio = game.Class.extend({
 
     // Loading error
     loadError: function(path) {
-        throw('Error loading ' + path);
+        throw('Error loading: ' + path);
     },
 
     // Get real path using correct format extension
@@ -126,15 +129,15 @@ game.Audio = game.Class.extend({
     },
 
     // Play audio
-    play: function(path, volume, loop, rate) {
-        if(!this.clips[path]) throw('Cannot find audio ' + path);
+    play: function(name, volume, loop, rate) {
+        if(!this.sources[name]) throw('Cannot find audio: ' + name);
 
         // Web Audio
-        if(this.context) {            
-            var source = this.context.createBufferSource();
-            source.buffer = this.clips[path];
-            source.loop = loop;
-            source.playbackRate.value = rate || 1;
+        if(this.context) {
+            var audio = this.context.createBufferSource();
+            audio.buffer = this.sources[name].audio;
+            audio.loop = loop;
+            audio.playbackRate.value = rate || 1;
             
             var gainNode;
             if(this.context.createGain) gainNode = this.context.createGain();
@@ -142,16 +145,40 @@ game.Audio = game.Class.extend({
             gainNode.gain.value = volume || 1;
 
             gainNode.connect(this.gainNode);
-            source.connect(gainNode);
+            audio.connect(gainNode);
 
-            if(source.start) source.start();
-            else if(source.noteOn) source.noteOn();
+            if(audio.start) audio.start();
+            else if(audio.noteOn) audio.noteOn();
+
+            this.sources[name].clips.push(audio);
         }
         // HTML5 Audio
         else {
-            this.clips[path].volume = volume || 1;
-            this.clips[path].loop = loop;
-            this.clips[path].play();
+            this.sources[name].audio.volume = volume || 1;
+            this.sources[name].audio.loop = loop;
+            this.sources[name].audio.play();
+        }
+    },
+
+    // Stop audio
+    stop: function(name) {
+        if(!this.sources[name]) throw('Cannot find source: ' + name);
+
+        // Web Audio
+        if(this.context) {
+            if(this.sources[name]) {
+                // Stop all source clips
+                for (var i = 0; i < this.sources[name].clips.length; i++) {
+                    if(this.sources[name].clips[i].stop) this.sources[name].clips[i].stop();
+                    else if(this.sources[name].clips[i].noteOff) this.sources[name].clips[i].noteOff();
+                }
+                this.sources[name].clips.length = 0;
+            }
+        }
+        // HTML5 Audio
+        else {
+            this.sources[name].audio.pause();
+            this.sources[name].audio.currentTime = 0;
         }
     },
 
@@ -164,21 +191,38 @@ game.Audio = game.Class.extend({
         if(loop) this.loopedSounds.push(name);
     },
 
+    stopSound: function(name) {
+        if(!game.Audio.enabled) return;
+
+        if(name) {
+            // Stop specific sound
+            this.stop(name);
+            var index = this.loopedSounds.indexOf(name);
+            if(index !== -1) this.loopedSounds.splice(index, 1);
+        } else {
+            // Stop all sounds
+            for(var i in this.sources) this.stop(i);
+            this.loopedSounds.length = 0;
+        }
+    },
+
     playMusic: function(name, volume) {
         if(!game.Audio.enabled) return;
         if(this.musicMuted) return;
 
+        if(this.currentMusic) this.stop(this.currentMusic);
+        this.currentMusic = name;
+
         volume = volume || 1;
-        this.play(name, volume * this.soundVolume, loop);
-        if(loop) this.loopedSounds.push(name);
+        this.play(name, volume * this.musicVolume, loop);
     }
 });
 
 // Is audio enabled
-game.Audio.enabled = false;
+game.Audio.enabled = true;
 
 // Is Web Audio enabled
-game.Audio.webAudio = true;
+game.Audio.webAudio = false;
 
 // List of supported formats
 game.Audio.formats = [
