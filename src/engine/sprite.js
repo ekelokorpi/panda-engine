@@ -37,11 +37,11 @@ game.Sprite = PIXI.Sprite.extend({
         this.position.y = y;
 
         // auto bind touch events for mobile
-        if(game.ua.mobile && !this.tap && this.click) this.tap = this.click;
-        if(game.ua.mobile && !this.touchmove && this.mousemove) this.touchmove = this.mousemove;
-        if(game.ua.mobile && !this.touchstart && this.mousedown) this.touchstart = this.mousedown;
-        if(game.ua.mobile && !this.touchend && this.mouseup) this.touchend = this.mouseup;
-        if(game.ua.mobile && !this.touchendoutside && this.mouseupoutside) this.touchendoutside = this.mouseupoutside;
+        if(game.device.mobile && !this.tap && this.click) this.tap = this.click;
+        if(game.device.mobile && !this.touchmove && this.mousemove) this.touchmove = this.mousemove;
+        if(game.device.mobile && !this.touchstart && this.mousedown) this.touchstart = this.mousedown;
+        if(game.device.mobile && !this.touchend && this.mouseup) this.touchend = this.mouseup;
+        if(game.device.mobile && !this.touchendoutside && this.mouseupoutside) this.touchendoutside = this.mouseupoutside;
     },
 
     /**

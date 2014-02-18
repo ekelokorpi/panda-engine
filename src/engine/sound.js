@@ -37,7 +37,7 @@ game.SoundManager = game.Class.extend({
     musicVolume: 1.0,
 
     init: function(){
-        if(game.ua.wp) game.SoundManager.enabled = false;
+        if(game.device.wp) game.SoundManager.enabled = false;
         
         if(!game.SoundManager.enabled) game.SoundManager.webAudio = false;
 
@@ -47,7 +47,7 @@ game.SoundManager = game.Class.extend({
             }
         }
 
-        if(!navigator.onLine && game.ua.mobile) {
+        if(!navigator.onLine && game.device.mobile) {
             game.SoundManager.webAudio = game.SoundManager.enabled = false;
         }
 
