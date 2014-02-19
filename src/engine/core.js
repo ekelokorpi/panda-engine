@@ -230,11 +230,13 @@ var core = {
         Add asset to preloader.
         @method addAsset
         @param {String} path
+        @return {String} path
         @example
             game.addAsset('media/logo.png');
     **/
     addAsset: function(path) {
         this.resources.push(path);
+        return path;
     },
 
     /**
