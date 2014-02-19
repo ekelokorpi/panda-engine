@@ -18,7 +18,6 @@ game.Audio = game.Class.extend({
     gainNode: null,
 
     // Sound
-    loopedSounds: [],
     soundMuted: false,
     soundVolume: 1.0,
 
@@ -70,7 +69,7 @@ game.Audio = game.Class.extend({
     decode: function(request, path, callback) {
         if(!this.context) return;
 
-        if(!request.response) throw('Error loading: ' + path);
+        if(!request.response) throw('Error loading audio: ' + path);
 
         this.context.decodeAudioData(
             request.response,
@@ -105,15 +104,20 @@ game.Audio = game.Class.extend({
 
     // Audio loaded
     loaded: function(path, callback, audio) {
-        if(this.sources[game.Audio.resources[path]]) throw('Duplicate audio: ' + game.Audio.resources[path]);
-        if(!game.Audio.resources[path]) throw('Cannot find audio name: ' + path);
+        if(this.sources[game.Audio.resources[path]]) throw('Duplicate audio source: ' + game.Audio.resources[path]);
+        if(!game.Audio.resources[path]) throw('Cannot find audio resource: ' + path);
 
         this.sources[game.Audio.resources[path]] = {
             clips: [],
-            audio: audio
+            audio: audio,
         };
 
-        if(audio instanceof Audio) audio.removeEventListener('canplaythrough', this.loaded, false);
+        if(audio instanceof Audio) {
+            audio.removeEventListener('canplaythrough', this.loaded, false);
+            audio.addEventListener('ended', function() {
+                this.playing = false;
+            }, false);
+        }
 
         if(callback) callback(path);
     },
@@ -130,13 +134,13 @@ game.Audio = game.Class.extend({
 
     // Play audio
     play: function(name, volume, loop, rate) {
-        if(!this.sources[name]) throw('Cannot find audio: ' + name);
+        if(!this.sources[name]) throw('Cannot find source: ' + name);
 
         // Web Audio
         if(this.context) {
             var audio = this.context.createBufferSource();
             audio.buffer = this.sources[name].audio;
-            audio.loop = loop;
+            audio.loop = !!loop;
             audio.playbackRate.value = rate || 1;
             
             var gainNode;
@@ -147,15 +151,19 @@ game.Audio = game.Class.extend({
             gainNode.connect(this.gainNode);
             audio.connect(gainNode);
 
-            if(audio.start) audio.start();
-            else if(audio.noteOn) audio.noteOn();
+            if(audio.start) audio.start(0, this.sources[name].audio.pauseTime);
+            else if(audio.noteOn) audio.noteOn(0, this.sources[name].audio.pauseTime);
 
             this.sources[name].clips.push(audio);
+            this.sources[name].audio.volume = gainNode.gain.value; // Store volume info for pauses
+            this.sources[name].audio.loop = audio.loop; // Store loop info for pauses
+            this.sources[name].audio.startTime = this.context.currentTime - this.sources[name].audio.pauseTime || 0;
         }
         // HTML5 Audio
         else {
             this.sources[name].audio.volume = volume || 1;
             this.sources[name].audio.loop = loop;
+            this.sources[name].audio.playing = true;
             this.sources[name].audio.play();
         }
     },
@@ -166,55 +174,113 @@ game.Audio = game.Class.extend({
 
         // Web Audio
         if(this.context) {
-            if(this.sources[name]) {
-                // Stop all source clips
-                for (var i = 0; i < this.sources[name].clips.length; i++) {
-                    if(this.sources[name].clips[i].stop) this.sources[name].clips[i].stop();
-                    else if(this.sources[name].clips[i].noteOff) this.sources[name].clips[i].noteOff();
-                }
-                this.sources[name].clips.length = 0;
+            // Stop all source clips
+            for (var i = 0; i < this.sources[name].clips.length; i++) {
+                if(this.sources[name].clips[i].stop) this.sources[name].clips[i].stop();
+                else if(this.sources[name].clips[i].noteOff) this.sources[name].clips[i].noteOff();
             }
+            this.sources[name].clips.length = 0;
+            this.sources[name].audio.pauseTime = 0;
         }
         // HTML5 Audio
         else {
             this.sources[name].audio.pause();
+            this.sources[name].audio.playing = false;
             this.sources[name].audio.currentTime = 0;
         }
     },
 
+    // Pause audio
+    pause: function(name) {
+        if(!this.sources[name]) throw('Cannot find source: ' + name);
+
+        // Web Audio
+        if(this.context) {
+            // Stop all source clips
+            for (var i = 0; i < this.sources[name].clips.length; i++) {
+                if(this.sources[name].clips[i].stop) this.sources[name].clips[i].stop();
+                else if(this.sources[name].clips[i].noteOff) this.sources[name].clips[i].noteOff();
+            }
+            this.sources[name].clips.length = 0;
+            this.sources[name].audio.pauseTime = this.context.currentTime - this.sources[name].audio.startTime;
+
+            if(this.sources[name].audio.pauseTime > this.sources[name].audio.duration && !this.sources[name].audio.loop) {
+                // Trying to pause completed not looping sound
+                this.sources[name].audio.pauseTime = 0;
+            }
+        }
+        // HTML5 Audio
+        else {
+            if(this.sources[name].audio.currentTime > 0 && this.sources[name].audio.currentTime < this.sources[name].audio.duration || this.sources[name].audio.loop) {
+                this.sources[name].audio.pause();
+            }
+        }
+    },
+
+    // Play audio as sound
     playSound: function(name, volume, loop) {
         if(!game.Audio.enabled) return;
         if(this.soundMuted) return;
 
         volume = volume || 1;
         this.play(name, volume * this.soundVolume, loop);
-        if(loop) this.loopedSounds.push(name);
     },
 
+    // Stop sound
     stopSound: function(name) {
         if(!game.Audio.enabled) return;
 
         if(name) {
             // Stop specific sound
             this.stop(name);
-            var index = this.loopedSounds.indexOf(name);
-            if(index !== -1) this.loopedSounds.splice(index, 1);
         } else {
             // Stop all sounds
             for(var i in this.sources) this.stop(i);
-            this.loopedSounds.length = 0;
         }
     },
 
+    // Play audio as music
     playMusic: function(name, volume) {
         if(!game.Audio.enabled) return;
         if(this.musicMuted) return;
 
+        // Stop current music before playing new
         if(this.currentMusic) this.stop(this.currentMusic);
         this.currentMusic = name;
 
         volume = volume || 1;
-        this.play(name, volume * this.musicVolume, loop);
+        this.play(name, volume * this.musicVolume, true);
+    },
+
+    // Stop music
+    stopMusic: function() {
+        if(!game.Audio.enabled) return;
+
+        if(this.currentMusic) this.stop(this.currentMusic);
+        this.currentMusic = null;
+    },
+
+    // Pause all audio
+    pauseAll: function() {
+        if(!game.Audio.enabled) return;
+
+        // Pause all sounds
+        for(var i in this.sources) this.pause(i);
+    },
+
+    // Resuma all paused audio
+    resumeAll: function() {
+        if(!game.Audio.enabled) return;
+
+        for(var name in this.sources) {
+            if(this.context) {
+                if(this.sources[name].audio.pauseTime) {
+                    this.play(name, this.sources[name].audio.volume, this.sources[name].audio.loop);
+                }
+            } else {
+                if(this.sources[name].audio.playing) this.sources[name].audio.play();
+            }
+        }
     }
 });
 
@@ -222,7 +288,7 @@ game.Audio = game.Class.extend({
 game.Audio.enabled = true;
 
 // Is Web Audio enabled
-game.Audio.webAudio = false;
+game.Audio.webAudio = true;
 
 // List of supported formats
 game.Audio.formats = [
