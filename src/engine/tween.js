@@ -1,417 +1,431 @@
-/**
-    Tween engine.
-    
-    @module tween
-    @namespace game
-**/
 game.module(
     'engine.tween'
 )
-.body(function() { 'use strict';
+.body(function() {
 
 /**
-    __Hint__: Use {{#crossLink "game.Scene/addTween:method"}}{{/crossLink}}
+ * @author sole / http://soledadpenades.com
+ * @author mrdoob / http://mrdoob.com
+ * @author Robert Eisele / http://www.xarg.org
+ * @author Philippe / http://philippe.elsass.me
+ * @author Robert Penner / http://www.robertpenner.com/easing_terms_of_use.html
+ * @author Paul Lewis / http://www.aerotwist.com/
+ * @author lechecacharro
+ * @author Josh Faul / http://jocafa.com/
+ * @author egraether / http://egraether.com/
+ * @author endel / http://endel.me
+ * @author Ben Delarre / http://delarre.net
+ */
 
-    @class Tween
-    @extends game.Class
-    @constructor
-    @param {Object} obj
-    @param {Object} properties
-    @param {Number} duration
-    @param {Object} [settings]
-**/
-game.Tween = game.Class.extend({
-    /**
-        @property {Easing} easing
-    **/
-    easing: null,
-    /**
-        @property {Loop} loop
-    **/
-    loop: 0,
-    /**
-        @property {Number} delay
-        @default 0
-    **/
-    delay: 0,
-    /**
-        @property {Function} onComplete
-    **/
-    onComplete: false,
-    /**
-        @property {Function} onStart
-    **/
-    onStart: false,
-    /**
-        @property {Number} duration
-        @default 1
-    **/
-    duration: 1,
+// Date.now shim for (ahem) Internet Explo(d|r)er
+if(Date.now === undefined) {
+    Date.now = function () {
+        return new Date().valueOf();
+    };
+}
 
-    object: null,
-    props: null,
-    chained: false,
-    elapsed: 0,
-    valuesStart: {},
-    valuesEnd: {},
-    valuesDelta: {},
-    timer: false,
-    started: false,
-    complete: false,
-    paused: false,
-    loopCount: -1,
-    loopNum: null,
+game.TweenEngine = (function () {
+    var _tweens = [];
+    return {
+        REVISION: '12',
 
-    init: function(obj, properties, duration, settings) {
-        this.object = obj;
-        this.props = properties;
-        this.duration = duration || this.duration;
-        this.easing = game.Tween.Easing.Linear.None;
-        game.merge(this, settings);
-        this.loopNum = this.loopCount;
-    },
+        getAll: function () {
+            return _tweens;
+        },
 
-    /**
-        Start tween.
-        @method start
-    **/
-    start: function() {
+        removeAll: function () {
+            _tweens.length = 0;
+        },
+
+        add: function (tween) {
+            _tweens.push(tween);
+        },
+
+        remove: function (tween) {
+            var i = _tweens.indexOf(tween);
+            if(i !== -1) {
+                _tweens.splice(i, 1);
+            }
+        },
+
+        update: function (time) {
+            if(_tweens.length === 0) return false;
+            var i = 0;
+            time = time !== undefined ? time : game.Timer.time;
+            while (i < _tweens.length) {
+                if(_tweens[i].update(time)) {
+                    i++;
+                } else {
+                    _tweens.splice(i, 1);
+                }
+            }
+            return true;
+        }
+    };
+})();
+
+game.Tween = function (object) {
+    var _object = object;
+    var _valuesStart = {};
+    var _valuesEnd = {};
+    var _valuesStartRepeat = {};
+    var _duration = 1000;
+    var _repeat = 0;
+    var _repeats = 0;
+    var _yoyo = false;
+    var _isPlaying = false;
+    var _reversed = false;
+    var _delayTime = 0;
+    var _startTime = null;
+    var _originalStartTime = null;
+    var _easingFunction = game.Tween.Easing.Linear.None;
+    var _interpolationFunction = game.Tween.Interpolation.Linear;
+    var _chainedTweens = [];
+    var _onStartCallback = null;
+    var _onStartCallbackFired = false;
+    var _onUpdateCallback = null;
+    var _onCompleteCallback = null;
+
+    // Set all starting values present on the target object
+    for (var field in object) {
+        _valuesStart[field] = parseFloat(object[field], 10);
+    }
+
+    this.to = function (properties, duration) {
+        if(duration !== undefined) {
+            _duration = duration;
+        }
+        _valuesEnd = properties;
+        return this;
+    };
+
+    this.start = function (time) {
+        game.TweenEngine.add(this);
+        _isPlaying = true;
+        _onStartCallbackFired = false;
+        _startTime = time !== undefined ? time : game.Timer.time;
+        _startTime += _delayTime;
+        _originalStartTime = _startTime;
+        for (var property in _valuesEnd) {
+            // check ifan Array was provided as property value
+            if(_valuesEnd[property] instanceof Array) {
+                if(_valuesEnd[property].length === 0) {
+                    continue;
+                }
+                // create a local copy of the Array with the start value at the front
+                _valuesEnd[property] = [_object[property]].concat(_valuesEnd[property]);
+            }
+            _valuesStart[property] = _object[property];
+            if((_valuesStart[property] instanceof Array) === false) {
+                _valuesStart[property] *= 1.0; // Ensures we're using numbers, not strings
+            }
+            _valuesStartRepeat[property] = _valuesStart[property] || 0;
+        }
+        return this;
+    };
+
+    this.stop = function () {
+        if(!_isPlaying) {
+            return this;
+        }
+        game.TweenEngine.remove(this);
+        _isPlaying = false;
+        this.stopChainedTweens();
+        return this;
+    };
+
+    this.stopChainedTweens = function () {
+        for (var i = 0, numChainedTweens = _chainedTweens.length; i < numChainedTweens; i++) {
+            _chainedTweens[i].stop();
+        }
+    };
+
+    this.delay = function (amount) {
+        _delayTime = amount;
+        return this;
+    };
+
+    this.repeat = function (times) {
+        _repeat = times;
+        return this;
+    };
+
+    this.yoyo = function (yoyo) {
+        _yoyo = yoyo;
+        return this;
+    };
+
+    this.easing = function (easing) {
+        _easingFunction = easing;
+        return this;
+    };
+
+    this.interpolation = function (interpolation) {
+        _interpolationFunction = interpolation;
+        return this;
+    };
+
+    this.chain = function () {
+        _chainedTweens = arguments;
+        return this;
+    };
+
+    this.onStart = function (callback) {
+        _onStartCallback = callback;
+        return this;
+    };
+
+    this.onUpdate = function (callback) {
+        _onUpdateCallback = callback;
+        return this;
+    };
+
+    this.onComplete = function (callback) {
+        _onCompleteCallback = callback;
+        return this;
+    };
+
+    this.update = function (time) {
         var property;
-        this.complete = false;
-        this.paused = false;
-        this.loopNum = this.loopCount;
-        this.elapsed = 0;
-        this.started = true;
-        this.timer = new game.Timer();
-        for (property in this.props) {
-            this.initEnd(property, this.props, this.valuesEnd);
+        if(time < _startTime) {
+            return true;
         }
-        for (property in this.valuesEnd) {
-            this.initStart(property, this.valuesEnd, this.object, this.valuesStart);
-            this.initDelta(property, this.valuesDelta, this.object, this.valuesEnd);
-        }
-    },
-
-    /**
-        Pause tween.
-        @method pause
-    **/
-    pause: function() {
-        this.paused = true;
-        if(this.timer) this.elapsed += this.timer.time();
-    },
-
-    /**
-        @method resume
-    **/
-    resume: function() {
-        this.paused = false;
-        if(this.timer) this.timer.reset();
-    },
-
-    /**
-        Stop tween.
-        @method stop
-        @param {Boolean} doComplete
-    **/
-    stop: function(doComplete) {
-        if(doComplete) {
-            this.paused = false;
-            this.complete = false;
-            this.loop = false;
-            this.elapsed += this.duration;
-            this.update();
-        }
-        this.complete = true;
-    },
-
-    /**
-        Chain tween to another tween.
-        @method chain
-        @param {game.Tween} tween
-    **/
-    chain: function(tween) {
-        this.chained = tween;
-    },
-
-    initEnd: function(prop, from, to) {
-        if(typeof(from[prop]) !== 'object') {
-            to[prop] = from[prop];
-        } else {
-            for (var subprop in from[prop]) {
-                if(!to[prop]) to[prop] = {};
-                this.initEnd(subprop, from[prop], to[prop]);
+        if(_onStartCallbackFired === false) {
+            if(_onStartCallback !== null) {
+                _onStartCallback.call(_object);
             }
+            _onStartCallbackFired = true;
         }
-    },
-
-    initStart: function(prop, end, from, to) {
-        if(typeof(from[prop]) !== 'object') {
-            if(typeof(end[prop]) !== 'undefined') to[prop] = from[prop];
-        } else {
-            for (var subprop in from[prop]) {
-                if(!to[prop]) to[prop] = {};
-                if(typeof(end[prop]) !== 'undefined') this.initStart(subprop, end[prop], from[prop], to[prop]);
-            }
-        }
-    },
-
-    initDelta: function(prop, delta, start, end) {
-        if(typeof(end[prop]) !== 'object') {
-            delta[prop] = end[prop] - start[prop];
-        } else {
-            for (var subprop in end[prop]) {
-                if(!delta[prop]) delta[prop] = {};
-                this.initDelta(subprop, delta[prop], start[prop], end[prop]);
-            }
-        }
-    },
-
-    propUpdate: function(prop, obj, start, delta, value) {
-        if(typeof(start[prop]) !== 'object') {
-            if(typeof start[prop] !== 'undefined') {
-                obj[prop] = start[prop] + delta[prop] * value;
+        var elapsed = (time - _startTime) / _duration;
+        elapsed = elapsed > 1 ? 1 : elapsed;
+        var value = _easingFunction(elapsed);
+        for (property in _valuesEnd) {
+            var start = _valuesStart[property] || 0;
+            var end = _valuesEnd[property];
+            if(end instanceof Array) {
+                _object[property] = _interpolationFunction(end, value);
             } else {
-                obj[prop] = obj[prop];
-            }
-        } else {
-            for (var subprop in start[prop]) {
-                this.propUpdate(subprop, obj[prop], start[prop], delta[prop], value);
-            }
-        }
-    },
-
-    propSet: function(prop, from, to) {
-        if(typeof(from[prop]) !== 'object') {
-            to[prop] = from[prop];
-        } else {
-            for (var subprop in from[prop]) {
-                if(!to[prop]) to[prop] = {};
-                this.propSet(subprop, from[prop], to[prop]);
+                // Parses relative end values with start as base (e.g.: +10, -3)
+                if(typeof (end) === 'string') {
+                    end = start + parseFloat(end, 10);
+                }
+                // protect against non numeric properties.
+                if(typeof (end) === 'number') {
+                    _object[property] = start + (end - start) * value;
+                }
             }
         }
-    },
-
-    update: function() {
-        if(!this.started) return false;
-        if(this.delay) {
-            if(this.timer.time() < this.delay) return;
-            this.delay = 0;
-            this.timer.reset();
+        if(_onUpdateCallback !== null) {
+            _onUpdateCallback.call(_object, value);
         }
-        if(this.paused || this.complete) return false;
-
-        if(this.onStart) {
-            this.onStart();
-            this.onStart = null;
-        }
-
-        var elapsed = Math.min(1, (this.timer.time() + this.elapsed) / this.duration);
-        var value = this.easing(elapsed);
-
-        for (var property in this.valuesDelta) {
-            this.propUpdate(property, this.object, this.valuesStart, this.valuesDelta, value);
-        }
-
         if(elapsed === 1) {
-            if(this.loopNum === 0 || !this.loop) {
-                this.complete = true;
-                if(this.onComplete) this.onComplete();
-                if(this.chained) this.chained.start();
+            if(_repeat > 0) {
+                if(isFinite(_repeat)) {
+                    _repeat--;
+                }
+                _repeats += 1;
+                // reassign starting values, restart by making startTime = now
+                for (property in _valuesStartRepeat) {
+                    if(typeof (_valuesEnd[property]) === 'string') {
+                        _valuesStartRepeat[property] = _valuesStartRepeat[property] + parseFloat(_valuesEnd[property], 10);
+                    }
+                    if(_yoyo) {
+                        var tmp = _valuesStartRepeat[property];
+                        _valuesStartRepeat[property] = _valuesEnd[property];
+                        _valuesEnd[property] = tmp;
+                        _reversed = !_reversed;
+                    }
+                    _valuesStart[property] = _valuesStartRepeat[property];
+                }
+                // _startTime = time + _delayTime;
+                _startTime = _originalStartTime + _repeats * (_duration + _delayTime);
+                return true;
+            } else {
+                if(_onCompleteCallback !== null) {
+                    _onCompleteCallback.call(_object);
+                }
+                for (var i = 0, numChainedTweens = _chainedTweens.length; i < numChainedTweens; i++) {
+                    _chainedTweens[i].start(time);
+                }
                 return false;
-            } else if(this.loop === game.Tween.Loop.Revert) {
-                // if(this.onComplete) this.onComplete();
-                for (property in this.valuesStart) {
-                    this.propSet(property, this.valuesStart, this.object);
-                }
-                this.elapsed = 0;
-                this.timer.reset();
-                if(this.loopNum !== -1) this.loopNum--;
-            } else if(this.loop === game.Tween.Loop.Reverse) {
-                // if(this.onComplete) this.onComplete();
-                var _start = {}, _end = {};
-                game.merge(_start, this.valuesEnd);
-                game.merge(_end, this.valuesStart);
-                game.merge(this.valuesStart, _start);
-                game.merge(this.valuesEnd, _end);
-                for (property in this.valuesEnd) {
-                    this.initDelta(property, this.valuesDelta, this.object, this.valuesEnd);
-                }
-                this.elapsed = 0;
-                this.timer.reset();
-                if(this.loopNum !== -1) this.loopNum--;
             }
         }
+        return true;
+    };
+};
+
+game.Tween.Easing = {
+    Linear: {
+        None: function (k) {
+            return k;
+        }
+    },
+
+    Quadratic: {
+        In: function (k) {
+            return k * k;
+        },
+        Out: function (k) {
+            return k * (2 - k);
+        },
+        InOut: function (k) {
+            if((k *= 2) < 1) return 0.5 * k * k;
+            return -0.5 * (--k * (k - 2) - 1);
+        }
+    },
+
+    Cubic: {
+        In: function (k) {
+            return k * k * k;
+        },
+        Out: function (k) {
+            return --k * k * k + 1;
+        },
+        InOut: function (k) {
+            if((k *= 2) < 1) return 0.5 * k * k * k;
+            return 0.5 * ((k -= 2) * k * k + 2);
+        }
+    },
+
+    Quartic: {
+        In: function (k) {
+            return k * k * k * k;
+        },
+        Out: function (k) {
+            return 1 - (--k * k * k * k);
+        },
+        InOut: function (k) {
+            if((k *= 2) < 1) return 0.5 * k * k * k * k;
+            return -0.5 * ((k -= 2) * k * k * k - 2);
+        }
+    },
+
+    Quintic: {
+        In: function (k) {
+            return k * k * k * k * k;
+        },
+        Out: function (k) {
+            return --k * k * k * k * k + 1;
+        },
+        InOut: function (k) {
+            if((k *= 2) < 1) return 0.5 * k * k * k * k * k;
+            return 0.5 * ((k -= 2) * k * k * k * k + 2);
+        }
+    },
+
+    Sinusoidal: {
+        In: function (k) {
+            return 1 - Math.cos(k * Math.PI / 2);
+        },
+        Out: function (k) {
+            return Math.sin(k * Math.PI / 2);
+        },
+        InOut: function (k) {
+            return 0.5 * (1 - Math.cos(Math.PI * k));
+        }
+    },
+
+    Exponential: {
+        In: function (k) {
+            return k === 0 ? 0 : Math.pow(1024, k - 1);
+        },
+        Out: function (k) {
+            return k === 1 ? 1 : 1 - Math.pow(2, -10 * k);
+        },
+        InOut: function (k) {
+            if(k === 0) return 0;
+            if(k === 1) return 1;
+            if((k *= 2) < 1) return 0.5 * Math.pow(1024, k - 1);
+            return 0.5 * (-Math.pow(2, -10 * (k - 1)) + 2);
+        }
+    },
+
+    Circular: {
+        In: function (k) {
+            return 1 - Math.sqrt(1 - k * k);
+        },
+        Out: function (k) {
+            return Math.sqrt(1 - (--k * k));
+        },
+        InOut: function (k) {
+            if((k *= 2) < 1) return -0.5 * (Math.sqrt(1 - k * k) - 1);
+            return 0.5 * (Math.sqrt(1 - (k -= 2) * k) + 1);
+        }
+    },
+
+    Elastic: {
+        In: function (k) {
+            var s, a = 0.1,
+                p = 0.4;
+            if(k === 0) return 0;
+            if(k === 1) return 1;
+            if(!a || a < 1) {
+                a = 1;
+                s = p / 4;
+            } else s = p * Math.asin(1 / a) / (2 * Math.PI);
+            return -(a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
+        },
+        Out: function (k) {
+            var s, a = 0.1,
+                p = 0.4;
+            if(k === 0) return 0;
+            if(k === 1) return 1;
+            if(!a || a < 1) {
+                a = 1;
+                s = p / 4;
+            } else s = p * Math.asin(1 / a) / (2 * Math.PI);
+            return (a * Math.pow(2, -10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
+        },
+        InOut: function (k) {
+            var s, a = 0.1,
+                p = 0.4;
+            if(k === 0) return 0;
+            if(k === 1) return 1;
+            if(!a || a < 1) {
+                a = 1;
+                s = p / 4;
+            } else s = p * Math.asin(1 / a) / (2 * Math.PI);
+            if((k *= 2) < 1) return -0.5 * (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
+            return a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * 0.5 + 1;
+        }
+    },
+
+    Back: {
+        In: function (k) {
+            var s = 1.70158;
+            return k * k * ((s + 1) * k - s);
+        },
+        Out: function (k) {
+            var s = 1.70158;
+            return --k * k * ((s + 1) * k + s) + 1;
+        },
+        InOut: function (k) {
+            var s = 1.70158 * 1.525;
+            if((k *= 2) < 1) return 0.5 * (k * k * ((s + 1) * k - s));
+            return 0.5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
+        }
+    },
+
+    Bounce: {
+        In: function (k) {
+            return 1 - game.Tween.Easing.Bounce.Out(1 - k);
+        },
+        Out: function (k) {
+            if(k < (1 / 2.75)) {
+                return 7.5625 * k * k;
+            } else if(k < (2 / 2.75)) {
+                return 7.5625 * (k -= (1.5 / 2.75)) * k + 0.75;
+            } else if(k < (2.5 / 2.75)) {
+                return 7.5625 * (k -= (2.25 / 2.75)) * k + 0.9375;
+            } else {
+                return 7.5625 * (k -= (2.625 / 2.75)) * k + 0.984375;
+            }
+        },
+        InOut: function (k) {
+            if(k < 0.5) return game.Tween.Easing.Bounce.In(k * 2) * 0.5;
+            return game.Tween.Easing.Bounce.Out(k * 2 - 1) * 0.5 + 0.5;
+        }
     }
-});
-
-/**
-    @attribute {Revert|Reverse} Loop
-**/
-game.Tween.Loop = { Revert: 1, Reverse: 2 };
-
-/**
-    Easing types: `In`, `Out` and `InOut`.
-    @attribute {Linear|Quadratic|Cubic|Quartic|Quintic|Sinusoidal|Exponential|Circular|Elastic|Back|Bounce} Easing
-**/
-game.Tween.Easing = { Linear: {}, Quadratic: {}, Cubic: {}, Quartic: {}, Quintic: {}, Sinusoidal: {}, Exponential: {}, Circular: {}, Elastic: {}, Back: {}, Bounce: {} };
-
-game.Tween.Easing.Linear.None = function (k) {
-    return k;
-};
-
-game.Tween.Easing.Quadratic.In = function (k) {
-    return k * k;
-};
-
-game.Tween.Easing.Quadratic.Out = function (k) {
-    return - k * (k - 2);
-};
-
-game.Tween.Easing.Quadratic.InOut = function (k) {
-    if((k *= 2) < 1) return 0.5 * k * k;
-    return - 0.5 * (--k * (k - 2) - 1);
-};
-
-game.Tween.Easing.Cubic.In = function (k) {
-    return k * k * k;
-};
-
-game.Tween.Easing.Cubic.Out = function (k) {
-    return --k * k * k + 1;
-};
-
-game.Tween.Easing.Cubic.InOut = function (k) {
-    if((k *= 2) < 1) return 0.5 * k * k * k;
-    return 0.5 * ((k -= 2) * k * k + 2);
-};
-
-game.Tween.Easing.Quartic.In = function (k) {
-    return k * k * k * k;
-};
-
-game.Tween.Easing.Quartic.Out = function (k) {
-    return - (--k * k * k * k - 1);
-};
-
-game.Tween.Easing.Quartic.InOut = function (k) {
-    if((k *= 2) < 1) return 0.5 * k * k * k * k;
-    return - 0.5 * ((k -= 2) * k * k * k - 2);
-};
-
-game.Tween.Easing.Quintic.In = function (k) {
-    return k * k * k * k * k;
-};
-
-game.Tween.Easing.Quintic.Out = function (k) {
-    return (k = k - 1) * k * k * k * k + 1;
-};
-
-game.Tween.Easing.Quintic.InOut = function (k) {
-    if((k *= 2) < 1) return 0.5 * k * k * k * k * k;
-    return 0.5 * ((k -= 2) * k * k * k * k + 2);
-};
-
-game.Tween.Easing.Sinusoidal.In = function (k) {
-    return - Math.cos(k * Math.PI / 2) + 1;
-};
-
-game.Tween.Easing.Sinusoidal.Out = function (k) {
-    return Math.sin(k * Math.PI / 2);
-};
-
-game.Tween.Easing.Sinusoidal.InOut = function (k) {
-    return - 0.5 * (Math.cos(Math.PI * k) - 1);
-};
-
-game.Tween.Easing.Exponential.In = function (k) {
-    return k === 0 ? 0 : Math.pow(2, 10 * (k - 1));
-};
-
-game.Tween.Easing.Exponential.Out = function (k) {
-    return k === 1 ? 1 : - Math.pow(2, - 10 * k) + 1;
-};
-
-game.Tween.Easing.Exponential.InOut = function (k) {
-    if(k === 0) return 0;
-    if(k === 1) return 1;
-    if((k *= 2) < 1) return 0.5 * Math.pow(2, 10 * (k - 1));
-    return 0.5 * (- Math.pow(2, - 10 * (k - 1)) + 2);
-};
-
-game.Tween.Easing.Circular.In = function (k) {
-    return - (Math.sqrt(1 - k * k) - 1);
-};
-
-game.Tween.Easing.Circular.Out = function (k) {
-    return Math.sqrt(1 - (--k * k));
-};
-
-game.Tween.Easing.Circular.InOut = function (k) {
-    if((k /= 0.5) < 1) return - 0.5 * (Math.sqrt(1 - k * k) - 1);
-    return 0.5 * (Math.sqrt(1 - (k -= 2) * k) + 1);
-};
-
-game.Tween.Easing.Elastic.In = function(k) {
-    var s, a = 0.1, p = 0.4;
-    if(k === 0) return 0; if(k === 1) return 1; if(!p) p = 0.3;
-    if(!a || a < 1) { a = 1; s = p / 4; }
-    else s = p / (2 * Math.PI) * Math.asin(1 / a);
-    return - (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
-};
-
-game.Tween.Easing.Elastic.Out = function(k) {
-    var s, a = 0.1, p = 0.4;
-    if(k === 0) return 0; if(k === 1) return 1; if(!p) p = 0.3;
-    if(!a || a < 1) { a = 1; s = p / 4; }
-    else s = p / (2 * Math.PI) * Math.asin(1 / a);
-    return (a * Math.pow(2, - 10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
-};
-
-game.Tween.Easing.Elastic.InOut = function(k) {
-    var s, a = 0.1, p = 0.4;
-    if(k === 0) return 0; if(k === 1) return 1; if(!p) p = 0.3;
-    if(!a || a < 1) { a = 1; s = p / 4; }
-    else s = p / (2 * Math.PI) * Math.asin(1 / a);
-    if((k *= 2) < 1) return - 0.5 * (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
-    return a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * 0.5 + 1;
-};
-
-game.Tween.Easing.Back.In = function(k) {
-    var s = 1.70158;
-    return k * k * ((s + 1) * k - s);
-};
-
-game.Tween.Easing.Back.Out = function(k) {
-    var s = 1.70158;
-    return (k = k - 1) * k * ((s + 1) * k + s) + 1;
-};
-
-game.Tween.Easing.Back.InOut = function(k) {
-    var s = 1.70158 * 1.525;
-    if((k *= 2) < 1) return 0.5 * (k * k * ((s + 1) * k - s));
-    return 0.5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
-};
-
-game.Tween.Easing.Bounce.In = function(k) {
-    return 1 - game.Tween.Easing.Bounce.Out(1 - k);
-};
-
-game.Tween.Easing.Bounce.Out = function(k) {
-    if((k /= 1) < (1 / 2.75)) {
-        return 7.5625 * k * k;
-    } else if(k < (2 / 2.75)) {
-        return 7.5625 * (k -= (1.5 / 2.75)) * k + 0.75;
-    } else if(k < (2.5 / 2.75)) {
-        return 7.5625 * (k -= (2.25 / 2.75)) * k + 0.9375;
-    } else {
-        return 7.5625 * (k -= (2.625 / 2.75)) * k + 0.984375;
-    }
-};
-
-game.Tween.Easing.Bounce.InOut = function(k) {
-    if(k < 0.5) return game.Tween.Easing.Bounce.In(k * 2) * 0.5;
-    return game.Tween.Easing.Bounce.Out(k * 2 - 1) * 0.5 + 0.5;
 };
 
 game.Tween.Easing.getNamesList = function() {
@@ -440,105 +454,73 @@ game.Tween.Easing.getName = function(easing) {
     }
 };
 
-/**
-    Group for tweens.
-    @class TweenGroup
-    @extends game.Class
-    @constructor
-    @param {Function} [onComplete]
-**/
-game.TweenGroup = game.Class.extend({
-    tweens: [],
-    onComplete: null,
-    complete: false,
-
-    init: function(onComplete) {
-        this.onComplete = onComplete;
+game.Tween.Interpolation = {
+    Linear: function (v, k) {
+        var m = v.length - 1,
+            f = m * k,
+            i = Math.floor(f),
+            fn = game.Tween.Interpolation.Utils.Linear;
+        if(k < 0) return fn(v[0], v[1], f);
+        if(k > 1) return fn(v[m], v[m - 1], m - f);
+        return fn(v[i], v[i + 1 > m ? m : i + 1], f - i);
     },
 
-    /**
-        Add tween to group.
-        @method add
-        @param {Object} obj
-        @param {Object} props
-        @param {Number} duration
-        @param {Object} settings
-        @return {game.Tween} tween
-    **/
-    add: function(obj, props, duration, settings) {
-        settings = settings || {};
-        settings.onComplete = this.tweenComplete.bind(this);
-
-        var tween = new game.Tween(obj, props, duration, settings);
-        this.tweens.push(tween);
-        return tween;
-    },
-
-    tweenComplete: function() {
-        if(this.complete) return;
-        for (var i = 0; i < this.tweens.length; i++) {
-            if(!this.tweens[i].complete) return;
+    Bezier: function (v, k) {
+        var b = 0,
+            n = v.length - 1,
+            pw = Math.pow,
+            bn = game.Tween.Interpolation.Utils.Bernstein,
+            i;
+        for (i = 0; i <= n; i++) {
+            b += pw(1 - k, n - i) * pw(k, i) * v[i] * bn(n, i);
         }
-        this.complete = true;
-        if(typeof(this.onComplete) === 'function') this.onComplete();
+        return b;
     },
 
-    /**
-        Remove tween from group.
-        @method remove
-        @param {game.Tween} tween
-    **/
-    remove: function(tween) {
-        this.tweens.erase(tween);
-    },
-
-    /**
-        Start tween group.
-        @method start
-    **/
-    start: function() {
-        for (var i = 0; i < this.tweens.length; i++) {
-            game.scene.tweens.push(this.tweens[i]);
-            this.tweens[i].start();
+    CatmullRom: function (v, k) {
+        var m = v.length - 1,
+            f = m * k,
+            i = Math.floor(f),
+            fn = game.Tween.Interpolation.Utils.CatmullRom;
+        if(v[0] === v[m]) {
+            if(k < 0) i = Math.floor(f = m * (1 + k));
+            return fn(v[(i - 1 + m) % m], v[i], v[(i + 1) % m], v[(i + 2) % m], f - i);
+        } else {
+            if(k < 0) return v[0] - (fn(v[0], v[0], v[1], v[1], -f) - v[0]);
+            if(k > 1) return v[m] - (fn(v[m], v[m], v[m - 1], v[m - 1], f - m) - v[m]);
+            return fn(v[i ? i - 1 : 0], v[i], v[m < i + 1 ? m : i + 1], v[m < i + 2 ? m : i + 2], f - i);
         }
     },
 
-    /**
-        Pause tween group.
-        @method pause
-    **/
-    pause: function() {
-        for (var i = 0; i < this.tweens.length; i++) {
-            this.tweens[i].pause();
-        }
-    },
+    Utils: {
+        Linear: function (p0, p1, t) {
+            return (p1 - p0) * t + p0;
+        },
 
-    /**
-        Resume tween group.
-        @method resume
-    **/
-    resume: function() {
-        for (var i = 0; i < this.tweens.length; i++) {
-            this.tweens[i].resume();
-        }
-    },
+        Bernstein: function (n, i) {
+            var fc = game.Tween.Interpolation.Utils.Factorial;
+            return fc(n) / fc(i) / fc(n - i);
+        },
 
-    /**
-        Stop tween group.
-        @method stop
-        @param {Boolean} doComplete Call onComplete function
-        @param {Boolean} endTween Set started tweens to end values
-    **/
-    stop: function(doComplete, endTween) {
-        if(this.complete) return;
+        Factorial: (function () {
+            var a = [1];
+            return function (n) {
+                var s = 1,
+                    i;
+                if(a[n]) return a[n];
+                for (i = n; i > 1; i--) s *= i;
+                return a[n] = s;
+            };
+        })(),
 
-        for (var i = 0; i < this.tweens.length; i++) {
-            this.tweens[i].stop(endTween);
+        CatmullRom: function (p0, p1, p2, p3, t) {
+            var v0 = (p2 - p0) * 0.5,
+                v1 = (p3 - p1) * 0.5,
+                t2 = t * t,
+                t3 = t * t2;
+            return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
         }
-        
-        if(!this.complete && doComplete) this.tweenComplete();
-        this.complete = true;
     }
-});
+};
 
 });

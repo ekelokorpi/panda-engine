@@ -10,7 +10,7 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
-    Basic timer.
+    Game timer.
     
     __Example__
 
@@ -21,27 +21,27 @@ game.module(
     @class Timer
     @extends game.Class
     @constructor
-    @param {Number} seconds
+    @param {Number} ms
 **/
 game.Timer = game.Class.extend({
     target: 0,
     base: 0,
     last: 0,
-    pausedAt: 0,
+    pauseTime: 0,
     
-    init: function(seconds) {
+    init: function(ms) {
         this.last = game.Timer.time;
-        this.set(seconds);
+        this.set(ms);
     },
     
     /**
         Set time for timer.
         @method set
-        @param {Number} seconds
+        @param {Number} ms
     **/
-    set: function(seconds) {
-        if(typeof(seconds) !== 'number') seconds = 0;
-        this.target = seconds || 0;
+    set: function(ms) {
+        if(typeof(ms) !== 'number') ms = 0;
+        this.target = ms || 0;
         this.reset();
     },
     
@@ -51,7 +51,7 @@ game.Timer = game.Class.extend({
     **/
     reset: function() {
         this.base = game.Timer.time;
-        this.pausedAt = 0;
+        this.pauseTime = 0;
     },
     
     /**
@@ -61,7 +61,7 @@ game.Timer = game.Class.extend({
     delta: function() {
         var delta = game.Timer.time - this.last;
         this.last = game.Timer.time;
-        return this.pausedAt ? 0 : delta;
+        return this.pauseTime ? 0 : delta;
     },
     
     /**
@@ -69,7 +69,7 @@ game.Timer = game.Class.extend({
         @method delta
     **/
     time: function() {
-        return (this.pausedAt || game.Timer.time) - this.base - this.target;
+        return (this.pauseTime || game.Timer.time) - this.base - this.target;
     },
 
     /**
@@ -77,7 +77,7 @@ game.Timer = game.Class.extend({
         @method pause
     **/
     pause: function() {
-        if(!this.pausedAt) this.pausedAt = game.Timer.time;
+        if(!this.pauseTime) this.pauseTime = game.Timer.time;
     },
 
     /**
@@ -85,9 +85,9 @@ game.Timer = game.Class.extend({
         @method unpause
     **/
     unpause: function() {
-        if(this.pausedAt) {
-            this.base += game.Timer.time - this.pausedAt;
-            this.pausedAt = 0;
+        if(this.pauseTime) {
+            this.base += game.Timer.time - this.pauseTime;
+            this.pauseTime = 0;
         }
     }
 });
@@ -95,13 +95,12 @@ game.Timer = game.Class.extend({
 game.Timer.last = 0;
 game.Timer.time = Number.MIN_VALUE;
 game.Timer.speedFactor = 1;
-game.Timer.maxStep = 0.05;
+game.Timer.maxStep = 50;
 
 game.Timer.update = function() {
-    var current = Date.now();
-    var delta = (current - game.Timer.last) / 1000;
-    game.Timer.time += Math.min(delta, game.Timer.maxStep) * game.Timer.speedFactor;
-    game.Timer.last = current;
+    var now = Date.now();
+    game.Timer.time += Math.min((now - game.Timer.last), game.Timer.maxStep) * game.Timer.speedFactor;
+    game.Timer.last = now;
 };
 
 });

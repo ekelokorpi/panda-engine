@@ -84,10 +84,7 @@ game.Scene = game.Class.extend({
             this.emitters[i].update();
             if(this.emitters[i]._remove) this.emitters.splice(i, 1);
         }
-        for (i = this.tweens.length - 1; i >= 0; i--) {
-            this.tweens[i].update();
-            if(this.tweens[i].complete) this.tweens.splice(i, 1);
-        }
+        if(game.TweenEngine) game.TweenEngine.update();
         for (i = this.objects.length - 1; i >= 0; i--) {
             this.objects[i].update();
             if(this.objects[i]._remove) this.objects.splice(i, 1);
