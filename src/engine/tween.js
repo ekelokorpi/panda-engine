@@ -141,14 +141,14 @@ game.Tween = function (object) {
         }
     };
 
-    this.delay = function (amount) {
+    this.delay = function (amount, onStart) {
         _delayTime = amount;
+        if(onStart) _delayOnStart = true;
         return this;
     };
 
     this.delayOnStart = function (amount) {
-        this.delay(amount);
-        _delayOnStart = true;
+        this.delay(amount, true);
         return this;
     };
 
