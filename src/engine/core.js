@@ -444,10 +444,10 @@ var core = {
         this.device.android = /android/i.test(navigator.userAgent);
         this.device.android2 = /android 2/i.test(navigator.userAgent);
 
-        this.device.wp7 = (this.device.wp && /Windows Phone OS 7/i.test(navigator.userAgent));
-        this.device.wp8 = (this.device.wp && /Windows Phone 8/i.test(navigator.userAgent));
+        this.device.wp7 = /Windows Phone OS 7/i.test(navigator.userAgent);
+        this.device.wp8 = /Windows Phone 8/i.test(navigator.userAgent);
+        this.device.wp = this.device.wp7 || this.device.wp8;
         this.device.wpApp = (this.device.wp && typeof(window.external) !== 'undefined' && typeof(window.external.notify) !== 'undefined');
-        this.device.wp = this.device.wp7 || this.device.wp8 || this.device.wpApp;
 
         this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
         this.device.ie10 = /MSIE 10/i.test(navigator.userAgent);

@@ -2,12 +2,9 @@ game.module(
     'game.scenes'
 )
 .require(
-    'engine.scene',
-    'engine.audio'
+    'engine.scene'
 )
 .body(function() {
-
-game.addAudio('media/sound/jump.m4a', 'jump');
 
 SceneGame = game.Scene.extend({
     backgroundColor: 0x808080,
@@ -18,12 +15,12 @@ SceneGame = game.Scene.extend({
         });
         this.stage.addChild(logo);
 
-        this.addTween(logo.scale, {x: 1.05, y: 1.05}, 2, {
-            easing: game.Tween.Easing.Quadratic.InOut,
-            loop: game.Tween.Loop.Reverse
-        }).start();
-
-        game.audio.playSound('jump');
+        var tween = new game.Tween(logo.scale)
+            .to({x: 1.05, y: 1.05}, 2000)
+            .easing(game.Tween.Easing.Quadratic.InOut)
+            .repeat()
+            .yoyo()
+            .start();
     }
 });
 

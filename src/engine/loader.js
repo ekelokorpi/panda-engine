@@ -37,11 +37,6 @@ game.Loader = game.Class.extend({
     **/
     backgroundColor: null,
     /**
-        List of tweens in loader.
-        @property {Array} tweens
-    **/
-    tweens: [],
-    /**
         List of assets to load.
         @property {Array} assets
     **/
@@ -99,12 +94,12 @@ game.Loader = game.Class.extend({
         game.system.stage.addChild(this.symbol);
 
         if(game.Tween) {
-            var tween = new game.Tween(this.symbol, {rotation: 0.1}, 0.5, {
-                easing: game.Tween.Easing.Cubic.InOut,
-                loop: game.Tween.Loop.Reverse
-            });
-            this.tweens.push(tween);
-            tween.start();
+            var tween = new game.Tween(this.symbol)
+                .to({rotation: 0.1}, 500)
+                .easing(game.Tween.Easing.Cubic.InOut)
+                .repeat(Infinity)
+                .yoyo(true)
+                .start();
         }
     },
 
@@ -221,11 +216,8 @@ game.Loader = game.Class.extend({
     },
 
     update: function() {
-        for (var i = this.tweens.length - 1; i >= 0; i--) {
-            this.tweens[i].update();
-            if(this.tweens[i].complete) this.tweens.splice(i, 1);
-        }
-        if(this.loaded === this.assets.length + this.sounds.length && this.timer.time() >= game.Loader.timeout + 0.1) {
+        if(game.TweenEngine) game.TweenEngine.update();
+        if(this.loaded === this.assets.length + this.sounds.length && this.timer.time() >= game.Loader.timeout) {
             this.timer.reset();
             this.timer.pause();
             this.ready();
@@ -247,12 +239,12 @@ game.Loader.getPath = function(path) {
 };
 
 /**
-    Minimum time to show preloader, in seconds.
+    Minimum time to show preloader, in milliseconds.
     @attribute {Number} timeout
-    @default 0.5
+    @default 500
     @example
-        game.Loader.timeout = 1;
+        game.Loader.timeout = 1000;
 **/
-game.Loader.timeout = 0.5;
+game.Loader.timeout = 500;
 
 });
