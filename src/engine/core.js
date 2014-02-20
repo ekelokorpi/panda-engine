@@ -249,7 +249,7 @@ var core = {
     **/
     addAudio: function(path, id) {
         id = id || path;
-        game.Audio.resources[path] = id;
+        game.Audio.queue[path] = id;
         return id;
     },
     

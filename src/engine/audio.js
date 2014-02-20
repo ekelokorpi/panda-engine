@@ -9,21 +9,47 @@ game.module(
 )
 .body(function(){ 'use strict';
 
+/**
+    Audio manager.
+    @class Audio
+**/
 game.Audio = game.Class.extend({
+    /**
+        Supported audio format extension.
+        @property {String} format
+    **/
     format: null,
     sources: {},
-
-    // Web Audio
     context: null,
     gainNode: null,
-
-    // Sound
+    /**
+        Is sound muted.
+        @property {Boolean} soundMuted
+        @default false
+    **/
     soundMuted: false,
+    /**
+        Main sound volume.
+        @property {Number} soundVolume
+        @default 1.0
+    **/
     soundVolume: 1.0,
-
-    // Music
+    /**
+        Id of current music.
+        @property {String} currentMusic
+    **/
     currentMusic: null,
+    /**
+        Is music muted.
+        @property {Boolean} musicMuted
+        @default false
+    **/
     musicMuted: false,
+    /**
+        Main music volume.
+        @property {Number} musicVolume
+        @default 1.0
+    **/
     musicVolume: 1.0,
 
     init: function() {
@@ -65,7 +91,6 @@ game.Audio = game.Class.extend({
         }
     },
 
-    // Decode audio for Web Audio
     decode: function(request, path, callback) {
         if(!this.context) return;
 
@@ -78,7 +103,6 @@ game.Audio = game.Class.extend({
         );
     },
 
-    // Load audio
     load: function(path, callback) {
         if(!game.Audio.enabled) return callback ? callback() : false;
 
@@ -102,13 +126,12 @@ game.Audio = game.Class.extend({
         }
     },
 
-    // Audio loaded
     loaded: function(path, callback, audio) {
-        if(this.sources[game.Audio.resources[path]]) throw('Duplicate audio source: ' + game.Audio.resources[path]);
-        if(!game.Audio.resources[path]) throw('Cannot find audio resource: ' + path);
+        if(this.sources[game.Audio.queue[path]]) throw('Duplicate audio source: ' + game.Audio.queue[path]);
+        if(!game.Audio.queue[path]) throw('Cannot find audio resource: ' + path);
 
         // Get id for path
-        var id = game.Audio.resources[path];
+        var id = game.Audio.queue[path];
 
         this.sources[id] = {
             clips: [],
@@ -125,17 +148,14 @@ game.Audio = game.Class.extend({
         if(callback) callback(path);
     },
 
-    // Loading error
     loadError: function(path) {
         throw('Error loading: ' + path);
     },
 
-    // Get real path using correct format extension
     getPath: function(path) {
         return path.replace(/[^\.]+$/, this.format);
     },
 
-    // Play audio
     play: function(id, volume, loop, callback, rate) {
         if(!this.sources[id]) throw('Cannot find source: ' + id);
 
@@ -175,7 +195,6 @@ game.Audio = game.Class.extend({
         }
     },
 
-    // Stop audio
     stop: function(id) {
         if(!this.sources[id]) throw('Cannot find source: ' + id);
 
@@ -197,7 +216,6 @@ game.Audio = game.Class.extend({
         }
     },
 
-    // Pause audio
     pause: function(id) {
         if(!this.sources[id]) throw('Cannot find source: ' + id);
 
@@ -224,7 +242,14 @@ game.Audio = game.Class.extend({
         }
     },
 
-    // Play audio as sound
+    /**
+        @method playSound
+        @param {String} id
+        @param {Number} [volume]
+        @param {Boolean} [loop]
+        @param {Function} [callback]
+        @param {Number} [rate] Only on Web Audio
+    **/
     playSound: function(id, volume, loop, callback, rate) {
         if(!game.Audio.enabled) return;
         if(this.soundMuted) return;
@@ -233,7 +258,10 @@ game.Audio = game.Class.extend({
         this.play(id, volume * this.soundVolume, loop, callback, rate);
     },
 
-    // Stop sound
+    /**
+        @method stopSound
+        @param {String} id
+    **/
     stopSound: function(id) {
         if(!game.Audio.enabled) return;
 
@@ -246,7 +274,11 @@ game.Audio = game.Class.extend({
         }
     },
 
-    // Play audio as music
+    /**
+        @method playMusic
+        @param {String} id
+        @param {Number} volume
+    **/
     playMusic: function(id, volume) {
         if(!game.Audio.enabled) return;
         if(this.musicMuted) return;
@@ -259,7 +291,9 @@ game.Audio = game.Class.extend({
         this.play(id, volume * this.musicVolume, true);
     },
 
-    // Stop music
+    /**
+        @method stopMusic
+    **/
     stopMusic: function() {
         if(!game.Audio.enabled) return;
 
@@ -267,21 +301,28 @@ game.Audio = game.Class.extend({
         this.currentMusic = null;
     },
 
-    // Pause sound
+    /**
+        @method pauseSound
+        @param {String} id
+    **/
     pauseSound: function(id) {
         if(!game.Audio.enabled) return;
 
         this.pause(id);
     },
 
-    // Pause all audio
+    /**
+        @method pauseAll
+    **/
     pauseAll: function() {
         if(!game.Audio.enabled) return;
 
         for(var id in this.sources) this.pause(id);
     },
 
-    // Resuma all paused audio
+    /**
+        @method resumeAll
+    **/
     resumeAll: function() {
         if(!game.Audio.enabled) return;
 
@@ -297,19 +338,29 @@ game.Audio = game.Class.extend({
     }
 });
 
-// Is audio enabled
+/**
+    Is audio enabled.
+    @attribute {Boolean} enabled
+    @default true
+**/
 game.Audio.enabled = true;
 
-// Is Web Audio enabled
+/**
+    Is Web Audio enabled.
+    @attribute {Boolean} webAudio
+    @default true
+**/
 game.Audio.webAudio = true;
 
-// List of supported formats
+/**
+    List of supported audio formats.
+    @attribute {Array} formats
+**/
 game.Audio.formats = [
     {ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"'},
     {ext: 'ogg', type: 'audio/ogg; codecs="vorbis"'}
 ];
 
-// List of audios to be loaded (contains path and id)
-game.Audio.resources = {};
+game.Audio.queue = {};
 
 });
