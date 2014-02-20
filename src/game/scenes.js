@@ -2,9 +2,12 @@ game.module(
     'game.scenes'
 )
 .require(
-    'engine.scene'
+    'engine.scene',
+    'engine.audio'
 )
 .body(function() {
+
+game.addAudio('media/sound/jump.m4a', 'jump');
 
 SceneGame = game.Scene.extend({
     backgroundColor: 0x808080,
@@ -19,6 +22,8 @@ SceneGame = game.Scene.extend({
             easing: game.Tween.Easing.Quadratic.InOut,
             loop: game.Tween.Loop.Reverse
         }).start();
+
+        game.audio.playSound('jump');
     }
 });
 
