@@ -159,6 +159,7 @@ game.Tween = function (object) {
     };
 
     this.yoyo = function (yoyo) {
+        if(typeof(yoyo) === 'undefined') yoyo = true;
         _yoyo = yoyo;
         return this;
     };
