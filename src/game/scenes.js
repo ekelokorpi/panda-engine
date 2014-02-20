@@ -15,10 +15,12 @@ SceneGame = game.Scene.extend({
         });
         this.stage.addChild(logo);
 
-        this.addTween(logo.scale, {x: 1.05, y: 1.05}, 2, {
-            easing: game.Tween.Easing.Quadratic.InOut,
-            loop: game.Tween.Loop.Reverse
-        }).start();
+        var tween = new game.Tween(logo.scale)
+            .to({x: 1.05, y: 1.05}, 2000)
+            .easing(game.Tween.Easing.Quadratic.InOut)
+            .repeat()
+            .yoyo()
+            .start();
     }
 });
 

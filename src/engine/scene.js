@@ -31,11 +31,6 @@ game.Scene = game.Class.extend({
     **/
     timers: [],
     /**
-        List of tweens in scene.
-        @property {Array} tweens
-    **/
-    tweens: [],
-    /**
         List of particle emitters in scene.
         @property {Array} emitters
     **/
@@ -84,10 +79,7 @@ game.Scene = game.Class.extend({
             this.emitters[i].update();
             if(this.emitters[i]._remove) this.emitters.splice(i, 1);
         }
-        for (i = this.tweens.length - 1; i >= 0; i--) {
-            this.tweens[i].update();
-            if(this.tweens[i].complete) this.tweens.splice(i, 1);
-        }
+        if(game.TweenEngine) game.TweenEngine.update();
         for (i = this.objects.length - 1; i >= 0; i--) {
             this.objects[i].update();
             if(this.objects[i]._remove) this.objects.splice(i, 1);
@@ -128,66 +120,6 @@ game.Scene = game.Class.extend({
     **/
     removeEmitter: function(emitter) {
         emitter._remove = true;
-    },
-
-    /**
-        Add {{#crossLink "game.Tween"}}{{/crossLink}} to scene.
-        @method addTween
-        @param {Object} obj
-        @param {Object} props
-        @param {Number} duration
-        @param {Object} [settings]
-    **/
-    addTween: function(obj, props, duration, settings) {
-        var tween = new game.Tween(obj, props, duration, settings);
-        this.tweens.push(tween);
-        return tween;
-    },
-
-    /**
-        Get tween for object.
-        @method getTween
-        @param {Object} obj
-    **/
-    getTween: function(obj) {
-        for (var i = 0; i < this.tweens.length; i++) {
-            if(this.tweens[i].object === obj) return this.tweens[i];
-        }
-        return false;
-    },
-
-    /**
-        Stop tweens for object.
-        @method stopTweens
-        @param {Object} [obj]
-        @param {Boolean} [doComplete]
-    **/
-    stopTweens: function(obj, doComplete) {
-        for (var i = 0; i < this.tweens.length; i++) {
-            if(obj && this.tweens[i].object === obj || !obj) this.tweens[i].stop(doComplete);
-        }
-    },
-
-    /**
-        Pause tweens for object.
-        @method pauseTweens
-        @param {Object} [obj]
-    **/
-    pauseTweens: function(obj) {
-        for ( var i = 0; i < this.tweens.length; i++ ) {
-            if(obj && this.tweens[i].object === obj || !obj) this.tweens[i].pause();
-        }
-    },
-
-    /**
-        Resume tweens for object.
-        @method resumeTweens
-        @param {Object} [obj]
-    **/
-    resumeTweens: function (obj) {
-        for ( var i = 0; i < this.tweens.length; i++ ) {
-            if(obj && this.tweens[i].object === obj || !obj) this.tweens[i].resume();
-        }
     },
 
     /**
