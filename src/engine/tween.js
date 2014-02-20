@@ -76,7 +76,7 @@ game.Tween = function (object) {
     var _isPlaying = false;
     var _reversed = false;
     var _delayTime = 0;
-    var _delayOnStart = false;
+    var _delayRepeat = false;
     var _startTime = null;
     var _originalStartTime = null;
     var _easingFunction = game.Tween.Easing.Linear.None;
@@ -141,14 +141,9 @@ game.Tween = function (object) {
         }
     };
 
-    this.delay = function (amount, onStart) {
+    this.delay = function (amount, repeat) {
         _delayTime = amount;
-        if(onStart) _delayOnStart = true;
-        return this;
-    };
-
-    this.delayOnStart = function (amount) {
-        this.delay(amount, true);
+        _delayRepeat = !!repeat;
         return this;
     };
 
@@ -247,7 +242,7 @@ game.Tween = function (object) {
                     _valuesStart[property] = _valuesStartRepeat[property];
                 }
                 // _startTime = time + _delayTime;
-                if(_delayOnStart) _delayTime = 0;
+                if(!_delayRepeat) _delayTime = 0;
                 _startTime = _originalStartTime + _repeats * (_duration + _delayTime);
                 return true;
             } else {
