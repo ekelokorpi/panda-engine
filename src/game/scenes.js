@@ -6,8 +6,10 @@ game.module(
 )
 .body(function() {
 
+
 SceneGame = game.Scene.extend({
     backgroundColor: 0x808080,
+
 
     init: function() {
         var sprite, tween;
@@ -28,12 +30,26 @@ SceneGame = game.Scene.extend({
             anchor: {x: 0.5, y: 0.5}
         });
         tween = new game.Tween(sprite.position)
-            .to({y: 0}, 250)
+            .to({y: 0}, 500)
             .repeat(Infinity)
             .yoyo(true)
+            .delayOnStart(200)
+            .start();
+        this.stage.addChild(sprite);
+
+        // Sprite 3
+        sprite = new game.Sprite(game.system.width / 2, game.system.height / 2, 'media/logo.png', {
+            anchor: {x: 0.5, y: 0.5}
+        });
+        tween = new game.Tween(sprite.position)
+            .to({y: 0}, 500)
+            .repeat(Infinity)
+            .yoyo(true)
+            .delayOnStart(100)
             .start();
         this.stage.addChild(sprite);
     }
 });
+
 
 });
