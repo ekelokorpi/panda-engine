@@ -63,7 +63,7 @@ game.Loader = game.Class.extend({
             this.assets.push(game.Loader.getPath(game.resources[i]));
         }
 
-        for(var name in game.Audio.resources) {
+        for(var name in game.Audio.queue) {
             this.sounds.push(name);
         }
 
