@@ -189,6 +189,10 @@ game.Tween = function (object) {
         return this;
     };
 
+    this.isPlaying = function() {
+        return _isPlaying;
+    };
+
     this.update = function (time) {
         var property;
         if(time < _startTime) {
@@ -241,11 +245,11 @@ game.Tween = function (object) {
                     }
                     _valuesStart[property] = _valuesStartRepeat[property];
                 }
-                // _startTime = time + _delayTime;
                 if(!_delayRepeat) _delayTime = 0;
                 _startTime = _originalStartTime + _repeats * (_duration + _delayTime);
                 return true;
             } else {
+                _isPlaying = false;
                 if(_onCompleteCallback !== null) {
                     _onCompleteCallback.call(_object);
                 }
@@ -527,5 +531,97 @@ game.Tween.Interpolation = {
         }
     }
 };
+
+/**
+    @class TweenGroup
+    @extends game.Class
+    @constructor
+    @param {Function} [onComplete]
+**/
+game.TweenGroup = game.Class.extend({
+    tweens: [],
+    onComplete: null,
+    complete: false,
+
+    init: function(onComplete) {
+        this.onComplete = onComplete;
+    },
+
+    /**
+        Add tween to group.
+        @method tween
+        @param {Object} obj
+        @return {game.Tween} tween
+    **/
+    tween: function(obj) {
+        var tween = new game.Tween(obj);
+        tween.onComplete(this.tweenComplete.bind(this));
+        this.tweens.push(tween);
+        return tween;
+    },
+
+    /**
+        @method tweenComplete
+    **/
+    tweenComplete: function() {
+        if(this.complete) return;
+        for (var i = 0; i < this.tweens.length; i++) {
+            if(this.tweens[i].isPlaying()) return;
+        }
+        this.complete = true;
+        if(typeof(this.onComplete) === 'function') this.onComplete();
+    },
+
+    /**
+        @method remove
+        @param {game.Tween} tween
+    **/
+    remove: function(tween) {
+        this.tweens.erase(tween);
+    },
+
+    /**
+        @method start
+    **/
+    start: function() {
+        for (var i = 0; i < this.tweens.length; i++) {
+            this.tweens[i].start();
+        }
+    },
+
+    /**
+        @method pause
+    **/
+    pause: function() {
+        for (var i = 0; i < this.tweens.length; i++) {
+            this.tweens[i].pause();
+        }
+    },
+
+    /**
+        @method resume
+    **/
+    resume: function() {
+        for (var i = 0; i < this.tweens.length; i++) {
+            this.tweens[i].resume();
+        }
+    },
+
+    /**
+        @method stop
+        @param {Boolean} doComplete Call onComplete function
+        @param {Boolean} endTween Set started tweens to end values
+    **/
+    stop: function(doComplete, endTween) {
+        if(this.complete) return;
+
+        for (var i = 0; i < this.tweens.length; i++) {
+            this.tweens[i].stop(endTween);
+        }
+        
+        if(!this.complete && doComplete) this.tweenComplete();
+        this.complete = true;
+    }
+});
 
 });
