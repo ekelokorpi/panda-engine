@@ -123,7 +123,6 @@ var core = {
     renderer: null,
     modules: {},
     resources: [],
-    audioResources: [],
     ready: false,
     nocache: '',
     _current: null,
@@ -240,27 +239,18 @@ var core = {
     },
 
     /**
-        Add sound to preloader.
-        @method addSound
+        Add audio to preloader.
+        @method addAudio
         @param {String} path
-        @param {String} [name]
+        @param {String} [id]
+        @return {String} id
         @example
-            game.addSound('media/sound/jump.m4a', 'jump');
+            game.addAudio('media/sound/jump.m4a', 'jump');
     **/
-    addSound: function(path, name) {
-        name = name || path;
-        var sound = new game.Sound(path, name);
-    },
-
-    /**
-        Add music to preloader.
-        @method addMusic
-        @param {String} path
-        @param {String} [name]
-    **/
-    addMusic: function(path, name) {
-        name = name || path;
-        var music = new game.Music(path, name);
+    addAudio: function(path, id) {
+        id = id || path;
+        game.Audio.resources[path] = id;
+        return id;
     },
     
     setNocache: function() {
@@ -325,7 +315,8 @@ var core = {
         height = height || (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
         this.system = new game.System(width, height, canvasId);
-        if(game.SoundManager) this.sound = new game.SoundManager();
+
+        if(game.Audio) this.audio = new game.Audio();
         if(game.Pool) this.pool = new game.Pool();
         if(game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
@@ -334,7 +325,7 @@ var core = {
 
         this.ready = true;
         
-        var loader = new game.Loader(scene || SceneGame, this.resources, this.audioResources);
+        var loader = new game.Loader();
         loader.start();
     },
 
@@ -705,7 +696,7 @@ game.module(
     'engine.loader',
     'engine.timer',
     'engine.system',
-    'engine.sound',
+    'engine.audio',
     'engine.renderer',
     'engine.sprite',
     'engine.debug',

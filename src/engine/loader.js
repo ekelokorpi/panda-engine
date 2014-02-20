@@ -55,7 +55,7 @@ game.Loader = game.Class.extend({
     init: function(scene) {
         var i;
 
-        this.scene = scene;
+        this.scene = scene || SceneGame;
         this.timer = new game.Timer();
 
         for (i = 0; i < game.resources.length; i++) {
@@ -63,9 +63,8 @@ game.Loader = game.Class.extend({
             this.assets.push(game.Loader.getPath(game.resources[i]));
         }
 
-        for (i = 0; i < game.audioResources.length; i++) {
-            if(game.SoundCache[game.audioResources[i].name]) continue;
-            this.sounds.push(game.audioResources[i]);
+        for(var name in game.Audio.resources) {
+            this.sounds.push(name);
         }
 
         if(this.assets.length > 0) {
@@ -160,8 +159,7 @@ game.Loader = game.Class.extend({
         File loaded.
         @method progress
     **/
-    progress: function(name, loaded) {
-        if(name && !loaded) this.error('Failed to load: ' + name);
+    progress: function() {
         this.loaded++;
         this.percent = Math.round(this.loaded / (this.assets.length + this.sounds.length) * 100);
         this.onPercentChange();
@@ -184,7 +182,7 @@ game.Loader = game.Class.extend({
     **/
     loadAudio: function() {
         for (var i = this.sounds.length - 1; i >= 0; i--) {
-            this.sounds[i].load(this.progress.bind(this));
+            game.audio.load(this.sounds[i], this.progress.bind(this));
         }
     },
 
@@ -210,7 +208,7 @@ game.Loader = game.Class.extend({
             }
         }
         game.resources.length = 0;
-        game.audioResources.length = 0;
+        game.Audio.resources = {};
         game.Timer.time = Number.MIN_VALUE;
         game.clearGameLoop(this.loopId);
         game.system.setScene(this.scene);
