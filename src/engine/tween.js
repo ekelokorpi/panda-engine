@@ -153,6 +153,7 @@ game.Tween = function (object) {
     };
 
     this.repeat = function (times) {
+        if(typeof(times) === 'undefined') times = Infinity;
         _repeat = times;
         return this;
     };
