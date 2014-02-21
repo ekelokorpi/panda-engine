@@ -1,14 +1,27 @@
-// Usage: node src/engine/build.js [sitelock-hostname]
+// Usage: node src/engine/build.js [config-file]
 var UglifyJS = require('uglify-js');
 var fs = require('fs');
 var i, file, size, result, output, totalSize = 0;
 
-var sitelock = process.argv[2];
-var outputFile = 'game.min.js';
-var outputDir = './';
+var configFile = process.argv[2];
+if(configFile) require(process.cwd() + '/' + configFile);
+
+var defaultConfig = {
+    sourceFolder: 'src',
+    outputFile: 'game.min.js',
+    outputDir: './'
+};
+
+if(typeof(pandaConfig) === 'undefined') pandaConfig = defaultConfig;
+else {
+    for(var i in defaultConfig) {
+        if(typeof(pandaConfig[i]) === 'undefined') pandaConfig[i] = defaultConfig[i];
+    }
+}
+
 var header = '// Made with Panda.js - http://www.pandajs.net';
 var include = ['engine/core.js', 'game/main.js'];
-var dir = process.cwd() + '/src/';
+var dir = process.cwd() + '/' + pandaConfig.sourceFolder + '/';
 
 global['game'] = {};
 game.modules = [];
@@ -50,10 +63,10 @@ result = UglifyJS.minify(game.modules);
 
 output = header + '\n';
 
-if(sitelock) {
+if(pandaConfig.sitelock) {
     var secret = 0;
-    for (i = 0; i < sitelock.length; i++) {
-        secret += sitelock[i].charCodeAt(0);
+    for (i = 0; i < pandaConfig.sitelock.length; i++) {
+        secret += pandaConfig.sitelock[i].charCodeAt(0);
     }
     var sitelockFunc = 'var s='+secret+',h=0,n=location.hostname;for(var i=0;i<n.length;i++)h+=n[i].charCodeAt(0);if(s!==h)throw 0;';
     output += sitelockFunc;
@@ -61,11 +74,11 @@ if(sitelock) {
 
 output += result.code;
 
-fs.writeFile(outputDir + outputFile, output, function(err) {
+fs.writeFile(pandaConfig.outputDir + pandaConfig.outputFile, output, function(err) {
     if(err) console.log(err);
     else {
-        var size = fs.statSync(outputDir + outputFile).size;
+        var size = fs.statSync(pandaConfig.outputDir + pandaConfig.outputFile).size;
         var percent = Math.round((size / totalSize) * 100);
-        console.log('Saved ' + outputFile + ' ' + size + ' bytes (' + percent + '%)');
+        console.log('Saved ' + pandaConfig.outputFile + ' ' + size + ' bytes (' + percent + '%)');
     }
 });

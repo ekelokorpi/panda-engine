@@ -48,7 +48,10 @@ if(typeof(global) !== 'undefined') return;
     @class Core
 **/
 var core = {
-    version: '1.0.3',
+    version: '1.1.0',
+    config: window.pandaConfig || {
+        sourceFolder: 'src'
+    },
     /**
         Scale factor for Retina and HiRes mode.
         @property {Number} scale
@@ -360,7 +363,7 @@ var core = {
         this.modules[name] = true;
         this._waitForLoad++;
         
-        var path = 'src/' + name.replace(/\./g, '/') + '.js' + this.nocache;
+        var path = this.config.sourceFolder + '/' + name.replace(/\./g, '/') + '.js' + this.nocache;
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
