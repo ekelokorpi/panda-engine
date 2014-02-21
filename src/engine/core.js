@@ -230,12 +230,13 @@ var core = {
     },
 
     /**
-        Add asset to preloader.
+        Add asset to loader.
         @method addAsset
         @param {String} path
+        @param {String} id
         @return {String} path
         @example
-            game.addAsset('media/logo.png');
+            game.addAsset('media/logo.png', 'logo');
     **/
     addAsset: function(path, id) {
         id = id || path;
@@ -245,7 +246,7 @@ var core = {
     },
 
     /**
-        Add audio to preloader.
+        Add audio to loader.
         @method addAudio
         @param {String} path
         @param {String} [id]
