@@ -333,6 +333,8 @@ var core = {
     },
 
     Math: {
+        _seed: Date.now(),
+        
         /**
             Distance between two points.
             @method Math.distance
@@ -353,9 +355,43 @@ var core = {
             @method Math.random
             @param {Number} min
             @param {Number} max
+            @param {Boolean} [seeded]
+            @param {Boolean} [integer]
+            @return {Number}
         **/
-        random: function(min, max) {
-            return Math.random() * (max - min) + min;
+        random: function(min, max, seeded, integer) {
+        	var rnd = seeded ? core.Math._seededRandom() : Math.random();
+        	
+            return integer ? Math.floor(rnd * (max - min + 1) + min) : rnd * (max - min) + min;
+        },
+
+        /**
+            Generate random integer between `min` and `max`.
+            @method Math.randomInt
+            @param {Number} min
+            @param {Number} max
+            @param {Boolean} [seeded]
+            @return {Number}
+        **/
+        randomInt: function(min, max, seeded) {
+        	return core.Math.random(min, max, seeded, true);
+        },
+
+        /**
+            Seed the random number generator.
+            @method Math.randomSeed
+            @param {Number} seed
+            @return {Number}
+        **/
+        randomSeed: function(seed) {
+			if(seed !== undefined) core.Math._seed = seed;
+
+			return core.Math._seed;
+        },
+        
+        _seededRandom: function() {
+			core.Math._seed = (core.Math._seed * 9301 + 49297) % 233280;
+			return core.Math._seed / 233280;
         }
     },
     
