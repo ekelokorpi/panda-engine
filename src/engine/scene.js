@@ -208,11 +208,11 @@ game.Scene = game.Class.extend({
     },
 
     pause: function() {
-        game.sound.muteAll();
+        game.audio.pauseAll();
     },
 
     resume: function() {
-        game.sound.unmuteAll();
+        game.audio.resumeAll();
     }
 });
 

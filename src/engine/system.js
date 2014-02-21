@@ -190,7 +190,7 @@ game.System = game.Class.extend({
         if(game.debug) game.debug.stats.begin();
 
         game.Timer.update();
-        this.delta = this.timer.delta();
+        this.delta = this.timer.delta() / 1000;
         
         game.scene.run();
         

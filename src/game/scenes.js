@@ -2,9 +2,13 @@ game.module(
     'game.scenes'
 )
 .require(
-    'engine.scene'
+    'engine.scene',
+    'engine.audio'
 )
 .body(function() {
+
+game.addAudio('media/sound/jump.m4a', 'jump');
+game.addAudio('media/sound/music.m4a', 'music');
 
 SceneGame = game.Scene.extend({
     backgroundColor: 0x808080,
@@ -21,6 +25,10 @@ SceneGame = game.Scene.extend({
             .repeat()
             .yoyo()
             .start();
+
+        game.audio.playSound('jump');
+
+        game.system.canvas.style.display = 'block';
     }
 });
 

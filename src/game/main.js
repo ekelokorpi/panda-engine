@@ -9,8 +9,8 @@ game.module(
 )
 .body(function(){
 
-game.System.hires = true;
-game.System.retina = true;
+game.System.orientation = 1;
+game.System.canvas = false;
 
 game.start();
 

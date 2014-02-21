@@ -2,7 +2,7 @@ game.module(
     'game.assets'
 )
 .require(
-    'engine.sound'
+    'engine.audio'
 )
 .body(function() {
 
