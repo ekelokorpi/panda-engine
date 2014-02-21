@@ -300,7 +300,7 @@ game.Debug = game.Class.extend({
         document.body.appendChild(this.stats.domElement);
         this.stats.domElement.style.position = 'absolute';
 
-        if(game.ua.mobile) {
+        if(game.device.mobile) {
             this.setPosition = game.Debug.position.mobile;
             this.setPosition();
             document.getElementById('fpsGraph').style.display = 'none';
