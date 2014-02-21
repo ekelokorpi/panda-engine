@@ -123,6 +123,7 @@ var core = {
             if(game.device.mobile) return;
     **/
     device: {},
+    assets: {},
     renderer: null,
     modules: {},
     resources: [],
@@ -236,7 +237,9 @@ var core = {
         @example
             game.addAsset('media/logo.png');
     **/
-    addAsset: function(path) {
+    addAsset: function(path, id) {
+        id = id || path;
+        this.assets[id] = path;
         this.resources.push(path);
         return path;
     },

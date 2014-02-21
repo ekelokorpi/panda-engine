@@ -29,6 +29,8 @@ game.module(
 **/
 game.Sprite = PIXI.Sprite.extend({
     init: function(x, y, path, settings) {
+        if(typeof(x) !== 'number') path = x;
+        path = game.assets[path] || path;
         var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
         this.super(texture);
         game.merge(this, settings);
@@ -42,6 +44,14 @@ game.Sprite = PIXI.Sprite.extend({
         if(game.device.mobile && !this.touchstart && this.mousedown) this.touchstart = this.mousedown;
         if(game.device.mobile && !this.touchend && this.mouseup) this.touchend = this.mouseup;
         if(game.device.mobile && !this.touchendoutside && this.mouseupoutside) this.touchendoutside = this.mouseupoutside;
+    },
+
+    setTexture: function(id) {
+        if(typeof(id) === 'string') {
+            id = game.assets[id] || id;
+            id = game.Texture.fromFrame(id);
+        }
+        this.super(id);
     },
 
     /**
@@ -77,8 +87,12 @@ game.Container = PIXI.DisplayObjectContainer.extend({
 });
 
 game.Texture = PIXI.Texture.extend();
-game.Texture.fromImage = PIXI.Texture.fromImage;
+game.Texture.fromImage = function(id) {
+    id = game.assets[id] || id;
+    return PIXI.Texture.fromImage(id);
+};
 game.Texture.fromCanvas = PIXI.Texture.fromCanvas;
+game.Texture.fromFrame = PIXI.Texture.fromFrame;
 
 game.TilingSprite = PIXI.TilingSprite.extend({
     speed: {x: 0, y: 0},
