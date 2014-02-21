@@ -324,7 +324,7 @@ var core = {
         if(game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
         if(game.Storage && game.Storage.id) this.storage = new game.Storage(game.Storage.id);
-        if(game.Analytics) this.analytics = new game.Analytics();
+        if(game.Analytics && this.config.analyticsId) this.analytics = new game.Analytics(this.config.analyticsId);
 
         this.ready = true;
         
