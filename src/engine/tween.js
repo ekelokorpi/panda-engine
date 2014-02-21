@@ -64,8 +64,9 @@ game.TweenEngine = (function () {
     };
 })();
 
-game.Tween = function (object, properties, duration) {
+game.Tween = function (object, properties, duration, settings) {
     if(!object) throw('No object defined for tween');
+    settings = settings || {};
     var _object = object;
     var _valuesStart = {};
     var _valuesEnd = properties || {};
@@ -80,13 +81,13 @@ game.Tween = function (object, properties, duration) {
     var _delayRepeat = false;
     var _startTime = null;
     var _originalStartTime = null;
-    var _easingFunction = game.Tween.Easing.Linear.None;
-    var _interpolationFunction = game.Tween.Interpolation.Linear;
+    var _easingFunction = settings.easing || game.Tween.Easing.Linear.None;
+    var _interpolationFunction = settings.interpolation || game.Tween.Interpolation.Linear;
     var _chainedTweens = [];
-    var _onStartCallback = null;
+    var _onStartCallback = settings.onStart || null;
     var _onStartCallbackFired = false;
-    var _onUpdateCallback = null;
-    var _onCompleteCallback = null;
+    var _onUpdateCallback = settings.onUpdate || null;
+    var _onCompleteCallback = settings.onComplete || null;
 
     // Set all starting values present on the target object
     for (var field in object) {
