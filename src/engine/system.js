@@ -97,6 +97,7 @@ game.System = game.Class.extend({
 
         game.normalizeVendorAttribute(this.canvas, 'requestFullscreen');
         game.normalizeVendorAttribute(this.canvas, 'requestFullScreen');
+        game.normalizeVendorAttribute(navigator, 'vibrate');
 
         document.body.style.margin = 0;
 
@@ -136,6 +137,11 @@ game.System = game.Class.extend({
         game.renderer = this.renderer;
 
         if(!navigator.isCocoonJS) this.initResize();
+    },
+
+    vibrate: function(time) {
+        if(navigator.vibrate) return navigator.vibrate(time);
+        return false;
     },
 
     /**
