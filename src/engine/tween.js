@@ -64,12 +64,13 @@ game.TweenEngine = (function () {
     };
 })();
 
-game.Tween = function (object) {
+game.Tween = function (object, properties, duration) {
+    if(!object) throw('No object defined for tween');
     var _object = object;
     var _valuesStart = {};
-    var _valuesEnd = {};
+    var _valuesEnd = properties || {};
     var _valuesStartRepeat = {};
-    var _duration = 1000;
+    var _duration = duration || 1000;
     var _repeat = 0;
     var _repeats = 0;
     var _yoyo = false;
