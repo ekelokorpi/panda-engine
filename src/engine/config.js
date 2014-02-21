@@ -5,4 +5,5 @@ pandaConfig = {
     outputFile: 'game.min.js',
     sitelock: 'www.pandajs.net',
     analyticsId: '',
+    storageId: ''
 };

@@ -68,10 +68,4 @@ game.Storage = game.Class.extend({
     }
 });
 
-/**
-    Identifier for local storage.
-    @attribute {String} id
-**/
-game.Storage.id = null;
-
 });
