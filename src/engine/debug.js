@@ -369,6 +369,6 @@ game.Debug.position = {
     Enable debug window (fps and render time).
     @attribute {Boolean} enabled
 **/
-game.Debug.enabled = document.location.hash == "#debug" ? true : false;
+game.Debug.enabled = document.location.hash === "#debug" ? true : false;
 
 });

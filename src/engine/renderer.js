@@ -1256,7 +1256,7 @@ PIXI.DisplayObjectContainer.prototype.removeAll = function()
 {
     for (var i = this.children.length - 1; i >= 0; i--) {
         this.removeChild(this.children[i]);
-    };
+    }
 };
 
 /*
@@ -10115,7 +10115,7 @@ spine.Slot.prototype = {
 
         var slotDatas = this.skeleton.data.slots;
         for (var i = 0, n = slotDatas.length; i < n; i++) {
-            if (slotDatas[i] == data) {
+            if (slotDatas[i] === data) {
                 this.setAttachment(!data.attachmentName ? null : this.skeleton.getAttachmentBySlotIndex(i, data.attachmentName));
                 break;
             }
@@ -10140,7 +10140,7 @@ spine.Skin.prototype = {
             var slotIndex = parseInt(key.substring(0, colon), 10);
             var name = key.substring(colon + 1);
             var slot = skeleton.slots[slotIndex];
-            if (slot.attachment && slot.attachment.name == name) {
+            if (slot.attachment && slot.attachment.name === name) {
                 var attachment = this.getAttachment(slotIndex, name);
                 if (attachment) slot.setAttachment(attachment);
             }
@@ -10178,7 +10178,7 @@ spine.binarySearch = function (values, target, step) {
             low = current + 1;
         else
             high = current;
-        if (low == high) return (low + 1) * step;
+        if (low === high) return (low + 1) * step;
         current = (low + high) >>> 1;
     }
 };
@@ -10229,7 +10229,7 @@ spine.Curves.prototype = {
         var curves = this.curves;
         var dfx = curves[curveIndex];
         if (!dfx/*LINEAR*/) return percent;
-        if (dfx == -1/*STEPPED*/) return 0;
+        if (dfx === -1/*STEPPED*/) return 0;
         var dfy = curves[curveIndex + 1];
         var ddfx = curves[curveIndex + 2];
         var ddfy = curves[curveIndex + 3];
@@ -10496,21 +10496,21 @@ spine.SkeletonData.prototype = {
     findBone: function (boneName) {
         var bones = this.bones;
         for (var i = 0, n = bones.length; i < n; i++)
-            if (bones[i].name == boneName) return bones[i];
+            if (bones[i].name === boneName) return bones[i];
         return null;
     },
     /** @return -1 if the bone was not found. */
     findBoneIndex: function (boneName) {
         var bones = this.bones;
         for (var i = 0, n = bones.length; i < n; i++)
-            if (bones[i].name == boneName) return i;
+            if (bones[i].name === boneName) return i;
         return -1;
     },
     /** @return May be null. */
     findSlot: function (slotName) {
         var slots = this.slots;
         for (var i = 0, n = slots.length; i < n; i++) {
-            if (slots[i].name == slotName) return slot[i];
+            if (slots[i].name === slotName) return slot[i];
         }
         return null;
     },
@@ -10518,21 +10518,21 @@ spine.SkeletonData.prototype = {
     findSlotIndex: function (slotName) {
         var slots = this.slots;
         for (var i = 0, n = slots.length; i < n; i++)
-            if (slots[i].name == slotName) return i;
+            if (slots[i].name === slotName) return i;
         return -1;
     },
     /** @return May be null. */
     findSkin: function (skinName) {
         var skins = this.skins;
         for (var i = 0, n = skins.length; i < n; i++)
-            if (skins[i].name == skinName) return skins[i];
+            if (skins[i].name === skinName) return skins[i];
         return null;
     },
     /** @return May be null. */
     findAnimation: function (animationName) {
         var animations = this.animations;
         for (var i = 0, n = animations.length; i < n; i++)
-            if (animations[i].name == animationName) return animations[i];
+            if (animations[i].name === animationName) return animations[i];
         return null;
     }
 };
@@ -10557,6 +10557,7 @@ spine.Skeleton = function (skeletonData) {
         this.drawOrder.push(slot);
     }
 };
+
 spine.Skeleton.prototype = {
     x: 0, y: 0,
     skin: null,
@@ -10594,28 +10595,28 @@ spine.Skeleton.prototype = {
     findBone: function (boneName) {
         var bones = this.bones;
         for (var i = 0, n = bones.length; i < n; i++)
-            if (bones[i].data.name == boneName) return bones[i];
+            if (bones[i].data.name === boneName) return bones[i];
         return null;
     },
     /** @return -1 if the bone was not found. */
     findBoneIndex: function (boneName) {
         var bones = this.bones;
         for (var i = 0, n = bones.length; i < n; i++)
-            if (bones[i].data.name == boneName) return i;
+            if (bones[i].data.name === boneName) return i;
         return -1;
     },
     /** @return May be null. */
     findSlot: function (slotName) {
         var slots = this.slots;
         for (var i = 0, n = slots.length; i < n; i++)
-            if (slots[i].data.name == slotName) return slots[i];
+            if (slots[i].data.name === slotName) return slots[i];
         return null;
     },
     /** @return -1 if the bone was not found. */
     findSlotIndex: function (slotName) {
         var slots = this.slots;
         for (var i = 0, n = slots.length; i < n; i++)
-            if (slots[i].data.name == slotName) return i;
+            if (slots[i].data.name === slotName) return i;
         return -1;
     },
     setSkinByName: function (skinName) {
@@ -10648,11 +10649,11 @@ spine.Skeleton.prototype = {
         var slots = this.slots;
         for (var i = 0, n = slots.size; i < n; i++) {
             var slot = slots[i];
-            if (slot.data.name == slotName) {
+            if (slot.data.name === slotName) {
                 var attachment = null;
                 if (attachmentName) {
                     attachment = this.getAttachment(i, attachmentName);
-                    if (attachment == null) throw "Attachment not found: " + attachmentName + ", for slot: " + slotName;
+                    if (attachment === null) throw "Attachment not found: " + attachmentName + ", for slot: " + slotName;
                 }
                 slot.setAttachment(attachment);
                 return;
@@ -10751,7 +10752,7 @@ spine.RegionAttachment.prototype = {
         vertices[6/*X4*/] = offset[6/*X4*/] * m00 + offset[7/*Y4*/] * m01 + x;
         vertices[7/*Y4*/] = offset[6/*X4*/] * m10 + offset[7/*Y4*/] * m11 + y;
     }
-}
+};
 
 spine.AnimationStateData = function (skeletonData) {
     this.skeletonData = skeletonData;
@@ -10943,7 +10944,7 @@ spine.SkeletonJson.prototype = {
                 }
             }
             skeletonData.skins.push(skin);
-            if (skin.name == "default") skeletonData.defaultSkin = skin;
+            if (skin.name === "default") skeletonData.defaultSkin = skin;
         }
 
         // Animations.
@@ -10961,7 +10962,7 @@ spine.SkeletonJson.prototype = {
 
         var type = spine.AttachmentType[map["type"] || "region"];
 
-        if (type == spine.AttachmentType.region) {
+        if (type === spine.AttachmentType.region) {
             var attachment = new spine.RegionAttachment();
             attachment.x = (map["x"] || 0) * this.scale;
             attachment.y = (map["y"] || 0) * this.scale;
@@ -10995,13 +10996,13 @@ spine.SkeletonJson.prototype = {
         for (var boneName in bones) {
             if (!bones.hasOwnProperty(boneName)) continue;
             var boneIndex = skeletonData.findBoneIndex(boneName);
-            if (boneIndex == -1) throw "Bone not found: " + boneName;
+            if (boneIndex === -1) throw "Bone not found: " + boneName;
             var boneMap = bones[boneName];
 
             for (timelineName in boneMap) {
                 if (!boneMap.hasOwnProperty(timelineName)) continue;
                 values = boneMap[timelineName];
-                if (timelineName == "rotate") {
+                if (timelineName === "rotate") {
                     timeline = new spine.RotateTimeline(values.length);
                     timeline.boneIndex = boneIndex;
 
@@ -11015,9 +11016,9 @@ spine.SkeletonJson.prototype = {
                     timelines.push(timeline);
                     duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 2 - 2]);
 
-                } else if (timelineName == "translate" || timelineName == "scale") {
+                } else if (timelineName === "translate" || timelineName === "scale") {
                     var timelineScale = 1;
-                    if (timelineName == "scale")
+                    if (timelineName === "scale")
                         timeline = new spine.ScaleTimeline(values.length);
                     else {
                         timeline = new spine.TranslateTimeline(values.length);
@@ -11050,7 +11051,7 @@ spine.SkeletonJson.prototype = {
             for (timelineName in slotMap) {
                 if (!slotMap.hasOwnProperty(timelineName)) continue;
                 values = slotMap[timelineName];
-                if (timelineName == "color") {
+                if (timelineName === "color") {
                     timeline = new spine.ColorTimeline(values.length);
                     timeline.slotIndex = slotIndex;
 
@@ -11069,7 +11070,7 @@ spine.SkeletonJson.prototype = {
                     timelines.push(timeline);
                     duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 5 - 5]);
 
-                } else if (timelineName == "attachment") {
+                } else if (timelineName === "attachment") {
                     timeline = new spine.AttachmentTimeline(values.length);
                     timeline.slotIndex = slotIndex;
 
@@ -11092,13 +11093,13 @@ spine.SkeletonJson.readCurve = function (timeline, frameIndex, valueMap) {
     /*jshint -W069*/
     var curve = valueMap["curve"];
     if (!curve) return;
-    if (curve == "stepped")
+    if (curve === "stepped")
         timeline.curves.setStepped(frameIndex);
     else if (curve instanceof Array)
         timeline.curves.setCurve(frameIndex, curve[0], curve[1], curve[2], curve[3]);
 };
 spine.SkeletonJson.toColor = function (hexString, colorIndex) {
-    if (hexString.length != 8) throw "Color hexidecimal length must be 8, recieved: " + hexString;
+    if (hexString.length !== 8) throw "Color hexidecimal length must be 8, recieved: " + hexString;
     return parseInt(hexString.substring(colorIndex * 2, 2), 16) / 255;
 };
 
@@ -11113,7 +11114,7 @@ spine.Atlas = function (atlasText, textureLoader) {
     var page = null;
     while (true) {
         var line = reader.readLine();
-        if (line == null) break;
+        if (line === null) break;
         line = reader.trim(line);
         if (!line.length)
             page = null;
@@ -11130,11 +11131,11 @@ spine.Atlas = function (atlasText, textureLoader) {
             var direction = reader.readValue();
             page.uWrap = spine.Atlas.TextureWrap.clampToEdge;
             page.vWrap = spine.Atlas.TextureWrap.clampToEdge;
-            if (direction == "x")
+            if (direction === "x")
                 page.uWrap = spine.Atlas.TextureWrap.repeat;
-            else if (direction == "y")
+            else if (direction === "y")
                 page.vWrap = spine.Atlas.TextureWrap.repeat;
-            else if (direction == "xy")
+            else if (direction === "xy")
                 page.uWrap = page.vWrap = spine.Atlas.TextureWrap.repeat;
 
             textureLoader.load(page, line);
@@ -11146,7 +11147,7 @@ spine.Atlas = function (atlasText, textureLoader) {
             region.name = line;
             region.page = page;
 
-            region.rotate = reader.readValue() == "true";
+            region.rotate = reader.readValue() === "true";
 
             reader.readTuple(tuple);
             var x = parseInt(tuple[0], 10);
@@ -11170,10 +11171,10 @@ spine.Atlas = function (atlasText, textureLoader) {
             region.width = Math.abs(width);
             region.height = Math.abs(height);
 
-            if (reader.readTuple(tuple) == 4) { // split is optional
+            if (reader.readTuple(tuple) === 4) { // split is optional
                 region.splits = [parseInt(tuple[0], 10), parseInt(tuple[1], 10), parseInt(tuple[2], 10), parseInt(tuple[3], 10)];
 
-                if (reader.readTuple(tuple) == 4) { // pad is optional, but only present with splits
+                if (reader.readTuple(tuple) === 4) { // pad is optional, but only present with splits
                     region.pads = [parseInt(tuple[0], 10), parseInt(tuple[1], 10), parseInt(tuple[2], 10), parseInt(tuple[3], 10)];
 
                     reader.readTuple(tuple);
@@ -11197,7 +11198,7 @@ spine.Atlas.prototype = {
     findRegion: function (name) {
         var regions = this.regions;
         for (var i = 0, n = regions.length; i < n; i++)
-            if (regions[i].name == name) return regions[i];
+            if (regions[i].name === name) return regions[i];
         return null;
     },
     dispose: function () {
@@ -11209,7 +11210,7 @@ spine.Atlas.prototype = {
         var regions = this.regions;
         for (var i = 0, n = regions.length; i < n; i++) {
             var region = regions[i];
-            if (region.page != page) continue;
+            if (region.page !== page) continue;
             region.u = region.x / page.width;
             region.v = region.y / page.height;
             if (region.rotate) {
@@ -11292,18 +11293,18 @@ spine.AtlasReader.prototype = {
     readValue: function () {
         var line = this.readLine();
         var colon = line.indexOf(":");
-        if (colon == -1) throw "Invalid line: " + line;
+        if (colon === -1) throw "Invalid line: " + line;
         return this.trim(line.substring(colon + 1));
     },
     /** Returns the number of tuple values read (2 or 4). */
     readTuple: function (tuple) {
         var line = this.readLine();
         var colon = line.indexOf(":");
-        if (colon == -1) throw "Invalid line: " + line;
+        if (colon === -1) throw "Invalid line: " + line;
         var i = 0, lastMatch= colon + 1;
         for (; i < 3; i++) {
             var comma = line.indexOf(",", lastMatch);
-            if (comma == -1) {
+            if (comma === -1) {
                 if (!i) throw "Invalid line: " + line;
                 break;
             }
@@ -11313,11 +11314,12 @@ spine.AtlasReader.prototype = {
         tuple[i] = this.trim(line.substring(lastMatch));
         return i + 1;
     }
-}
+};
 
 spine.AtlasAttachmentLoader = function (atlas) {
     this.atlas = atlas;
-}
+};
+
 spine.AtlasAttachmentLoader.prototype = {
     newAttachment: function (skin, type, name) {
         switch (type) {
@@ -11337,7 +11339,7 @@ spine.AtlasAttachmentLoader.prototype = {
         }
         throw "Unknown attachment type: " + type;
     }
-}
+};
 
 spine.Bone.yDown = true;
 PIXI.AnimCache = {};
@@ -11414,7 +11416,7 @@ PIXI.Spine.prototype.updateTransform = function () {
         }
 
         if (attachment.rendererObject) {
-            if (!slot.currentSpriteName || slot.currentSpriteName != attachment.name) {
+            if (!slot.currentSpriteName || slot.currentSpriteName !== attachment.name) {
                 var spriteName = attachment.rendererObject.name;
                 if (slot.currentSprite !== undefined) {
                     slot.currentSprite.visible = false;
@@ -14204,17 +14206,16 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
     }
 }).call(this);
 
-PIXI.FlashClip = function(clipName)
-{
+PIXI.FlashClip = function(clipName){
     var textures = [];
     for(var name in PIXI.TextureCache) {
         // better way, regexp?
-        if(name.indexOf(clipName) != -1 && name.length == clipName.length + 4) textures.push(PIXI.Texture.fromFrame(name));
+        if(name.indexOf(clipName) !== -1 && name.length === clipName.length + 4) textures.push(PIXI.Texture.fromFrame(name));
     }
-    if(textures.length == 0) throw "FlashClip textures not found";
+    if(textures.length === 0) throw "FlashClip textures not found";
 
     PIXI.MovieClip.call(this, textures);
-}
+};
 
 PIXI.FlashClip.prototype = Object.create( PIXI.MovieClip.prototype );
 PIXI.FlashClip.prototype.constructor = PIXI.FlashClip;
@@ -14231,10 +14232,10 @@ window.PIXI_WindowsPhone_fileLoaded = function(file, data) {
         if(PIXI.WindowsPhoneLoaders[file].onJSONLoaded) PIXI.WindowsPhoneLoaders[file].onJSONLoaded();
         if(PIXI.WindowsPhoneLoaders[file].onXMLLoaded) PIXI.WindowsPhoneLoaders[file].onXMLLoaded();
     }
-}
+};
 
 window.PIXI_WindowsPhone_fix = function() {
-    if(typeof(window.external) != "undefined" && typeof(window.external.notify) == "unknown" && /Windows Phone/i.test(navigator.userAgent)) {
+    if(typeof(window.external) !== "undefined" && typeof(window.external.notify) === "unknown" && /Windows Phone/i.test(navigator.userAgent)) {
         PIXI.WindowsPhoneLoaders[this.url] = this;
         window.external.notify("GetResource?file=" + this.url + ";callback=PIXI_WindowsPhone_fileLoaded");
         return true;
@@ -14250,7 +14251,7 @@ PIXI.extend = function(prop) {
     function Class() {
         if(this.init) this.init.apply(this, arguments);
         else this.base.apply(this, arguments);
-
+        var name = null;
         for(name in proto) {
             if(typeof(proto[name]) !== 'function') this[name] = game.copy(proto[name]);
         }
