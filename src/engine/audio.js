@@ -119,7 +119,8 @@ game.Audio = game.Class.extend({
         // HTML5 Audio
         else {
             var audio = new Audio(realPath);
-            audio.addEventListener('canplaythrough', this.loaded.bind(this, path, callback, audio), false);
+            audio.loadCallback = this.loaded.bind(this, path, callback, audio);
+            audio.addEventListener('canplaythrough', audio.loadCallback, false);
             audio.addEventListener('error', this.loadError.bind(this, path), false);
             audio.preload = 'auto';
             audio.load();
@@ -139,7 +140,7 @@ game.Audio = game.Class.extend({
         };
 
         if(audio instanceof Audio) {
-            audio.removeEventListener('canplaythrough', this.loaded, false);
+            audio.removeEventListener('canplaythrough', audio.loadCallback, false);
             audio.addEventListener('ended', function() {
                 this.playing = false;
             }, false);
@@ -221,6 +222,7 @@ game.Audio = game.Class.extend({
 
         // Web Audio
         if(this.context) {
+            if(this.sources[id].clips.length === 0) return;
             // Stop all source clips
             for (var i = 0; i < this.sources[id].clips.length; i++) {
                 if(this.sources[id].clips[i].stop) this.sources[id].clips[i].stop();
