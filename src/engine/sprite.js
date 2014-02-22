@@ -35,8 +35,8 @@ game.Sprite = PIXI.Sprite.extend({
         this.super(texture);
         game.merge(this, settings);
 
-        this.position.x = x;
-        this.position.y = y;
+        if(typeof(x) === 'number') this.position.x = x;
+        if(typeof(y) === 'number') this.position.y = y;
 
         // auto bind touch events for mobile
         if(game.device.mobile && !this.tap && this.click) this.tap = this.click;
