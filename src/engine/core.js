@@ -202,7 +202,6 @@ var core = {
     **/
     fullscreen: function() {
         if(game.system.canvas.requestFullscreen) game.system.canvas.requestFullscreen();
-        if(game.system.canvas.requestFullScreen) game.system.canvas.requestFullScreen();
     },
 
     /**
