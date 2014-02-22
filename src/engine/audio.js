@@ -247,12 +247,12 @@ game.Audio = game.Class.extend({
     /**
         @method playSound
         @param {String} id
-        @param {Number} [volume]
         @param {Boolean} [loop]
+        @param {Number} [volume]
         @param {Function} [callback]
         @param {Number} [rate] Only on Web Audio
     **/
-    playSound: function(id, volume, loop, callback, rate) {
+    playSound: function(id, loop, volume, callback, rate) {
         if(!game.Audio.enabled) return;
         if(this.soundMuted) return;
 
