@@ -11,12 +11,14 @@ game.Camera = game.Class.extend({
     target: null,
     position: null,
     offset: null,
+    limit: null,
     panSpeed: 70,
     easing: game.Tween.Easing.Quadratic.Out,
 
     init: function() {
         this.position = new game.Vector();
         this.offset = new game.Vector();
+        this.limit = new game.Vector();
     },
 
     follow: function(target) {
@@ -32,6 +34,11 @@ game.Camera = game.Class.extend({
     },
 
     pan: function(x, y) {
+        if(x < this.offset.x) x = this.offset.x;
+        if(y < this.offset.y) y = this.offset.y;
+        if(this.limit.x > 0 && x > this.limit.x - this.offset.x) x = this.limit.x - this.offset.x;
+        if(this.limit.y > 0 && y > this.limit.y - this.offset.y) y = this.limit.y - this.offset.y;
+
         var dist = game.Math.distance(this.position.x, this.position.y, x, y);
         var speed = dist / (this.panSpeed / 1000);
 
