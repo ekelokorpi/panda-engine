@@ -328,7 +328,7 @@ game.Debug.backgroundColor = {
         @attribute {String} backgroundColor.webGL
         @default '#0000ff'
     **/
-    webGL: '#AFDE97'
+    webGL: '#0000ff'
 };
 
 game.Debug.POSITION = {
