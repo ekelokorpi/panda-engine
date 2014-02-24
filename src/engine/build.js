@@ -56,6 +56,7 @@ for (i = 0; i < game.modules.length; i++) {
     totalSize += size;
     console.log(file + ' ' + size + ' bytes');
 }
+if(configFile) game.modules.unshift(configFile);
 
 console.log('Total ' + totalSize + ' bytes');
 
