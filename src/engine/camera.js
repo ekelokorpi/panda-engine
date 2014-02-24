@@ -13,6 +13,7 @@ game.Camera = game.Class.extend({
     offset: null,
     limit: null,
     panSpeed: 70,
+    panLimit: 120,
     easing: game.Tween.Easing.Quadratic.Out,
 
     init: function() {
@@ -40,6 +41,7 @@ game.Camera = game.Class.extend({
         if(this.limit.y > 0 && y > this.limit.y - this.offset.y) y = this.limit.y - this.offset.y;
 
         var dist = game.Math.distance(this.position.x, this.position.y, x, y);
+        if(dist < this.panLimit) return;
         var speed = dist / (this.panSpeed / 1000);
 
         if(this.tween) this.tween.stop();
