@@ -203,8 +203,8 @@ game.Audio = game.Class.extend({
         if(this.context) {
             // Stop all source clips
             for (var i = 0; i < this.sources[id].clips.length; i++) {
-                if(this.sources[id].clips[i].stop) this.sources[id].clips[i].stop();
-                else if(this.sources[id].clips[i].noteOff) this.sources[id].clips[i].noteOff();
+                if(this.sources[id].clips[i].stop) this.sources[id].clips[i].stop(true);
+                else if(this.sources[id].clips[i].noteOff) this.sources[id].clips[i].noteOff(true);
             }
             this.sources[id].clips.length = 0;
             this.sources[id].audio.pauseTime = 0;
@@ -225,8 +225,8 @@ game.Audio = game.Class.extend({
             if(this.sources[id].clips.length === 0) return;
             // Stop all source clips
             for (var i = 0; i < this.sources[id].clips.length; i++) {
-                if(this.sources[id].clips[i].stop) this.sources[id].clips[i].stop();
-                else if(this.sources[id].clips[i].noteOff) this.sources[id].clips[i].noteOff();
+                if(this.sources[id].clips[i].stop) this.sources[id].clips[i].stop(true);
+                else if(this.sources[id].clips[i].noteOff) this.sources[id].clips[i].noteOff(true);
             }
             this.sources[id].clips.length = 0;
             this.sources[id].audio.pauseTime = this.context.currentTime - this.sources[id].audio.startTime;
