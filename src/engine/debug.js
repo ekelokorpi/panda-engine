@@ -107,8 +107,8 @@ game.DebugDraw = game.Class.extend({
                 }
             } else {
                 if(this.container.children[i].target.parent) this.container.children[i].target.updateTransform();
-                this.container.children[i].position.x = this.container.children[i].target.worldTransform[2];
-                this.container.children[i].position.y = this.container.children[i].target.worldTransform[5];
+                this.container.children[i].position.x = this.container.children[i].target.worldTransform.tx;
+                this.container.children[i].position.y = this.container.children[i].target.worldTransform.ty;
                 this.container.children[i].scale.x = this.container.children[i].target.scale.x;
                 this.container.children[i].scale.y = this.container.children[i].target.scale.y;
                 if(!this.container.children[i].target.parent) {
