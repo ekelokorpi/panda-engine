@@ -24,7 +24,7 @@ game.Camera = game.Class.extend({
 
     follow: function(target) {
         this.target = target;
-        this.set(target.position.x, target.position.y);
+        this.pan(target.position.x, target.position.y, true);
     },
 
     set: function(x, y) {
@@ -34,21 +34,20 @@ game.Camera = game.Class.extend({
         this.container.position.y = -this.position.y + this.offset.y;
     },
 
-    pan: function(x, y) {
+    pan: function(x, y, noTween) {
         if(x < this.offset.x) x = this.offset.x;
         if(y < this.offset.y) y = this.offset.y;
         if(this.limit.x > 0 && x > this.limit.x - this.offset.x) x = this.limit.x - this.offset.x;
         if(this.limit.y > 0 && y > this.limit.y - this.offset.y) y = this.limit.y - this.offset.y;
+
+        if(noTween) return this.set(x, y);
 
         var dist = game.Math.distance(this.position.x, this.position.y, x, y);
         if(dist < this.panLimit) return;
         var speed = dist / (this.panSpeed / 1000);
 
         if(this.tween) this.tween.stop();
-        this.tween = new game.Tween(this.position)
-            .to({x:x, y:y}, speed)
-            .easing(this.easing)
-            .start();
+        this.tween = new game.Tween(this.position).to({x:x, y:y}, speed).easing(this.easing).start();
     },
 
     update: function() {
