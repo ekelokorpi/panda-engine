@@ -4,6 +4,7 @@
     @module physics
     @namespace game
 **/
+/* jshint -W004 */
 game.module(
 	'engine.physics'
 )

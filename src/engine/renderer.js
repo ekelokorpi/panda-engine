@@ -1,3 +1,4 @@
+/* jshint ignore:start */
 game.module(
     'engine.renderer'
 )
@@ -17,7 +18,6 @@ game.module(
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
-
 (function(){
 
     var root = window;
@@ -14321,3 +14321,4 @@ game.HitPolygon = PIXI.Polygon;
 game.TextureCache = PIXI.TextureCache;
 
 });
+/* jshint ignore:end */
