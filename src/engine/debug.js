@@ -175,13 +175,13 @@ game.Debug = game.Class.extend({
 
             var fpsText = document.createElement( 'div' );
             fpsText.id = 'fpsText';
-            fpsText.style.cssText = 'color:#0ff;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px';
+            fpsText.style.cssText = 'color:#39960B;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px';
             fpsText.innerHTML = 'FPS';
             fpsDiv.appendChild( fpsText );
 
             var fpsGraph = document.createElement( 'div' );
             fpsGraph.id = 'fpsGraph';
-            fpsGraph.style.cssText = 'position:relative;width:74px;height:30px;background-color:#0ff';
+            fpsGraph.style.cssText = 'position:relative;width:74px;height:30px;background-color:#39960B';
             fpsDiv.appendChild( fpsGraph );
 
             while ( fpsGraph.children.length < 74 ) {
@@ -320,9 +320,9 @@ game.Debug.backgroundColor = {
     /**
         Background color of debug box, when using Canvas renderer.
         @attribute {String} backgroundColor.canvas
-        @default '#ff0000'
+        @default '#AFDE97'
     **/
-    canvas: '#ff0000',
+    canvas: '#AFDE97',
     /**
         Background color of debug box, when using WebGL renderer.
         @attribute {String} backgroundColor.webGL
@@ -369,6 +369,6 @@ game.Debug.position = {
     Enable debug window (fps and render time).
     @attribute {Boolean} enabled
 **/
-game.Debug.enabled = document.location.href.match(/\?debug/) ? true : false;
+game.Debug.enabled = document.location.hash === "#debug" ? true : false;
 
 });

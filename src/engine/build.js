@@ -12,16 +12,16 @@ var defaultConfig = {
     outputDir: './'
 };
 
-if(typeof(pandaConfig) === 'undefined') pandaConfig = defaultConfig;
+if(typeof(window.pandaConfig) === 'undefined') window.pandaConfig = defaultConfig;
 else {
     for(var i in defaultConfig) {
-        if(typeof(pandaConfig[i]) === 'undefined') pandaConfig[i] = defaultConfig[i];
+        if(typeof(window.pandaConfig[i]) === 'undefined') window.pandaConfig[i] = defaultConfig[i];
     }
 }
 
 var header = '// Made with Panda.js - http://www.pandajs.net';
 var include = ['engine/core.js', 'game/main.js'];
-var dir = process.cwd() + '/' + pandaConfig.sourceFolder + '/';
+var dir = process.cwd() + '/' + window.pandaConfig.sourceFolder + '/';
 
 global['game'] = {};
 game.modules = [];
@@ -64,10 +64,10 @@ result = UglifyJS.minify(game.modules);
 
 output = header + '\n';
 
-if(pandaConfig.sitelock) {
+if(window.pandaConfig.sitelock) {
     var secret = 0;
-    for (i = 0; i < pandaConfig.sitelock.length; i++) {
-        secret += pandaConfig.sitelock[i].charCodeAt(0);
+    for (i = 0; i < window.pandaConfig.sitelock.length; i++) {
+        secret += window.pandaConfig.sitelock[i].charCodeAt(0);
     }
     var sitelockFunc = 'var s='+secret+',h=0,n=location.hostname;for(var i=0;i<n.length;i++)h+=n[i].charCodeAt(0);if(s!==h)throw 0;';
     output += sitelockFunc;
@@ -75,11 +75,11 @@ if(pandaConfig.sitelock) {
 
 output += result.code;
 
-fs.writeFile(pandaConfig.outputDir + pandaConfig.outputFile, output, function(err) {
+fs.writeFile(window.pandaConfig.outputDir + window.pandaConfig.outputFile, output, function(err) {
     if(err) console.log(err);
     else {
-        var size = fs.statSync(pandaConfig.outputDir + pandaConfig.outputFile).size;
+        var size = fs.statSync(window.pandaConfig.outputDir + window.pandaConfig.outputFile).size;
         var percent = Math.round((size / totalSize) * 100);
-        console.log('Saved ' + pandaConfig.outputFile + ' ' + size + ' bytes (' + percent + '%)');
+        console.log('Saved ' + window.pandaConfig.outputFile + ' ' + size + ' bytes (' + percent + '%)');
     }
 });

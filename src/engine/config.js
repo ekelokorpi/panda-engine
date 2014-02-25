@@ -1,6 +1,5 @@
 // Example Panda.js config file
-
-pandaConfig = {
+var pandaConfig = {
     sourceFolder: 'src',
     outputFile: 'game.min.js',
     sitelock: 'www.pandajs.net',
