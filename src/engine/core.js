@@ -348,7 +348,7 @@ var core = {
 
         this.ready = true;
         
-        var loader = new game.Loader();
+        var loader = new game.Loader(scene);
         loader.start();
     },
 
