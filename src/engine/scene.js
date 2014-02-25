@@ -131,11 +131,33 @@ game.Scene = game.Class.extend({
         @return {game.Timer}
     **/
     addTimer: function(time, callback, repeat) {
+        if(game.Timer.seconds) time *= 1000;
         var timer = new game.Timer(time);
         timer.repeat = !!repeat;
         timer.callback = callback;
         this.timers.push(timer);
         return timer;
+    },
+
+    // Deprecated
+    addTween: function(obj, to, time, settings) {
+        var tween = new game.Tween(obj);
+        tween.to(to, time * 1000);
+        settings = settings || {};
+        if(settings.delay) tween.delay(settings.delay * 1000);
+        if(settings.easing) tween.easing(settings.easing);
+        if(settings.onComplete) tween.onComplete(settings.onComplete);
+        if(settings.onStart) tween.onStart(settings.onStart);
+        if(typeof(settings.loop) !== 'undefined') {
+            var loopCount = settings.loopCount || Infinity;
+            tween.repeat(loopCount);
+            if(settings.loop === game.Tween.Loop.Reverse) tween.yoyo();
+        }
+        return tween;
+    },
+
+    stopTweens: function(obj) {
+        game.TweenEngine.stopAllForObject(obj);
     },
 
     /**

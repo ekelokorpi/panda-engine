@@ -260,6 +260,16 @@ var core = {
         game.Audio.queue[path] = id;
         return id;
     },
+
+    // Deprecated
+    addSound: function(path, id) {
+        this.addAudio(path, id);
+    },
+    
+    // Deprecated
+    addMusic: function(path, id) {
+        this.addAudio(path, id);
+    },
     
     setNocache: function() {
         this.nocache = '?' + Date.now();
@@ -324,11 +334,16 @@ var core = {
 
         this.system = new game.System(width, height, canvasId);
 
-        if(game.Audio) this.audio = new game.Audio();
+        if(game.Audio) {
+            this.audio = new game.Audio();
+            this.sound = this.audio; // Deprecated
+        }
         if(game.Pool) this.pool = new game.Pool();
         if(game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
+        if(game.Storage.id) this.config.storageId = game.Storage.id; // Deprecated
         if(game.Storage && this.config.storageId) this.storage = new game.Storage(this.config.storageId);
+        if(game.Analytics.id) this.config.analyticsId = game.Analytics.id; // Deprecated
         if(game.Analytics && this.config.analyticsId) this.analytics = new game.Analytics(this.config.analyticsId);
 
         this.ready = true;

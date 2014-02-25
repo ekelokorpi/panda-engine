@@ -337,6 +337,10 @@ game.Audio = game.Class.extend({
                 if(this.sources[id].audio.playing) this.sources[id].audio.play();
             }
         }
+    },
+
+    // Deprecated
+    stopAll: function() {
     }
 });
 
