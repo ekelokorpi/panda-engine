@@ -43,6 +43,13 @@ game.TweenEngine = (function () {
             }
         },
 
+        getTweenForObject: function(obj) {
+            for (var i = _tweens.length - 1; i >= 0; i--) {
+                if(_tweens[i].getObject() === obj) return _tweens[i];
+            }
+            return false;
+        },
+
         add: function (tween) {
             _tweens.push(tween);
         },
