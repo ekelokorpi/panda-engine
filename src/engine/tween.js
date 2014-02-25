@@ -36,6 +36,12 @@ game.TweenEngine = (function () {
         removeAll: function () {
             _tweens.length = 0;
         },
+        
+        stopAllForObject: function(obj) {
+            for (var i = _tweens.length - 1; i >= 0; i--) {
+                if(_tweens[i].getObject() === obj) _tweens[i].stop();
+            }
+        },
 
         add: function (tween) {
             _tweens.push(tween);
@@ -93,6 +99,10 @@ game.Tween = function (object, properties, duration, settings) {
     for (var field in object) {
         _valuesStart[field] = parseFloat(object[field], 10);
     }
+
+    this.getObject = function() {
+        return _object;
+    };
 
     this.to = function (properties, duration) {
         if(duration !== undefined) {
@@ -263,6 +273,12 @@ game.Tween = function (object, properties, duration, settings) {
         }
         return true;
     };
+};
+
+// Deprecated
+game.Tween.Loop = {
+    Reverse: 0,
+    Revert: 1
 };
 
 game.Tween.Easing = {

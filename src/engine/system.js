@@ -175,6 +175,7 @@ game.System = game.Class.extend({
     },
     
     setSceneNow: function(SceneClass) {
+        if(game.TweenEngine) game.TweenEngine.removeAll();
         game.scene = new (SceneClass)();
         this.startRunLoop();
     },
