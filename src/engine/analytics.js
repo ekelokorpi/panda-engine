@@ -16,6 +16,7 @@ game.module(
 **/
 game.Analytics = game.Class.extend({
     init: function(id) {
+        if(!navigator.onLine) return;
         if(!id) throw('Analytics id not set.');
 
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -34,6 +35,7 @@ game.Analytics = game.Class.extend({
         @param {String} action
     **/
     event: function(category, action) {
+        if(!navigator.onLine) return;
         ga('send', 'event', category, action);
     }
 });
