@@ -13,7 +13,7 @@ game.Camera = game.Class.extend({
     offset: null,
     limit: null,
     panSpeed: 70,
-    panLimit: 120,
+    panLimit: 0,
     easing: game.Tween.Easing.Quadratic.Out,
 
     init: function() {
@@ -24,7 +24,6 @@ game.Camera = game.Class.extend({
 
     follow: function(target) {
         this.target = target;
-        this.pan(target.position.x, target.position.y, true);
     },
 
     set: function(x, y) {
@@ -34,23 +33,31 @@ game.Camera = game.Class.extend({
         this.container.position.y = -this.position.y + this.offset.y;
     },
 
-    pan: function(x, y, noTween) {
+    pan: function(x, y, callback, speed) {        
         if(x < this.offset.x) x = this.offset.x;
         if(y < this.offset.y) y = this.offset.y;
         if(this.limit.x > 0 && x > this.limit.x - this.offset.x) x = this.limit.x - this.offset.x;
         if(this.limit.y > 0 && y > this.limit.y - this.offset.y) y = this.limit.y - this.offset.y;
 
-        if(noTween) return this.set(x, y);
-
         var dist = game.Math.distance(this.position.x, this.position.y, x, y);
         if(dist < this.panLimit) return;
-        var speed = dist / (this.panSpeed / 1000);
+
+        if(typeof(speed) === 'number') {
+            if(speed === 0) return this.set(x, y);
+        } else {
+            speed = dist / (this.panSpeed / 1000);
+        }
 
         if(this.tween) this.tween.stop();
-        this.tween = new game.Tween(this.position).to({x:x, y:y}, speed).easing(this.easing).start();
+        this.tween = new game.Tween(this.position).to({x:x, y:y}, speed).easing(this.easing)
+        if(typeof(callback) === 'function') this.tween.onComplete(callback.bind(this));
+        this.tween.start();
     },
 
     update: function() {
+        if(this.target) {
+            // TODO
+        }
         if(this.container) {
             this.container.position.x = -this.position.x + this.offset.x;
             this.container.position.y = -this.position.y + this.offset.y;
