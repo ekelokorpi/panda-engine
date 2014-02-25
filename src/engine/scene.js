@@ -142,9 +142,13 @@ game.Scene = game.Class.extend({
     // Deprecated
     addTween: function(obj, to, time, settings) {
         var tween = new game.Tween(obj);
-        tween.to(to, time * 1000);
+        if(game.Timer.seconds) time *= 1000;
+        tween.to(to, time);
         settings = settings || {};
-        if(settings.delay) tween.delay(settings.delay * 1000);
+        if(settings.delay) {
+            if(game.Timer.seconds) settings.delay *= 1000;
+            tween.delay(settings.delay);
+        }
         if(settings.easing) tween.easing(settings.easing);
         if(settings.onComplete) tween.onComplete(settings.onComplete);
         if(settings.onStart) tween.onStart(settings.onStart);
@@ -156,8 +160,14 @@ game.Scene = game.Class.extend({
         return tween;
     },
 
+    // Deprecated
     stopTweens: function(obj) {
         game.TweenEngine.stopAllForObject(obj);
+    },
+
+    // Deprecated
+    getTween: function(obj) {
+        return game.TweenEngine.getTweenForObject(obj);
     },
 
     /**
