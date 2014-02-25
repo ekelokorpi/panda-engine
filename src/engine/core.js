@@ -22,6 +22,7 @@
 // inspired by Impact Game Engine
 // sponsored by Yle
 
+/* jshint -W020 */
 if(typeof(window) === 'undefined') window = {};
 (function(window){ 'use strict';
 
