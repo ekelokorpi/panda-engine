@@ -69,7 +69,9 @@ game.Timer = game.Class.extend({
         @method delta
     **/
     time: function() {
-        return (this.pauseTime || game.Timer.time) - this.base - this.target;
+        var time = (this.pauseTime || game.Timer.time) - this.base - this.target;
+        if(game.Timer.seconds) time /= 1000;
+        return time;
     },
 
     /**
@@ -96,6 +98,7 @@ game.Timer.last = 0;
 game.Timer.time = Number.MIN_VALUE;
 game.Timer.speedFactor = 1;
 game.Timer.maxStep = 50;
+game.Timer.seconds = false;
 
 game.Timer.update = function() {
     var now = Date.now();
