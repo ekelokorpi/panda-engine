@@ -33,7 +33,7 @@ game.Camera = game.Class.extend({
         this.container.position.y = -this.position.y + this.offset.y;
     },
 
-    pan: function(x, y, callback, speed) {        
+    pan: function(x, y, callback, speed) {
         if(x < this.offset.x) x = this.offset.x;
         if(y < this.offset.y) y = this.offset.y;
         if(this.limit.x > 0 && x > this.limit.x - this.offset.x) x = this.limit.x - this.offset.x;
@@ -49,7 +49,7 @@ game.Camera = game.Class.extend({
         }
 
         if(this.tween) this.tween.stop();
-        this.tween = new game.Tween(this.position).to({x:x, y:y}, speed).easing(this.easing)
+        this.tween = new game.Tween(this.position).to({x:x, y:y}, speed).easing(this.easing);
         if(typeof(callback) === 'function') this.tween.onComplete(callback.bind(this));
         this.tween.start();
     },
@@ -57,6 +57,7 @@ game.Camera = game.Class.extend({
     update: function() {
         if(this.target) {
             // TODO
+            console.log('Follow not yet implemented');
         }
         if(this.container) {
             this.container.position.x = -this.position.x + this.offset.x;

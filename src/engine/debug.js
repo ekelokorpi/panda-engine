@@ -97,7 +97,7 @@ game.DebugDraw = game.Class.extend({
                     this.drawSprite(this.container.children[i], this.container.children[i].target);
                 }
                 if(this.container.children[i].radius !== this.container.children[i].target.shape.radius) {
-                    this.drawSprite(this.container.children[i], this.container.children[i].target);   
+                    this.drawSprite(this.container.children[i], this.container.children[i].target);
                 }
 
                 this.container.children[i].position.x = this.container.children[i].target.position.x + game.scene.stage.position.x;

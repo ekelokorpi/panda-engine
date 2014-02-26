@@ -2,7 +2,7 @@ game.module(
     'engine.renderer'
 )
 .body(function() { 'use strict';
-
+/* jshint ignore:start */
 /**
  * @license
  * pixi.js - v1.5.0
@@ -14204,39 +14204,41 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
     }
 }).call(this);
 
+/* jshint ignore:end */
+
 PIXI.FlashClip = function(clipName)
 {
     var textures = [];
     for(var name in PIXI.TextureCache) {
         // better way, regexp?
-        if(name.indexOf(clipName) != -1 && name.length == clipName.length + 4) textures.push(PIXI.Texture.fromFrame(name));
+        if(name.indexOf(clipName) !== -1 && name.length === clipName.length + 4) textures.push(PIXI.Texture.fromFrame(name));
     }
-    if(textures.length == 0) throw "FlashClip textures not found";
+    if(textures.length === 0) throw 'FlashClip textures not found';
 
     PIXI.MovieClip.call(this, textures);
-}
+};
 
 PIXI.FlashClip.prototype = Object.create( PIXI.MovieClip.prototype );
 PIXI.FlashClip.prototype.constructor = PIXI.FlashClip;
 
 PIXI.WindowsPhoneLoaders = {};
 
-window.PIXI_WindowsPhone_fileLoaded = function(file, data) {
+window.PIXIwindowsPhoneFileLoaded = function(file, data) {
     if(PIXI.WindowsPhoneLoaders[file]) {
         PIXI.WindowsPhoneLoaders[file].ajaxRequest = {};
         PIXI.WindowsPhoneLoaders[file].ajaxRequest.readyState = 4;
         PIXI.WindowsPhoneLoaders[file].ajaxRequest.status = 200;
         PIXI.WindowsPhoneLoaders[file].ajaxRequest.responseText = data;
-        PIXI.WindowsPhoneLoaders[file].ajaxRequest.responseXML = "";
+        PIXI.WindowsPhoneLoaders[file].ajaxRequest.responseXML = '';
         if(PIXI.WindowsPhoneLoaders[file].onJSONLoaded) PIXI.WindowsPhoneLoaders[file].onJSONLoaded();
         if(PIXI.WindowsPhoneLoaders[file].onXMLLoaded) PIXI.WindowsPhoneLoaders[file].onXMLLoaded();
     }
-}
+};
 
-window.PIXI_WindowsPhone_fix = function() {
-    if(typeof(window.external) != "undefined" && typeof(window.external.notify) == "unknown" && /Windows Phone/i.test(navigator.userAgent)) {
+window.PIXIwindowsPhoneFix = function() {
+    if(typeof(window.external) !== 'undefined' && typeof(window.external.notify) === 'unknown' && /Windows Phone/i.test(navigator.userAgent)) {
         PIXI.WindowsPhoneLoaders[this.url] = this;
-        window.external.notify("GetResource?file=" + this.url + ";callback=PIXI_WindowsPhone_fileLoaded");
+        window.external.notify('GetResource?file=' + this.url + ';callback=PIXI_WindowsPhone_fileLoaded');
         return true;
     }
     return false;
@@ -14248,6 +14250,7 @@ PIXI.extend = function(prop) {
     var base = this.prototype.base || this;
 
     function Class() {
+        var name;
         if(this.init) this.init.apply(this, arguments);
         else this.base.apply(this, arguments);
 

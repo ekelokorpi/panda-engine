@@ -93,8 +93,8 @@ game.Loader = game.Class.extend({
                 .to({rotation: 0.1}, 500)
                 .easing(game.Tween.Easing.Cubic.InOut)
                 .repeat(Infinity)
-                .yoyo(true)
-                .start();
+                .yoyo(true);
+            tween.start();
         }
     },
 
