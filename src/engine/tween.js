@@ -63,14 +63,9 @@ game.TweenEngine = (function () {
 
         update: function (time) {
             if(_tweens.length === 0) return false;
-            var i = 0;
             time = time !== undefined ? time : game.Timer.time;
-            while (i < _tweens.length) {
-                if(_tweens[i].update(time)) {
-                    i++;
-                } else {
-                    _tweens.splice(i, 1);
-                }
+            for (var i = _tweens.length - 1; i >= 0; i--) {
+                if(!_tweens[i].update(time)) _tweens.splice(i, 1);
             }
             return true;
         }
