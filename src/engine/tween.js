@@ -462,32 +462,6 @@ game.Tween.Easing = {
     }
 };
 
-game.Tween.Easing.getNamesList = function() {
-    var names = [];
-    for(var i in game.Tween.Easing) {
-        for(var o in game.Tween.Easing[i]) {
-            names.push(i + '.' + o);
-        }
-    }
-    return names;
-};
-
-game.Tween.Easing.getByName = function(name) {
-    name = name.split('.');
-    var type = name[1];
-    name = name[0];
-
-    return game.Tween.Easing[name][type];
-};
-
-game.Tween.Easing.getName = function(easing) {
-    for(var i in game.Tween.Easing) {
-        for(var o in game.Tween.Easing[i]) {
-            if(easing === game.Tween.Easing[i][o]) return i + '.' + o;
-        }
-    }
-};
-
 game.Tween.Interpolation = {
     Linear: function (v, k) {
         var m = v.length - 1,
