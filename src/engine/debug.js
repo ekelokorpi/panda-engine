@@ -44,7 +44,8 @@ game.DebugDraw = game.Class.extend({
         var grap = new game.Graphics();
         grap.beginFill(game.DebugDraw.spriteColor);
 
-        grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
+        if(sprite.hitArea) grap.drawRect(sprite.hitArea.x, sprite.hitArea.y, sprite.hitArea.width, sprite.hitArea.height);
+        else grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
 
         grap.target = sprite;
         grap.alpha = game.DebugDraw.spriteAlpha;
@@ -58,7 +59,7 @@ game.DebugDraw = game.Class.extend({
     **/
     addBody: function(body) {
         var sprite = new game.Graphics();
-        this.drawSprite(sprite, body);
+        this.drawDebugSprite(sprite, body);
 
         sprite.position.x = body.position.x;
         sprite.position.y = body.position.y;
@@ -67,7 +68,7 @@ game.DebugDraw = game.Class.extend({
         this.container.addChild(sprite);
     },
 
-    drawSprite: function(sprite, body) {
+    drawDebugSprite: function(sprite, body) {
         sprite.clear();
         sprite.beginFill(game.DebugDraw.shapeColor);
 
@@ -94,10 +95,10 @@ game.DebugDraw = game.Class.extend({
             if(game.modules['engine.physics'] && this.container.children[i].target instanceof game.Body) {
                 if(this.container.children[i].width !== this.container.children[i].target.shape.width ||
                     this.container.children[i].height !== this.container.children[i].target.shape.height) {
-                    this.drawSprite(this.container.children[i], this.container.children[i].target);
+                    this.drawDebugSprite(this.container.children[i], this.container.children[i].target);
                 }
                 if(this.container.children[i].radius !== this.container.children[i].target.shape.radius) {
-                    this.drawSprite(this.container.children[i], this.container.children[i].target);
+                    this.drawDebugSprite(this.container.children[i], this.container.children[i].target);
                 }
 
                 this.container.children[i].position.x = this.container.children[i].target.position.x + game.scene.stage.position.x;
