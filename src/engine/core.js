@@ -490,6 +490,9 @@ var core = {
                 };
             }
         }
+
+        // Deprecated
+        this.ua = this.device;
     },
 
     _DOMReady: function() {
