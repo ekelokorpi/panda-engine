@@ -30,7 +30,7 @@ game.module(
 game.Sprite = PIXI.Sprite.extend({
     init: function(x, y, path, settings) {
         if(typeof(x) !== 'number') path = x;
-        path = game.assets[path] || path;
+        path = game.assets[path] || path;
         var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
         this.super(texture);
         game.merge(this, settings);

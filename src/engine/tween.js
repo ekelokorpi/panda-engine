@@ -79,7 +79,7 @@ game.Tween = function (object, properties, duration, settings) {
     var _valuesStart = {};
     var _valuesEnd = properties || {};
     var _valuesStartRepeat = {};
-    var _duration = duration || 1000;
+    var _duration = duration || 1000;
     var _repeat = 0;
     var _repeats = 0;
     var _yoyo = false;
@@ -89,13 +89,13 @@ game.Tween = function (object, properties, duration, settings) {
     var _delayRepeat = false;
     var _startTime = null;
     var _originalStartTime = null;
-    var _easingFunction = settings.easing || game.Tween.Easing.Linear.None;
-    var _interpolationFunction = settings.interpolation || game.Tween.Interpolation.Linear;
+    var _easingFunction = settings.easing || game.Tween.Easing.Linear.None;
+    var _interpolationFunction = settings.interpolation || game.Tween.Interpolation.Linear;
     var _chainedTweens = [];
-    var _onStartCallback = settings.onStart || null;
+    var _onStartCallback = settings.onStart || null;
     var _onStartCallbackFired = false;
-    var _onUpdateCallback = settings.onUpdate || null;
-    var _onCompleteCallback = settings.onComplete || null;
+    var _onUpdateCallback = settings.onUpdate || null;
+    var _onCompleteCallback = settings.onComplete || null;
 
     // Set all starting values present on the target object
     for (var field in object) {

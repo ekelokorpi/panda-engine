@@ -165,7 +165,7 @@ game.Audio = game.Class.extend({
             var audio = this.context.createBufferSource();
             audio.buffer = this.sources[id].audio;
             audio.loop = !!loop;
-            audio.playbackRate.value = rate || 1;
+            audio.playbackRate.value = rate || 1;
             if(typeof(callback) === 'function') audio.onended = callback.bind(this);
             else audio.onended = null;
 
@@ -177,8 +177,8 @@ game.Audio = game.Class.extend({
             gainNode.connect(this.gainNode);
             audio.connect(gainNode);
 
-            if(audio.start) audio.start(0, this.sources[id].audio.pauseTime || 0);
-            else if(audio.noteOn) audio.noteOn(0, this.sources[id].audio.pauseTime || 0);
+            if(audio.start) audio.start(0, this.sources[id].audio.pauseTime || 0);
+            else if(audio.noteOn) audio.noteOn(0, this.sources[id].audio.pauseTime || 0);
 
             this.sources[id].clips.push(audio);
             this.sources[id].audio.volume = gainNode.gain.value; // Store volume info for pauses
@@ -187,7 +187,7 @@ game.Audio = game.Class.extend({
         }
         // HTML5 Audio
         else {
-            this.sources[id].audio.volume = volume || 1;
+            this.sources[id].audio.volume = volume || 1;
             this.sources[id].audio.loop = loop;
             this.sources[id].audio.playing = true;
             if(typeof(callback) === 'function') this.sources[id].audio.onended = callback.bind(this);
