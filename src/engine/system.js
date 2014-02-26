@@ -338,6 +338,9 @@ game.System = game.Class.extend({
                     this.canvas.style.height = window.innerHeight + 'px';
                     this.canvas.style.width = window.innerHeight * (this.width / this.height) + 'px';
                 }
+            } else {
+                this.canvas.style.width = this.width + 'px';
+                this.canvas.style.height = this.height + 'px';
             }
         }
     }
