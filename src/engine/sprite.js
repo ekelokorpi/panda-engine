@@ -87,9 +87,9 @@ game.Container = PIXI.DisplayObjectContainer.extend({
 });
 
 game.Texture = PIXI.Texture.extend();
-game.Texture.fromImage = function(id) {
+game.Texture.fromImage = function(id, crossorigin) {
     id = game.assets[id] || id;
-    return PIXI.Texture.fromImage(id);
+    return PIXI.Texture.fromImage(id, crossorigin);
 };
 game.Texture.fromCanvas = PIXI.Texture.fromCanvas;
 game.Texture.fromFrame = PIXI.Texture.fromFrame;
