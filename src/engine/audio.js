@@ -177,8 +177,8 @@ game.Audio = game.Class.extend({
             gainNode.connect(this.gainNode);
             audio.connect(gainNode);
 
-            if(audio.start) audio.start(0, this.sources[id].audio.pauseTime);
-            else if(audio.noteOn) audio.noteOn(0, this.sources[id].audio.pauseTime);
+            if(audio.start) audio.start(0, this.sources[id].audio.pauseTime || 0);
+            else if(audio.noteOn) audio.noteOn(0, this.sources[id].audio.pauseTime || 0);
 
             this.sources[id].clips.push(audio);
             this.sources[id].audio.volume = gainNode.gain.value; // Store volume info for pauses
