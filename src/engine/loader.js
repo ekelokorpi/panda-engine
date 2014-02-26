@@ -75,13 +75,6 @@ game.Loader = game.Class.extend({
     },
 
     initStage: function() {
-        if(this.backgroundColor) {
-            var bg = new game.Graphics();
-            bg.beginFill(this.backgroundColor);
-            bg.drawRect(0, 0, game.system.width, game.system.height);
-            game.system.stage.addChild(bg);
-        }
-
         this.text = new game.Text(this.percent+'%',{font:'30px Arial',fill:'#ffffff'});
         this.text.position.x = game.system.width / 2 - this.text.width / 2;
         this.text.position.y = game.system.height/2 + 80;
@@ -126,6 +119,13 @@ game.Loader = game.Class.extend({
         }
         if(game.sound) game.sound.stopAll();
 
+        if(this.backgroundColor) {
+            var bg = new game.Graphics();
+            bg.beginFill(this.backgroundColor);
+            bg.drawRect(0, 0, game.system.width, game.system.height);
+            game.system.stage.addChild(bg);
+        }
+        
         this.initStage();
 
         if(this.assets.length > 0) this.loader.load();
