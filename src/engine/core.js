@@ -242,7 +242,7 @@ var core = {
     addAsset: function(path, id) {
         id = id || path;
         this.assets[id] = path;
-        this.resources.push(path);
+        if(this.resources.indexOf(path) === -1) this.resources.push(path);
         return path;
     },
 
