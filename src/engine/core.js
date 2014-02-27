@@ -324,9 +324,10 @@ var core = {
         @param {game.Scene} scene Starting scene.
         @param {Number} width Width of canvas.
         @param {Number} height Height of canvas.
+        @param {game.Loader} loaderClass Custom loader class.
         @param {String} canvasId
     **/
-    start: function(scene, width, height, canvasId) {
+    start: function(scene, width, height, loaderClass, canvasId) {
         if(this._loadQueue.length > 0) throw('Core not ready.');
         
         width = width || (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
@@ -348,7 +349,7 @@ var core = {
 
         this.ready = true;
         
-        var loader = new game.Loader(scene);
+        var loader = new (loaderClass || game.Loader)(scene);
         loader.start();
     },
 
