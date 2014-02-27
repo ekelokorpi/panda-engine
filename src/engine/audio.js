@@ -58,6 +58,9 @@ game.Audio = game.Class.extend({
         // Disable audio on Windows Phone
         if(game.device.wp) game.Audio.enabled = false;
 
+        // Disable audio on Android 2.x.x
+        if(game.device.android2) game.Audio.enabled = false;
+
         // Disable audio on mobile, when offline
         // if(!navigator.onLine && game.device.mobile) game.Audio.enabled = false;
 
