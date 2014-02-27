@@ -604,7 +604,7 @@ else {
 
 // http://ejohn.org/blog/simple-javascript-inheritance/
 var initializing = false;
-var fnTest = /xyz/.test(function(){ var xyz; return xyz; }) ? /\bsuper\b/ : /[\D|\d]*/;
+var fnTest = /xyz/.test(function(){ var xyz; return xyz; }) ? /\b_super\b/ : /[\D|\d]*/;
 
 /**
     @class Class
