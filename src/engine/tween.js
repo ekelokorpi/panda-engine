@@ -1,3 +1,9 @@
+/**
+    Tween engine.
+    
+    @module tween
+    @namespace game
+**/
 game.module(
     'engine.tween'
 )
@@ -24,25 +30,41 @@ if(Date.now === undefined) {
     };
 }
 
+/**
+    Tween engine.
+    @class TweenEngine
+**/
 game.TweenEngine = (function () {
     var _tweens = [];
     return {
         REVISION: '12',
 
+        /**
+            @method getAll
+        **/
         getAll: function () {
             return _tweens;
         },
 
+        /**
+            @method removeAll
+        **/
         removeAll: function () {
             _tweens.length = 0;
         },
         
+        /**
+            @method stopAllForObject
+        **/
         stopAllForObject: function(obj) {
             for (var i = _tweens.length - 1; i >= 0; i--) {
                 if(_tweens[i].getObject() === obj) _tweens[i].stop();
             }
         },
 
+        /**
+            @method getTweenForObject
+        **/
         getTweenForObject: function(obj) {
             for (var i = _tweens.length - 1; i >= 0; i--) {
                 if(_tweens[i].getObject() === obj) return _tweens[i];
@@ -50,10 +72,18 @@ game.TweenEngine = (function () {
             return false;
         },
 
+        /**
+            @method add
+            @param {game.Tween} tween
+        **/
         add: function (tween) {
             _tweens.push(tween);
         },
 
+        /**
+            @method remove
+            @param {game.Tween} tween
+        **/
         remove: function (tween) {
             var i = _tweens.indexOf(tween);
             if(i !== -1) {
@@ -61,6 +91,9 @@ game.TweenEngine = (function () {
             }
         },
 
+        /**
+            @method update
+        **/
         update: function (time) {
             if(_tweens.length === 0) return false;
             time = time !== undefined ? time : game.Timer.time;
@@ -72,6 +105,10 @@ game.TweenEngine = (function () {
     };
 })();
 
+/**
+    Tween.
+    @class Tween
+**/
 game.Tween = function (object, properties, duration, settings) {
     if(!object) throw('No object defined for tween');
     settings = settings || {};
@@ -97,15 +134,22 @@ game.Tween = function (object, properties, duration, settings) {
     var _onUpdateCallback = settings.onUpdate || null;
     var _onCompleteCallback = settings.onComplete || null;
 
-    // Set all starting values present on the target object
     for (var field in object) {
         _valuesStart[field] = parseFloat(object[field], 10);
     }
 
+    /**
+        @method getObject
+    **/
     this.getObject = function() {
         return _object;
     };
 
+    /**
+        @method to
+        @param {Object} properties
+        @param {Number} duration
+    **/
     this.to = function (properties, duration) {
         if(duration !== undefined) {
             _duration = duration;
@@ -114,6 +158,9 @@ game.Tween = function (object, properties, duration, settings) {
         return this;
     };
 
+    /**
+        @method start
+    **/
     this.start = function (time) {
         game.TweenEngine.add(this);
         _isPlaying = true;
@@ -139,6 +186,9 @@ game.Tween = function (object, properties, duration, settings) {
         return this;
     };
 
+    /**
+        @method stop
+    **/
     this.stop = function () {
         if(!_isPlaying) {
             return this;
@@ -149,60 +199,104 @@ game.Tween = function (object, properties, duration, settings) {
         return this;
     };
 
+    /**
+        @method stopChainedTweens
+    **/
     this.stopChainedTweens = function () {
         for (var i = 0, numChainedTweens = _chainedTweens.length; i < numChainedTweens; i++) {
             _chainedTweens[i].stop();
         }
     };
 
-    this.delay = function (amount, repeat) {
-        _delayTime = amount;
+    /**
+        @method delay
+        @param {Number} time
+        @param {Boolean} repeat
+    **/
+    this.delay = function (time, repeat) {
+        _delayTime = time;
         _delayRepeat = !!repeat;
         return this;
     };
 
+    /**
+        @method repeat
+        @param {Number} times
+    **/
     this.repeat = function (times) {
         if(typeof(times) === 'undefined') times = Infinity;
         _repeat = times;
         return this;
     };
 
-    this.yoyo = function (yoyo) {
-        if(typeof(yoyo) === 'undefined') yoyo = true;
-        _yoyo = yoyo;
+    /**
+        @method yoyo
+        @param {Boolean} enabled
+    **/
+    this.yoyo = function (enabled) {
+        if(typeof(enabled) === 'undefined') enabled = true;
+        _yoyo = enabled;
         return this;
     };
 
+    /**
+        @method easing
+        @param {Function} easing
+    **/
     this.easing = function (easing) {
         _easingFunction = easing;
         return this;
     };
 
+    /**
+        @method interpolation
+        @param {Function} interpolation
+    **/
     this.interpolation = function (interpolation) {
         _interpolationFunction = interpolation;
         return this;
     };
 
+    /**
+        @method chain
+        @param {game.Tween} tween
+    **/
     this.chain = function () {
         _chainedTweens = arguments;
         return this;
     };
 
+    /**
+        @method onStart
+        @param {Function} callback
+    **/
     this.onStart = function (callback) {
         _onStartCallback = callback;
         return this;
     };
 
+    /**
+        @method onUpdate
+        @param {Function} callback
+    **/
     this.onUpdate = function (callback) {
         _onUpdateCallback = callback;
         return this;
     };
 
+    /**
+        @method onComplete
+        @param {Function} callback
+    **/
     this.onComplete = function (callback) {
         _onCompleteCallback = callback;
         return this;
     };
 
+    /**
+        @method isPlaying
+        @return {Boolean}
+    **/
     this.isPlaying = function() {
         return _isPlaying;
     };
