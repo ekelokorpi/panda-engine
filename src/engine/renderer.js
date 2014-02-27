@@ -14268,10 +14268,10 @@ PIXI.extend = function(prop) {
         var from = proto[name];
         if(name === 'init' && !from) from = base;
         return function() {
-            var tmp = this.super;
-            this.super = from;
+            var tmp = this._super;
+            this._super = from;
             var ret = fn.apply(this, arguments);
-            this.super = tmp;
+            this._super = tmp;
             return ret;
         };
     };

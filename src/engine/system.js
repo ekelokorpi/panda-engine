@@ -278,6 +278,10 @@ game.System = game.Class.extend({
 
     checkOrientation: function() {
         this.orientation = window.innerWidth < window.innerHeight ? game.System.PORTRAIT : game.System.LANDSCAPE;
+        if(game.device.android2 && window.innerWidth === 320 && window.innerHeight === 251) {
+            // Android 2.3 portrait fix
+            this.orientation = game.System.PORTRAIT;
+        }
         game.System.rotateScreen = game.System.orientation !== this.orientation ? true : false;
 
         this.canvas.style.display = game.System.rotateScreen ? 'none' : 'block';
