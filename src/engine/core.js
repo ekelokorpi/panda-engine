@@ -49,7 +49,7 @@ if(typeof(global) !== 'undefined') return;
     @class Core
 **/
 var core = {
-    version: '1.1.0',
+    version: '1.1.1',
     config: window.pandaConfig || {
         sourceFolder: 'src'
     },
