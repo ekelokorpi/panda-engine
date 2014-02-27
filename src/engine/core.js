@@ -626,10 +626,10 @@ core.Class.extend = function(prop) {
                 Call functions parent function.
                 @method super
             **/
-            var tmp = this.super;
-            this.super = parent[name];
+            var tmp = this._super;
+            this._super = parent[name];
             var ret = fn.apply(this, arguments);
-            this.super = tmp;
+            this._super = tmp;
             return ret;
         };
     };
@@ -687,10 +687,10 @@ core.Class.extend = function(prop) {
 
         var makeFn = function(name, fn){
             return function() {
-                var tmp = this.super;
-                this.super = parent[name];
+                var tmp = this._super;
+                this._super = parent[name];
                 var ret = fn.apply(this, arguments);
-                this.super = tmp;
+                this._super = tmp;
                 return ret;
             };
         };

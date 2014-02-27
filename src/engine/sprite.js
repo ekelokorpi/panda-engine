@@ -32,7 +32,7 @@ game.Sprite = PIXI.Sprite.extend({
         if(typeof(x) !== 'number') path = x;
         path = game.assets[path] || path;
         var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
-        this.super(texture);
+        this._super(texture);
         game.merge(this, settings);
 
         if(typeof(x) === 'number') this.position.x = x;
@@ -51,7 +51,7 @@ game.Sprite = PIXI.Sprite.extend({
             id = game.assets[id] || id;
             id = game.Texture.fromFrame(id);
         }
-        this.super(id);
+        this._super(id);
     },
 
     /**
@@ -81,7 +81,7 @@ game.Container = PIXI.DisplayObjectContainer.extend({
         @method addChild
     **/
     addChild: function(obj) {
-        this.super(obj);
+        this._super(obj);
         if(game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
     }
 });
@@ -99,7 +99,7 @@ game.TilingSprite = PIXI.TilingSprite.extend({
 
     init: function(x, y, path, width, height, settings) {
         var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
-        this.super(texture, width || texture.width, height || texture.height);
+        this._super(texture, width || texture.width, height || texture.height);
         game.merge(this, settings);
 
         this.position.x = x;
@@ -121,7 +121,7 @@ game.Animation = PIXI.MovieClip.extend({
             textures.push(game.Texture.fromImage(frames[i]));
         }
 
-        this.super(textures);
+        this._super(textures);
     }
 });
 
