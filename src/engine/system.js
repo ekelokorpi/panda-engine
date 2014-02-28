@@ -329,7 +329,7 @@ game.System = game.Class.extend({
                 this.canvas.style.height = width * this.ratio + 'px';
             }
 
-            window.scroll(0,1);
+            if(!game.device.ejecta) window.scroll(0,1);
         } else {
             // Desktop resize
             if(window.innerWidth === 0) return; // Chrome bug
