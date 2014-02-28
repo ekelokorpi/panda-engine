@@ -50,9 +50,7 @@ if(typeof(global) !== 'undefined') return;
 **/
 var core = {
     version: '1.1.1',
-    config: window.pandaConfig || {
-        sourceFolder: 'src'
-    },
+    config: window.pandaConfig || {},
     /**
         Scale factor for Retina and HiRes mode.
         @property {Number} scale
@@ -446,6 +444,9 @@ var core = {
     
     _boot: function() {
         if(document.location.href.match(/\?nocache/)) this.setNocache();
+
+        // Default config
+        this.config.sourceFolder = this.config.sourceFolder || 'src';
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
