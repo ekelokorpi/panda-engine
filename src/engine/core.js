@@ -482,6 +482,7 @@ var core = {
         this.device.opera = /Opera/i.test(navigator.userAgent);
         this.device.crosswalk = /Crosswalk/i.test(navigator.userAgent);
         this.device.cocoonJS = !!navigator.isCocoonJS;
+        this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp;
 
