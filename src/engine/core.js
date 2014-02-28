@@ -49,7 +49,7 @@ if(typeof(global) !== 'undefined') return;
     @class Core
 **/
 var core = {
-    version: '1.1.1',
+    version: '1.1.2',
     config: window.pandaConfig || {},
     /**
         Scale factor for Retina and HiRes mode.
