@@ -122,9 +122,14 @@ game.Audio = game.Class.extend({
         // HTML5 Audio
         else {
             var audio = new Audio(realPath);
-            audio.loadCallback = this.loaded.bind(this, path, callback, audio);
-            audio.addEventListener('canplaythrough', audio.loadCallback, false);
-            audio.addEventListener('error', this.loadError.bind(this, path), false);
+            if(game.device.ie) {
+                // Sometimes IE fails to trigger events, when loading audio
+                this.loaded(path, callback, audio);
+            } else {
+                audio.loadCallback = this.loaded.bind(this, path, callback, audio);
+                audio.addEventListener('canplaythrough', audio.loadCallback, false);
+                audio.addEventListener('error', this.loadError.bind(this, path), false);
+            }
             audio.preload = 'auto';
             audio.load();
         }
