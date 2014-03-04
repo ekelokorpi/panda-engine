@@ -12408,6 +12408,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
             }
             else
             {
+                PIXI.JsonCache[this.url] = this.json;
                 this.onLoaded();
             }
         }
@@ -12417,6 +12418,8 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
         }
     }
 };
+
+PIXI.JsonCache = {};
 
 /**
  * Invoke when json file loaded
