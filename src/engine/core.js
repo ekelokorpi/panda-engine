@@ -49,7 +49,7 @@ if(typeof(global) !== 'undefined') return;
     @class Core
 **/
 var core = {
-    version: '1.1.2',
+    version: '1.1.3',
     config: window.pandaConfig || {},
     plugins: {},
     /**
