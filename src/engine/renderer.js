@@ -12229,7 +12229,7 @@ PIXI.AssetLoader.prototype.load = function()
     var scope = this;
 
     function onLoad(evt) {
-        scope.onAssetLoaded(evt.loader);
+        scope.onAssetLoaded(evt.content);
     }
 
     this.loadCount = this.assetURLs.length;
@@ -12408,7 +12408,6 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
             }
             else
             {
-                PIXI.JsonCache[this.url] = this.json;
                 this.onLoaded();
             }
         }
@@ -12418,8 +12417,6 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
         }
     }
 };
-
-PIXI.JsonCache = {};
 
 /**
  * Invoke when json file loaded
@@ -14324,6 +14321,5 @@ game.HitCircle = PIXI.Circle;
 game.HitEllipse = PIXI.Ellipse;
 game.HitPolygon = PIXI.Polygon;
 game.TextureCache = PIXI.TextureCache;
-game.JsonCache = PIXI.JsonCache;
 
 });
