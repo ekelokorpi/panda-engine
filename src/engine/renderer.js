@@ -14324,5 +14324,6 @@ game.HitCircle = PIXI.Circle;
 game.HitEllipse = PIXI.Ellipse;
 game.HitPolygon = PIXI.Polygon;
 game.TextureCache = PIXI.TextureCache;
+game.JsonCache = PIXI.JsonCache;
 
 });
