@@ -52,6 +52,10 @@ var core = {
     version: '1.1.3',
     config: window.pandaConfig || {},
     plugins: {},
+    json: {},
+    getJSON: function(id) {
+        return this.json[this.assets[id]];
+    },
     /**
         Scale factor for Retina and HiRes mode.
         @property {Number} scale
