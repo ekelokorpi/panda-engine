@@ -26,7 +26,7 @@
 if(typeof(window) === 'undefined') window = {};
 (function(window){ 'use strict';
 
-if(typeof(global) !== 'undefined') return;
+if(typeof(global) !== 'undefined' && global.game) return;
 /**
     Panda.js core.
 
