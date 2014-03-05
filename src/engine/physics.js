@@ -368,9 +368,9 @@ game.Body = game.Class.extend({
     /**
         Body's collision group.
         @property {Number} collisionGroup
-        @default 0
+        @default null
     **/
-    collisionGroup: 0,
+    collisionGroup: null,
     /**
         Group number that body collides against.
         @property {Number} collideAgainst
@@ -409,6 +409,17 @@ game.Body = game.Class.extend({
     **/
     collide: function() {
         return true;
+    },
+
+    /**
+        Set new collision group for body.
+        @method setCollisionGroup
+        @param {Number} group
+    **/
+    setCollisionGroup: function(group) {
+        if(!this.world) return;
+        if(typeof(this.collisionGroup) === 'number') this.world.removeBodyCollision(this, this.collisionGroup);
+        this.world.addBodyCollision(this, group);
     },
 
     /**
