@@ -51,6 +51,7 @@ if(typeof(global) !== 'undefined') return;
 var core = {
     version: '1.1.2',
     config: window.pandaConfig || {},
+    plugins: {},
     /**
         Scale factor for Retina and HiRes mode.
         @property {Number} scale
@@ -344,6 +345,11 @@ var core = {
         if(game.Storage && this.config.storageId) this.storage = new game.Storage(this.config.storageId);
         if(game.Analytics.id) this.config.analyticsId = game.Analytics.id; // Deprecated
         if(game.Analytics && this.config.analyticsId) this.analytics = new game.Analytics(this.config.analyticsId);
+
+        // Load plugins
+        for(var name in this.plugins) {
+            this.plugins[name] = new (this.plugins[name]);
+        }
 
         this.ready = true;
         
