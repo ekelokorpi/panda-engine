@@ -6,7 +6,7 @@
 **/
 /* jshint -W004 */
 game.module(
-	'engine.physics'
+    'engine.physics'
 )
 .body(function() { 'use strict';
 
@@ -55,10 +55,7 @@ game.World = game.Class.extend({
     addBody: function(body) {
         body.world = this;
         this.bodies.push(body);
-        if(typeof(body.collisionGroup) === 'number') {
-            this.collisionGroups[body.collisionGroup] = this.collisionGroups[body.collisionGroup] || [];
-            this.collisionGroups[body.collisionGroup].push(body);
-        }
+        if(typeof(body.collisionGroup) === 'number') this.addBodyCollision(body, body.collisionGroup);
         if(game.debugDraw && body.shape) game.debugDraw.addBody(body);
     },
 
@@ -84,6 +81,18 @@ game.World = game.Class.extend({
     },
 
     /**
+        Add body to collision group.
+        @method addBodyCollision
+        @param {game.Body} body
+        @param {Number} group
+    **/
+    addBodyCollision: function(body, group) {
+        body.collisionGroup = group;
+        this.collisionGroups[body.collisionGroup] = this.collisionGroups[body.collisionGroup] || [];
+        this.collisionGroups[body.collisionGroup].push(body);
+    },
+
+    /**
         Remove collision group from world.
         @method removeCollisionGroup
         @param {Number} i
@@ -102,6 +111,7 @@ game.World = game.Class.extend({
 
         var i, b;
         for (i = this.collisionGroups[body.collideAgainst].length - 1; i >= 0; i--) {
+            if(!this.collisionGroups[body.collideAgainst]) break;
             b = this.collisionGroups[body.collideAgainst][i];
             if(body !== b) this.solver.solve(body, b);
         }
