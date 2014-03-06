@@ -159,33 +159,17 @@ game.Debug = game.Class.extend({
     last: 0,
     fps: 0,
     fpsText: null,
-    /**
-        Fps update frequency in milliseconds.
-        @property {Number|pandaConfig.fpsFrequency} frequency
-        @default 1000
-    **/
-    frequency: game.config.fpsFrequency || 1000,
-    /**
-        Fps text color.
-        @property {String|pandaConfig.fpsColor} color
-        @default 'black'
-    **/
-    color: game.config.fpsColor || 'black',
-    position: {
-        x: 10,
-        y: 10
-    },
 
     init: function() {
-        this.fpsText = new game.Text('0', {fill: this.color});
-        this.fpsText.position.set(this.position.x, this.position.y);
+        this.fpsText = new game.Text('0', {fill: game.Debug.color});
+        this.fpsText.position.set(game.Debug.position.x, game.Debug.position.y);
         game.system.stage.addChild(this.fpsText);
     },
 
     update: function() {
         this.frames++;
 
-        if(game.Timer.last >= this.last + this.frequency) {
+        if(game.Timer.last >= this.last + game.Debug.frequency) {
             this.fps = (Math.round((this.frames * 1000) / (game.Timer.last - this.last))).toString();
             if(this.fps !== this.fpsText.text) this.fpsText.setText(this.fps.toString());
             this.last = game.Timer.last;
@@ -196,9 +180,18 @@ game.Debug = game.Class.extend({
 
 /**
     Enable fps display.
-    @attribute {Boolean|pandaConfig.debug} enabled
+    @attribute {Boolean} enabled
     @default false
 **/
-game.Debug.enabled = document.location.href.toLowerCase().match(/\?debug/) || pandaConfig.debug;
+game.Debug.enabled = !!document.location.href.toLowerCase().match(/\?debug/);
+
+game.Debug.frequency = 1000;
+
+game.Debug.color = 'black';
+
+game.Debug.position = {
+    x: 10,
+    y: 10
+};
 
 });
