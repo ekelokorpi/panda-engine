@@ -3,21 +3,13 @@ var UglifyJS = require('uglify-js');
 var fs = require('fs');
 var i, file, size, result, output, totalSize = 0;
 
-var configFile = process.argv[2];
-if(configFile) require(process.cwd() + '/' + configFile);
-
-var defaultConfig = {
-    sourceFolder: 'src',
-    outputFile: 'game.min.js',
-    outputDir: './'
-};
-
-if(typeof(pandaConfig) === 'undefined') pandaConfig = defaultConfig;
-else {
-    for(var i in defaultConfig) {
-        if(typeof(pandaConfig[i]) === 'undefined') pandaConfig[i] = defaultConfig[i];
-    }
+var configFile = process.argv[2] || 'src/game/config.js';
+try {
+    require(process.cwd() + '/' + configFile);
+} catch(e) {
+    return console.log('Error reading config file.');
 }
+console.log('Using config ' + configFile);
 
 var header = '// Made with Panda.js - http://www.pandajs.net';
 var include = ['engine/core.js', 'game/main.js'];
@@ -75,10 +67,10 @@ if(pandaConfig.sitelock) {
 
 output += result.code;
 
-fs.writeFile(pandaConfig.outputDir + pandaConfig.outputFile, output, function(err) {
+fs.writeFile(pandaConfig.outputFile, output, function(err) {
     if(err) console.log(err);
     else {
-        var size = fs.statSync(pandaConfig.outputDir + pandaConfig.outputFile).size;
+        var size = fs.statSync(pandaConfig.outputFile).size;
         var percent = Math.round((size / totalSize) * 100);
         console.log('Saved ' + pandaConfig.outputFile + ' ' + size + ' bytes (' + percent + '%)');
     }
