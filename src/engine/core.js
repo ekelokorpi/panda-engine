@@ -50,10 +50,6 @@ if(typeof(global) !== 'undefined' && global.game) return;
 **/
 var core = {
     version: '1.1.4',
-    /**
-        Panda config.
-        @property {Object} config
-    **/
     config: window.pandaConfig || {},
     plugins: {},
     json: {},
@@ -355,7 +351,7 @@ var core = {
 
         // Load plugins
         for(var name in this.plugins) {
-            this.plugins[name] = new (this.plugins[name]);
+            this.plugins[name] = new (this.plugins[name])();
         }
 
         this.ready = true;
@@ -432,7 +428,7 @@ var core = {
                 if(game._loadQueue.length === 0) {
                     // Last module loaded, parse config
                     for(var c in window.pandaConfig) {
-                        var m = c.toLowerCase().ucfirst();
+                        var m = c.ucfirst();
                         if(game[m]) {
                             for(var o in window.pandaConfig[c]) {
                                 game[m][o] = window.pandaConfig[c][o];
