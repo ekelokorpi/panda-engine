@@ -50,6 +50,14 @@ if(typeof(global) !== 'undefined' && global.game) return;
 **/
 var core = {
     version: '1.1.3',
+    /**
+        Panda config.
+
+        - sourceFolder - Folder name for source files (default: src)
+        - outputFile - Filename for minified js file (default: game.min.js)
+
+        @property {Object} config
+    **/
     config: window.pandaConfig || {},
     plugins: {},
     json: {},
@@ -343,7 +351,6 @@ var core = {
             this.sound = this.audio; // Deprecated
         }
         if(game.Pool) this.pool = new game.Pool();
-        if(game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
         if(game.Storage.id) this.config.storageId = game.Storage.id; // Deprecated
         if(game.Storage && this.config.storageId) this.storage = new game.Storage(this.config.storageId);

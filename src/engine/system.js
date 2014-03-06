@@ -177,6 +177,7 @@ game.System = game.Class.extend({
     setSceneNow: function(SceneClass) {
         if(game.TweenEngine) game.TweenEngine.removeAll();
         game.scene = new (SceneClass)();
+        if(game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
         this.startRunLoop();
     },
     
@@ -194,14 +195,12 @@ game.System = game.Class.extend({
     run: function() {
         if(this.paused) return;
 
-        if(game.debug) game.debug.stats.begin();
-
         game.Timer.update();
         this.delta = this.timer.delta() / 1000;
         
         game.scene.run();
         
-        if(game.debug) game.debug.stats.end();
+        if(this.debug) this.debug.update();
 
         if(this.newSceneClass) {
             this.setSceneNow(this.newSceneClass);
