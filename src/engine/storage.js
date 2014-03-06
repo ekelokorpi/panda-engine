@@ -68,4 +68,6 @@ game.Storage = game.Class.extend({
     }
 });
 
+game.Storage.id = '';
+
 });

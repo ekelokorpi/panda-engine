@@ -342,12 +342,11 @@ var core = {
             this.audio = new game.Audio();
             this.sound = this.audio; // Deprecated
         }
+
         if(game.Pool) this.pool = new game.Pool();
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
-        if(game.Storage.id) this.config.storageId = game.Storage.id; // Deprecated
-        if(game.Storage && this.config.storageId) this.storage = new game.Storage(this.config.storageId);
-        if(game.Analytics.id) this.config.analyticsId = game.Analytics.id; // Deprecated
-        if(game.Analytics && this.config.analyticsId) this.analytics = new game.Analytics(this.config.analyticsId);
+        if(game.Storage && game.Storage.id) this.storage = new game.Storage(game.Storage.id);
+        if(game.Analytics && game.Analytics.id) this.analytics = new game.Analytics(game.Analytics.id);
 
         // Load plugins
         for(var name in this.plugins) {

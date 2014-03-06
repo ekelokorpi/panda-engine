@@ -42,4 +42,6 @@ game.Analytics = game.Class.extend({
     }
 });
 
+game.Analytics.id = '';
+
 });
