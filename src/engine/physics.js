@@ -149,7 +149,11 @@ game.CollisionSolver = game.Class.extend({
         @param {game.Body} b
     **/
     solve: function(a, b) {
-        if(this.hitTest(a, b)) this.hitResponse(a, b);
+        if(this.hitTest(a, b)) {
+            if(this.hitResponse(a, b)) {
+                a.afterCollide(b);
+            }
+        }
     },
 
     /**
@@ -259,24 +263,26 @@ game.CollisionSolver = game.Class.extend({
             if(a.last.y + a.shape.height / 2 <= b.last.y - b.shape.height / 2) {
                 if(a.collide(b)) {
                     a.position.y = b.position.y - b.shape.height / 2 - a.shape.height / 2;
+                    return true;
                 }
             }
             else if(a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
                 if(a.collide(b)) {
                     a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
+                    return true;
                 }
             }
             else if(a.last.x + a.shape.width / 2 <= b.last.x - b.shape.width / 2) {
                 if(a.collide(b)) {
                     a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
+                    return true;
                 }
             }
             else if(a.last.x - a.shape.width / 2 >= b.last.x + b.shape.width / 2) {
                 if(a.collide(b)) {
                     a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
+                    return true;
                 }
-            } else {
-                a.collide(b);
             }
         }
         else if(a.shape instanceof game.Circle && b.shape instanceof game.Circle) {
@@ -286,6 +292,7 @@ game.CollisionSolver = game.Class.extend({
 
                 a.position.x = b.position.x + Math.cos(angle) * dist;
                 a.position.y = b.position.y + Math.sin(angle) * dist;
+                return true;
             }
         }
         else if(a.shape instanceof game.Rectangle && b.shape instanceof game.Circle) {
@@ -318,6 +325,7 @@ game.CollisionSolver = game.Class.extend({
                 return;
             }
         }
+        return false;
     }
 });
 
@@ -407,8 +415,12 @@ game.Body = game.Class.extend({
         @method collide
         @return {Boolean} Return true, to apply hit response.
     **/
-    collide: function() {
+    collide: function(b) {
         return true;
+    },
+
+    afterCollide: function(b) {
+
     },
 
     /**
