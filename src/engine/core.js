@@ -429,6 +429,17 @@ var core = {
             
             if(dependenciesLoaded && module.body) {
                 game._loadQueue.splice(i, 1);
+                if(game._loadQueue.length === 0) {
+                    // Last module loaded, parse config
+                    for(var c in window.pandaConfig) {
+                        var m = c.toLowerCase().ucfirst();
+                        if(game[m]) {
+                            for(var o in window.pandaConfig[c]) {
+                                game[m][o] = window.pandaConfig[c][o];
+                            }
+                        }
+                    }
+                }
                 module.loaded = true;
                 module.body();
                 moduleLoaded = true;
@@ -459,7 +470,6 @@ var core = {
     _boot: function() {
         if(document.location.href.match(/\?nocache/)) this.setNocache();
 
-        // Default config
         this.config.sourceFolder = this.config.sourceFolder || 'src';
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
