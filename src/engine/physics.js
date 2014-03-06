@@ -423,6 +423,15 @@ game.Body = game.Class.extend({
     },
 
     /**
+        Set collision group that body will collide against.
+        @method setCollideAgainst
+        @param {Number} group
+    **/
+    setCollideAgainst: function(group) {
+        this.collideAgainst = group;
+    },
+
+    /**
         Update body's position and velocity.
         @method update
     **/
