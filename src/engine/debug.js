@@ -151,7 +151,6 @@ game.DebugDraw.shapeAlpha = 0.3;
 game.DebugDraw.enabled = document.location.href.match(/\?debugdraw/) ? true : false;
 
 /**
-    Instance automatically created at {{#crossLink "game.Core"}}{{/crossLink}}, if URL contains `?debug`.
     @class Debug
     @extends game.Class
 **/
@@ -160,20 +159,33 @@ game.Debug = game.Class.extend({
     last: 0,
     fps: 0,
     fpsText: null,
-    fpsFrequency: 1000,
+    /**
+        Fps update frequency in milliseconds.
+        @property {Number|pandaConfig.fpsFrequency} frequency
+        @default 1000
+    **/
+    frequency: game.config.fpsFrequency || 1000,
+    /**
+        Fps text color.
+        @property {String|pandaConfig.fpsColor} color
+        @default 'black'
+    **/
+    color: game.config.fpsColor || 'black',
+    position: {
+        x: 10,
+        y: 10
+    },
 
     init: function() {
-        this.fpsText = new game.Text('0', {fill: game.config.fpsColor || 'black'});
-        this.fpsText.position.set(game.config.fpsLeft || 10, game.config.fpsTop || 10);
-        this.fpsFrequency = game.config.fpsFrequency || this.fpsFrequency;
-
+        this.fpsText = new game.Text('0', {fill: this.color});
+        this.fpsText.position.set(this.position.x, this.position.y);
         game.system.stage.addChild(this.fpsText);
     },
 
     update: function() {
         this.frames++;
 
-        if(game.Timer.last >= this.last + this.fpsFrequency) {
+        if(game.Timer.last >= this.last + this.frequency) {
             this.fps = (Math.round((this.frames * 1000) / (game.Timer.last - this.last))).toString();
             if(this.fps !== this.fpsText.text) this.fpsText.setText(this.fps.toString());
             this.last = game.Timer.last;
@@ -183,9 +195,10 @@ game.Debug = game.Class.extend({
 });
 
 /**
-    Enable debug.
-    @attribute {Boolean} enabled
+    Enable fps display.
+    @attribute {Boolean|pandaConfig.debug} enabled
+    @default false
 **/
-game.Debug.enabled = document.location.href.match(/\?debug/) ? true : false;
+game.Debug.enabled = document.location.href.toLowerCase().match(/\?debug/) || pandaConfig.debug;
 
 });

@@ -52,10 +52,6 @@ var core = {
     version: '1.1.4',
     /**
         Panda config.
-
-        - sourceFolder - Folder name for source files (default: src)
-        - outputFile - Filename for minified js file (default: game.min.js)
-
         @property {Object} config
     **/
     config: window.pandaConfig || {},
