@@ -60,6 +60,11 @@ game.Sprite = PIXI.Sprite.extend({
     **/
     remove: function() {
         if(this.parent) this.parent.removeChild(this);
+    },
+
+    addChild: function(obj) {
+        this._super(obj);
+        if(game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
     }
 });
 
