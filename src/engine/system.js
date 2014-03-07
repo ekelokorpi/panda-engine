@@ -214,6 +214,13 @@ game.System = game.Class.extend({
         if(game.System.center) this.canvas.style.margin = 'auto';
 
         if(game.device.mobile) {
+            // Mobile position
+            if(!game.System.center) {
+                this.canvas.style.position = 'absolute';
+                this.canvas.style.left = game.System.left + 'px';
+                this.canvas.style.top = game.System.top + 'px';
+            }
+
             document.addEventListener('touchstart', function(e) { e.preventDefault(); }, false);
 
             var div = document.createElement('div');
@@ -269,10 +276,8 @@ game.System = game.Class.extend({
             }
         }
 
-        if(game.System.resize) {
-            window.onresize = this.onResize.bind(this);
-            this.onResize();
-        }
+        window.onresize = this.onResize.bind(this);
+        this.onResize();
     },
 
     checkOrientation: function() {
@@ -310,10 +315,13 @@ game.System = game.Class.extend({
     },
 
     onResize: function() {
+        // Mobile orientation
+        if(game.device.mobile) this.checkOrientation();
+
+        if(!game.System.resize) return;
+
         if(game.device.mobile) {
             // Mobile resize
-            this.checkOrientation();
-
             var width = window.innerWidth;
             var height = window.innerHeight;
             
