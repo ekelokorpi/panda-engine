@@ -92,6 +92,7 @@ game.Scene = game.Class.extend({
         @param {Object} object
     **/
     addObject: function(object) {
+        if(object._remove) object._remove = false;    
         this.objects.push(object);
     },
 
