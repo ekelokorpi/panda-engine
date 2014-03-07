@@ -33,9 +33,9 @@ game.Loader = game.Class.extend({
     /**
         Background color of preloader.
         @property {Number} backgroundColor
-        @default null
+        @default 0x000000
     **/
-    backgroundColor: null,
+    backgroundColor: 0x000000,
     /**
         List of assets to load.
         @property {Array} assets
@@ -122,7 +122,7 @@ game.Loader = game.Class.extend({
         }
         if(game.audio) game.audio.stopAll();
 
-        if(this.backgroundColor) {
+        if(typeof(this.backgroundColor) === 'number') {
             var bg = new game.Graphics();
             bg.beginFill(this.backgroundColor);
             bg.drawRect(0, 0, game.system.width, game.system.height);
