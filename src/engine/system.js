@@ -455,7 +455,7 @@ game.System.backgroundColor = {
         @attribute backgroundColor.rotate
         @type {String}
     **/
-    rotate: null
+    rotate: '#ffffff'
 };
 game.System.backgroundImage = {
     /**
