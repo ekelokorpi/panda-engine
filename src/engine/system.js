@@ -66,6 +66,11 @@ game.System = game.Class.extend({
     running: false,
 
     init: function(width, height, canvasId) {
+        width = width || game.System.width;
+        height = height || game.System.height;
+        if(!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
+        if(!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
+
         if(game.System.hires && window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
             this.hires = true;
         }

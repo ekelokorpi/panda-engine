@@ -332,9 +332,6 @@ var core = {
     **/
     start: function(scene, width, height, loaderClass, canvasId) {
         if(this._loadQueue.length > 0) throw('Core not ready.');
-        
-        width = width || (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
-        height = height || (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
         this.system = new game.System(width, height, canvasId);
 
