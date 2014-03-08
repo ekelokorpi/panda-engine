@@ -3181,7 +3181,7 @@ PIXI.InteractionManager.prototype.update = function()
 
             if(!item.__isOver)
             {
-                if(item.mouseover) item.mouseover(this.mouse);
+                if(item.mouseover && this.mouse.originalEvent) item.mouseover(this.mouse);
                 else if(item.touchover) item.touchover(this.mouse);
                 item.__isOver = true;
             }
@@ -3191,7 +3191,7 @@ PIXI.InteractionManager.prototype.update = function()
             if(item.__isOver)
             {
                 // roll out!
-                if(item.mouseout)item.mouseout(this.mouse);
+                if(item.mouseout && this.mouse.originalEvent)item.mouseout(this.mouse);
                 else if(item.touchout) item.touchout(this.mouse);
                 item.__isOver = false;
             }
