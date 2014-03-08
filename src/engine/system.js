@@ -449,7 +449,7 @@ game.System.backgroundColor = {
         @attribute backgroundColor.game
         @type {String}
     **/
-    game: null,
+    game: '#000000',
     /**
         Background color for rotate screen on mobile.
         @attribute backgroundColor.rotate
