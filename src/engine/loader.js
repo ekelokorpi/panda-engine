@@ -158,7 +158,7 @@ game.Loader = game.Class.extend({
         @method progress
     **/
     progress: function(loader) {
-        if(loader.json && !loader.json.frames && !loader.json.bones) game.json[loader.url] = loader.json;
+        if(loader && loader.json && !loader.json.frames && !loader.json.bones) game.json[loader.url] = loader.json;
         this.loaded++;
         this.percent = Math.round(this.loaded / (this.assets.length + this.sounds.length) * 100);
         this.onPercentChange();
