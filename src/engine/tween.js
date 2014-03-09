@@ -638,11 +638,10 @@ game.TweenGroup = game.Class.extend({
     /**
         Add tween to group.
         @method add
-        @param {Object} obj
+        @param {game.Tween} tween
         @return {game.Tween} tween
     **/
-    add: function(obj) {
-        var tween = new game.Tween(obj);
+    add: function(tween) {
         tween.onComplete(this.tweenComplete.bind(this));
         this.tweens.push(tween);
         return tween;
