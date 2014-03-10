@@ -353,7 +353,7 @@ var core = {
         this.ready = true;
         
         this.loader = loaderClass || game.Loader;
-        var loader = new this.loader(scene);
+        var loader = new this.loader(window[game.System.startScene] || game[game.System.startScene] || scene);
         loader.start();
     },
 
