@@ -1273,8 +1273,7 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 
     PIXI.DisplayObject.prototype.updateTransform.call( this );
 
-    for(var i=0,j=this.children.length; i<j; i++)
-    {
+    for (var i = this.children.length - 1; i >= 0; i--) {
         this.children[i].updateTransform();
     }
 };
