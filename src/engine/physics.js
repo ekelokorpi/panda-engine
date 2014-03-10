@@ -67,7 +67,7 @@ game.World = game.Class.extend({
     removeBody: function(body) {
         if(!body.world) return;
         body.world = null;
-        this.removeBodyCollision(body);
+        if(body.collisionGroup) this.removeBodyCollision(body);
         this.bodies.erase(body);
     },
 
