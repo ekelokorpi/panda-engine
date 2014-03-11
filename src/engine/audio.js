@@ -203,6 +203,7 @@ game.Audio = game.Class.extend({
             this.sources[id].audio.playing = true;
             if(typeof(callback) === 'function') this.sources[id].audio.onended = callback.bind(this);
             else this.sources[id].audio.onended = null;
+            this.sources[id].audio.currentTime = 0;
             this.sources[id].audio.play();
         }
     },
@@ -222,7 +223,8 @@ game.Audio = game.Class.extend({
         }
         // HTML5 Audio
         else {
-            this.sources[id].audio.pause();
+            if(navigator.isCocoonJS) this.sources[id].audio.volume = 0;
+            else this.sources[id].audio.pause();
             this.sources[id].audio.playing = false;
             this.sources[id].audio.currentTime = 0;
         }
