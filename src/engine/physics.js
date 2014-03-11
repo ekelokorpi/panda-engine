@@ -750,7 +750,7 @@ game.Vector = game.Class.extend({
         @return {Number}
     **/
     angle: function(vector) {
-        return Math.atan2(vector.y, vector.x) - Math.atan2(this.y, this.x);
+        return Math.atan2(vector.y - this.y, vector.x - this.x);
     },
 
     /**
