@@ -115,12 +115,21 @@ game.System = game.Class.extend({
         }
 
         if(!navigator.isCocoonJS) {
-            window.addEventListener('focus', function() {
-                if(game.System.pauseOnHide) game.system.resume();
-            }, false);
+            var visibilityChange;
+            if (typeof document.hidden !== 'undefined') {
+                visibilityChange = 'visibilitychange';
+            } else if (typeof document.mozHidden !== 'undefined') {
+                visibilityChange = 'mozvisibilitychange';
+            } else if (typeof document.msHidden !== 'undefined') {
+                visibilityChange = 'msvisibilitychange';
+            } else if (typeof document.webkitHidden !== 'undefined') {
+                visibilityChange = 'webkitvisibilitychange';
+            }
 
-            window.addEventListener('blur', function() {
-                if(game.System.pauseOnHide) game.system.pause();
+            document.addEventListener(visibilityChange, function() {
+                var hidden = !!game.getVendorAttribute(document, 'hidden');
+                if(hidden && game.System.pauseOnHide) game.system.pause();
+                if(!hidden && game.System.pauseOnHide) game.system.resume();
             }, false);
         }
 
