@@ -12104,8 +12104,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
         displayObject.worldTransform.ty = position.y;
     }
 
-    for(var i = 0, j = children.length; i < j; i++)
-    {
+    for (var i = children.length - 1; i >= 0; i--) {
         children[i].updateTransform();
     }
 
@@ -14326,5 +14325,6 @@ game.HitCircle = PIXI.Circle;
 game.HitEllipse = PIXI.Ellipse;
 game.HitPolygon = PIXI.Polygon;
 game.TextureCache = PIXI.TextureCache;
+game.RenderTexture = PIXI.RenderTexture;
 
 });
