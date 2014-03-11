@@ -754,6 +754,16 @@ game.Vector = game.Class.extend({
     },
 
     /**
+        Get angle between two vectors from origin.
+        @method angleFromOrigin
+        @param {game.Vector} vector
+        @return {Number}
+    **/
+    angleFromOrigin: function(vector) {
+        return Math.atan2(vector.y, vector.x) - Math.atan2(this.y, this.x);
+    },
+
+    /**
         Round vector values.
         @method round
         @return {game.Vector}
