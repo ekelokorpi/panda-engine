@@ -244,6 +244,7 @@ var core = {
     **/
     addAsset: function(path, id) {
         id = id || path;
+        path = this.config.mediaFolder + '/' + path;
         this.assets[id] = path;
         if(this.resources.indexOf(path) === -1) this.resources.push(path);
         return path;
@@ -260,6 +261,7 @@ var core = {
     **/
     addAudio: function(path, id) {
         id = id || path;
+        path = this.config.mediaFolder + '/' + path;
         game.Audio.queue[path] = id;
         return id;
     },
@@ -319,6 +321,7 @@ var core = {
         this._current.body = body;
         this._current = null;
         if(this._initDOMReady) this._initDOMReady();
+        else if(this.loadFinished) this._loadModules();
     },
 
     /**
@@ -456,6 +459,8 @@ var core = {
                 unresolved.push(game._loadQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
             }
             throw('Unresolved modules:\n' + unresolved.join('\n'));
+        } else {
+            this.loadFinished = true;
         }
     },
     
@@ -463,6 +468,7 @@ var core = {
         if(document.location.href.match(/\?nocache/)) this.setNocache();
 
         this.config.sourceFolder = this.config.sourceFolder || 'src';
+        this.config.mediaFolder = this.config.mediaFolder || '.';
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
