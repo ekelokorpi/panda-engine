@@ -481,6 +481,7 @@ var core = {
         this.device.iOS5 = (this.device.iOS && /OS 5/i.test(navigator.userAgent));
         this.device.iOS6 = (this.device.iOS && /OS 6/i.test(navigator.userAgent));
         this.device.iOS7 = (this.device.iOS && /OS 7/i.test(navigator.userAgent));
+        this.device.iOS71 = (this.device.iOS && /OS 7_1/i.test(navigator.userAgent));
 
         this.device.android = /android/i.test(navigator.userAgent);
         this.device.android2 = /android 2/i.test(navigator.userAgent);
@@ -512,6 +513,13 @@ var core = {
 
         // Deprecated
         this.ua = this.device;
+
+        if(this.device.iOS71) {
+            var viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            viewport.content = 'minimal-ui';
+            document.getElementsByTagName('head')[0].appendChild(viewport);
+        }
     },
 
     _DOMReady: function() {
