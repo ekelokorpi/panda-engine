@@ -281,7 +281,12 @@ game.System = game.Class.extend({
             }
         }
 
-        window.onresize = this.onResize.bind(this);
+        if(typeof(window.onorientationchange) !== 'undefined') {
+            window.onorientationchange = this.onResize.bind(this);            
+        } else {
+            window.onresize = this.onResize.bind(this);
+        }
+
         this.onResize();
     },
 
