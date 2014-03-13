@@ -81,7 +81,7 @@ game.Scene = game.Class.extend({
         }
         if(game.TweenEngine) game.TweenEngine.update();
         for (i = this.objects.length - 1; i >= 0; i--) {
-            this.objects[i].update();
+            if(typeof(this.objects[i].update) === 'function') this.objects[i].update();
             if(this.objects[i]._remove) this.objects.splice(i, 1);
         }
     },
