@@ -102,13 +102,11 @@ game.Texture.fromFrame = PIXI.Texture.fromFrame;
 game.TilingSprite = PIXI.TilingSprite.extend({
     speed: {x: 0, y: 0},
 
-    init: function(x, y, path, width, height, settings) {
+    init: function(path, width, height, settings) {
+        path = game.assets[path] || path;
         var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
         this._super(texture, width || texture.width, height || texture.height);
         game.merge(this, settings);
-
-        this.position.x = x;
-        this.position.y = y;
     },
 
     update: function() {
