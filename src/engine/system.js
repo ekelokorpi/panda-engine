@@ -98,7 +98,7 @@ game.System = game.Class.extend({
         else this.renderer = new PIXI.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
         
         this.canvas = this.renderer.view;
-        this.stage = new PIXI.Stage(width,height);
+        this.stage = new PIXI.Stage();
 
         game.normalizeVendorAttribute(this.canvas, 'requestFullscreen');
         game.normalizeVendorAttribute(this.canvas, 'requestFullScreen');
