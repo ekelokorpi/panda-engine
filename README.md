@@ -6,7 +6,7 @@ http://www.pandajs.net
 
 ### Plugins
 
-Download [Panda.js plugins](http://github.com/ekelokorpi/panda.js-plugins).
+See list of [Panda.js plugins](http://github.com/ekelokorpi/panda.js-plugins).
 
 ### Forum
 
