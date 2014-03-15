@@ -4,6 +4,10 @@ Free open source HTML5 game engine for mobile and desktop with Canvas and WebGL 
 
 http://www.pandajs.net
 
+### Plugins
+
+Download [Panda.js plugins](http://github.com/ekelokorpi/panda.js-plugins).
+
 ### Forum
 
 Join the discussion at official [Panda.js forum](http://www.html5gamedevs.com/forum/19-pandajs/).
