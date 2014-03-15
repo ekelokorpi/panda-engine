@@ -251,7 +251,13 @@ game.Audio = game.Class.extend({
         }
         // HTML5 Audio
         else {
-            if(this.sources[id].audio.currentTime > 0 && this.sources[id].audio.currentTime < this.sources[id].audio.duration || this.sources[id].audio.loop) {
+            var currentTime;
+            if(game.device.cocoonJS) {
+                currentTime = this.sources[id].audio.currentTime * Math.pow(10, -6);
+            } else {
+                currentTime = this.sources[id].audio.currentTime;
+            }
+            if(currentTime > 0 && currentTime < this.sources[id].audio.duration || this.sources[id].audio.loop) {
                 this.sources[id].audio.pause();
             }
         }
