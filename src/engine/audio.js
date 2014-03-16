@@ -257,6 +257,21 @@ game.Audio = game.Class.extend({
         }
     },
 
+    resume: function(id) {
+        if(!this.sources[id]) throw('Cannot find source: ' + id);
+
+        // Web Audio
+        if(this.context) {
+            if(this.sources[id].audio.pauseTime) {
+                this.play(id, this.sources[id].audio.volume, this.sources[id].audio.loop);
+            }
+        }
+        // HTML5 Audio
+        else {
+            if(this.sources[id].audio.playing) this.sources[id].audio.play();
+        }
+    },
+
     /**
         @method playSound
         @param {String} id
@@ -285,7 +300,41 @@ game.Audio = game.Class.extend({
             this.stop(id);
         } else {
             // Stop all sounds
-            for(var i in this.sources) this.stop(i);
+            for(id in this.sources) {
+                if(id !== this.currentMusic) this.stop(id);
+            }
+        }
+    },
+
+    /**
+        @method pauseSound
+        @param {String} [id]
+    **/
+    pauseSound: function(id) {
+        if(!game.Audio.enabled) return;
+
+        if(id) this.pause(id);
+        else {
+            // Pause all sounds
+            for(id in this.sources) {
+                if(id !== this.currentMusic) this.pause(id);
+            }
+        }
+    },
+
+    /**
+        @method resumeSound
+        @param {String} [id]
+    **/
+    resumeSound: function(id) {
+        if(!game.Audio.enabled) return;
+
+        if(id) this.resume(id);
+        else {
+            // Resume all sounds
+            for(id in this.sources) {
+                if(id !== this.currentMusic) this.resume(id);
+            }
         }
     },
 
@@ -317,16 +366,33 @@ game.Audio = game.Class.extend({
     },
 
     /**
-        @method pauseSound
-        @param {String} id
+        @method pauseMusic
     **/
-    pauseSound: function(id) {
+    pauseMusic: function() {
         if(!game.Audio.enabled) return;
 
-        this.pause(id);
+        if(this.currentMusic) this.pause(this.currentMusic);
     },
 
     /**
+        @method resumeMusic
+    **/
+    resumeMusic: function() {
+        if(!game.Audio.enabled) return;
+
+        if(this.currentMusic) {
+            if(this.context) {
+                // Web Audio
+                this.play(this.currentMusic);
+            } else {
+                // HTML5 Audio
+                if(this.sources[this.currentMusic].audio.playing) this.sources[this.currentMusic].audio.play();
+            }
+        }
+    },
+
+    /**
+        Pause all sounds and music
         @method pauseAll
     **/
     pauseAll: function() {
@@ -336,20 +402,13 @@ game.Audio = game.Class.extend({
     },
 
     /**
+        Resume all sounds and music
         @method resumeAll
     **/
     resumeAll: function() {
         if(!game.Audio.enabled) return;
 
-        for(var id in this.sources) {
-            if(this.context) {
-                if(this.sources[id].audio.pauseTime) {
-                    this.play(id, this.sources[id].audio.volume, this.sources[id].audio.loop);
-                }
-            } else {
-                if(this.sources[id].audio.playing) this.sources[id].audio.play();
-            }
-        }
+        for(var id in this.sources) this.resume(id);
     },
 
     // Deprecated
