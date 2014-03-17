@@ -3304,8 +3304,8 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
     this.mouseOut = true;
 
     // move the mouse to an impossible position
-    this.mouse.global.x = -10000;
-    this.mouse.global.y = -10000;
+    // this.mouse.global.x = -10000;
+    // this.mouse.global.y = -10000;
 };
 
 /**
@@ -3444,7 +3444,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
     var touchData;
-    var i = 0;
+    var i, j, length, item;
 
     for (i = 0; i < changedTouches.length; i++)
     {
@@ -3461,14 +3461,13 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         }
         this.mouse.global.x = touchData.global.x;
         this.mouse.global.y = touchData.global.y;
-    }
 
-    var length = this.interactiveItems.length;
-    for (i = 0; i < length; i++)
-    {
-        var item = this.interactiveItems[i];
-        if(item.touchmove)
-            item.touchmove(touchData);
+        length = this.interactiveItems.length;
+        for (j = 0; j < length; j++)
+        {
+            item = this.interactiveItems[j];
+            if(item.touchmove) item.touchmove(touchData);
+        }
     }
 };
 
@@ -3536,6 +3535,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
+    // console.log('touchend');
     //this.mouse.originalEvent = event || window.event; //IE uses window.event
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
@@ -3559,6 +3559,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
             var itemTouchData = item.__touchData; // <-- Here!
             item.__hit = this.hitTest(item, touchData);
 
+            itemTouchData = touchData;
             if(itemTouchData === touchData)
             {
                 // so this one WAS down...
