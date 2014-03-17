@@ -265,6 +265,6 @@ game.Loader.getPath = function(path) {
     @example
         game.Loader.timeout = 1000;
 **/
-game.Loader.timeout = 22500;
+game.Loader.timeout = 500;
 
 });
