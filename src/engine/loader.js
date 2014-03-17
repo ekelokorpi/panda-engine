@@ -87,7 +87,7 @@ game.Loader = game.Class.extend({
             this.bar.beginFill(0x555555);
             this.bar.drawRect(0, 0, 200, 20);
             this.bar.position.set(game.system.width / 2 - 100, game.system.height / 2 + 90);
-            this.bar.scale.x = 0;
+            this.bar.scale.x = this.percent / 100;
             this.stage.addChild(this.bar);
 
             this.text = new game.Text(this.percent+'%',{font:'18px Arial',fill:'#ffffff'});
