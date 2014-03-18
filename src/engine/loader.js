@@ -53,7 +53,6 @@ game.Loader = game.Class.extend({
         if(game.Timer.seconds) game.Loader.timeout /= 1000;
 
         this.scene = scene || SceneGame;
-        this.timer = new game.Timer();
         this.stage = game.system.stage;
 
         for (i = 0; i < game.resources.length; i++) {
@@ -142,6 +141,8 @@ game.Loader = game.Class.extend({
         }
         
         this.initStage();
+
+        this.startTime = Date.now();
 
         if(this.assets.length > 0) this.loader.load();
         else this.loadAudio();
@@ -237,10 +238,18 @@ game.Loader = game.Class.extend({
 
     update: function() {
         if(game.TweenEngine) game.TweenEngine.update();
-        if(this.loaded === this.assets.length + this.sounds.length && this.timer.time() >= game.Loader.timeout) {
-            this.timer.reset();
-            this.timer.pause();
-            this.ready();
+
+        if(this._ready) return;
+        if(this.timer) {
+            if(this.timer.time() >= 0) {
+                this._ready = true;
+                this.ready();
+            }
+        } else if(this.loaded === this.assets.length + this.sounds.length) {
+            // Everything loaded
+            var loadTime = Date.now() - this.startTime;
+            var waitTime = Math.max(100, game.Loader.timeout - loadTime);
+            this.timer = new game.Timer(waitTime);
         }
     },
 
