@@ -411,16 +411,21 @@ game.Body = game.Class.extend({
     },
 
     /**
-        Callback for collision.
+        This is called, when body collides with another body.
         @method collide
+        @param {game.Body} bodyB
         @return {Boolean} Return true, to apply hit response.
     **/
-    collide: function(b) {
+    collide: function() {
         return true;
     },
 
-    afterCollide: function(b) {
-
+    /**
+        This is called, when collision has been resolved.
+        @method afterCollide
+        @param {game.Body} bodyB
+    **/
+    afterCollide: function() {
     },
 
     /**

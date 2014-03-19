@@ -282,7 +282,7 @@ game.System = game.Class.extend({
         }
 
         if(typeof(window.onorientationchange) !== 'undefined') {
-            window.onorientationchange = this.onResize.bind(this);            
+            window.onorientationchange = this.onResize.bind(this);
         } else {
             window.onresize = this.onResize.bind(this);
         }
