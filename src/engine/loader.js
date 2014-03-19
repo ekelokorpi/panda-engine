@@ -169,8 +169,7 @@ game.Loader = game.Class.extend({
         @method onPercentChange
     **/
     onPercentChange: function() {
-        if(!this.bar) return;
-        this.bar.scale.x = this.percent / 100;
+        if(this.bar) this.bar.scale.x = this.percent / 100;
     },
 
     /**
