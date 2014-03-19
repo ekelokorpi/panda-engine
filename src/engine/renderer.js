@@ -10667,7 +10667,7 @@ spine.Skeleton.prototype = {
         throw "Slot not found: " + slotName;
     },
     update: function (delta) {
-        time += delta;
+        this.time += delta;
     }
 };
 
