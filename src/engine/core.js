@@ -467,9 +467,6 @@ var core = {
     _boot: function() {
         if(document.location.href.match(/\?nocache/)) this.setNocache();
 
-        this.config.sourceFolder = this.config.sourceFolder || 'src';
-        this.config.mediaFolder = this.config.mediaFolder ?  this.config.mediaFolder + '/' : '';
-
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
             width: window.screen.availWidth * this.device.pixelRatio,
@@ -519,13 +516,29 @@ var core = {
 
         // Deprecated
         this.ua = this.device;
-
-        if(this.device.iOS71) {
-            var viewport = document.createElement('meta');
-            viewport.name = 'viewport';
-            viewport.content = 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui';
-            document.getElementsByTagName('head')[0].appendChild(viewport);
+        
+        var i;
+        if(this.device.iOS && this.config.iOS) {
+            for(i in this.config.iOS) this.config[i] = this.config.iOS[i];
         }
+
+        if(this.device.android && this.config.android) {
+            for(i in this.config.android) this.config[i] = this.config.android[i];
+        }
+
+        if(this.device.wp && this.config.wp) {
+            for(i in this.config.wp) this.config[i] = this.config.wp[i];
+        }
+
+        this.config.sourceFolder = this.config.sourceFolder || 'src';
+        this.config.mediaFolder = this.config.mediaFolder ?  this.config.mediaFolder + '/' : '';
+
+        var viewport = document.createElement('meta');
+        viewport.name = 'viewport';
+        var content = 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no';
+        if(this.device.iOS71) content += ',minimal-ui';
+        viewport.content = content;
+        document.getElementsByTagName('head')[0].appendChild(viewport);
     },
 
     _DOMReady: function() {
