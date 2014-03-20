@@ -39,16 +39,16 @@ game.Keyboard = game.Class.extend({
             PRINT_SCREEN
             INSERT
             DELETE
-            ZERO
-            ONE
-            TWO
-            THREE
-            FOUR
-            FIVE
-            SIX
-            SEVEN
-            EIGHT
-            NINE
+            0
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
             A
             B
             C
@@ -134,16 +134,16 @@ game.Keyboard = game.Class.extend({
         this.keys[44] = 'PRINT_SCREEN';
         this.keys[45] = 'INSERT';
         this.keys[46] = 'DELETE';
-        this.keys[48] = 'ZERO';
-        this.keys[49] = 'ONE';
-        this.keys[50] = 'TWO';
-        this.keys[51] = 'THREE';
-        this.keys[52] = 'FOUR';
-        this.keys[53] = 'FIVE';
-        this.keys[54] = 'SIX';
-        this.keys[55] = 'SEVEN';
-        this.keys[56] = 'EIGHT';
-        this.keys[57] = 'NINE';
+        this.keys[48] = '0';
+        this.keys[49] = '1';
+        this.keys[50] = '2';
+        this.keys[51] = '3';
+        this.keys[52] = '4';
+        this.keys[53] = '5';
+        this.keys[54] = '6';
+        this.keys[55] = '7';
+        this.keys[56] = '8';
+        this.keys[57] = '9';
         this.keys[65] = 'A';
         this.keys[66] = 'B';
         this.keys[67] = 'C';
