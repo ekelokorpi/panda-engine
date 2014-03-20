@@ -49,7 +49,7 @@ if(typeof(global) !== 'undefined' && global.game) return;
     @class Core
 **/
 var core = {
-    version: '1.1.6',
+    version: '1.1.7',
     config: window.pandaConfig || {},
     plugins: {},
     json: {},
@@ -265,16 +265,6 @@ var core = {
         game.Audio.queue[path] = id;
         return id;
     },
-
-    // Deprecated
-    addSound: function(path, id) {
-        this.addAudio(path, id);
-    },
-    
-    // Deprecated
-    addMusic: function(path, id) {
-        this.addAudio(path, id);
-    },
     
     setNocache: function() {
         this.nocache = '?' + Date.now();
@@ -338,11 +328,7 @@ var core = {
 
         this.system = new game.System(width, height, canvasId);
 
-        if(game.Audio) {
-            this.audio = new game.Audio();
-            this.sound = this.audio; // Deprecated
-        }
-
+        if(game.Audio) this.audio = new game.Audio();
         if(game.Pool) this.pool = new game.Pool();
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
         if(game.Storage && game.Storage.id) this.storage = new game.Storage(game.Storage.id);
@@ -513,9 +499,6 @@ var core = {
                 };
             }
         }
-
-        // Deprecated
-        this.ua = this.device;
         
         var i;
         if(this.device.iOS && this.config.iOS) {
