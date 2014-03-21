@@ -49,7 +49,7 @@ if(typeof(global) !== 'undefined' && global.game) return;
     @class Core
 **/
 var core = {
-    version: '1.1.6',
+    version: '1.2.0',
     config: window.pandaConfig || {},
     plugins: {},
     json: {},
@@ -244,6 +244,7 @@ var core = {
     **/
     addAsset: function(path, id) {
         id = id || path;
+        path = this.config.mediaFolder + path;
         this.assets[id] = path;
         if(this.resources.indexOf(path) === -1) this.resources.push(path);
         return path;
@@ -260,18 +261,9 @@ var core = {
     **/
     addAudio: function(path, id) {
         id = id || path;
+        path = this.config.mediaFolder + path;
         game.Audio.queue[path] = id;
         return id;
-    },
-
-    // Deprecated
-    addSound: function(path, id) {
-        this.addAudio(path, id);
-    },
-    
-    // Deprecated
-    addMusic: function(path, id) {
-        this.addAudio(path, id);
     },
     
     setNocache: function() {
@@ -319,6 +311,7 @@ var core = {
         this._current.body = body;
         this._current = null;
         if(this._initDOMReady) this._initDOMReady();
+        else if(this.loadFinished) this._loadModules();
     },
 
     /**
@@ -335,11 +328,7 @@ var core = {
 
         this.system = new game.System(width, height, canvasId);
 
-        if(game.Audio) {
-            this.audio = new game.Audio();
-            this.sound = this.audio; // Deprecated
-        }
-
+        if(game.Audio) this.audio = new game.Audio();
         if(game.Pool) this.pool = new game.Pool();
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
         if(game.Storage && game.Storage.id) this.storage = new game.Storage(game.Storage.id);
@@ -456,13 +445,13 @@ var core = {
                 unresolved.push(game._loadQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
             }
             throw('Unresolved modules:\n' + unresolved.join('\n'));
+        } else {
+            this.loadFinished = true;
         }
     },
     
     _boot: function() {
         if(document.location.href.match(/\?nocache/)) this.setNocache();
-
-        this.config.sourceFolder = this.config.sourceFolder || 'src';
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
@@ -481,6 +470,7 @@ var core = {
         this.device.iOS5 = (this.device.iOS && /OS 5/i.test(navigator.userAgent));
         this.device.iOS6 = (this.device.iOS && /OS 6/i.test(navigator.userAgent));
         this.device.iOS7 = (this.device.iOS && /OS 7/i.test(navigator.userAgent));
+        this.device.iOS71 = (this.device.iOS && /OS 7_1/i.test(navigator.userAgent));
 
         this.device.android = /android/i.test(navigator.userAgent);
         this.device.android2 = /android 2/i.test(navigator.userAgent);
@@ -509,9 +499,29 @@ var core = {
                 };
             }
         }
+        
+        var i;
+        if(this.device.iOS && this.config.iOS) {
+            for(i in this.config.iOS) this.config[i] = this.config.iOS[i];
+        }
 
-        // Deprecated
-        this.ua = this.device;
+        if(this.device.android && this.config.android) {
+            for(i in this.config.android) this.config[i] = this.config.android[i];
+        }
+
+        if(this.device.wp && this.config.wp) {
+            for(i in this.config.wp) this.config[i] = this.config.wp[i];
+        }
+
+        this.config.sourceFolder = this.config.sourceFolder || 'src';
+        this.config.mediaFolder = this.config.mediaFolder ?  this.config.mediaFolder + '/' : '';
+
+        var viewport = document.createElement('meta');
+        viewport.name = 'viewport';
+        var content = 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no';
+        if(this.device.iOS71) content += ',minimal-ui';
+        viewport.content = content;
+        document.getElementsByTagName('head')[0].appendChild(viewport);
     },
 
     _DOMReady: function() {

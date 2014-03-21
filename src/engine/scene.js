@@ -40,6 +40,16 @@ game.Scene = game.Class.extend({
         @property {game.Container} stage
     **/
     stage: null,
+    /**
+        Minimum distance to trigger swipe.
+        @property {Number} swipeDist
+    **/
+    swipeDist: 100,
+    /**
+        Minimum time to trigger swipe.
+        @property {Number} swipeTime
+    **/
+    swipeTime: 500,
     
     staticInit: function() {
         game.scene = this;
@@ -47,11 +57,11 @@ game.Scene = game.Class.extend({
         for (var i = game.system.stage.children.length - 1; i >= 0; i--) {
             game.system.stage.removeChild(game.system.stage.children[i]);
         }
-        game.system.stage.setBackgroundColor(this.clearColor || this.backgroundColor);
+        game.system.stage.setBackgroundColor(this.backgroundColor);
 
-        game.system.stage.mousemove = game.system.stage.touchmove = this.mousemove.bind(this);
+        game.system.stage.mousemove = game.system.stage.touchmove = this._mousemove.bind(this);
         game.system.stage.click = game.system.stage.tap = this.click.bind(this);
-        game.system.stage.mousedown = game.system.stage.touchstart = this.mousedown.bind(this);
+        game.system.stage.mousedown = game.system.stage.touchstart = this._mousedown.bind(this);
         game.system.stage.mouseup = game.system.stage.mouseupoutside = game.system.stage.touchend = game.system.stage.touchendoutside = this.mouseup.bind(this);
         game.system.stage.mouseout = this.mouseout.bind(this);
 
@@ -81,7 +91,7 @@ game.Scene = game.Class.extend({
         }
         if(game.TweenEngine) game.TweenEngine.update();
         for (i = this.objects.length - 1; i >= 0; i--) {
-            this.objects[i].update();
+            if(typeof(this.objects[i].update) === 'function') this.objects[i].update();
             if(this.objects[i]._remove) this.objects.splice(i, 1);
         }
     },
@@ -92,7 +102,7 @@ game.Scene = game.Class.extend({
         @param {Object} object
     **/
     addObject: function(object) {
-        if(object._remove) object._remove = false;    
+        if(object._remove) object._remove = false;
         this.objects.push(object);
     },
 
@@ -229,6 +239,38 @@ game.Scene = game.Class.extend({
         @method keyup
     **/
     keyup: function() {},
+
+    _mousedown: function(event) {
+        event.startTime = Date.now();
+        event.swipeX = event.global.x;
+        event.swipeY = event.global.y;
+        this.mousedown(event);
+    },
+
+    _mousemove: function(event) {
+        this.mousemove(event);
+
+        if(!event.startTime) return;
+
+        if(event.global.x - event.swipeX >= this.swipeDist) this._swipe(event, 'right');
+        else if(event.global.x - event.swipeX <= -this.swipeDist) this._swipe(event, 'left');
+        else if(event.global.y - event.swipeY >= this.swipeDist) this._swipe(event, 'down');
+        else if(event.global.y - event.swipeY <= -this.swipeDist) this._swipe(event, 'up');
+    },
+
+    _swipe: function(event, dir) {
+        var time = Date.now() - event.startTime;
+        event.startTime = null;
+        if(time <= this.swipeTime) this.swipe(dir);
+    },
+
+    /**
+        Callback for swipe.
+        @method swipe
+        @param {String} direction
+    **/
+    swipe: function() {
+    },
 
     run: function() {
         this.update();

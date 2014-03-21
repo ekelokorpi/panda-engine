@@ -98,7 +98,7 @@ game.System = game.Class.extend({
         else this.renderer = new PIXI.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
         
         this.canvas = this.renderer.view;
-        this.stage = new PIXI.Stage(width,height);
+        this.stage = new PIXI.Stage();
 
         game.normalizeVendorAttribute(this.canvas, 'requestFullscreen');
         game.normalizeVendorAttribute(this.canvas, 'requestFullScreen');
@@ -281,7 +281,12 @@ game.System = game.Class.extend({
             }
         }
 
-        window.onresize = this.onResize.bind(this);
+        if(typeof(window.onorientationchange) !== 'undefined') {
+            window.onorientationchange = this.onResize.bind(this);
+        } else {
+            window.onresize = this.onResize.bind(this);
+        }
+
         this.onResize();
     },
 
@@ -330,7 +335,7 @@ game.System = game.Class.extend({
             var width = window.innerWidth;
             var height = window.innerHeight;
             
-            // iPad iOS 7 landscape innerHeight bugfix
+            // iPad iOS 7.0 landscape innerHeight bugfix
             if(game.device.iPad && height === 671 && this.orientation === game.System.LANDSCAPE) height = 672;
 
             if(game.System.orientation === game.System.LANDSCAPE) {
@@ -460,7 +465,7 @@ game.System.backgroundColor = {
         @attribute backgroundColor.rotate
         @type {String}
     **/
-    rotate: '#ffffff'
+    rotate: '#000000'
 };
 game.System.backgroundImage = {
     /**
@@ -487,7 +492,7 @@ game.System.rotateMsg = 'Please rotate your device';
     @attribute {URL} rotateImg
     @default null
 **/
-game.System.rotateImg = null;
+game.System.rotateImg = 'media/rotate.png';
 
 game.System.canvas = true;
 game.System.transparent = false;

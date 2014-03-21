@@ -1,5 +1,5 @@
 pandaConfig = {
     sourceFolder: 'src',
-    outputFile: 'game.min.js',
-    sitelock: ''
+    mediaFolder: 'media',
+    outputFile: 'game.min.js'
 };

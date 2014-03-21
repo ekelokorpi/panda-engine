@@ -66,7 +66,7 @@ game.Timer = game.Class.extend({
     
     /**
         Get time since start.
-        @method delta
+        @method time
     **/
     time: function() {
         var time = (this.pauseTime || game.Timer.time) - this.base - this.target;
@@ -84,9 +84,9 @@ game.Timer = game.Class.extend({
 
     /**
         Resume paused timer.
-        @method unpause
+        @method resume
     **/
-    unpause: function() {
+    resume: function() {
         if(this.pauseTime) {
             this.base += game.Timer.time - this.pauseTime;
             this.pauseTime = 0;

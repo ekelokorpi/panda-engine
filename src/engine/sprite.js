@@ -13,14 +13,9 @@ game.module(
 .body(function() {
 
 /**
-    http://www.goodboydigital.com/pixijs/docs/classes/Sprite%E2%84%A2.html
-
-    __Example__
-
-        var sprite = new game.Sprite(100, 200, 'media/logo.png');
-        game.scene.stage.addChild(sprite);
+    Sprite.
+    http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
     @class Sprite
-    @extends PIXI.Sprite
     @constructor
     @param {Number} x
     @param {Number} y
@@ -70,6 +65,7 @@ game.Sprite = PIXI.Sprite.extend({
 
 /**
     Sprite container.
+    http://www.goodboydigital.com/pixijs/docs/classes/DisplayObjectContainer.html
     @class Container
 **/
 game.Container = PIXI.DisplayObjectContainer.extend({
@@ -99,16 +95,24 @@ game.Texture.fromImage = function(id, crossorigin) {
 game.Texture.fromCanvas = PIXI.Texture.fromCanvas;
 game.Texture.fromFrame = PIXI.Texture.fromFrame;
 
+/**
+    Tiling sprite.
+    http://www.goodboydigital.com/pixijs/docs/classes/TilingSprite.html
+    @class TilingSprite
+    @constructor
+    @param {String|game.Texture} texture
+    @param {Number} width
+    @param {Number} height
+    @param {Object} [settings]
+**/
 game.TilingSprite = PIXI.TilingSprite.extend({
     speed: {x: 0, y: 0},
 
-    init: function(x, y, path, width, height, settings) {
+    init: function(path, width, height, settings) {
+        path = game.assets[path] || path;
         var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
         this._super(texture, width || texture.width, height || texture.height);
         game.merge(this, settings);
-
-        this.position.x = x;
-        this.position.y = y;
     },
 
     update: function() {
@@ -117,6 +121,13 @@ game.TilingSprite = PIXI.TilingSprite.extend({
     }
 });
 
+/**
+    Sprite animation.
+    http://www.goodboydigital.com/pixijs/docs/classes/MovieClip.html
+    @class Animation
+    @constructor
+    @param {Array} textures
+**/
 game.Animation = PIXI.MovieClip.extend({
     init: function() {
         var frames = Array.prototype.slice.call(arguments);
