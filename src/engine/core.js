@@ -49,7 +49,7 @@ if(typeof(global) !== 'undefined' && global.game) return;
     @class Core
 **/
 var core = {
-    version: '1.1.7',
+    version: '1.2.0',
     config: window.pandaConfig || {},
     plugins: {},
     json: {},
