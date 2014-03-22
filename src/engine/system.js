@@ -64,6 +64,7 @@ game.System = game.Class.extend({
     gameLoopId: 0,
     newSceneClass: null,
     running: false,
+    rotateScreen: false,
 
     init: function(width, height, canvasId) {
         width = width || game.System.width;
@@ -296,25 +297,25 @@ game.System = game.Class.extend({
             // Android 2.3 portrait fix
             this.orientation = game.System.PORTRAIT;
         }
-        game.System.rotateScreen = game.System.orientation !== this.orientation ? true : false;
+        this.rotateScreen = game.System.orientation !== this.orientation ? true : false;
 
-        this.canvas.style.display = game.System.rotateScreen ? 'none' : 'block';
-        game.System.rotateDiv.style.display = game.System.rotateScreen ? 'block' : 'none';
+        this.canvas.style.display = this.rotateScreen ? 'none' : 'block';
+        game.System.rotateDiv.style.display = this.rotateScreen ? 'block' : 'none';
 
-        if(game.System.rotateScreen && game.System.backgroundColor.rotate) document.body.style.backgroundColor = game.System.backgroundColor.rotate;
-        if(!game.System.rotateScreen && game.System.backgroundColor.game) document.body.style.backgroundColor = game.System.backgroundColor.game;
+        if(this.rotateScreen && game.System.backgroundColor.rotate) document.body.style.backgroundColor = game.System.backgroundColor.rotate;
+        if(!this.rotateScreen && game.System.backgroundColor.game) document.body.style.backgroundColor = game.System.backgroundColor.game;
 
-        if(game.System.rotateScreen) document.body.style.backgroundImage = game.System.backgroundImage.rotate ? 'url(' + game.System.backgroundImage.rotate + ')' : 'none';
-        if(!game.System.rotateScreen) document.body.style.backgroundImage = game.System.backgroundImage.game ? 'url(' + game.System.backgroundImage.game + ')' : 'none';
+        if(this.rotateScreen) document.body.style.backgroundImage = game.System.backgroundImage.rotate ? 'url(' + game.System.backgroundImage.rotate + ')' : 'none';
+        if(!this.rotateScreen) document.body.style.backgroundImage = game.System.backgroundImage.game ? 'url(' + game.System.backgroundImage.game + ')' : 'none';
 
-        if(game.System.rotateScreen && game.system && typeof(game.system.pause) === 'function') game.system.pause();
-        if(!game.System.rotateScreen && game.system && typeof(game.system.resume) === 'function') game.system.resume();
+        if(this.rotateScreen && game.system && typeof(game.system.pause) === 'function') game.system.pause();
+        if(!this.rotateScreen && game.system && typeof(game.system.resume) === 'function') game.system.resume();
 
-        if(game.System.rotateScreen) this.resizeRotateImage();
+        if(this.rotateScreen) this.resizeRotateImage();
     },
 
     resizeRotateImage: function() {
-        if(game.System.rotateScreen && game.System.rotateDiv.image) {
+        if(this.rotateScreen && game.System.rotateDiv.image) {
             if(window.innerHeight < game.System.rotateDiv.image.height) {
                 game.System.rotateDiv.image.style.height = window.innerHeight + 'px';
                 game.System.rotateDiv.image.style.width = 'auto';
@@ -367,7 +368,6 @@ game.System = game.Class.extend({
     }
 });
 
-game.System.rotateScreen = false;
 game.System.PORTRAIT = 0;
 game.System.LANDSCAPE = 1;
 
