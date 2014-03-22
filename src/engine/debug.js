@@ -90,6 +90,11 @@ game.DebugDraw = game.Class.extend({
     **/
     update: function() {
         for (var i = this.container.children.length - 1; i >= 0; i--) {
+            if(game.modules['plugins.p2'] && this.container.children[i].target instanceof game.Body) {
+                this.updateP2(this.container.children[i]);
+                continue;
+            }
+            
             this.container.children[i].rotation = this.container.children[i].target.rotation;
 
             if(game.modules['engine.physics'] && this.container.children[i].target instanceof game.Body) {
