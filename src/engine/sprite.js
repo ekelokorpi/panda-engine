@@ -23,6 +23,8 @@ game.module(
     @param {Object} [settings]
 **/
 game.Sprite = PIXI.Sprite.extend({
+    debugDraw: true,
+
     init: function(x, y, path, settings) {
         if(typeof(x) !== 'number') path = x;
         path = game.assets[path] || path;
@@ -69,6 +71,8 @@ game.Sprite = PIXI.Sprite.extend({
     @class Container
 **/
 game.Container = PIXI.DisplayObjectContainer.extend({
+    debugDraw: true,
+    
     /**
         Remove object from container.
         @method remove
@@ -83,7 +87,7 @@ game.Container = PIXI.DisplayObjectContainer.extend({
     **/
     addChild: function(obj) {
         this._super(obj);
-        if(game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
+        if(game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
     }
 });
 
