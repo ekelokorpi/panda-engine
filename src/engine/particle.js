@@ -331,7 +331,7 @@ game.Emitter = game.Class.extend({
         if(!particle.sprite) {
             particle.sprite = new game.Sprite(particle.position.x, particle.position.y, this.textures.random(), this.spriteSettings);
         } else {
-            particle.sprite.setTexture(game.TextureCache[this.textures.random()]);
+            particle.sprite.setTexture(game.TextureCache[game.config.mediaFolder + this.textures.random()]);
             particle.sprite.position.x = particle.position.x;
             particle.sprite.position.y = particle.position.y;
         }
