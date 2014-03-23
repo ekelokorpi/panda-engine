@@ -212,7 +212,7 @@ game.Keyboard = game.Class.extend({
         if(this.keysDown[this.keys[event.keyCode]]) return; // key already down
 
         this.keysDown[this.keys[event.keyCode]] = true;
-        if(game.scene) game.scene.keydown(this.keys[event.keyCode]);
+        if(game.scene) game.scene.keydown(this.keys[event.keyCode], !!this.keysDown['SHIFT'], !!this.keysDown['CTRL'], !!this.keysDown['ALT']);
     },
 
     /**
