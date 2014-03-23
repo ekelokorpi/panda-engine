@@ -44,8 +44,14 @@ game.DebugDraw = game.Class.extend({
         var grap = new game.Graphics();
         grap.beginFill(game.DebugDraw.spriteColor);
 
-        if(sprite.hitArea) grap.drawRect(sprite.hitArea.x, sprite.hitArea.y, sprite.hitArea.width, sprite.hitArea.height);
-        else grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
+        if(sprite.hitArea) {
+            if(sprite.hitArea instanceof game.HitRectangle) {
+                grap.drawRect(sprite.hitArea.x, sprite.hitArea.y, sprite.hitArea.width, sprite.hitArea.height);
+            }
+            else if (sprite.hitArea instanceof game.HitCircle) {
+                grap.drawCircle(sprite.hitArea.x, sprite.hitArea.y, sprite.hitArea.radius);
+            }
+        } else grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
 
         grap.target = sprite;
         grap.alpha = game.DebugDraw.spriteAlpha;
