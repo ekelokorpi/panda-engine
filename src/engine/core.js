@@ -285,6 +285,7 @@ var core = {
         if(this.modules[name] && this.modules[name].body) throw('Module ' + name + ' is already defined');
         
         this._current = {name: name, requires: [], loaded: false, body: null, version: version};
+        if(name === 'game.main') this._current.requires.push('engine.core');
         this.modules[name] = this._current;
         this._loadQueue.push(this._current);
         return this;
@@ -298,7 +299,7 @@ var core = {
     require: function() {
         var i, modules = Array.prototype.slice.call(arguments);
         for (i = 0; i < modules.length; i++) {
-            if(modules[i]) this._current.requires.push(modules[i]);
+            if(modules[i] && this._current.requires.indexOf(modules[i]) === -1) this._current.requires.push(modules[i]);
         }
         return this;
     },
