@@ -546,16 +546,16 @@ game.Line = game.Class.extend({
     @class Vector
     @extends game.Class
     @constructor
-    @param {Number} x
-    @param {Number} y
+    @param {Number} [x]
+    @param {Number} [y]
 **/
 game.Vector = game.Class.extend({
-    value: null,
+    x: 0,
+    y: 0,
 
     init: function(x, y) {
-        this.value = new Float32Array(2);
-        this.x = x || 0;
-        this.y = y || 0;
+        if(typeof(x) === 'number') this.x = x;
+        if(typeof(y) === 'number') this.y = y;
     },
 
     /**
@@ -777,30 +777,6 @@ game.Vector = game.Class.extend({
         this.x = Math.round(this.x);
         this.y = Math.round(this.y);
         return this;
-    }
-});
-
-/**
-    @property {Number} x
-**/
-Object.defineProperty(game.Vector.prototype, 'x', {
-    get: function() {
-        return this.value[0];
-    },
-    set: function(value) {
-        this.value[0] = value;
-    }
-});
-
-/**
-    @property {Number} y
-**/
-Object.defineProperty(game.Vector.prototype, 'y', {
-    get: function() {
-        return this.value[1];
-    },
-    set: function(value) {
-        this.value[1] = value;
     }
 });
 
