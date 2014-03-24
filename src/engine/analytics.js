@@ -10,8 +10,6 @@ game.module(
 .body(function() {
 
 /**
-    Example: http://www.pandajs.net/tutorials/example-2/
-
     @class game.Analytics
 **/
 game.Analytics = game.Class.extend({
@@ -42,6 +40,9 @@ game.Analytics = game.Class.extend({
     }
 });
 
+/**
+    @attribute {String} id
+**/
 game.Analytics.id = '';
 
 });

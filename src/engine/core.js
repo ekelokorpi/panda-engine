@@ -1,41 +1,19 @@
-// ##################################################################################
-// #######    #############################################################   #######
-// ####            #####     #####      ###       ##         ############      ######
-// ####              ##        ##                   #            #######        #####
-// ###                #         #                    #             ####          ####
-// ###                 #         #       ####        ##   ##        #            ####
-// ##         ##       #          #      #####       ##   ####     #              ###
-// ##         ###      #    #     ##     #####       ##   #####   #        #      ###
-// ##         ###      #   ##      #     #####       ##   ####   #        ##       ##
-// ##         ###     ##  ###      ##    #####       #    ###    #       ###       ##
-// ###        ##     ##             #    ####        #          ##                 ##
-// ###             ##               #    ####       #           #                  ##
-// ###          ###     #####       #    ####       #           #       ####       ##
-// ####         ##      #####       ##   ####      ##           #      #####       ##
-// ####        ###     ######       ##################      ###############        ##
-// #####     #################      #########################################      ##
-// ##################################################################################
-
 // Panda.js HTML5 game engine
-// author Eemeli Kelokorpi
 
+// created by Eemeli Kelokorpi
 // inspired by Impact Game Engine
 // sponsored by Yle
 
-/* jshint -W020 */
-if(typeof(window) === 'undefined') window = {};
 (function(window){ 'use strict';
 
 if(typeof(global) !== 'undefined' && global.game) return;
 /**
-    Panda.js core.
-
     @module core
     @namespace game
     @requires loader
     @requires timer
     @requires system
-    @requires sound
+    @requires audio
     @requires sprite
     @requires debug
     @requires storage
@@ -45,7 +23,6 @@ if(typeof(global) !== 'undefined' && global.game) return;
     @requires analytics
 **/
 /**
-    Instance automatically created at `game`
     @class Core
 **/
 var core = {
@@ -98,33 +75,7 @@ var core = {
     keyboard: null,
     /**
         Device / browser detection.
-        
-            game.device.iPhone
-            game.device.iPhone4
-            game.device.iPhone5
-            game.device.iPad
-            game.device.iPadRetina
-            game.device.iOS
-            game.device.iOS5
-            game.device.iOS6
-            game.device.iOS7
-            game.device.android
-            game.device.android2
-            game.device.wp7
-            game.device.wp8
-            game.device.wpApp
-            game.device.wp
-            game.device.ie9
-            game.device.ie10
-            game.device.ie11
-            game.device.ie
-            game.device.opera
-            game.device.crosswalk
-            game.device.cocoonJS
-            game.device.mobile
         @property {Object} device
-        @example
-            if(game.device.mobile) return;
     **/
     device: {},
     assets: {},
@@ -275,10 +226,6 @@ var core = {
         @method module
         @param {String} name
         @param {String} [version]
-        @example
-            game.module('game.mymodule').body(function() {
-                // body of new module
-            });
     **/
     module: function(name, version) {
         if(this._current) throw('Module ' + this._current.name + ' has no body');
@@ -652,12 +599,12 @@ var fnTest = /xyz/.test(function(){ var xyz; return xyz; }) ? /\b_super\b/ : /[\
 /**
     @class Class
 **/
-core.Class = function() {};
+game.Class = function() {};
 /**
     @method extend
-    @return {Class}
+    @return {game.Class} Returns extended class
 **/
-core.Class.extend = function(prop) {
+game.Class.extend = function(prop) {
     var parent = this.prototype;
     initializing = true;
     var prototype = new this();
@@ -667,7 +614,7 @@ core.Class.extend = function(prop) {
         return function() {
             /**
                 Call functions parent function.
-                @method super
+                @method _super
             **/
             var tmp = this._super;
             this._super = parent[name];
@@ -694,8 +641,8 @@ core.Class.extend = function(prop) {
         if(!initializing) {
             if(this.staticInit) {
                 /**
-                    If Class has `staticInit` function, it is called before `init` function.
-                    @property {Function} staticInit
+                    This method is called before init.
+                    @method staticInit
                 **/
                 var obj = this.staticInit.apply(this, arguments);
                 if(obj) {
@@ -709,8 +656,8 @@ core.Class.extend = function(prop) {
             }
             if(this.init) {
                 /**
-                    Automatically called, when creating new class.
-                    @property {Function} init
+                    This method is called, when you create new instance of the class.
+                    @method init
                 **/
                 this.init.apply(this, arguments);
             }
