@@ -165,7 +165,7 @@ game.Audio = game.Class.extend({
     },
 
     getPath: function(path) {
-        return path.replace(/[^\.]+$/, this.format);
+        return path.replace(/[^\.]+$/, this.format + game.nocache);
     },
 
     play: function(id, volume, loop, callback, rate) {

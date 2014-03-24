@@ -244,7 +244,7 @@ var core = {
     **/
     addAsset: function(path, id) {
         id = id || path;
-        path = this.config.mediaFolder + path;
+        path = this.config.mediaFolder + path + this.nocache;
         this.assets[id] = path;
         if(this.resources.indexOf(path) === -1) this.resources.push(path);
         return path;
@@ -261,7 +261,7 @@ var core = {
     **/
     addAudio: function(path, id) {
         id = id || path;
-        path = this.config.mediaFolder + path;
+        path = this.config.mediaFolder + path + this.nocache;
         game.Audio.queue[path] = id;
         return id;
     },

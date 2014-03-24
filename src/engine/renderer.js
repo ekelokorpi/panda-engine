@@ -12961,7 +12961,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
             }
 
             var textureUrl = this.baseUrl + responseXML.getElementsByTagName('page')[0].getAttribute('file');
-            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+            var image = new PIXI.ImageLoader(textureUrl + game.nocache, this.crossorigin);
             this.texture = image.texture.baseTexture;
 
             var data = {};
