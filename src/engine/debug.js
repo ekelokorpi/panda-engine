@@ -1,6 +1,4 @@
 /**
-    Debugging.
-    
     @module debug
     @namespace game
 **/
@@ -162,6 +160,8 @@ game.DebugDraw.shapeAlpha = 0.3;
 game.DebugDraw.enabled = document.location.href.match(/\?debugdraw/) ? true : false;
 
 /**
+    Show FPS.
+    Automatically enabled, if URL contains `?debug`.
     @class Debug
     @extends game.Class
 **/
@@ -192,14 +192,28 @@ game.Debug = game.Class.extend({
 /**
     Enable fps display.
     @attribute {Boolean} enabled
-    @default false
 **/
 game.Debug.enabled = !!document.location.href.toLowerCase().match(/\?debug/);
 
+/**
+    How often update fps.
+    @attribute {Number} frequence
+    @default 1000
+**/
 game.Debug.frequency = 1000;
 
+/**
+    Color of fps text.
+    @attribute {String} color
+    @default white
+**/
 game.Debug.color = 'white';
 
+/**
+    Position of fps text.
+    @attribute {Object} position
+    @default 10,10
+**/
 game.Debug.position = {
     x: 10,
     y: 10

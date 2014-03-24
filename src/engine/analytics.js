@@ -1,13 +1,11 @@
 /**
-    Google Analytics.
-    
     @module analytics
     @namespace game
 **/
 game.module(
     'engine.analytics'
 )
-.body(function() {
+.body(function() { 'use strict';
 
 /**
     @class game.Analytics

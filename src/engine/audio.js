@@ -1,6 +1,4 @@
 /**
-    Audio manager.
-    
     @module audio
     @namespace game
 **/
@@ -10,7 +8,6 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
-    Audio manager.
     @class Audio
 **/
 game.Audio = game.Class.extend({
@@ -19,9 +16,6 @@ game.Audio = game.Class.extend({
         @property {String} format
     **/
     format: null,
-    sources: {},
-    context: null,
-    gainNode: null,
     /**
         Is sound muted.
         @property {Boolean} soundMuted
@@ -51,6 +45,9 @@ game.Audio = game.Class.extend({
         @default 1.0
     **/
     musicVolume: 1.0,
+    sources: {},
+    context: null,
+    gainNode: null,
 
     init: function() {
         game.normalizeVendorAttribute(window, 'AudioContext');
