@@ -9,317 +9,290 @@ game.module(
 )
 .body(function() {
 
-/**
- * @author sole / http://soledadpenades.com
- * @author mrdoob / http://mrdoob.com
- * @author Robert Eisele / http://www.xarg.org
- * @author Philippe / http://philippe.elsass.me
- * @author Robert Penner / http://www.robertpenner.com/easing_terms_of_use.html
- * @author Paul Lewis / http://www.aerotwist.com/
- * @author lechecacharro
- * @author Josh Faul / http://jocafa.com/
- * @author egraether / http://egraether.com/
- * @author endel / http://endel.me
- * @author Ben Delarre / http://delarre.net
- */
-
-// Date.now shim for (ahem) Internet Explo(d|r)er
-if(Date.now === undefined) {
-    Date.now = function () {
-        return new Date().valueOf();
-    };
-}
+// Based on https://github.com/sole/tween.js/
 
 /**
-    Tween engine.
     @class TweenEngine
+    @extends game.Class
 **/
-game.TweenEngine = (function () {
-    var _tweens = [];
-    return {
-        REVISION: '12',
-
-        /**
-            @method getAll
-        **/
-        getAll: function () {
-            return _tweens;
-        },
-
-        /**
-            @method removeAll
-        **/
-        removeAll: function () {
-            _tweens.length = 0;
-        },
-        
-        /**
-            @method stopAllForObject
-        **/
-        stopAllForObject: function(obj) {
-            for (var i = _tweens.length - 1; i >= 0; i--) {
-                if(_tweens[i].getObject() === obj) _tweens[i].stop();
-            }
-        },
-
-        /**
-            @method getTweenForObject
-        **/
-        getTweenForObject: function(obj) {
-            for (var i = _tweens.length - 1; i >= 0; i--) {
-                if(_tweens[i].getObject() === obj) return _tweens[i];
-            }
-            return false;
-        },
-
-        /**
-            @method add
-            @param {game.Tween} tween
-        **/
-        add: function (tween) {
-            _tweens.push(tween);
-        },
-
-        /**
-            @method remove
-            @param {game.Tween} tween
-        **/
-        remove: function (tween) {
-            var i = _tweens.indexOf(tween);
-            if(i !== -1) {
-                _tweens.splice(i, 1);
-            }
-        },
-
-        /**
-            @method update
-        **/
-        update: function (time) {
-            if(_tweens.length === 0) return false;
-            time = time !== undefined ? time : game.Timer.time;
-            for (var i = _tweens.length - 1; i >= 0; i--) {
-                if(!_tweens[i].update(time)) _tweens.splice(i, 1);
-            }
-            return true;
-        }
-    };
-})();
-
-/**
-    Tween.
-    @class Tween
-**/
-game.Tween = function (object, properties, duration, settings) {
-    if(!object) throw('No object defined for tween');
-    settings = settings || {};
-    var _object = object;
-    var _valuesStart = {};
-    var _valuesEnd = properties || {};
-    var _valuesStartRepeat = {};
-    var _duration = duration || 1000;
-    var _repeat = 0;
-    var _repeats = 0;
-    var _yoyo = false;
-    var _isPlaying = false;
-    var _reversed = false;
-    var _delayTime = 0;
-    var _delayRepeat = false;
-    var _startTime = null;
-    var _originalStartTime = null;
-    var _easingFunction = settings.easing || game.Tween.Easing.Linear.None;
-    var _interpolationFunction = settings.interpolation || game.Tween.Interpolation.Linear;
-    var _chainedTweens = [];
-    var _onStartCallback = settings.onStart || null;
-    var _onStartCallbackFired = false;
-    var _onUpdateCallback = settings.onUpdate || null;
-    var _onCompleteCallback = settings.onComplete || null;
-
-    for (var field in object) {
-        _valuesStart[field] = parseFloat(object[field], 10);
-    }
+game.TweenEngine = game.Class.extend({
+    /**
+        List of tweens.
+        @property {Array} tweens
+    **/
+    tweens: [],
 
     /**
-        @method getObject
+        @method removeAll
     **/
-    this.getObject = function() {
-        return _object;
-    };
+    removeAll: function() {
+        this.tweens.length = 0;
+    },
+    
+    /**
+        @method stopTweensForObject
+        @param {Object} object
+    **/
+    stopTweensForObject: function(object) {
+        for (var i = this.tweens.length - 1; i >= 0; i--) {
+            if(this.tweens[i].object === object) this.tweens[i].stop();
+        }
+    },
+
+    /**
+        @method getTweenForObject
+        @param {Object} object
+    **/
+    getTweenForObject: function(object) {
+        for (var i = this.tweens.length - 1; i >= 0; i--) {
+            if(this.tweens[i].object === object) return this.tweens[i];
+        }
+        return false;
+    },
+
+    /**
+        @method add
+        @param {game.Tween} tween
+    **/
+    add: function(tween) {
+        this.tweens.push(tween);
+    },
+
+    /**
+        @method remove
+        @param {game.Tween} tween
+    **/
+    remove: function(tween) {
+        var i = this.tweens.indexOf(tween);
+        if(i !== -1) this.tweens.splice(i, 1);
+    },
+
+    /**
+        @method update
+    **/
+    update: function() {
+        if(this.tweens.length === 0) return false;
+        for (var i = this.tweens.length - 1; i >= 0; i--) {
+            if(!this.tweens[i].update(game.Timer.time)) this.tweens.splice(i, 1);
+        }
+        return true;
+    }
+});
+
+/**
+    @class Tween
+    @extends game.Class
+    @constructor
+    @param {Object} object
+**/
+game.Tween = game.Class.extend({
+    object: null,
+    valuesStart: {},
+    valuesEnd: null,
+    valuesStartRepeat: {},
+    duration: 1000,
+    repeatCount: 0,
+    repeats: 0,
+    yoyoEnabled: false,
+    isPlaying: false,
+    reversed: false,
+    delayTime: 0,
+    delayRepeat: false,
+    startTime: null,
+    originalStartTime: null,
+    easingFunction: null,
+    interpolationFunction: null,
+    chainedTweens: [],
+    onStartCallback: null,
+    onStartCallbackFired: false,
+    onUpdateCallback: null,
+    onCompleteCallback: null,
+
+    init: function(object) {
+        if(!object) throw('No object defined for tween');
+        this.object = object;
+
+        this.easingFunction = game.Tween.Easing.Linear.None;
+        this.interpolationFunction = game.Tween.Interpolation.Liner;
+
+        for (var field in object) {
+            this.valuesStart[field] = parseFloat(object[field], 10);
+        }
+    },
 
     /**
         @method to
         @param {Object} properties
         @param {Number} duration
     **/
-    this.to = function (properties, duration) {
-        if(duration !== undefined) {
-            _duration = duration;
-        }
-        _valuesEnd = properties;
+    to: function(properties, duration) {
+        this.duration = duration || this.duration;
+        this.valuesEnd = properties;
         return this;
-    };
+    },
 
     /**
         @method start
     **/
-    this.start = function (time) {
-        game.TweenEngine.add(this);
-        _isPlaying = true;
-        _onStartCallbackFired = false;
-        _startTime = time !== undefined ? time : game.Timer.time;
-        _startTime += _delayTime;
-        _originalStartTime = _startTime;
-        for (var property in _valuesEnd) {
+    start: function() {
+        game.tweenEngine.add(this);
+        this.isPlaying = true;
+        this.onStartCallbackFired = false;
+        this.startTime = game.Timer.time;
+        this.startTime += this.delayTime;
+        this.originalStartTime = this.startTime;
+        for (var property in this.valuesEnd) {
             // check ifan Array was provided as property value
-            if(_valuesEnd[property] instanceof Array) {
-                if(_valuesEnd[property].length === 0) {
+            if(this.valuesEnd[property] instanceof Array) {
+                if(this.valuesEnd[property].length === 0) {
                     continue;
                 }
                 // create a local copy of the Array with the start value at the front
-                _valuesEnd[property] = [_object[property]].concat(_valuesEnd[property]);
+                this.valuesEnd[property] = [this.object[property]].concat(this.valuesEnd[property]);
             }
-            _valuesStart[property] = _object[property];
-            if((_valuesStart[property] instanceof Array) === false) {
-                _valuesStart[property] *= 1.0; // Ensures we're using numbers, not strings
+            this.valuesStart[property] = this.object[property];
+            if((this.valuesStart[property] instanceof Array) === false) {
+                this.valuesStart[property] *= 1.0; // Ensures we're using numbers, not strings
             }
-            _valuesStartRepeat[property] = _valuesStart[property] || 0;
+            this.valuesStartRepeat[property] = this.valuesStart[property] || 0;
         }
         return this;
-    };
+    },
 
     /**
         @method stop
     **/
-    this.stop = function () {
-        if(!_isPlaying) {
+    stop: function() {
+        if(!this.isPlaying) {
             return this;
         }
-        game.TweenEngine.remove(this);
-        _isPlaying = false;
+        game.tweenEngine.remove(this);
+        this.isPlaying = false;
         this.stopChainedTweens();
         return this;
-    };
+    },
+
+    pause: function() {
+        // TODO
+    },
+
+    resume: function() {
+        // TODO
+    },
 
     /**
         @method stopChainedTweens
     **/
-    this.stopChainedTweens = function () {
-        for (var i = 0, numChainedTweens = _chainedTweens.length; i < numChainedTweens; i++) {
-            _chainedTweens[i].stop();
+    stopChainedTweens: function() {
+        for (var i = 0, numChainedTweens = this.chainedTweens.length; i < numChainedTweens; i++) {
+            this.chainedTweens[i].stop();
         }
-    };
+    },
 
     /**
         @method delay
         @param {Number} time
         @param {Boolean} repeat
     **/
-    this.delay = function (time, repeat) {
-        _delayTime = time;
-        _delayRepeat = !!repeat;
+    delay: function(time, repeat) {
+        this.delayTime = time;
+        this.delayRepeat = !!repeat;
         return this;
-    };
+    },
 
     /**
         @method repeat
         @param {Number} times
     **/
-    this.repeat = function (times) {
+    repeat: function(times) {
         if(typeof(times) === 'undefined') times = Infinity;
-        _repeat = times;
+        this.repeatCount = times;
         return this;
-    };
+    },
 
     /**
         @method yoyo
         @param {Boolean} enabled
     **/
-    this.yoyo = function (enabled) {
+    yoyo: function(enabled) {
         if(typeof(enabled) === 'undefined') enabled = true;
-        _yoyo = enabled;
+        this.yoyoEnabled = enabled;
         return this;
-    };
+    },
 
     /**
         @method easing
         @param {Function} easing
     **/
-    this.easing = function (easing) {
-        _easingFunction = easing;
+    easing: function(easing) {
+        this.easingFunction = easing;
         return this;
-    };
+    },
 
     /**
         @method interpolation
         @param {Function} interpolation
     **/
-    this.interpolation = function (interpolation) {
-        _interpolationFunction = interpolation;
+    interpolation: function(interpolation) {
+        this.interpolationFunction = interpolation;
         return this;
-    };
+    },
 
     /**
         @method chain
         @param {game.Tween} tween
     **/
-    this.chain = function () {
-        _chainedTweens = arguments;
+    chain: function() {
+        this.chainedTweens = arguments;
         return this;
-    };
+    },
 
     /**
         @method onStart
         @param {Function} callback
     **/
-    this.onStart = function (callback) {
-        _onStartCallback = callback;
+    onStart: function(callback) {
+        this.onStartCallback = callback;
         return this;
-    };
+    },
 
     /**
         @method onUpdate
         @param {Function} callback
     **/
-    this.onUpdate = function (callback) {
-        _onUpdateCallback = callback;
+    onUpdate: function(callback) {
+        this.onUpdateCallback = callback;
         return this;
-    };
+    },
 
     /**
         @method onComplete
         @param {Function} callback
     **/
-    this.onComplete = function (callback) {
-        _onCompleteCallback = callback;
+    onComplete: function(callback) {
+        this.onCompleteCallback = callback;
         return this;
-    };
+    },
 
-    /**
-        @method isPlaying
-        @return {Boolean}
-    **/
-    this.isPlaying = function() {
-        return _isPlaying;
-    };
-
-    this.update = function (time) {
+    update: function(time) {
         var property;
-        if(time < _startTime) {
+        if(time < this.startTime) {
             return true;
         }
-        if(_onStartCallbackFired === false) {
-            if(_onStartCallback !== null) {
-                _onStartCallback.call(_object);
+        if(this.onStartCallbackFired === false) {
+            if(this.onStartCallback !== null) {
+                this.onStartCallback.call(this.object);
             }
-            _onStartCallbackFired = true;
+            this.onStartCallbackFired = true;
         }
-        var elapsed = (time - _startTime) / _duration;
+        var elapsed = (time - this.startTime) / this.duration;
         elapsed = elapsed > 1 ? 1 : elapsed;
-        var value = _easingFunction(elapsed);
-        for (property in _valuesEnd) {
-            var start = _valuesStart[property] || 0;
-            var end = _valuesEnd[property];
+        var value = this.easingFunction(elapsed);
+        for (property in this.valuesEnd) {
+            var start = this.valuesStart[property] || 0;
+            var end = this.valuesEnd[property];
             if(end instanceof Array) {
-                _object[property] = _interpolationFunction(end, value);
+                this.object[property] = this.interpolationFunction(end, value);
             } else {
                 // Parses relative end values with start as base (e.g.: +10, -3)
                 if(typeof (end) === 'string') {
@@ -327,135 +300,129 @@ game.Tween = function (object, properties, duration, settings) {
                 }
                 // protect against non numeric properties.
                 if(typeof (end) === 'number') {
-                    _object[property] = start + (end - start) * value;
+                    this.object[property] = start + (end - start) * value;
                 }
             }
         }
-        if(_onUpdateCallback !== null) {
-            _onUpdateCallback.call(_object, value);
+        if(this.onUpdateCallback !== null) {
+            this.onUpdateCallback.call(this.object, value);
         }
         if(elapsed === 1) {
-            if(_repeat > 0) {
-                if(isFinite(_repeat)) {
-                    _repeat--;
+            if(this.repeatCount > 0) {
+                if(isFinite(this.repeatCount)) {
+                    this.repeatCount--;
                 }
-                _repeats += 1;
+                this.repeats += 1;
                 // reassign starting values, restart by making startTime = now
-                for (property in _valuesStartRepeat) {
-                    if(typeof (_valuesEnd[property]) === 'string') {
-                        _valuesStartRepeat[property] = _valuesStartRepeat[property] + parseFloat(_valuesEnd[property], 10);
+                for (property in this.valuesStartRepeat) {
+                    if(typeof (this.valuesEnd[property]) === 'string') {
+                        this.valuesStartRepeat[property] = this.valuesStartRepeat[property] + parseFloat(this.valuesEnd[property], 10);
                     }
-                    if(_yoyo) {
-                        var tmp = _valuesStartRepeat[property];
-                        _valuesStartRepeat[property] = _valuesEnd[property];
-                        _valuesEnd[property] = tmp;
-                        _reversed = !_reversed;
+                    if(this.yoyoEnabled) {
+                        var tmp = this.valuesStartRepeat[property];
+                        this.valuesStartRepeat[property] = this.valuesEnd[property];
+                        this.valuesEnd[property] = tmp;
+                        this.reversed = !this.reversed;
                     }
-                    _valuesStart[property] = _valuesStartRepeat[property];
+                    this.valuesStart[property] = this.valuesStartRepeat[property];
                 }
-                if(!_delayRepeat) _delayTime = 0;
-                _startTime = _originalStartTime + _repeats * (_duration + _delayTime);
+                if(!this.delayRepeat) this.delayTime = 0;
+                this.startTime = this.originalStartTime + this.repeats * (this.duration + this.delayTime);
                 return true;
             } else {
-                _isPlaying = false;
-                if(_onCompleteCallback !== null) {
-                    _onCompleteCallback.call(_object);
+                this.isPlaying = false;
+                if(this.onCompleteCallback !== null) {
+                    this.onCompleteCallback.call(this.object);
                 }
-                for (var i = 0, numChainedTweens = _chainedTweens.length; i < numChainedTweens; i++) {
-                    _chainedTweens[i].start(time);
+                for (var i = 0, numChainedTweens = this.chainedTweens.length; i < numChainedTweens; i++) {
+                    this.chainedTweens[i].start(time);
                 }
                 return false;
             }
         }
         return true;
-    };
-};
-
-// Deprecated
-game.Tween.Loop = {
-    Reverse: 0,
-    Revert: 1
-};
+    }
+});
 
 game.Tween.Easing = {
     Linear: {
-        None: function (k) {
+        None: function(k) {
             return k;
         }
     },
 
     Quadratic: {
-        In: function (k) {
+        In: function(k) {
             return k * k;
         },
-        Out: function (k) {
+        Out: function(k) {
             return k * (2 - k);
         },
-        InOut: function (k) {
+        InOut: function(k) {
             if((k *= 2) < 1) return 0.5 * k * k;
             return -0.5 * (--k * (k - 2) - 1);
         }
     },
 
     Cubic: {
-        In: function (k) {
+        In: function(k) {
             return k * k * k;
         },
-        Out: function (k) {
+        Out: function(k) {
             return --k * k * k + 1;
         },
-        InOut: function (k) {
+        InOut: function(k) {
             if((k *= 2) < 1) return 0.5 * k * k * k;
             return 0.5 * ((k -= 2) * k * k + 2);
         }
     },
 
     Quartic: {
-        In: function (k) {
+        In: function(k) {
             return k * k * k * k;
         },
-        Out: function (k) {
+        Out: function(k) {
             return 1 - (--k * k * k * k);
         },
-        InOut: function (k) {
+        InOut: function(k) {
             if((k *= 2) < 1) return 0.5 * k * k * k * k;
             return -0.5 * ((k -= 2) * k * k * k - 2);
         }
     },
 
     Quintic: {
-        In: function (k) {
+        In: function(k) {
             return k * k * k * k * k;
         },
-        Out: function (k) {
+        Out: function(k) {
             return --k * k * k * k * k + 1;
         },
-        InOut: function (k) {
+        InOut: function(k) {
             if((k *= 2) < 1) return 0.5 * k * k * k * k * k;
             return 0.5 * ((k -= 2) * k * k * k * k + 2);
         }
     },
 
     Sinusoidal: {
-        In: function (k) {
+        In: function(k) {
             return 1 - Math.cos(k * Math.PI / 2);
         },
-        Out: function (k) {
+        Out: function(k) {
             return Math.sin(k * Math.PI / 2);
         },
-        InOut: function (k) {
+        InOut: function(k) {
             return 0.5 * (1 - Math.cos(Math.PI * k));
         }
     },
 
     Exponential: {
-        In: function (k) {
+        In: function(k) {
             return k === 0 ? 0 : Math.pow(1024, k - 1);
         },
-        Out: function (k) {
+        Out: function(k) {
             return k === 1 ? 1 : 1 - Math.pow(2, -10 * k);
         },
-        InOut: function (k) {
+        InOut: function(k) {
             if(k === 0) return 0;
             if(k === 1) return 1;
             if((k *= 2) < 1) return 0.5 * Math.pow(1024, k - 1);
@@ -464,20 +431,20 @@ game.Tween.Easing = {
     },
 
     Circular: {
-        In: function (k) {
+        In: function(k) {
             return 1 - Math.sqrt(1 - k * k);
         },
-        Out: function (k) {
+        Out: function(k) {
             return Math.sqrt(1 - (--k * k));
         },
-        InOut: function (k) {
+        InOut: function(k) {
             if((k *= 2) < 1) return -0.5 * (Math.sqrt(1 - k * k) - 1);
             return 0.5 * (Math.sqrt(1 - (k -= 2) * k) + 1);
         }
     },
 
     Elastic: {
-        In: function (k) {
+        In: function(k) {
             var s, a = 0.1,
                 p = 0.4;
             if(k === 0) return 0;
@@ -488,7 +455,7 @@ game.Tween.Easing = {
             } else s = p * Math.asin(1 / a) / (2 * Math.PI);
             return -(a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
         },
-        Out: function (k) {
+        Out: function(k) {
             var s, a = 0.1,
                 p = 0.4;
             if(k === 0) return 0;
@@ -499,7 +466,7 @@ game.Tween.Easing = {
             } else s = p * Math.asin(1 / a) / (2 * Math.PI);
             return (a * Math.pow(2, -10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
         },
-        InOut: function (k) {
+        InOut: function(k) {
             var s, a = 0.1,
                 p = 0.4;
             if(k === 0) return 0;
@@ -514,15 +481,15 @@ game.Tween.Easing = {
     },
 
     Back: {
-        In: function (k) {
+        In: function(k) {
             var s = 1.70158;
             return k * k * ((s + 1) * k - s);
         },
-        Out: function (k) {
+        Out: function(k) {
             var s = 1.70158;
             return --k * k * ((s + 1) * k + s) + 1;
         },
-        InOut: function (k) {
+        InOut: function(k) {
             var s = 1.70158 * 1.525;
             if((k *= 2) < 1) return 0.5 * (k * k * ((s + 1) * k - s));
             return 0.5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
@@ -530,10 +497,10 @@ game.Tween.Easing = {
     },
 
     Bounce: {
-        In: function (k) {
+        In: function(k) {
             return 1 - game.Tween.Easing.Bounce.Out(1 - k);
         },
-        Out: function (k) {
+        Out: function(k) {
             if(k < (1 / 2.75)) {
                 return 7.5625 * k * k;
             } else if(k < (2 / 2.75)) {
@@ -544,7 +511,7 @@ game.Tween.Easing = {
                 return 7.5625 * (k -= (2.625 / 2.75)) * k + 0.984375;
             }
         },
-        InOut: function (k) {
+        InOut: function(k) {
             if(k < 0.5) return game.Tween.Easing.Bounce.In(k * 2) * 0.5;
             return game.Tween.Easing.Bounce.Out(k * 2 - 1) * 0.5 + 0.5;
         }
@@ -552,7 +519,7 @@ game.Tween.Easing = {
 };
 
 game.Tween.Interpolation = {
-    Linear: function (v, k) {
+    Linear: function(v, k) {
         var m = v.length - 1,
             f = m * k,
             i = Math.floor(f),
@@ -562,7 +529,7 @@ game.Tween.Interpolation = {
         return fn(v[i], v[i + 1 > m ? m : i + 1], f - i);
     },
 
-    Bezier: function (v, k) {
+    Bezier: function(v, k) {
         var b = 0,
             n = v.length - 1,
             pw = Math.pow,
@@ -574,7 +541,7 @@ game.Tween.Interpolation = {
         return b;
     },
 
-    CatmullRom: function (v, k) {
+    CatmullRom: function(v, k) {
         var m = v.length - 1,
             f = m * k,
             i = Math.floor(f),
@@ -590,27 +557,27 @@ game.Tween.Interpolation = {
     },
 
     Utils: {
-        Linear: function (p0, p1, t) {
+        Linear: function(p0, p1, t) {
             return (p1 - p0) * t + p0;
         },
 
-        Bernstein: function (n, i) {
+        Bernstein: function(n, i) {
             var fc = game.Tween.Interpolation.Utils.Factorial;
             return fc(n) / fc(i) / fc(n - i);
         },
 
-        Factorial: (function () {
+        Factorial: function() {
             var a = [1];
-            return function (n) {
+            return function(n) {
                 var s = 1,
                     i;
                 if(a[n]) return a[n];
                 for (i = n; i > 1; i--) s *= i;
                 return a[n] = s;
             };
-        })(),
+        },
 
-        CatmullRom: function (p0, p1, p2, p3, t) {
+        CatmullRom: function(p0, p1, p2, p3, t) {
             var v0 = (p2 - p0) * 0.5,
                 v1 = (p3 - p1) * 0.5,
                 t2 = t * t,
@@ -653,7 +620,7 @@ game.TweenGroup = game.Class.extend({
     tweenComplete: function() {
         if(this.complete) return;
         for (var i = 0; i < this.tweens.length; i++) {
-            if(this.tweens[i].isPlaying()) return;
+            if(this.tweens[i].isPlaying) return;
         }
         this.complete = true;
         if(typeof(this.onComplete) === 'function') this.onComplete();

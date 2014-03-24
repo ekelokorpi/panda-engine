@@ -334,6 +334,7 @@ var core = {
         if(game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
         if(game.Storage && game.Storage.id) this.storage = new game.Storage(game.Storage.id);
         if(game.Analytics && game.Analytics.id) this.analytics = new game.Analytics(game.Analytics.id);
+        if(game.TweenEngine) game.tweenEngine = new game.TweenEngine();
 
         // Load plugins
         for(var name in this.plugins) {

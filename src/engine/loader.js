@@ -217,7 +217,7 @@ game.Loader = game.Class.extend({
     },
 
     update: function() {
-        if(game.TweenEngine) game.TweenEngine.update();
+        if(game.tweenEngine) game.tweenEngine.update();
 
         if(this._ready) return;
         if(this.timer) {
