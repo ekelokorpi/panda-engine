@@ -211,7 +211,10 @@ game.Loader = game.Class.extend({
     },
 
     run: function() {
+        this.last = game.Timer.time;
         game.Timer.update();
+        game.system.delta = (game.Timer.time - this.last) / 1000;
+
         this.update();
         this.render();
     },

@@ -73,7 +73,7 @@ game.TweenEngine = game.Class.extend({
     update: function() {
         if(this.tweens.length === 0) return false;
         for (var i = this.tweens.length - 1; i >= 0; i--) {
-            if(!this.tweens[i].update(game.Timer.time)) this.tweens.splice(i, 1);
+            if(!this.tweens[i].update()) this.tweens.splice(i, 1);
         }
         return true;
     }
@@ -107,6 +107,8 @@ game.Tween = game.Class.extend({
     onStartCallbackFired: false,
     onUpdateCallback: null,
     onCompleteCallback: null,
+    paused: false,
+    currentTime: 0,
 
     init: function(object) {
         if(!object) throw('No object defined for tween');
@@ -138,8 +140,7 @@ game.Tween = game.Class.extend({
         game.tweenEngine.add(this);
         this.isPlaying = true;
         this.onStartCallbackFired = false;
-        this.startTime = game.Timer.time;
-        this.startTime += this.delayTime;
+        this.startTime = this.delayTime;
         this.originalStartTime = this.startTime;
         for (var property in this.valuesEnd) {
             // check ifan Array was provided as property value
@@ -173,11 +174,11 @@ game.Tween = game.Class.extend({
     },
 
     pause: function() {
-        // TODO
+        this.paused = true;
     },
 
     resume: function() {
-        // TODO
+        this.paused = false;
     },
 
     /**
@@ -274,20 +275,24 @@ game.Tween = game.Class.extend({
         return this;
     },
 
-    update: function(time) {
-        var property;
-        if(time < this.startTime) {
-            return true;
-        }
+    update: function() {
+        if(this.paused) return true;
+
+        this.currentTime += game.system.delta * 1000;
+
+        if(this.currentTime < this.startTime) return true;
+        
         if(this.onStartCallbackFired === false) {
             if(this.onStartCallback !== null) {
                 this.onStartCallback.call(this.object);
             }
             this.onStartCallbackFired = true;
         }
-        var elapsed = (time - this.startTime) / this.duration;
+        
+        var elapsed = (this.currentTime - this.startTime) / this.duration;
         elapsed = elapsed > 1 ? 1 : elapsed;
         var value = this.easingFunction(elapsed);
+        var property;
         for (property in this.valuesEnd) {
             var start = this.valuesStart[property] || 0;
             var end = this.valuesEnd[property];
