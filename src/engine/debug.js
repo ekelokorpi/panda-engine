@@ -198,7 +198,7 @@ game.Debug.enabled = !!document.location.href.toLowerCase().match(/\?debug/);
 
 game.Debug.frequency = 1000;
 
-game.Debug.color = 'black';
+game.Debug.color = 'white';
 
 game.Debug.position = {
     x: 10,
