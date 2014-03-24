@@ -494,6 +494,18 @@ var core = {
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp;
 
+        if(typeof(navigator.plugins) === 'undefined' || navigator.plugins.length === 0) {
+            try {
+                new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+                this.device.flash = true;
+            }
+            catch(err){
+                this.device.flash = false;
+            }
+        } else {
+            this.device.flash = !!navigator.plugins['Shockwave Flash'];
+        }
+        
         if(this.device.wp) {
             if (typeof(window.external.notify) !== 'undefined') {
                 window.console.log = function (message) {
