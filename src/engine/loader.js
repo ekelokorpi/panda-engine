@@ -50,8 +50,6 @@ game.Loader = game.Class.extend({
     init: function(scene) {
         var i;
 
-        if(game.Timer.seconds) game.Loader.timeout /= 1000;
-
         this.scene = scene || SceneGame;
         this.stage = game.system.stage;
 
