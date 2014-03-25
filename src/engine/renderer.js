@@ -14327,5 +14327,6 @@ game.HitEllipse = PIXI.Ellipse;
 game.HitPolygon = PIXI.Polygon;
 game.TextureCache = PIXI.TextureCache;
 game.RenderTexture = PIXI.RenderTexture;
+game.Point = PIXI.Point;
 
 });

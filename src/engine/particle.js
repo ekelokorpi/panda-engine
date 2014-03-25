@@ -3,13 +3,9 @@
 
     @module particle
     @namespace game
-    @requires physics
 **/
 game.module(
     'engine.particle'
-)
-.require(
-    'engine.physics'
 )
 .body(function() { 'use strict';
 
@@ -19,11 +15,11 @@ game.module(
 **/
 game.Particle = game.Class.extend({
     /**
-        @property {game.Vector} position
+        @property {game.Point} position
     **/
     position: null,
     /**
-        @property {game.Vector} velocity
+        @property {game.Point} velocity
     **/
     velocity: null,
     /**
@@ -31,14 +27,14 @@ game.Particle = game.Class.extend({
     **/
     sprite: null,
     /**
-        @property {game.Vector} accel
+        @property {game.Point} accel
     **/
     accel: null,
 
     init: function() {
-        this.position = new game.Vector();
-        this.velocity = new game.Vector();
-        this.accel = new game.Vector();
+        this.position = new game.Point();
+        this.velocity = new game.Point();
+        this.accel = new game.Point();
     },
 
     /**
@@ -94,11 +90,11 @@ game.Emitter = game.Class.extend({
     **/
     container: null,
     /**
-        @property {game.Vector} position
+        @property {game.Point} position
     **/
     position: null,
     /**
-        @property {game.Vector} positionVar
+        @property {game.Point} positionVar
     **/
     positionVar: null,
     /**
@@ -222,7 +218,7 @@ game.Emitter = game.Class.extend({
     endScaleVar: 0,
     /**
         Target position for particles.
-        @property {game.Vector} target
+        @property {game.Point} target
     **/
     target: null,
     /**
@@ -261,17 +257,17 @@ game.Emitter = game.Class.extend({
         anchor: {x: 0.5, y: 0.5},
     },
     /**
-        @property {game.Vector} velocityLimit
+        @property {game.Point} velocityLimit
         @default 0
     **/
     velocityLimit: null,
 
     init: function(settings) {
         game.pool.create(this.poolName);
-        this.position = new game.Vector();
-        this.positionVar = new game.Vector();
-        this.velocityLimit = new game.Vector();
-        this.target = new game.Vector();
+        this.position = new game.Point();
+        this.positionVar = new game.Point();
+        this.velocityLimit = new game.Point();
+        this.target = new game.Point();
 
         game.merge(this, settings);
     },
@@ -286,7 +282,7 @@ game.Emitter = game.Class.extend({
             if(typeof this[name] === 'number') {
                 this[name] = game.Emitter.prototype[name];
             }
-            if(this[name] instanceof game.Vector && resetVec) {
+            if(this[name] instanceof game.Point && resetVec) {
                 this[name].set(0, 0);
             }
         }
@@ -370,13 +366,24 @@ game.Emitter = game.Class.extend({
 
         if(this.targetForce > 0) {
             particle.accel.set(this.target.x - particle.position.x, this.target.y - particle.position.y);
-            particle.accel.normalize().multiply(this.targetForce);
+            var len = Math.sqrt(particle.accel.x * particle.accel.x + particle.accel.y * particle.accel.y);
+            particle.accel.x /= len || 1;
+            particle.accel.y /= len || 1;
+            particle.accel.x *= this.targetForce;
+            particle.accel.y *= this.targetForce;
         }
 
-        particle.velocity.multiplyAdd(particle.accel, game.system.delta);
-        if(this.velocityLimit.x > 0 || this.velocityLimit.y > 0) particle.velocity.limit(this.velocityLimit);
+        particle.velocity.x += particle.accel.x * game.system.delta;
+        particle.velocity.y += particle.accel.y * game.system.delta;
+        
+        if(this.velocityLimit.x > 0 || this.velocityLimit.y > 0) {
+            particle.velocity.x = particle.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
+            particle.velocity.y = particle.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
+        }
         if(particle.velRotate) particle.velocity.rotate(particle.velRotate * game.system.delta);
-        particle.position.multiplyAdd(particle.velocity, game.scale * game.system.delta);
+        
+        particle.position.x += particle.velocity.x * game.scale * game.system.delta;
+        particle.position.y += particle.velocity.y * game.scale * game.system.delta;
 
         if(particle.deltaAlpha) particle.sprite.alpha = Math.max(0, particle.sprite.alpha + particle.deltaAlpha * game.system.delta);
         if(particle.deltaScale) particle.sprite.scale.x = particle.sprite.scale.y += particle.deltaScale * game.system.delta;
