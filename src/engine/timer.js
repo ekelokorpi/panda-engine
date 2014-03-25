@@ -91,6 +91,7 @@ game.Timer.maxStep = 50;
 
 game.Timer.update = function() {
     var now = Date.now();
+    if(!game.Timer.last) game.Timer.last = now;
     game.Timer.time += Math.min((now - game.Timer.last), game.Timer.maxStep) * game.Timer.speedFactor;
     game.Timer.last = now;
 };

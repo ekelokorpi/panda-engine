@@ -164,6 +164,7 @@ game.System = game.Class.extend({
     resume: function() {
         if(!this.paused) return;
         this.paused = false;
+        game.Timer.last = Date.now();
         if(game.scene) game.scene.resume();
     },
 
