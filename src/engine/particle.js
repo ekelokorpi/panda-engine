@@ -380,7 +380,16 @@ game.Emitter = game.Class.extend({
             particle.velocity.x = particle.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
             particle.velocity.y = particle.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
         }
-        if(particle.velRotate) particle.velocity.rotate(particle.velRotate * game.system.delta);
+        
+        if(particle.velRotate) {
+            var c = Math.cos(particle.velRotate * game.system.delta);
+            var s = Math.sin(particle.velRotate * game.system.delta);
+            
+            var x = particle.velocity.x * c - particle.velocity.y * s;
+            var y = particle.velocity.y * c + particle.velocity.x * s;
+            
+            particle.velocity.set(x, y);
+        }
         
         particle.position.x += particle.velocity.x * game.scale * game.system.delta;
         particle.position.y += particle.velocity.y * game.scale * game.system.delta;
