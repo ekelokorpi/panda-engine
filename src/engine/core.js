@@ -4,7 +4,7 @@
 // inspired by Impact Game Engine
 // sponsored by Yle
 
-(function(window){ 'use strict';
+(function(window) { 'use strict';
 
 if(typeof(global) !== 'undefined' && global.game) return;
 /**
@@ -28,11 +28,6 @@ if(typeof(global) !== 'undefined' && global.game) return;
 var core = {
     version: '1.2.1',
     config: window.pandaConfig || {},
-    plugins: {},
-    json: {},
-    getJSON: function(id) {
-        return this.json[this.assets[id]];
-    },
     /**
         Scale factor for Retina and HiRes mode.
         @property {Number} scale
@@ -79,16 +74,21 @@ var core = {
     **/
     device: {},
     assets: {},
+    plugins: {},
+    json: {},
     renderer: null,
     modules: {},
     resources: [],
-    ready: false,
     nocache: '',
-    _current: null,
-    _loadQueue: [],
-    _waitForLoad: 0,
-    _DOMLoaded: false,
-        
+    current: null,
+    loadQueue: [],
+    waitForLoad: 0,
+    DOMLoaded: false,
+    
+    getJSON: function(id) {
+        return this.json[this.assets[id]];
+    },
+
     copy: function(object) {
         var l,c,i;
         if(
@@ -216,10 +216,6 @@ var core = {
         game.Audio.queue[path] = id;
         return id;
     },
-    
-    setNocache: function() {
-        this.nocache = '?' + Date.now();
-    },
 
     /**
         Define new module.
@@ -228,13 +224,13 @@ var core = {
         @param {String} [version]
     **/
     module: function(name, version) {
-        if(this._current) throw('Module ' + this._current.name + ' has no body');
+        if(this.current) throw('Module ' + this.current.name + ' has no body');
         if(this.modules[name] && this.modules[name].body) throw('Module ' + name + ' is already defined');
         
-        this._current = {name: name, requires: [], loaded: false, body: null, version: version};
-        if(name === 'game.main') this._current.requires.push('engine.core');
-        this.modules[name] = this._current;
-        this._loadQueue.push(this._current);
+        this.current = {name: name, requires: [], loaded: false, body: null, version: version};
+        if(name === 'game.main') this.current.requires.push('engine.core');
+        this.modules[name] = this.current;
+        this.loadQueue.push(this.current);
         return this;
     },
 
@@ -246,7 +242,7 @@ var core = {
     require: function() {
         var i, modules = Array.prototype.slice.call(arguments);
         for (i = 0; i < modules.length; i++) {
-            if(modules[i] && this._current.requires.indexOf(modules[i]) === -1) this._current.requires.push(modules[i]);
+            if(modules[i] && this.current.requires.indexOf(modules[i]) === -1) this.current.requires.push(modules[i]);
         }
         return this;
     },
@@ -256,10 +252,10 @@ var core = {
         @method body
     **/
     body: function(body) {
-        this._current.body = body;
-        this._current = null;
-        if(this._initDOMReady) this._initDOMReady();
-        else if(this.loadFinished) this._loadModules();
+        this.current.body = body;
+        this.current = null;
+        if(this.initDOMReady) this.initDOMReady();
+        else if(this.loadFinished) this.loadModules();
     },
 
     /**
@@ -272,7 +268,7 @@ var core = {
         @param {String} canvasId
     **/
     start: function(scene, width, height, loaderClass, canvasId) {
-        if(this._loadQueue.length > 0) throw('Core not ready.');
+        if(this.loadQueue.length > 0) throw('Core not ready.');
 
         this.system = new game.System(width, height, canvasId);
 
@@ -287,8 +283,6 @@ var core = {
         for(var name in this.plugins) {
             this.plugins[name] = new (this.plugins[name])();
         }
-
-        this.ready = true;
         
         this.loader = loaderClass || game.Loader;
         var loader = new this.loader(window[game.System.startScene] || game[game.System.startScene] || scene);
@@ -322,17 +316,17 @@ var core = {
         }
     },
     
-    _loadScript: function(name, requiredFrom) {
+    loadScript: function(name, requiredFrom) {
         this.modules[name] = true;
-        this._waitForLoad++;
+        this.waitForLoad++;
         
         var path = this.config.sourceFolder + '/' + name.replace(/\./g, '/') + '.js' + this.nocache;
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
         script.onload = function() {
-            game._waitForLoad--;
-            game._loadModules();
+            game.waitForLoad--;
+            game.loadModules();
         };
         script.onerror = function() {
             throw('Failed to load module ' + name + ' at ' + path + ' required from ' + requiredFrom);
@@ -340,17 +334,17 @@ var core = {
         document.getElementsByTagName('head')[0].appendChild(script);
     },
     
-    _loadModules: function() {
+    loadModules: function() {
         var moduleLoaded, i, j, module, name, dependenciesLoaded;
-        for(i = 0; i < game._loadQueue.length; i++) {
-            module = game._loadQueue[i];
+        for(i = 0; i < game.loadQueue.length; i++) {
+            module = game.loadQueue[i];
             dependenciesLoaded = true;
             
             for(j = 0; j < module.requires.length; j++) {
                 name = module.requires[j];
                 if(!game.modules[name]) {
                     dependenciesLoaded = false;
-                    game._loadScript(name, module.name);
+                    game.loadScript(name, module.name);
                 }
                 else if(!game.modules[name].loaded) {
                     dependenciesLoaded = false;
@@ -358,14 +352,14 @@ var core = {
             }
             
             if(dependenciesLoaded && module.body) {
-                game._loadQueue.splice(i, 1);
-                if(game._loadQueue.length === 0) {
+                game.loadQueue.splice(i, 1);
+                if(game.loadQueue.length === 0) {
                     // Last module loaded, parse config
-                    for(var c in window.pandaConfig) {
+                    for(var c in this.config) {
                         var m = c.ucfirst();
                         if(game[m]) {
-                            for(var o in window.pandaConfig[c]) {
-                                game[m][o] = window.pandaConfig[c][o];
+                            for(var o in this.config[c]) {
+                                game[m][o] = this.config[c][o];
                             }
                         }
                     }
@@ -377,21 +371,21 @@ var core = {
             }
         }
         
-        if(moduleLoaded && this._loadQueue.length > 0) {
-            game._loadModules();
+        if(moduleLoaded && this.loadQueue.length > 0) {
+            game.loadModules();
         }
-        else if(game._waitForLoad === 0 && game._loadQueue.length !== 0) {
+        else if(game.waitForLoad === 0 && game.loadQueue.length !== 0) {
             var unresolved = [];
-            for(i = 0; i < game._loadQueue.length; i++ ) {
+            for(i = 0; i < game.loadQueue.length; i++ ) {
                 var unloaded = [];
-                var requires = game._loadQueue[i].requires;
+                var requires = game.loadQueue[i].requires;
                 for(j = 0; j < requires.length; j++ ) {
                     module = game.modules[requires[j]];
                     if(!module || !module.loaded) {
                         unloaded.push(requires[j]);
                     }
                 }
-                unresolved.push(game._loadQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
+                unresolved.push(game.loadQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
             }
             throw('Unresolved modules:\n' + unresolved.join('\n'));
         } else {
@@ -399,8 +393,8 @@ var core = {
         }
     },
     
-    _boot: function() {
-        if(document.location.href.match(/\?nocache/)) this.setNocache();
+    boot: function() {
+        if(document.location.href.match(/\?nocache/)) this.nocache = '?' + Date.now();
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
@@ -446,7 +440,7 @@ var core = {
                 new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
                 this.device.flash = true;
             }
-            catch(err){
+            catch(err) {
                 this.device.flash = false;
             }
         } else {
@@ -455,7 +449,7 @@ var core = {
         
         if(this.device.wp) {
             if (typeof(window.external.notify) !== 'undefined') {
-                window.console.log = function (message) {
+                window.console.log = function(message) {
                     window.external.notify(message);
                 };
             }
@@ -485,21 +479,21 @@ var core = {
         document.getElementsByTagName('head')[0].appendChild(viewport);
     },
 
-    _DOMReady: function() {
-        if(!game._DOMLoaded) {
-            if(!document.body) return setTimeout(game._DOMReady, 13);
-            game._DOMLoaded = true;
-            game._loadModules();
+    DOMReady: function() {
+        if(!game.DOMLoaded) {
+            if(!document.body) return setTimeout(game.DOMReady, 13);
+            game.DOMLoaded = true;
+            game.loadModules();
         }
     },
     
-    _initDOMReady: function() {
-        this._initDOMReady = null;
-        this._boot();
-        if (document.readyState === 'complete') this._DOMReady();
+    initDOMReady: function() {
+        this.initDOMReady = null;
+        this.boot();
+        if (document.readyState === 'complete') this.DOMReady();
         else {
-            document.addEventListener('DOMContentLoaded', this._DOMReady, false);
-            window.addEventListener('load', this._DOMReady, false);
+            document.addEventListener('DOMContentLoaded', this.DOMReady, false);
+            window.addEventListener('load', this.DOMReady, false);
         }
     }
 };
@@ -531,7 +525,7 @@ Array.prototype.random = function() {
 };
 
 // http://jsperf.com/array-shuffle-comparator/2
-Array.prototype.shuffle = function () {
+Array.prototype.shuffle = function() {
     var len = this.length;
     var i = len;
     while (i--) {
@@ -545,12 +539,12 @@ Array.prototype.shuffle = function () {
 };
 
 // http://jsperf.com/function-bind-performance
-Function.prototype.bind = function(context){
+Function.prototype.bind = function(context) {
     var fn = this, linked = [];
     Array.prototype.push.apply(linked, arguments);
     linked.shift();
 
-    return function(){
+    return function() {
        var args = [];
        Array.prototype.push.apply(args, linked);
        Array.prototype.push.apply(args, arguments);
@@ -594,7 +588,7 @@ else {
 
 // http://ejohn.org/blog/simple-javascript-inheritance/
 var initializing = false;
-var fnTest = /xyz/.test(function(){ var xyz; return xyz; }) ? /\b_super\b/ : /[\D|\d]*/;
+var fnTest = /xyz/.test(function() { var xyz; return xyz; }) ? /\b_super\b/ : /[\D|\d]*/;
 
 /**
     @class Class
@@ -610,7 +604,7 @@ game.Class.extend = function(prop) {
     var prototype = new this();
     initializing = false;
  
-    var makeFn = function(name, fn){
+    var makeFn = function(name, fn) {
         return function() {
             /**
                 Call functions parent function.
@@ -675,7 +669,7 @@ game.Class.extend = function(prop) {
         var proto = this.prototype;
         var parent = {};
 
-        var makeFn = function(name, fn){
+        var makeFn = function(name, fn) {
             return function() {
                 var tmp = this._super;
                 this._super = parent[name];
@@ -722,5 +716,5 @@ game.module(
     'engine.pool',
     'engine.analytics'
 )
-.body(function(){
+.body(function() {
 });
