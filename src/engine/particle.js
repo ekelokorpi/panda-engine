@@ -330,6 +330,7 @@ game.Emitter = game.Class.extend({
             particle.sprite.setTexture(this.textures.random());
             particle.sprite.position.x = particle.position.x;
             particle.sprite.position.y = particle.position.y;
+            particle.sprite.rotation = 0;
         }
 
         particle.rotate = this.rotate + this.getVariance(this.rotateVar);
@@ -380,7 +381,7 @@ game.Emitter = game.Class.extend({
             particle.velocity.x = particle.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
             particle.velocity.y = particle.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
         }
-        
+
         if(particle.velRotate) {
             var c = Math.cos(particle.velRotate * game.system.delta);
             var s = Math.sin(particle.velRotate * game.system.delta);
