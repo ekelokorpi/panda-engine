@@ -1,6 +1,4 @@
 /**
-    Game graphics.
-
     @module sprite
     @namespace game
 **/

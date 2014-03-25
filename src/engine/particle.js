@@ -1,6 +1,4 @@
 /**
-    Particle engine.
-
     @module particle
     @namespace game
 **/
@@ -60,8 +58,6 @@ game.Particle = game.Class.extend({
 
 /**
     Particle emitter.
-
-    Example: http://www.pandajs.net/tutorials/example-5/
 
     @class Emitter
     @extends game.Class

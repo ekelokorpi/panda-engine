@@ -1,6 +1,4 @@
 /**
-    Tween engine.
-    
     @module tween
     @namespace game
 **/
@@ -112,6 +110,7 @@ game.Tween = game.Class.extend({
 
     init: function(object) {
         if(!object) throw('No object defined for tween');
+        if(typeof(object) !== 'object') throw('Tween parameter must be object');
         this.object = object;
 
         this.easingFunction = game.Tween.Easing.Linear.None;
@@ -349,6 +348,9 @@ game.Tween = game.Class.extend({
     }
 });
 
+/**
+    @attribute {Object} Easing
+**/
 game.Tween.Easing = {
     Linear: {
         None: function(k) {
@@ -523,6 +525,9 @@ game.Tween.Easing = {
     }
 };
 
+/**
+    @attribute {Object} Interpolation
+**/
 game.Tween.Interpolation = {
     Linear: function(v, k) {
         var m = v.length - 1,

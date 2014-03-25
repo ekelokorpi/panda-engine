@@ -9,6 +9,7 @@ game.module(
 
 /**
     @class Audio
+    @extends game.Class
 **/
 game.Audio = game.Class.extend({
     /**

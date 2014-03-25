@@ -1,6 +1,4 @@
 /**
-    Physics engine.
-
     @module physics
     @namespace game
 **/

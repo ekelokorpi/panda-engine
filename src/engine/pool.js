@@ -1,6 +1,4 @@
 /**
-    Object pooling.
-
     @module pool
     @namespace game
 **/
@@ -10,7 +8,7 @@ game.module(
 .body(function() { 'use strict';
 
 /**
-    Instance automatically created at {{#crossLink "game.Core"}}{{/crossLink}}
+    Object pool.
     @class Pool
     @extends game.Class
 **/

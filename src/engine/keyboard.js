@@ -1,6 +1,4 @@
 /**
-    Keyboard manager.
-    
     @module keyboard
     @namespace game
 **/
@@ -10,7 +8,6 @@ game.module(
 .body(function() {
 
 /**
-    Instance automatically created at {{#crossLink "game.Core"}}{{/crossLink}}
     @class Keyboard
     @extends game.Class
 **/

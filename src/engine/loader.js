@@ -1,6 +1,4 @@
-/**
-    Dynamic loader for assets and audio.
-    
+/**    
     @module loader
     @namespace game
 **/
@@ -10,7 +8,7 @@ game.module(
 .body(function(){ 'use strict';
 
 /**
-    Loader.
+    Dynamic loader for assets and audio.
     @class Loader
     @extends game.Class
 **/

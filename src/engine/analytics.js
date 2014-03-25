@@ -8,7 +8,8 @@ game.module(
 .body(function() { 'use strict';
 
 /**
-    @class game.Analytics
+    @class Analytics
+    @extends game.Class
 **/
 game.Analytics = game.Class.extend({
     init: function(id) {

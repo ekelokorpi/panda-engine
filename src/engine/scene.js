@@ -1,6 +1,4 @@
 /**
-    Scene manager.
-
     @module scene
     @namespace game
 **/

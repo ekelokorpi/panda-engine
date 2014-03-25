@@ -11,6 +11,7 @@ game.module(
     DebugDraw will draw all interactive sprite hit areas and physic shapes.
     Automatically enabled, if URL contains `?debugdraw`.
     @class DebugDraw
+    @extends game.Class
 **/
 game.DebugDraw = game.Class.extend({
     /**

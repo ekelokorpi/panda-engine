@@ -1,6 +1,4 @@
-/**
-    Local storage for saving data.
-    
+/**    
     @module storage
     @namespace game
 **/
@@ -10,14 +8,7 @@ game.module(
 .body(function() { 'use strict';
 
 /**
-    Instance automatically created at {{#crossLink "game.Core"}}{{/crossLink}}, if {{#crossLink "game.Storage/id:attribute"}}{{/crossLink}} is set.
-
-    __Example__
-
-        game.Storage.id = 'com.company.mygame'; // id must be set before engine is started.
-
-        game.storage.set('highScore', 1000);
-        var highScore = game.storage.get('highScore');
+    Local storage.
     @class Storage
     @extends game.Class
 **/
@@ -68,6 +59,9 @@ game.Storage = game.Class.extend({
     }
 });
 
+/**
+    @attribute {String} id
+**/
 game.Storage.id = '';
 
 });
