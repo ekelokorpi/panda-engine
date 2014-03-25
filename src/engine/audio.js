@@ -262,6 +262,7 @@ game.Audio = game.Class.extend({
         if(this.context) {
             if(this.sources[id].audio.pauseTime) {
                 this.play(id, this.sources[id].audio.volume, this.sources[id].audio.loop);
+                this.sources[id].audio.pauseTime = 0;
             }
         }
         // HTML5 Audio
