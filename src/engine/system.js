@@ -345,6 +345,8 @@ game.System = game.Class.extend({
                 this.canvas.style.height = width * this.ratio + 'px';
             }
 
+            if(game.device.iOS71) setTimeout(this.onResize.bind(this), 100);
+
             if(!game.device.ejecta) window.scroll(0,1);
         } else {
             // Desktop resize
