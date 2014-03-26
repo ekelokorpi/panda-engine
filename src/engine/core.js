@@ -509,6 +509,10 @@ var core = {
 
 window.game = core;
 
+var elem = document.createElement('canvas');
+var canvasSupported = !!(elem.getContext && elem.getContext('2d'));
+if(!canvasSupported && core.config.noCanvasURL) return window.location = core.config.noCanvasURL;
+
 Number.prototype.limit = function(min, max) {
     var i = this;
     if(i < min) i = min;
