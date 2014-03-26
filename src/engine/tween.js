@@ -84,6 +84,16 @@ game.TweenEngine = game.Class.extend({
     @param {Object} object
 **/
 game.Tween = game.Class.extend({
+    /**
+        Is tween playing.
+        @property {Boolean} isPlaying
+    **/
+    isPlaying: false,
+    /**
+        Is tween paused.
+        @property {Boolean} paused
+    **/
+    paused: false,
     object: null,
     valuesStart: {},
     valuesEnd: null,
@@ -92,7 +102,6 @@ game.Tween = game.Class.extend({
     repeatCount: 0,
     repeats: 0,
     yoyoEnabled: false,
-    isPlaying: false,
     reversed: false,
     delayTime: 0,
     delayRepeat: false,
@@ -105,7 +114,6 @@ game.Tween = game.Class.extend({
     onStartCallbackFired: false,
     onUpdateCallback: null,
     onCompleteCallback: null,
-    paused: false,
     currentTime: 0,
 
     init: function(object) {
