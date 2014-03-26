@@ -406,6 +406,7 @@ game.Audio = game.Class.extend({
     **/
     resumeAll: function() {
         if(!game.Audio.enabled) return;
+        if(this.soundMuted || this.musicMuted) return;
 
         for(var id in this.sources) this.resume(id);
     },
