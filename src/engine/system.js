@@ -303,8 +303,8 @@ game.System = game.Class.extend({
         if(this.rotateScreen && game.System.backgroundColor.rotate) document.body.style.backgroundColor = game.System.backgroundColor.rotate;
         if(!this.rotateScreen && game.System.backgroundColor.game) document.body.style.backgroundColor = game.System.backgroundColor.game;
 
-        if(this.rotateScreen) document.body.style.backgroundImage = game.System.backgroundImage.rotate ? 'url(' + game.System.backgroundImage.rotate + ')' : 'none';
-        if(!this.rotateScreen) document.body.style.backgroundImage = game.System.backgroundImage.game ? 'url(' + game.System.backgroundImage.game + ')' : 'none';
+        if(this.rotateScreen && game.System.backgroundImage.rotate) document.body.style.backgroundImage = 'url(' + game.System.backgroundImage.rotate + ')';
+        if(!this.rotateScreen && game.System.backgroundImage.game) document.body.style.backgroundImage = 'url(' + game.System.backgroundImage.game + ')';
 
         if(this.rotateScreen && game.system && typeof(game.system.pause) === 'function') game.system.pause();
         if(!this.rotateScreen && game.system && typeof(game.system.resume) === 'function') game.system.resume();
