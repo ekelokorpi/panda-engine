@@ -240,7 +240,7 @@ game.Audio = game.Class.extend({
                 else if(this.sources[id].clips[i].noteOff) this.sources[id].clips[i].noteOff(true);
             }
             this.sources[id].clips.length = 0;
-            this.sources[id].audio.pauseTime = this.context.currentTime - this.sources[id].audio.startTime;
+            this.sources[id].audio.pauseTime = (this.context.currentTime - this.sources[id].audio.startTime) % this.sources[id].audio.duration;
 
             if(this.sources[id].audio.pauseTime > this.sources[id].audio.duration && !this.sources[id].audio.loop) {
                 // Trying to pause completed not looping sound
