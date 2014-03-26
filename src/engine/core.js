@@ -471,12 +471,21 @@ var core = {
         this.config.sourceFolder = this.config.sourceFolder || 'src';
         this.config.mediaFolder = this.config.mediaFolder ?  this.config.mediaFolder + '/' : '';
 
-        var viewport = document.createElement('meta');
-        viewport.name = 'viewport';
-        var content = 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no';
-        if(this.device.iOS71) content += ',minimal-ui';
-        viewport.content = content;
-        document.getElementsByTagName('head')[0].appendChild(viewport);
+        var metaTags = document.getElementsByTagName('meta');
+        var viewportFound = false;
+        
+        for (var i = 0; i < metaTags.length; i++) {
+            if(metaTags[i].name === 'viewport') viewportFound = true;
+        }
+
+        if(!viewportFound) {
+            var viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            var content = 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no';
+            if(this.device.iOS71) content += ',minimal-ui';
+            viewport.content = content;
+            document.getElementsByTagName('head')[0].appendChild(viewport);
+        }
     },
 
     DOMReady: function() {
