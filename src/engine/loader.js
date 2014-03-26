@@ -131,8 +131,6 @@ game.Loader = game.Class.extend({
         
         this.initStage();
 
-        this.startTime = Date.now();
-
         if(this.assets.length > 0) this.loader.load();
         else this.loadAudio();
         
@@ -216,6 +214,7 @@ game.Loader = game.Class.extend({
     },
 
     update: function() {
+        if(!this.startTime) this.startTime = Date.now();
         if(game.tweenEngine) game.tweenEngine.update();
 
         if(this._ready) return;
