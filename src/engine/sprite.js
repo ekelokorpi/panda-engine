@@ -11,23 +11,24 @@ game.module(
 .body(function() {
 
 /**
-    Sprite.
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
     @class Sprite
     @constructor
-    @param {Number} x
-    @param {Number} y
-    @param {String} path
+    @param {String} id
+    @param {Number} [x]
+    @param {Number} [y]
     @param {Object} [settings]
 **/
 game.Sprite = PIXI.Sprite.extend({
     debugDraw: true,
 
-    init: function(x, y, path, settings) {
-        if(typeof(x) !== 'number') path = x;
-        path = game.assets[path] || path;
-        var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
-        this._super(texture);
+    init: function(id, x, y, settings) {
+        if(typeof(id) === 'string') {
+            id = game.assets[id] || id;
+            id = game.Texture.fromFrame(id);
+        }
+        this._super(id);
+
         game.merge(this, settings);
 
         if(typeof(x) === 'number') this.position.x = x;
