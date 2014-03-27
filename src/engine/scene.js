@@ -148,6 +148,23 @@ game.Scene = game.Class.extend({
     },
 
     /**
+        Shorthand for adding tween.
+        @method addTween
+        @param {Object} obj
+        @param {Object} props
+        @param {Number} time
+        @param {Object} settings
+    **/
+    addTween: function(obj, props, time, settings) {
+        var tween = new game.Tween(obj);
+        tween.to(props, time);
+        for(var i in settings) {
+            tween[i](settings[i]);
+        }
+        return tween;
+    },
+
+    /**
         Remove timer from scene.
         @method removeTimer
         @param {game.Timer} timer
