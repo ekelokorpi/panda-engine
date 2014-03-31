@@ -229,7 +229,6 @@ game.System = game.Class.extend({
 
             var div = document.createElement('div');
             div.innerHTML = game.System.rotateImg ? '' : game.System.rotateMsg;
-            div.id = 'ig_rotateMsg';
             div.style.position = 'absolute';
             div.style.height = '12px';
             div.style.textAlign = 'center';
@@ -251,7 +250,7 @@ game.System = game.Class.extend({
                     div.style.height = e.target.height+'px';
                     me.resizeRotateImage();
                 };
-                img.src = game.System.rotateImg;
+                img.src = game.config.mediaFolder + game.System.rotateImg;
                 img.style.position = 'relative';
             }
         } else {
@@ -492,7 +491,7 @@ game.System.rotateMsg = 'Please rotate your device';
     @attribute {URL} rotateImg
     @default null
 **/
-game.System.rotateImg = 'media/rotate.png';
+game.System.rotateImg = 'rotate.png';
 
 game.System.canvas = true;
 game.System.transparent = false;
