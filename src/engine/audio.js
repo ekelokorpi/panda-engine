@@ -242,7 +242,7 @@ game.Audio = game.Class.extend({
             this.sources[id].clips.length = 0;
             this.sources[id].audio.pauseTime = (this.context.currentTime - this.sources[id].audio.startTime) % this.sources[id].audio.duration;
 
-            if(this.sources[id].audio.pauseTime > this.sources[id].audio.duration && !this.sources[id].audio.loop) {
+            if(this.context.currentTime > this.sources[id].audio.startTime + this.sources[id].audio.duration && !this.sources[id].audio.loop) {
                 // Trying to pause completed not looping sound
                 this.sources[id].audio.pauseTime = 0;
             }
@@ -397,7 +397,8 @@ game.Audio = game.Class.extend({
     pauseAll: function() {
         if(!game.Audio.enabled) return;
 
-        for(var id in this.sources) this.pause(id);
+        if(!this.soundMuted) this.pauseSound();
+        if(!this.musicMuted) this.pauseMusic();
     },
 
     /**
@@ -406,9 +407,9 @@ game.Audio = game.Class.extend({
     **/
     resumeAll: function() {
         if(!game.Audio.enabled) return;
-        if(this.soundMuted || this.musicMuted) return;
 
-        for(var id in this.sources) this.resume(id);
+        if(!this.soundMuted) this.resumeSound();
+        if(!this.musicMuted) this.resumeMusic();
     },
 
     /**
@@ -416,8 +417,10 @@ game.Audio = game.Class.extend({
         @method stopAll
     **/
     stopAll: function() {
-        this.stopSound();
-        this.stopMusic();
+        if(!game.Audio.enabled) return;
+
+        if(!this.soundMuted) this.stopSound();
+        if(!this.musicMuted) this.stopMusic();
     }
 });
 
