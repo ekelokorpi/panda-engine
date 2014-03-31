@@ -411,8 +411,13 @@ game.Audio = game.Class.extend({
         for(var id in this.sources) this.resume(id);
     },
 
-    // Deprecated
+    /**
+        Stop all sounds and music
+        @method stopAll
+    **/
     stopAll: function() {
+        this.stopSound();
+        this.stopMusic();
     }
 });
 
