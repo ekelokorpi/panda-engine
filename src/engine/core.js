@@ -188,17 +188,15 @@ var core = {
         Add asset to loader.
         @method addAsset
         @param {String} path
-        @param {String} id
-        @return {String} path
-        @example
-            game.addAsset('media/logo.png', 'logo');
+        @param {String} [id]
+        @return {String} id
     **/
     addAsset: function(path, id) {
         id = id || path;
         path = this.config.mediaFolder + path + this.nocache;
         this.assets[id] = path;
         if(this.resources.indexOf(path) === -1) this.resources.push(path);
-        return path;
+        return id;
     },
 
     /**
@@ -207,8 +205,6 @@ var core = {
         @param {String} path
         @param {String} [id]
         @return {String} id
-        @example
-            game.addAudio('media/sound/jump.m4a', 'jump');
     **/
     addAudio: function(path, id) {
         id = id || path;
