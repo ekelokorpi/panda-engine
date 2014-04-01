@@ -245,9 +245,9 @@ game.System = game.Class.extend({
                 var img = new Image();
                 var me = this;
                 img.onload = function(e) {
-                    div.image = e.target;
-                    div.appendChild(e.target);
-                    div.style.height = e.target.height+'px';
+                    div.image = img;
+                    div.style.height = img.height+'px';
+                    div.appendChild(img);
                     me.resizeRotateImage();
                 };
                 img.src = game.config.mediaFolder + game.System.rotateImg;

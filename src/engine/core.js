@@ -399,38 +399,48 @@ var core = {
             height: window.screen.availHeight * this.device.pixelRatio
         };
         
+        // iPhone
         this.device.iPhone = /iPhone/i.test(navigator.userAgent);
         this.device.iPhone4 = (this.device.iPhone && this.device.pixelRatio === 2);
         this.device.iPhone5 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 1096);
 
+        // iPad
         this.device.iPad = /iPad/i.test(navigator.userAgent);
         this.device.iPadRetina = (this.device.iPad && this.device.pixelRatio === 2);
         
+        // iOS
         this.device.iOS = this.device.iPhone || this.device.iPad;
         this.device.iOS5 = (this.device.iOS && /OS 5/i.test(navigator.userAgent));
         this.device.iOS6 = (this.device.iOS && /OS 6/i.test(navigator.userAgent));
         this.device.iOS7 = (this.device.iOS && /OS 7/i.test(navigator.userAgent));
         this.device.iOS71 = (this.device.iOS && /OS 7_1/i.test(navigator.userAgent));
 
+        // Android
         this.device.android = /android/i.test(navigator.userAgent);
         this.device.android2 = /android 2/i.test(navigator.userAgent);
 
+        // Internet Explorer
+        this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
+        this.device.ie10 = /MSIE 10/i.test(navigator.userAgent);
+        this.device.ie11 = /rv:11.0/i.test(navigator.userAgent);
+        this.device.ie = this.device.ie10 || this.device.ie11 || this.device.ie9;
+
+        // Windows Phone
         this.device.wp7 = /Windows Phone OS 7/i.test(navigator.userAgent);
         this.device.wp8 = /Windows Phone 8/i.test(navigator.userAgent);
         this.device.wp = this.device.wp7 || this.device.wp8;
         this.device.wpApp = (this.device.wp && typeof(window.external) !== 'undefined' && typeof(window.external.notify) !== 'undefined');
 
-        this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
-        this.device.ie10 = /MSIE 10/i.test(navigator.userAgent);
-        this.device.ie11 = /rv:11.0/i.test(navigator.userAgent);
-        this.device.ie = this.device.ie10 || this.device.ie11 || this.device.ie9;
+        // Windows Tablet
+        this.device.wt = (this.device.ie && /Tablet/i.test(navigator.userAgent));
         
+        // Others
         this.device.opera = /Opera/i.test(navigator.userAgent);
         this.device.crosswalk = /Crosswalk/i.test(navigator.userAgent);
         this.device.cocoonJS = !!navigator.isCocoonJS;
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
 
-        this.device.mobile = this.device.iOS || this.device.android || this.device.wp;
+        this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
 
         if(typeof(navigator.plugins) === 'undefined' || navigator.plugins.length === 0) {
             try {
@@ -443,14 +453,15 @@ var core = {
         } else {
             this.device.flash = !!navigator.plugins['Shockwave Flash'];
         }
-        
-        if(this.device.wp) {
-            if (typeof(window.external.notify) !== 'undefined') {
-                window.console.log = function(message) {
-                    window.external.notify(message);
-                };
-            }
-        }
+
+        // This is going to be used on Windows Phone App
+        // if(this.device.wp) {
+        //     if (typeof(window.external.notify) !== 'undefined') {
+        //         window.console.log = function(message) {
+        //             window.external.notify(message);
+        //         };
+        //     }
+        // }
         
         var i;
         if(this.device.iOS && this.config.iOS) {
