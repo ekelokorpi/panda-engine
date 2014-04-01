@@ -246,6 +246,7 @@ var core = {
     /**
         Define body for module.
         @method body
+        @param {Function} body
     **/
     body: function(body) {
         this.current.body = body;
@@ -257,11 +258,11 @@ var core = {
     /**
         Start the game engine.
         @method start
-        @param {game.Scene} scene Starting scene.
-        @param {Number} width Width of canvas.
-        @param {Number} height Height of canvas.
-        @param {game.Loader} loaderClass Custom loader class.
-        @param {String} canvasId
+        @param {game.Scene} [scene] Starting scene.
+        @param {Number} [width] Width of canvas.
+        @param {Number} [height] Height of canvas.
+        @param {game.Loader} [loaderClass] Custom loader class.
+        @param {String} [canvasId] Id of canvas element.
     **/
     start: function(scene, width, height, loaderClass, canvasId) {
         if(this.loadQueue.length > 0) throw('Core not ready.');
@@ -569,7 +570,7 @@ game.normalizeVendorAttribute(window, 'requestAnimationFrame');
 if(window.requestAnimationFrame) {
     var next = 1, anims = {};
 
-    window.game.setGameLoop = function(callback, element) {
+    game.setGameLoop = function(callback, element) {
         var current = next++;
         anims[current] = true;
 
@@ -582,15 +583,15 @@ if(window.requestAnimationFrame) {
         return current;
     };
 
-    window.game.clearGameLoop = function(id) {
+    game.clearGameLoop = function(id) {
         delete anims[id];
     };
 }
 else {
-    window.game.setGameLoop = function(callback) {
+    game.setGameLoop = function(callback) {
         return window.setInterval(callback, 1000/60);
     };
-    window.game.clearGameLoop = function(id) {
+    game.clearGameLoop = function(id) {
         window.clearInterval(id);
     };
 }
@@ -670,7 +671,7 @@ game.Class.extend = function(prop) {
     
     Class.prototype = prototype;
     Class.prototype.constructor = Class;
-    Class.extend = window.game.Class.extend;
+    Class.extend = game.Class.extend;
     /**
         @method inject
     **/
