@@ -71,7 +71,7 @@ game.Loader = game.Class.extend({
     },
 
     initStage: function() {
-        this.symbol = new game.Sprite(game.Texture.fromImage(game.Loader.logo, true));
+        this.symbol = new game.Sprite(game.Texture.fromImage(game.Loader.logo));
         this.symbol.anchor.set(0.5, 1.0);
         this.symbol.position.set(game.system.width / 2, game.system.height / 2 + this.symbol.height / 2);
         this.stage.addChild(this.symbol);
