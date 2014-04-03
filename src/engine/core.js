@@ -26,7 +26,7 @@ if(typeof(global) !== 'undefined' && global.game) return;
     @class Core
 **/
 var core = {
-    version: '1.3.0',
+    version: '1.3.1',
     config: window.pandaConfig || {},
     /**
         Scale factor for Retina and HiRes mode.
