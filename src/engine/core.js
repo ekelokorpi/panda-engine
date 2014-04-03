@@ -482,7 +482,7 @@ var core = {
         var metaTags = document.getElementsByTagName('meta');
         var viewportFound = false;
         
-        for (var i = 0; i < metaTags.length; i++) {
+        for (i = 0; i < metaTags.length; i++) {
             if(metaTags[i].name === 'viewport') viewportFound = true;
         }
 

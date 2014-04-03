@@ -244,7 +244,7 @@ game.System = game.Class.extend({
             if(game.System.rotateImg) {
                 var img = new Image();
                 var me = this;
-                img.onload = function(e) {
+                img.onload = function() {
                     div.image = img;
                     div.style.height = img.height+'px';
                     div.appendChild(img);
