@@ -321,7 +321,7 @@ game.Emitter = game.Class.extend({
         particle.life = this.life + this.getVariance(this.lifeVar);
 
         if(!particle.sprite) {
-            particle.sprite = new game.Sprite(particle.position.x, particle.position.y, this.textures.random(), this.spriteSettings);
+            particle.sprite = new game.Sprite(this.textures.random(), particle.position.x, particle.position.y, this.spriteSettings);
         } else {
             particle.sprite.setTexture(this.textures.random());
             particle.sprite.position.x = particle.position.x;
