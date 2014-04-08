@@ -347,7 +347,7 @@ game.Tween = game.Class.extend({
                     this.onCompleteCallback.call(this.object);
                 }
                 for (var i = 0, numChainedTweens = this.chainedTweens.length; i < numChainedTweens; i++) {
-                    this.chainedTweens[i].start(time);
+                    this.chainedTweens[i].start();
                 }
                 return false;
             }
