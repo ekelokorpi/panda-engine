@@ -44,14 +44,12 @@ game.Scene = game.Class.extend({
     **/
     swipeDist: 100,
     /**
-        Minimum time to trigger swipe.
+        Maximum time to trigger swipe.
         @property {Number} swipeTime
     **/
     swipeTime: 500,
     
     staticInit: function() {
-        game.scene = this;
-
         for (var i = game.system.stage.children.length - 1; i >= 0; i--) {
             game.system.stage.removeChild(game.system.stage.children[i]);
         }

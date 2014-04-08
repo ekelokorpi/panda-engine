@@ -46,12 +46,10 @@ game.Loader = game.Class.extend({
     sounds: [],
     
     init: function(scene) {
-        var i;
-
         this.scene = scene || SceneGame;
         this.stage = game.system.stage;
 
-        for (i = 0; i < game.resources.length; i++) {
+        for (var i = 0; i < game.resources.length; i++) {
             if(game.TextureCache[game.resources[i]]) continue;
             this.assets.push(game.Loader.getPath(game.resources[i]));
         }

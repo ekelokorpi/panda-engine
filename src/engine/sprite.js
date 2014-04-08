@@ -73,7 +73,7 @@ game.Container = PIXI.DisplayObjectContainer.extend({
     debugDraw: true,
     
     /**
-        Remove object from container.
+        Remove container from it's parent.
         @method remove
     **/
     remove: function() {
