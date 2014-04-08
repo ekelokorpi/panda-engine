@@ -3663,7 +3663,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         for (var j = 0; j < this.interactiveItems.length; j++)
         {
             var item = this.interactiveItems[j];
-            if(item.touchmove && item.__touchDatas[touchEvent.identifier]) item.touchmove(touchData);
+            if(item.touchmove && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
         }
     }
 };
@@ -3714,8 +3714,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
                     //call the function!
                     if(item.touchstart)item.touchstart(touchData);
                     item.__isDown = true;
-                    item.__touchDatas = item.__touchDatas || {};
-                    item.__touchDatas[touchEvent.identifier] = touchData;
+                    item.__touchData = item.__touchData || {};
+                    item.__touchData[touchEvent.identifier] = touchData;
 
                     if(!item.interactiveChildren)break;
                 }
@@ -3754,9 +3754,9 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         {
             var item = this.interactiveItems[j];
 
-            if(item.__touchDatas[touchEvent.identifier]) {
+            if(item.__touchData && item.__touchData[touchEvent.identifier]) {
 
-                item.__hit = this.hitTest(item, item.__touchDatas[touchEvent.identifier]);
+                item.__hit = this.hitTest(item, item.__touchData[touchEvent.identifier]);
 
                 // so this one WAS down...
                 touchData.originalEvent = event || window.event;
@@ -3785,7 +3785,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
                     item.__isDown = false;
                 }
 
-                item.__touchDatas[touchEvent.identifier] = null;
+                item.__touchData[touchEvent.identifier] = null;
             }
         }
         // remove the touch..
