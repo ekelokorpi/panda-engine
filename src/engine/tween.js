@@ -114,6 +114,7 @@ game.Tween = game.Class.extend({
     onStartCallbackFired: false,
     onUpdateCallback: null,
     onCompleteCallback: null,
+    onRepeatCallback: null,
     currentTime: 0,
 
     init: function(object) {
@@ -281,6 +282,15 @@ game.Tween = game.Class.extend({
         this.onCompleteCallback = callback;
         return this;
     },
+    
+    /**
+     * @method onRepeat
+     * @param {Function} callback
+     */
+     onRepeat: function(callback) {
+         this.onRepeatCallback = callback;
+         return this;
+     },
 
     update: function() {
         if(this.paused) return true;
@@ -340,6 +350,9 @@ game.Tween = game.Class.extend({
                 }
                 if(!this.delayRepeat) this.delayTime = 0;
                 this.startTime = this.originalStartTime + this.repeats * (this.duration + this.delayTime);
+                if (this.onRepeatCallback !== null) {
+                    this.onRepeatCallback.call(this.object);
+                }
                 return true;
             } else {
                 this.isPlaying = false;
