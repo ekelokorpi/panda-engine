@@ -13,7 +13,7 @@ game.module(
 **/
 game.Audio = game.Class.extend({
     /**
-        Supported audio format extension.
+        Current audio format.
         @property {String} format
     **/
     format: null,
@@ -273,10 +273,10 @@ game.Audio = game.Class.extend({
 
     /**
         @method playSound
-        @param {String} id
-        @param {Boolean} [loop]
-        @param {Number} [volume]
-        @param {Function} [callback]
+        @param {String} id Id of the sound
+        @param {Boolean} [loop] Should the sound loop
+        @param {Number} [volume] Sound volume
+        @param {Function} [callback] Callback when sound if finished
         @param {Number} [rate] Only on Web Audio
     **/
     playSound: function(id, loop, volume, callback, rate) {
@@ -288,8 +288,9 @@ game.Audio = game.Class.extend({
     },
 
     /**
+        Stop specific or all sounds.
         @method stopSound
-        @param {String} id
+        @param {String} id Id of the sound
     **/
     stopSound: function(id) {
         if(!game.Audio.enabled) return;
@@ -306,8 +307,9 @@ game.Audio = game.Class.extend({
     },
 
     /**
+        Pause specific or all sounds.
         @method pauseSound
-        @param {String} [id]
+        @param {String} [id] Id of the sound
     **/
     pauseSound: function(id) {
         if(!game.Audio.enabled) return;
@@ -355,6 +357,7 @@ game.Audio = game.Class.extend({
     },
 
     /**
+        Stop current music.
         @method stopMusic
     **/
     stopMusic: function() {
@@ -365,6 +368,7 @@ game.Audio = game.Class.extend({
     },
 
     /**
+        Pause current music.
         @method pauseMusic
     **/
     pauseMusic: function() {
@@ -374,6 +378,7 @@ game.Audio = game.Class.extend({
     },
 
     /**
+        Resume current music.
         @method resumeMusic
     **/
     resumeMusic: function() {
@@ -438,10 +443,6 @@ game.Audio.enabled = true;
 **/
 game.Audio.webAudio = true;
 
-/**
-    List of supported audio formats.
-    @attribute {Array} formats
-**/
 game.Audio.formats = [
     {ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"'},
     {ext: 'ogg', type: 'audio/ogg; codecs="vorbis"'}
