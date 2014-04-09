@@ -14655,5 +14655,8 @@ game.HitPolygon = PIXI.Polygon;
 game.TextureCache = PIXI.TextureCache;
 game.RenderTexture = PIXI.RenderTexture;
 game.Point = PIXI.Point;
+game.CanvasRenderer = PIXI.CanvasRenderer;
+game.autoDetectRenderer = PIXI.autoDetectRenderer;
+game.Stage = PIXI.Stage; 
 
 });

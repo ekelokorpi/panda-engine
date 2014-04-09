@@ -58,10 +58,26 @@ game.System = game.Class.extend({
         @property {Boolean} retina
     **/
     retina: false,
-    gameLoopId: 0,
-    newSceneClass: null,
-    running: false,
+    /**
+        Is mobile rotate screen visible.
+        @property {Boolean} rotateScreenVisible
+    **/
     rotateScreenVisible: false,
+    /**
+        Current id of the game loop.
+        @property {Number} gameLoopId
+    **/
+    gameLoopId: 0,
+    /**
+        New scene to be set on end of run loop.
+        @property {game.Scene} newSceneClass
+    **/
+    newSceneClass: null,
+    /**
+        Is game engine running.
+        @property {Boolean} running
+    **/
+    running: false,
 
     init: function(width, height, canvasId) {
         width = width || game.System.width;
@@ -69,8 +85,29 @@ game.System = game.Class.extend({
         if(!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         if(!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
-        if(game.System.hires && window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
-            this.hires = true;
+        if(typeof(game.System.aspectRatio) === 'string') {
+            var ratio = game.System.aspectRatio.split(':');
+            if(ratio.length === 2) {
+                if(window.innerWidth / window.innerHeight > ratio[0] / ratio[1]) {
+                    height = window.innerHeight;
+                    width = (height / ratio[1]) * ratio[0];
+                } else {
+                    width = window.innerWidth;
+                    height = (width / ratio[0]) * ratio[1];
+                }
+                game.System.hires = false;
+                game.System.scale = false;
+            }
+        }
+
+        if(game.System.hires) {
+            if(typeof(game.System.hiresWidth) === 'number' && typeof(game.System.hiresHeight) === 'number') {
+                if(window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
+                    this.hires = true;
+                }
+            } else if(window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
+                this.hires = true;
+            }
         }
         if(game.System.retina && game.device.pixelRatio === 2) {
             this.retina = true;
@@ -80,6 +117,8 @@ game.System = game.Class.extend({
             height *= 2;
             game.scale = 2;
         }
+
+        if(typeof(game.System.resize) !== 'undefined') game.System.scale = game.System.resize; // Deprecated
 
         this.width = width;
         this.height = height;
@@ -92,11 +131,11 @@ game.System = game.Class.extend({
             document.body.appendChild(canvas);
         }
 
-        if(game.System.webGL || !game.System.canvas) this.renderer = new PIXI.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
-        else this.renderer = new PIXI.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
+        if(game.System.webGL || !game.System.canvas) this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
+        else this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
         
         this.canvas = this.renderer.view;
-        this.stage = new PIXI.Stage();
+        this.stage = new game.Stage();
 
         game.normalizeVendorAttribute(this.canvas, 'requestFullscreen');
         game.normalizeVendorAttribute(this.canvas, 'requestFullScreen');
@@ -114,19 +153,22 @@ game.System = game.Class.extend({
 
         if(!navigator.isCocoonJS) {
             var visibilityChange;
-            if (typeof document.hidden !== 'undefined') {
+            if(typeof(document.hidden) !== 'undefined') {
                 visibilityChange = 'visibilitychange';
-            } else if (typeof document.mozHidden !== 'undefined') {
+            } else if(typeof(document.mozHidden) !== 'undefined') {
                 visibilityChange = 'mozvisibilitychange';
-            } else if (typeof document.msHidden !== 'undefined') {
+            } else if(typeof(document.msHidden) !== 'undefined') {
                 visibilityChange = 'msvisibilitychange';
-            } else if (typeof document.webkitHidden !== 'undefined') {
+            } else if(typeof(document.webkitHidden) !== 'undefined') {
                 visibilityChange = 'webkitvisibilitychange';
             }
 
             document.addEventListener(visibilityChange, function() {
-                var hidden = !!game.getVendorAttribute(document, 'hidden');
-                if(game.System.pauseOnHide) hidden ? game.system.pause() : game.system.resume();
+                if(game.System.pauseOnHide) {
+                    var hidden = !!game.getVendorAttribute(document, 'hidden');
+                    if(hidden) game.system.pause();
+                    else game.system.resume();
+                }
             }, false);
         }
 
@@ -141,6 +183,11 @@ game.System = game.Class.extend({
         if(!navigator.isCocoonJS) this.initResize();
     },
 
+    /**
+        Vibrate device.
+        @method vibrate
+        @param {Number} time Time to vibrate.
+    **/
     vibrate: function(time) {
         if(navigator.vibrate) return navigator.vibrate(time);
         return false;
@@ -273,8 +320,8 @@ game.System = game.Class.extend({
                 this.canvas.style.top = game.System.top + 'px';
             }
 
-            // Desktop resize
-            if(game.System.resize) {
+            // Desktop scaling
+            if(game.System.scale) {
                 var minWidth = game.System.minWidth === 'auto' ? this.retina ? this.width / 4 : this.width / 2 : game.System.minWidth;
                 var minHeight = game.System.minHeight === 'auto' ? this.retina ? this.height / 4 : this.height / 2 : game.System.minHeight;
                 var maxWidth = game.System.maxWidth === 'auto' ? this.retina ? this.width / 2 : this.width : game.System.maxWidth;
@@ -333,7 +380,7 @@ game.System = game.Class.extend({
         // Mobile orientation
         if(game.device.mobile) this.checkOrientation();
 
-        if(!game.System.resize) return;
+        if(!game.System.scale) return;
 
         if(game.device.mobile) {
             // Mobile resize
@@ -374,44 +421,50 @@ game.System = game.Class.extend({
     }
 });
 
-game.System.PORTRAIT = 0;
-game.System.LANDSCAPE = 1;
-
 /**
-    Turn canvas centering on/off.
+    Enable/disable canvas centering.
     @attribute {Boolean} center
     @default true
 **/
 game.System.center = true;
+/**
+    Canvas position from left, when centering is disabled.
+    @attribute {Number} left
+    @default 0
+**/
 game.System.left = 0;
+/**
+    Canvas position from top, when centering is disabled.
+    @attribute {Number} top
+    @default 0
+**/
 game.System.top = 0;
 /**
-    Turn canvas resizing on/off.
+    Enable/disable canvas scaling.
     @attribute {Boolean} resize
     @default true
 **/
-game.System.resize = true;
-
+game.System.scale = true;
 /**
-    Minimum width for canvas.
+    Minimum width for canvas, when using scaling on desktop.
     @attribute {Number} minWidth
     @default auto
 **/
 game.System.minWidth = 'auto';
 /**
-    Minimum height for canvas.
+    Minimum height for canvas, when using scaling on desktop.
     @attribute {Number} minHeight
     @default auto
 **/
 game.System.minHeight = 'auto';
 /**
-    Maximum width for canvas.
+    Maximum width for canvas, when using scaling on desktop.
     @attribute {Number} maxWidth
     @default auto
 **/
 game.System.maxWidth = 'auto';
 /**
-    Maximum height for canvas.
+    Maximum height for canvas, when using scaling on desktop.
     @attribute {Number} maxHeight
     @default auto
 **/
@@ -436,11 +489,13 @@ game.System.screenCanvas = true;
 **/
 game.System.hires = false;
 /**
-    Canvas width/height factor, when to enable HiRes mode.
+    Canvas width/height factor, when HiRes mode is enabled.
     @attribute {Number} hiresFactor
     @default 1.5
 **/
 game.System.hiresFactor = 1.5;
+game.System.hiresWidth = null;
+game.System.hiresHeight = null;
 /**
     Use Retina mode.
     @attribute {Boolean} retina
@@ -453,12 +508,14 @@ game.System.retina = false;
     @default true
 **/
 game.System.pauseOnHide = true;
+game.System.PORTRAIT = 0;
+game.System.LANDSCAPE = 1;
 /**
     Mobile orientation for the game.
     @attribute {LANDSCAPE|PORTRAIT} orientation
     @default game.System.PORTRAIT
 **/
-game.System.orientation = game.System.PORTRAIT;
+game.System.orientation = game.System.LANDSCAPE;
 game.System.backgroundColor = {
     /**
         Background color for game screen on mobile.
@@ -505,9 +562,22 @@ game.System.rotateImg = 'rotate.png';
     @default false
 **/
 game.System.webGL = false;
-
-game.System.canvas = true;
+/**
+    Use transparent renderer.
+    @attribute {Boolean} transparent
+    @default false
+**/
 game.System.transparent = false;
+/**
+    Use antialias (only on WebGL).
+    @attribute {Boolean} antialias
+    @default false
+**/
 game.System.antialias = false;
+
+// Testing, is this useful?
+game.System.aspectRatio = null;
+
+game.System.canvas = true; // Deprecated
 
 });
