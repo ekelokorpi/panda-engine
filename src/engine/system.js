@@ -175,6 +175,28 @@ game.System = game.Class.extend({
         window.addEventListener('devicemotion', function(event) {
             game.accelerometer = game.accel = event.accelerationIncludingGravity;
         }, false);
+
+        if(!navigator.isCocoonJS) {
+            // Deprecated
+            if(typeof(game.System.backgroundColor) === 'object') {
+                game.System.bgColorMobile = game.System.backgroundColor.mobile;
+                game.System.bgColorRotate = game.System.backgroundColor.rotate;
+                game.System.bgImageMobile = game.System.backgroundImage.mobile;
+                game.System.bgImageRotate = game.System.backgroundImage.rotate;
+            }
+
+            if(game.System.bgColor && !game.System.bgColorMobile) game.System.bgColorMobile = game.System.bgColor;
+            if(game.System.bgColorMobile && !game.System.bgColorRotate) game.System.bgColorRotate = game.System.bgColorMobile;
+
+            if(game.System.bgImage && !game.System.bgImageMobile) game.System.bgImageMobile = game.System.bgImage;
+            if(game.System.bgImageMobile && !game.System.bgImageRotate) game.System.bgImageRotate = game.System.bgImageMobile;
+
+            if(!game.device.mobile) {
+                if(game.System.bgColor) document.body.style.backgroundColor = game.System.bgColor;
+                if(game.System.bgImage) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImage + ')';
+            }
+            if(game.System.bgPosition) document.body.style.backgroundPosition = game.System.bgPosition;
+        }
         
         if(navigator.isCocoonJS) this.canvas.style.cssText='idtkscale:'+game.System.idtkScale+';';
         
@@ -353,11 +375,11 @@ game.System = game.Class.extend({
         this.canvas.style.display = this.rotateScreenVisible ? 'none' : 'block';
         game.System.rotateDiv.style.display = this.rotateScreenVisible ? 'block' : 'none';
 
-        if(this.rotateScreenVisible && game.System.backgroundColor.rotate) document.body.style.backgroundColor = game.System.backgroundColor.rotate;
-        if(!this.rotateScreenVisible && game.System.backgroundColor.game) document.body.style.backgroundColor = game.System.backgroundColor.game;
+        if(this.rotateScreenVisible && game.System.bgColorRotate) document.body.style.backgroundColor = game.System.bgColorRotate;
+        if(!this.rotateScreenVisible && game.System.bgColorMobile) document.body.style.backgroundColor = game.System.bgColorMobile;
 
-        if(this.rotateScreenVisible && game.System.backgroundImage.rotate) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.backgroundImage.rotate + ')';
-        if(!this.rotateScreenVisible && game.System.backgroundImage.game) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.backgroundImage.game + ')';
+        if(this.rotateScreenVisible && game.System.bgImageRotate) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImageRotate + ')';
+        if(!this.rotateScreenVisible && game.System.bgImageMobile) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImageMobile + ')';
 
         if(this.rotateScreenVisible && game.system && typeof(game.system.pause) === 'function') game.system.pause();
         if(!this.rotateScreenVisible && game.system && typeof(game.system.resume) === 'function') game.system.resume();
@@ -516,34 +538,34 @@ game.System.LANDSCAPE = 1;
     @default game.System.PORTRAIT
 **/
 game.System.orientation = game.System.PORTRAIT;
-game.System.backgroundColor = {
-    /**
-        Background color for game screen on mobile.
-        @attribute backgroundColor.game
-        @type {String}
-    **/
-    game: '#000000',
-    /**
-        Background color for rotate screen on mobile.
-        @attribute backgroundColor.rotate
-        @type {String}
-    **/
-    rotate: '#000000'
-};
-game.System.backgroundImage = {
-    /**
-        Background image for game screen on mobile.
-        @attribute backgroundImage.game
-        @type {URL}
-    **/
-    game: null,
-    /**
-        Background image for rotate screen on mobile.
-        @attribute backgroundImage.rotate
-        @type {URL}
-    **/
-    rotate: null
-};
+/**
+    Body background color.
+**/
+game.System.bgColor = '#000000';
+/**
+    Body background color for mobile.
+**/
+game.System.bgColorMobile = null;
+/**
+    Body background color for mobile rotate screen.
+**/
+game.System.bgColorRotate = null;
+/**
+    Body background image.
+**/
+game.System.bgImage = null;
+/**
+    Body background image for mobile.
+**/
+game.System.bgImageMobile = null;
+/**
+    Body background image for mobile rotate screen.
+**/
+game.System.bgImageRotate = null;
+/**
+    Body background image position.
+**/
+game.System.bgPosition = null;
 /**
     Rotate message for mobile.
     @attribute {String} rotateMsg
