@@ -515,7 +515,7 @@ game.System.LANDSCAPE = 1;
     @attribute {LANDSCAPE|PORTRAIT} orientation
     @default game.System.PORTRAIT
 **/
-game.System.orientation = game.System.LANDSCAPE;
+game.System.orientation = game.System.PORTRAIT;
 game.System.backgroundColor = {
     /**
         Background color for game screen on mobile.
