@@ -50,6 +50,8 @@ game.Scene = game.Class.extend({
     swipeTime: 500,
     
     staticInit: function() {
+        game.scene = this;
+        
         for (var i = game.system.stage.children.length - 1; i >= 0; i--) {
             game.system.stage.removeChild(game.system.stage.children[i]);
         }
