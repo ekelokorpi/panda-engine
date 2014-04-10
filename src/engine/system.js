@@ -131,8 +131,11 @@ game.System = game.Class.extend({
             document.body.appendChild(canvas);
         }
 
-        if(game.System.webGL || !game.System.canvas) this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
-        else this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
+        // Deprecated
+        if(game.System.canvas === false) game.System.webGL = true;
+
+        if(game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
+        else this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
         
         this.canvas = this.renderer.view;
         this.stage = new game.Stage();
@@ -198,7 +201,9 @@ game.System = game.Class.extend({
             if(game.System.bgPosition) document.body.style.backgroundPosition = game.System.bgPosition;
         }
         
-        if(navigator.isCocoonJS) this.canvas.style.cssText='idtkscale:'+game.System.idtkScale+';';
+        if(navigator.isCocoonJS) {
+            this.canvas.style.cssText = 'idtkscale:' + game.System.idtkScale + ';';
+        }
         
         game.renderer = this.renderer;
 
@@ -599,7 +604,5 @@ game.System.antialias = false;
 
 // Testing, is this useful?
 game.System.aspectRatio = null;
-
-game.System.canvas = true; // Deprecated
 
 });
