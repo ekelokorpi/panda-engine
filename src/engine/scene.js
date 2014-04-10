@@ -5,7 +5,8 @@
 game.module(
     'engine.scene'
 )
-.body(function(){ 'use strict';
+.body(function() {
+'use strict';
 
 /**
     Game scene.
@@ -66,31 +67,31 @@ game.Scene = game.Class.extend({
         this.stage = new game.Container();
         game.system.stage.addChild(this.stage);
 
-        if(game.debugDraw) game.debugDraw.reset();
+        if (game.debugDraw) game.debugDraw.reset();
     },
     
     /**
         This is called every frame.
         @method update
     **/
-    update: function(){
+    update: function() {
         var i;
-        if(this.world) this.world.update();
+        if (this.world) this.world.update();
         for (i = this.timers.length - 1; i >= 0; i--) {
-            if(this.timers[i].time() >= 0) {
-                if(typeof(this.timers[i].callback) === 'function') this.timers[i].callback();
-                if(this.timers[i].repeat) this.timers[i].reset();
+            if (this.timers[i].time() >= 0) {
+                if (typeof this.timers[i].callback === 'function') this.timers[i].callback();
+                if (this.timers[i].repeat) this.timers[i].reset();
                 else this.timers.splice(i, 1);
             }
         }
         for (i = this.emitters.length - 1; i >= 0; i--) {
             this.emitters[i].update();
-            if(this.emitters[i]._remove) this.emitters.splice(i, 1);
+            if (this.emitters[i]._remove) this.emitters.splice(i, 1);
         }
-        if(game.tweenEngine) game.tweenEngine.update();
+        if (game.tweenEngine) game.tweenEngine.update();
         for (i = this.objects.length - 1; i >= 0; i--) {
-            if(typeof(this.objects[i].update) === 'function') this.objects[i].update();
-            if(this.objects[i]._remove) this.objects.splice(i, 1);
+            if (typeof this.objects[i].update === 'function') this.objects[i].update();
+            if (this.objects[i]._remove) this.objects.splice(i, 1);
         }
     },
 
@@ -100,7 +101,7 @@ game.Scene = game.Class.extend({
         @param {Object} object
     **/
     addObject: function(object) {
-        if(object._remove) object._remove = false;
+        if (object._remove) object._remove = false;
         this.objects.push(object);
     },
 
@@ -158,7 +159,7 @@ game.Scene = game.Class.extend({
     addTween: function(obj, props, time, settings) {
         var tween = new game.Tween(obj);
         tween.to(props, time);
-        for(var i in settings) {
+        for (var i in settings) {
             tween[i](settings[i]);
         }
         return tween;
@@ -171,7 +172,7 @@ game.Scene = game.Class.extend({
         @param {Boolean} doCallback
     **/
     removeTimer: function(timer, doCallback) {
-        if(!doCallback) timer.callback = null;
+        if (!doCallback) timer.callback = null;
         timer.repeat = false;
         timer.set(0);
     },
@@ -233,18 +234,18 @@ game.Scene = game.Class.extend({
     _mousemove: function(event) {
         this.mousemove(event);
 
-        if(!event.startTime) return;
+        if (!event.startTime) return;
 
-        if(event.global.x - event.swipeX >= this.swipeDist) this._swipe(event, 'right');
-        else if(event.global.x - event.swipeX <= -this.swipeDist) this._swipe(event, 'left');
-        else if(event.global.y - event.swipeY >= this.swipeDist) this._swipe(event, 'down');
-        else if(event.global.y - event.swipeY <= -this.swipeDist) this._swipe(event, 'up');
+        if (event.global.x - event.swipeX >= this.swipeDist) this._swipe(event, 'right');
+        else if (event.global.x - event.swipeX <= -this.swipeDist) this._swipe(event, 'left');
+        else if (event.global.y - event.swipeY >= this.swipeDist) this._swipe(event, 'down');
+        else if (event.global.y - event.swipeY <= -this.swipeDist) this._swipe(event, 'up');
     },
 
     _swipe: function(event, dir) {
         var time = Date.now() - event.startTime;
         event.startTime = null;
-        if(time <= this.swipeTime) this.swipe(dir);
+        if (time <= this.swipeTime) this.swipe(dir);
     },
 
     /**
@@ -257,11 +258,11 @@ game.Scene = game.Class.extend({
 
     run: function() {
         this.update();
-        if(game.debugDraw) game.debugDraw.update();
+        if (game.debugDraw) game.debugDraw.update();
         this.render();
     },
 
-    render: function(){
+    render: function() {
         game.renderer.render(game.system.stage);
     },
 

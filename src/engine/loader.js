@@ -1,11 +1,12 @@
-/**    
+/**
     @module loader
     @namespace game
 **/
 game.module(
     'engine.loader'
 )
-.body(function(){ 'use strict';
+.body(function() {
+'use strict';
 
 /**
     Dynamic loader for assets and audio.
@@ -50,22 +51,22 @@ game.Loader = game.Class.extend({
         this.stage = game.system.stage;
 
         for (var i = 0; i < game.resources.length; i++) {
-            if(game.TextureCache[game.resources[i]]) continue;
+            if (game.TextureCache[game.resources[i]]) continue;
             this.assets.push(game.Loader.getPath(game.resources[i]));
         }
 
-        for(var name in game.Audio.queue) {
+        for (var name in game.Audio.queue) {
             this.sounds.push(name);
         }
 
-        if(this.assets.length > 0) {
+        if (this.assets.length > 0) {
             this.loader = new game.AssetLoader(this.assets, true);
             this.loader.onProgress = this.progress.bind(this);
             this.loader.onComplete = this.loadAudio.bind(this);
             this.loader.onError = this.error.bind(this);
         }
 
-        if(this.assets.length === 0 && this.sounds.length === 0) this.percent = 100;
+        if (this.assets.length === 0 && this.sounds.length === 0) this.percent = 100;
     },
 
     initStage: function() {
@@ -87,11 +88,11 @@ game.Loader = game.Class.extend({
         this.bar.scale.x = this.percent / 100;
         this.stage.addChild(this.bar);
 
-        if(game.Tween && game.Loader.logoTween) {
+        if (game.Tween && game.Loader.logoTween) {
             this.symbol.rotation = -0.1;
 
             var tween = new game.Tween(this.symbol)
-                .to({rotation: 0.1}, 500)
+                .to({ rotation: 0.1 }, 500)
                 .easing(game.Tween.Easing.Cubic.InOut)
                 .repeat()
                 .yoyo();
@@ -104,7 +105,7 @@ game.Loader = game.Class.extend({
         @method start
     **/
     start: function() {
-        if(game.scene) {
+        if (game.scene) {
             for (var i = this.stage.children.length - 1; i >= 0; i--) {
                 this.stage.removeChild(this.stage.children[i]);
             }
@@ -118,9 +119,9 @@ game.Loader = game.Class.extend({
             this.stage.mouseup = this.stage.mouseupoutside = this.stage.touchend = this.stage.touchendoutside = null;
             this.stage.mouseout = null;
         }
-        if(game.audio) game.audio.stopAll();
+        if (game.audio) game.audio.stopAll();
 
-        if(typeof(this.backgroundColor) === 'number') {
+        if (typeof this.backgroundColor === 'number') {
             var bg = new game.Graphics();
             bg.beginFill(this.backgroundColor);
             bg.drawRect(0, 0, game.system.width, game.system.height);
@@ -129,10 +130,10 @@ game.Loader = game.Class.extend({
         
         this.initStage();
 
-        if(this.assets.length > 0) this.loader.load();
+        if (this.assets.length > 0) this.loader.load();
         else this.loadAudio();
         
-        if(!game.scene) this.loopId = game.setGameLoop(this.run.bind(this), game.system.canvas);
+        if (!game.scene) this.loopId = game.setGameLoop(this.run.bind(this), game.system.canvas);
         else game.scene = this;
     },
 
@@ -142,7 +143,7 @@ game.Loader = game.Class.extend({
         @param {String} msg
     **/
     error: function(msg) {
-        if(msg) throw msg;
+        if (msg) throw msg;
     },
 
     /**
@@ -150,7 +151,7 @@ game.Loader = game.Class.extend({
         @method progress
     **/
     progress: function(loader) {
-        if(loader && loader.json && !loader.json.frames && !loader.json.bones) game.json[loader.url] = loader.json;
+        if (loader && loader.json && !loader.json.frames && !loader.json.bones) game.json[loader.url] = loader.json;
         this.loaded++;
         this.percent = Math.round(this.loaded / (this.assets.length + this.sounds.length) * 100);
         this.onPercentChange();
@@ -161,7 +162,7 @@ game.Loader = game.Class.extend({
         @method onPercentChange
     **/
     onPercentChange: function() {
-        if(this.bar) this.bar.scale.x = this.percent / 100;
+        if (this.bar) this.bar.scale.x = this.percent / 100;
     },
 
     /**
@@ -187,9 +188,9 @@ game.Loader = game.Class.extend({
         @method setScene
     **/
     setScene: function() {
-        if(game.system.retina || game.system.hires) {
-            for(var i in game.TextureCache) {
-                if(i.indexOf('@2x') !== -1) {
+        if (game.system.retina || game.system.hires) {
+            for (var i in game.TextureCache) {
+                if (i.indexOf('@2x') !== -1) {
                     game.TextureCache[i.replace('@2x', '')] = game.TextureCache[i];
                     delete game.TextureCache[i];
                 }
@@ -212,16 +213,17 @@ game.Loader = game.Class.extend({
     },
 
     update: function() {
-        if(!this.startTime) this.startTime = Date.now();
-        if(game.tweenEngine) game.tweenEngine.update();
+        if (!this.startTime) this.startTime = Date.now();
+        if (game.tweenEngine) game.tweenEngine.update();
 
-        if(this._ready) return;
-        if(this.timer) {
-            if(this.timer.time() >= 0) {
+        if (this._ready) return;
+        if (this.timer) {
+            if (this.timer.time() >= 0) {
                 this._ready = true;
                 this.ready();
             }
-        } else if(this.loaded === this.assets.length + this.sounds.length) {
+        }
+        else if (this.loaded === this.assets.length + this.sounds.length) {
             // Everything loaded
             var loadTime = Date.now() - this.startTime;
             var waitTime = Math.max(100, game.Loader.timeout - loadTime);

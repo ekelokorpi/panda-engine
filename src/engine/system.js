@@ -5,7 +5,8 @@
 game.module(
     'engine.system'
 )
-.body(function(){ 'use strict';
+.body(function() {
+'use strict';
 
 /**
     @class System
@@ -82,16 +83,17 @@ game.System = game.Class.extend({
     init: function(width, height, canvasId) {
         width = width || game.System.width;
         height = height || game.System.height;
-        if(!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
-        if(!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
+        if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
+        if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
-        if(typeof(game.System.aspectRatio) === 'string') {
+        if (typeof game.System.aspectRatio === 'string') {
             var ratio = game.System.aspectRatio.split(':');
-            if(ratio.length === 2) {
-                if(window.innerWidth / window.innerHeight > ratio[0] / ratio[1]) {
+            if (ratio.length === 2) {
+                if (window.innerWidth / window.innerHeight > ratio[0] / ratio[1]) {
                     height = window.innerHeight;
                     width = (height / ratio[1]) * ratio[0];
-                } else {
+                }
+                else {
                     width = window.innerWidth;
                     height = (width / ratio[0]) * ratio[1];
                 }
@@ -100,43 +102,44 @@ game.System = game.Class.extend({
             }
         }
 
-        if(game.System.hires) {
-            if(typeof(game.System.hiresWidth) === 'number' && typeof(game.System.hiresHeight) === 'number') {
-                if(window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
+        if (game.System.hires) {
+            if (typeof game.System.hiresWidth === 'number' && typeof game.System.hiresHeight === 'number') {
+                if (window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
                     this.hires = true;
                 }
-            } else if(window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
+            }
+            else if (window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
                 this.hires = true;
             }
         }
-        if(game.System.retina && game.device.pixelRatio === 2) {
+        if (game.System.retina && game.device.pixelRatio === 2) {
             this.retina = true;
         }
-        if(this.hires || this.retina) {
+        if (this.hires || this.retina) {
             width *= 2;
             height *= 2;
             game.scale = 2;
         }
 
-        if(typeof(game.System.resize) !== 'undefined') game.System.scale = game.System.resize; // Deprecated
+        if (typeof game.System.resize !== 'undefined') game.System.scale = game.System.resize; // Deprecated
 
         this.width = width;
         this.height = height;
         this.canvasId = canvasId || this.canvasId;
         this.timer = new game.Timer();
 
-        if(!document.getElementById(this.canvasId)) {
+        if (!document.getElementById(this.canvasId)) {
             var canvas = document.createElement((navigator.isCocoonJS && game.System.screenCanvas) ? 'screencanvas' : 'canvas');
             canvas.id = this.canvasId;
             document.body.appendChild(canvas);
         }
 
         // Deprecated
-        if(game.System.canvas === false) game.System.webGL = true;
+        if (game.System.canvas === false) game.System.webGL = true;
 
-        if(game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
+        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
         else this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
-        
+
         this.canvas = this.renderer.view;
         this.stage = new game.Stage();
 
@@ -146,30 +149,34 @@ game.System = game.Class.extend({
 
         document.body.style.margin = 0;
 
-        if(this.retina) {
+        if (this.retina) {
             this.canvas.style.width = width / 2 + 'px';
             this.canvas.style.height = height / 2 + 'px';
-        } else {
+        }
+        else {
             this.canvas.style.width = width + 'px';
             this.canvas.style.height = height + 'px';
         }
 
-        if(!navigator.isCocoonJS) {
+        if (!navigator.isCocoonJS) {
             var visibilityChange;
-            if(typeof(document.hidden) !== 'undefined') {
+            if (typeof document.hidden !== 'undefined') {
                 visibilityChange = 'visibilitychange';
-            } else if(typeof(document.mozHidden) !== 'undefined') {
+            }
+            else if (typeof document.mozHidden !== 'undefined') {
                 visibilityChange = 'mozvisibilitychange';
-            } else if(typeof(document.msHidden) !== 'undefined') {
+            }
+            else if (typeof document.msHidden !== 'undefined') {
                 visibilityChange = 'msvisibilitychange';
-            } else if(typeof(document.webkitHidden) !== 'undefined') {
+            }
+            else if (typeof document.webkitHidden !== 'undefined') {
                 visibilityChange = 'webkitvisibilitychange';
             }
 
             document.addEventListener(visibilityChange, function() {
-                if(game.System.pauseOnHide) {
+                if (game.System.pauseOnHide) {
                     var hidden = !!game.getVendorAttribute(document, 'hidden');
-                    if(hidden) game.system.pause();
+                    if (hidden) game.system.pause();
                     else game.system.resume();
                 }
             }, false);
@@ -179,35 +186,35 @@ game.System = game.Class.extend({
             game.accelerometer = game.accel = event.accelerationIncludingGravity;
         }, false);
 
-        if(!navigator.isCocoonJS) {
+        if (!navigator.isCocoonJS) {
             // Deprecated
-            if(typeof(game.System.backgroundColor) === 'object') {
+            if (typeof game.System.backgroundColor === 'object') {
                 game.System.bgColorMobile = game.System.backgroundColor.mobile;
                 game.System.bgColorRotate = game.System.backgroundColor.rotate;
                 game.System.bgImageMobile = game.System.backgroundImage.mobile;
                 game.System.bgImageRotate = game.System.backgroundImage.rotate;
             }
 
-            if(game.System.bgColor && !game.System.bgColorMobile) game.System.bgColorMobile = game.System.bgColor;
-            if(game.System.bgColorMobile && !game.System.bgColorRotate) game.System.bgColorRotate = game.System.bgColorMobile;
+            if (game.System.bgColor && !game.System.bgColorMobile) game.System.bgColorMobile = game.System.bgColor;
+            if (game.System.bgColorMobile && !game.System.bgColorRotate) game.System.bgColorRotate = game.System.bgColorMobile;
 
-            if(game.System.bgImage && !game.System.bgImageMobile) game.System.bgImageMobile = game.System.bgImage;
-            if(game.System.bgImageMobile && !game.System.bgImageRotate) game.System.bgImageRotate = game.System.bgImageMobile;
+            if (game.System.bgImage && !game.System.bgImageMobile) game.System.bgImageMobile = game.System.bgImage;
+            if (game.System.bgImageMobile && !game.System.bgImageRotate) game.System.bgImageRotate = game.System.bgImageMobile;
 
-            if(!game.device.mobile) {
-                if(game.System.bgColor) document.body.style.backgroundColor = game.System.bgColor;
-                if(game.System.bgImage) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImage + ')';
+            if (!game.device.mobile) {
+                if (game.System.bgColor) document.body.style.backgroundColor = game.System.bgColor;
+                if (game.System.bgImage) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImage + ')';
             }
-            if(game.System.bgPosition) document.body.style.backgroundPosition = game.System.bgPosition;
+            if (game.System.bgPosition) document.body.style.backgroundPosition = game.System.bgPosition;
         }
-        
-        if(navigator.isCocoonJS) {
+
+        if (navigator.isCocoonJS) {
             this.canvas.style.cssText = 'idtkscale:' + game.System.idtkScale + ';';
         }
-        
+
         game.renderer = this.renderer;
 
-        if(!navigator.isCocoonJS) this.initResize();
+        if (!navigator.isCocoonJS) this.initResize();
     },
 
     /**
@@ -216,7 +223,7 @@ game.System = game.Class.extend({
         @param {Number} time Time to vibrate.
     **/
     vibrate: function(time) {
-        if(navigator.vibrate) return navigator.vibrate(time);
+        if (navigator.vibrate) return navigator.vibrate(time);
         return false;
     },
 
@@ -225,9 +232,9 @@ game.System = game.Class.extend({
         @method pause
     **/
     pause: function() {
-        if(this.paused) return;
+        if (this.paused) return;
         this.paused = true;
-        if(game.scene) game.scene.pause();
+        if (game.scene) game.scene.pause();
     },
 
     /**
@@ -235,31 +242,31 @@ game.System = game.Class.extend({
         @method resume
     **/
     resume: function() {
-        if(!this.paused) return;
+        if (!this.paused) return;
         this.paused = false;
         game.Timer.last = Date.now();
-        if(game.scene) game.scene.resume();
+        if (game.scene) game.scene.resume();
     },
 
     /**
         Change current scene.
         @method setScene
-        @param  {game.Scene} sceneClass
+        @param {game.Scene} sceneClass
     **/
     setScene: function(sceneClass) {
-        if(this.running) this.newSceneClass = sceneClass;
+        if (this.running) this.newSceneClass = sceneClass;
         else this.setSceneNow(sceneClass);
     },
-    
+
     setSceneNow: function(SceneClass) {
-        if(game.tweenEngine) game.tweenEngine.removeAll();
+        if (game.tweenEngine) game.tweenEngine.removeAll();
         game.scene = new (SceneClass)();
-        if(game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
+        if (game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
         this.startRunLoop();
     },
-    
+
     startRunLoop: function() {
-        if(this.gameLoopId) this.stopRunLoop();
+        if (this.gameLoopId) this.stopRunLoop();
         this.gameLoopId = game.setGameLoop(this.run.bind(this), this.canvas);
         this.running = true;
     },
@@ -268,18 +275,18 @@ game.System = game.Class.extend({
         game.clearGameLoop(this.gameLoopId);
         this.running = false;
     },
-    
+
     run: function() {
-        if(this.paused) return;
+        if (this.paused) return;
 
         game.Timer.update();
         this.delta = this.timer.delta() / 1000;
-        
-        game.scene.run();
-        
-        if(this.debug) this.debug.update();
 
-        if(this.newSceneClass) {
+        game.scene.run();
+
+        if (this.debug) this.debug.update();
+
+        if (this.newSceneClass) {
             this.setSceneNow(this.newSceneClass);
             this.newSceneClass = null;
         }
@@ -296,17 +303,19 @@ game.System = game.Class.extend({
     initResize: function() {
         this.ratio = game.System.orientation === game.System.LANDSCAPE ? this.width / this.height : this.height / this.width;
 
-        if(game.System.center) this.canvas.style.margin = 'auto';
+        if (game.System.center) this.canvas.style.margin = 'auto';
 
-        if(game.device.mobile) {
+        if (game.device.mobile) {
             // Mobile position
-            if(!game.System.center) {
+            if (!game.System.center) {
                 this.canvas.style.position = 'absolute';
                 this.canvas.style.left = game.System.left + 'px';
                 this.canvas.style.top = game.System.top + 'px';
             }
 
-            document.addEventListener('touchstart', function(e) { e.preventDefault(); }, false);
+            document.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+            }, false);
 
             var div = document.createElement('div');
             div.innerHTML = game.System.rotateImg ? '' : game.System.rotateMsg;
@@ -322,47 +331,50 @@ game.System = game.Class.extend({
             game.System.rotateDiv = div;
             document.body.appendChild(game.System.rotateDiv);
 
-            if(game.System.rotateImg) {
+            if (game.System.rotateImg) {
                 var img = new Image();
                 var me = this;
                 img.onload = function() {
                     div.image = img;
-                    div.style.height = img.height+'px';
+                    div.style.height = img.height + 'px';
                     div.appendChild(img);
                     me.resizeRotateImage();
                 };
                 img.src = game.config.mediaFolder + game.System.rotateImg;
                 img.style.position = 'relative';
             }
-        } else {
+        }
+        else {
             // Desktop center
             this.canvas.style.position = 'absolute';
-            if(game.System.center) {
+            if (game.System.center) {
                 this.canvas.style.top = 0;
                 this.canvas.style.left = 0;
                 this.canvas.style.bottom = 0;
                 this.canvas.style.right = 0;
-            } else {
+            }
+            else {
                 this.canvas.style.left = game.System.left + 'px';
                 this.canvas.style.top = game.System.top + 'px';
             }
 
             // Desktop scaling
-            if(game.System.scale) {
+            if (game.System.scale) {
                 var minWidth = game.System.minWidth === 'auto' ? this.retina ? this.width / 4 : this.width / 2 : game.System.minWidth;
                 var minHeight = game.System.minHeight === 'auto' ? this.retina ? this.height / 4 : this.height / 2 : game.System.minHeight;
                 var maxWidth = game.System.maxWidth === 'auto' ? this.retina ? this.width / 2 : this.width : game.System.maxWidth;
                 var maxHeight = game.System.maxHeight === 'auto' ? this.retina ? this.height / 2 : this.height : game.System.maxHeight;
-                if(game.System.minWidth) this.canvas.style.minWidth = minWidth + 'px';
-                if(game.System.minHeight) this.canvas.style.minHeight = minHeight + 'px';
-                if(game.System.maxWidth) this.canvas.style.maxWidth = maxWidth + 'px';
-                if(game.System.maxHeight) this.canvas.style.maxHeight = maxHeight + 'px';
+                if (game.System.minWidth) this.canvas.style.minWidth = minWidth + 'px';
+                if (game.System.minHeight) this.canvas.style.minHeight = minHeight + 'px';
+                if (game.System.maxWidth) this.canvas.style.maxWidth = maxWidth + 'px';
+                if (game.System.maxHeight) this.canvas.style.maxHeight = maxHeight + 'px';
             }
         }
 
-        if(typeof(window.onorientationchange) !== 'undefined') {
+        if (typeof window.onorientationchange !== 'undefined') {
             window.onorientationchange = this.onResize.bind(this);
-        } else {
+        }
+        else {
             window.onresize = this.onResize.bind(this);
         }
 
@@ -371,7 +383,7 @@ game.System = game.Class.extend({
 
     checkOrientation: function() {
         this.orientation = window.innerWidth < window.innerHeight ? game.System.PORTRAIT : game.System.LANDSCAPE;
-        if(game.device.android2 && window.innerWidth === 320 && window.innerHeight === 251) {
+        if (game.device.android2 && window.innerWidth === 320 && window.innerHeight === 251) {
             // Android 2.3 portrait fix
             this.orientation = game.System.PORTRAIT;
         }
@@ -380,21 +392,21 @@ game.System = game.Class.extend({
         this.canvas.style.display = this.rotateScreenVisible ? 'none' : 'block';
         game.System.rotateDiv.style.display = this.rotateScreenVisible ? 'block' : 'none';
 
-        if(this.rotateScreenVisible && game.System.bgColorRotate) document.body.style.backgroundColor = game.System.bgColorRotate;
-        if(!this.rotateScreenVisible && game.System.bgColorMobile) document.body.style.backgroundColor = game.System.bgColorMobile;
+        if (this.rotateScreenVisible && game.System.bgColorRotate) document.body.style.backgroundColor = game.System.bgColorRotate;
+        if (!this.rotateScreenVisible && game.System.bgColorMobile) document.body.style.backgroundColor = game.System.bgColorMobile;
 
-        if(this.rotateScreenVisible && game.System.bgImageRotate) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImageRotate + ')';
-        if(!this.rotateScreenVisible && game.System.bgImageMobile) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImageMobile + ')';
+        if (this.rotateScreenVisible && game.System.bgImageRotate) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImageRotate + ')';
+        if (!this.rotateScreenVisible && game.System.bgImageMobile) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImageMobile + ')';
 
-        if(this.rotateScreenVisible && game.system && typeof(game.system.pause) === 'function') game.system.pause();
-        if(!this.rotateScreenVisible && game.system && typeof(game.system.resume) === 'function') game.system.resume();
+        if (this.rotateScreenVisible && game.system && typeof game.system.pause === 'function') game.system.pause();
+        if (!this.rotateScreenVisible && game.system && typeof game.system.resume === 'function') game.system.resume();
 
-        if(this.rotateScreenVisible) this.resizeRotateImage();
+        if (this.rotateScreenVisible) this.resizeRotateImage();
     },
 
     resizeRotateImage: function() {
-        if(this.rotateScreenVisible && game.System.rotateDiv.image) {
-            if(window.innerHeight < game.System.rotateDiv.image.height) {
+        if (this.rotateScreenVisible && game.System.rotateDiv.image) {
+            if (window.innerHeight < game.System.rotateDiv.image.height) {
                 game.System.rotateDiv.image.style.height = window.innerHeight + 'px';
                 game.System.rotateDiv.image.style.width = 'auto';
                 game.System.rotateDiv.style.height = window.innerHeight + 'px';
@@ -405,34 +417,36 @@ game.System = game.Class.extend({
 
     onResize: function() {
         // Mobile orientation
-        if(game.device.mobile) this.checkOrientation();
+        if (game.device.mobile) this.checkOrientation();
 
-        if(!game.System.scale) return;
+        if (!game.System.scale) return;
 
-        if(game.device.mobile) {
+        if (game.device.mobile) {
             // Mobile resize
             var width = window.innerWidth;
             var height = window.innerHeight;
-            
-            // iPad iOS 7.0 landscape innerHeight bugfix
-            if(game.device.iPad && height === 671 && this.orientation === game.System.LANDSCAPE) height = 672;
 
-            if(game.System.orientation === game.System.LANDSCAPE) {
+            // iPad iOS 7.0 landscape innerHeight bugfix
+            if (game.device.iPad && height === 671 && this.orientation === game.System.LANDSCAPE) height = 672;
+
+            if (game.System.orientation === game.System.LANDSCAPE) {
                 this.canvas.style.height = height + 'px';
                 this.canvas.style.width = height * this.ratio + 'px';
-            } else {
+            }
+            else {
                 this.canvas.style.width = width + 'px';
                 this.canvas.style.height = width * this.ratio + 'px';
             }
 
-            if(game.device.iOS71) setTimeout(this.onResize.bind(this), 100);
+            if (game.device.iOS71) setTimeout(this.onResize.bind(this), 100);
 
-            if(!game.device.ejecta) window.scroll(0,1);
-        } else {
+            if (!game.device.ejecta) window.scroll(0, 1);
+        }
+        else {
             // Desktop resize
-            if(window.innerWidth === 0) return; // Chrome bug
-            if(window.innerWidth < this.width || window.innerHeight < this.height) {
-                if(window.innerWidth / this.width < window.innerHeight / this.height) {
+            if (window.innerWidth === 0) return; // Chrome bug
+            if (window.innerWidth < this.width || window.innerHeight < this.height) {
+                if (window.innerWidth / this.width < window.innerHeight / this.height) {
                     this.canvas.style.width = window.innerWidth + 'px';
                     this.canvas.style.height = window.innerWidth * (this.height / this.width) + 'px';
                 }
@@ -440,7 +454,8 @@ game.System = game.Class.extend({
                     this.canvas.style.height = window.innerHeight + 'px';
                     this.canvas.style.width = window.innerHeight * (this.width / this.height) + 'px';
                 }
-            } else {
+            }
+            else {
                 this.canvas.style.width = this.width + 'px';
                 this.canvas.style.height = this.height + 'px';
             }

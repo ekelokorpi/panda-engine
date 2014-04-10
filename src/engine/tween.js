@@ -5,7 +5,8 @@
 game.module(
     'engine.tween'
 )
-.body(function() { 'use strict';
+.body(function() {
+'use strict';
 
 /**
     Based on https://github.com/sole/tween.js/
@@ -32,7 +33,7 @@ game.TweenEngine = game.Class.extend({
     **/
     stopTweensForObject: function(object) {
         for (var i = this.tweens.length - 1; i >= 0; i--) {
-            if(this.tweens[i].object === object) this.tweens[i].stop();
+            if (this.tweens[i].object === object) this.tweens[i].stop();
         }
     },
 
@@ -42,7 +43,7 @@ game.TweenEngine = game.Class.extend({
     **/
     getTweenForObject: function(object) {
         for (var i = this.tweens.length - 1; i >= 0; i--) {
-            if(this.tweens[i].object === object) return this.tweens[i];
+            if (this.tweens[i].object === object) return this.tweens[i];
         }
         return false;
     },
@@ -61,16 +62,16 @@ game.TweenEngine = game.Class.extend({
     **/
     remove: function(tween) {
         var i = this.tweens.indexOf(tween);
-        if(i !== -1) this.tweens.splice(i, 1);
+        if (i !== -1) this.tweens.splice(i, 1);
     },
 
     /**
         @method update
     **/
     update: function() {
-        if(this.tweens.length === 0) return false;
+        if (this.tweens.length === 0) return false;
         for (var i = this.tweens.length - 1; i >= 0; i--) {
-            if(!this.tweens[i].update()) this.tweens.splice(i, 1);
+            if (!this.tweens[i].update()) this.tweens.splice(i, 1);
         }
         return true;
     }
@@ -117,8 +118,8 @@ game.Tween = game.Class.extend({
     currentTime: 0,
 
     init: function(object) {
-        if(!object) throw('No object defined for tween');
-        if(typeof(object) !== 'object') throw('Tween parameter must be object');
+        if (!object) throw('No object defined for tween');
+        if (typeof object !== 'object') throw('Tween parameter must be object');
         this.object = object;
 
         this.easingFunction = game.Tween.Easing.Linear.None;
@@ -151,15 +152,15 @@ game.Tween = game.Class.extend({
         this.originalStartTime = this.startTime;
         for (var property in this.valuesEnd) {
             // check ifan Array was provided as property value
-            if(this.valuesEnd[property] instanceof Array) {
-                if(this.valuesEnd[property].length === 0) {
+            if (this.valuesEnd[property] instanceof Array) {
+                if (this.valuesEnd[property].length === 0) {
                     continue;
                 }
                 // create a local copy of the Array with the start value at the front
                 this.valuesEnd[property] = [this.object[property]].concat(this.valuesEnd[property]);
             }
             this.valuesStart[property] = this.object[property];
-            if((this.valuesStart[property] instanceof Array) === false) {
+            if ((this.valuesStart[property] instanceof Array) === false) {
                 this.valuesStart[property] *= 1.0; // Ensures we're using numbers, not strings
             }
             this.valuesStartRepeat[property] = this.valuesStart[property] || 0;
@@ -171,7 +172,7 @@ game.Tween = game.Class.extend({
         @method stop
     **/
     stop: function() {
-        if(!this.isPlaying) {
+        if (!this.isPlaying) {
             return this;
         }
         game.tweenEngine.remove(this);
@@ -213,7 +214,7 @@ game.Tween = game.Class.extend({
         @param {Number} times
     **/
     repeat: function(times) {
-        if(typeof(times) === 'undefined') times = Infinity;
+        if (typeof times === 'undefined') times = Infinity;
         this.repeatCount = times;
         return this;
     },
@@ -223,7 +224,7 @@ game.Tween = game.Class.extend({
         @param {Boolean} enabled
     **/
     yoyo: function(enabled) {
-        if(typeof(enabled) === 'undefined') enabled = true;
+        if (typeof enabled === 'undefined') enabled = true;
         this.yoyoEnabled = enabled;
         return this;
     },
@@ -292,14 +293,14 @@ game.Tween = game.Class.extend({
     },
 
     update: function() {
-        if(this.paused) return true;
+        if (this.paused) return true;
 
         this.currentTime += game.system.delta * 1000;
 
-        if(this.currentTime < this.startTime) return true;
+        if (this.currentTime < this.startTime) return true;
         
-        if(this.onStartCallbackFired === false) {
-            if(this.onStartCallback !== null) {
+        if (this.onStartCallbackFired === false) {
+            if (this.onStartCallback !== null) {
                 this.onStartCallback.call(this.object);
             }
             this.onStartCallbackFired = true;
@@ -312,34 +313,35 @@ game.Tween = game.Class.extend({
         for (property in this.valuesEnd) {
             var start = this.valuesStart[property] || 0;
             var end = this.valuesEnd[property];
-            if(end instanceof Array) {
+            if (end instanceof Array) {
                 this.object[property] = this.interpolationFunction(end, value);
-            } else {
+            }
+            else {
                 // Parses relative end values with start as base (e.g.: +10, -3)
-                if(typeof (end) === 'string') {
+                if (typeof end === 'string') {
                     end = start + parseFloat(end, 10);
                 }
                 // protect against non numeric properties.
-                if(typeof (end) === 'number') {
+                if (typeof end === 'number') {
                     this.object[property] = start + (end - start) * value;
                 }
             }
         }
-        if(this.onUpdateCallback !== null) {
+        if (this.onUpdateCallback !== null) {
             this.onUpdateCallback.call(this.object, value);
         }
-        if(elapsed === 1) {
-            if(this.repeatCount > 0) {
-                if(isFinite(this.repeatCount)) {
+        if (elapsed === 1) {
+            if (this.repeatCount > 0) {
+                if (isFinite(this.repeatCount)) {
                     this.repeatCount--;
                 }
                 this.repeats += 1;
                 // reassign starting values, restart by making startTime = now
                 for (property in this.valuesStartRepeat) {
-                    if(typeof (this.valuesEnd[property]) === 'string') {
+                    if (typeof this.valuesEnd[property] === 'string') {
                         this.valuesStartRepeat[property] = this.valuesStartRepeat[property] + parseFloat(this.valuesEnd[property], 10);
                     }
-                    if(this.yoyoEnabled) {
+                    if (this.yoyoEnabled) {
                         var tmp = this.valuesStartRepeat[property];
                         this.valuesStartRepeat[property] = this.valuesEnd[property];
                         this.valuesEnd[property] = tmp;
@@ -347,15 +349,16 @@ game.Tween = game.Class.extend({
                     }
                     this.valuesStart[property] = this.valuesStartRepeat[property];
                 }
-                if(!this.delayRepeat) this.delayTime = 0;
+                if (!this.delayRepeat) this.delayTime = 0;
                 this.startTime = this.originalStartTime + this.repeats * (this.duration + this.delayTime);
-                if(this.onRepeatCallback !== null) {
+                if (this.onRepeatCallback !== null) {
                     this.onRepeatCallback.call(this.object);
                 }
                 return true;
-            } else {
+            }
+            else {
                 this.isPlaying = false;
-                if(this.onCompleteCallback !== null) {
+                if (this.onCompleteCallback !== null) {
                     this.onCompleteCallback.call(this.object);
                 }
                 for (var i = 0, numChainedTweens = this.chainedTweens.length; i < numChainedTweens; i++) {
@@ -386,7 +389,7 @@ game.Tween.Easing = {
             return k * (2 - k);
         },
         InOut: function(k) {
-            if((k *= 2) < 1) return 0.5 * k * k;
+            if ((k *= 2) < 1) return 0.5 * k * k;
             return -0.5 * (--k * (k - 2) - 1);
         }
     },
@@ -399,7 +402,7 @@ game.Tween.Easing = {
             return --k * k * k + 1;
         },
         InOut: function(k) {
-            if((k *= 2) < 1) return 0.5 * k * k * k;
+            if ((k *= 2) < 1) return 0.5 * k * k * k;
             return 0.5 * ((k -= 2) * k * k + 2);
         }
     },
@@ -412,7 +415,7 @@ game.Tween.Easing = {
             return 1 - (--k * k * k * k);
         },
         InOut: function(k) {
-            if((k *= 2) < 1) return 0.5 * k * k * k * k;
+            if ((k *= 2) < 1) return 0.5 * k * k * k * k;
             return -0.5 * ((k -= 2) * k * k * k - 2);
         }
     },
@@ -425,7 +428,7 @@ game.Tween.Easing = {
             return --k * k * k * k * k + 1;
         },
         InOut: function(k) {
-            if((k *= 2) < 1) return 0.5 * k * k * k * k * k;
+            if ((k *= 2) < 1) return 0.5 * k * k * k * k * k;
             return 0.5 * ((k -= 2) * k * k * k * k + 2);
         }
     },
@@ -450,9 +453,9 @@ game.Tween.Easing = {
             return k === 1 ? 1 : 1 - Math.pow(2, -10 * k);
         },
         InOut: function(k) {
-            if(k === 0) return 0;
-            if(k === 1) return 1;
-            if((k *= 2) < 1) return 0.5 * Math.pow(1024, k - 1);
+            if (k === 0) return 0;
+            if (k === 1) return 1;
+            if ((k *= 2) < 1) return 0.5 * Math.pow(1024, k - 1);
             return 0.5 * (-Math.pow(2, -10 * (k - 1)) + 2);
         }
     },
@@ -465,7 +468,7 @@ game.Tween.Easing = {
             return Math.sqrt(1 - (--k * k));
         },
         InOut: function(k) {
-            if((k *= 2) < 1) return -0.5 * (Math.sqrt(1 - k * k) - 1);
+            if ((k *= 2) < 1) return -0.5 * (Math.sqrt(1 - k * k) - 1);
             return 0.5 * (Math.sqrt(1 - (k -= 2) * k) + 1);
         }
     },
@@ -474,35 +477,38 @@ game.Tween.Easing = {
         In: function(k) {
             var s, a = 0.1,
                 p = 0.4;
-            if(k === 0) return 0;
-            if(k === 1) return 1;
-            if(!a || a < 1) {
+            if (k === 0) return 0;
+            if (k === 1) return 1;
+            if (!a || a < 1) {
                 a = 1;
                 s = p / 4;
-            } else s = p * Math.asin(1 / a) / (2 * Math.PI);
+            }
+            else s = p * Math.asin(1 / a) / (2 * Math.PI);
             return -(a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
         },
         Out: function(k) {
             var s, a = 0.1,
                 p = 0.4;
-            if(k === 0) return 0;
-            if(k === 1) return 1;
-            if(!a || a < 1) {
+            if (k === 0) return 0;
+            if (k === 1) return 1;
+            if (!a || a < 1) {
                 a = 1;
                 s = p / 4;
-            } else s = p * Math.asin(1 / a) / (2 * Math.PI);
+            }
+            else s = p * Math.asin(1 / a) / (2 * Math.PI);
             return (a * Math.pow(2, -10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
         },
         InOut: function(k) {
             var s, a = 0.1,
                 p = 0.4;
-            if(k === 0) return 0;
-            if(k === 1) return 1;
-            if(!a || a < 1) {
+            if (k === 0) return 0;
+            if (k === 1) return 1;
+            if (!a || a < 1) {
                 a = 1;
                 s = p / 4;
-            } else s = p * Math.asin(1 / a) / (2 * Math.PI);
-            if((k *= 2) < 1) return -0.5 * (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
+            }
+            else s = p * Math.asin(1 / a) / (2 * Math.PI);
+            if ((k *= 2) < 1) return -0.5 * (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
             return a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * 0.5 + 1;
         }
     },
@@ -518,7 +524,7 @@ game.Tween.Easing = {
         },
         InOut: function(k) {
             var s = 1.70158 * 1.525;
-            if((k *= 2) < 1) return 0.5 * (k * k * ((s + 1) * k - s));
+            if ((k *= 2) < 1) return 0.5 * (k * k * ((s + 1) * k - s));
             return 0.5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
         }
     },
@@ -528,18 +534,21 @@ game.Tween.Easing = {
             return 1 - game.Tween.Easing.Bounce.Out(1 - k);
         },
         Out: function(k) {
-            if(k < (1 / 2.75)) {
+            if (k < (1 / 2.75)) {
                 return 7.5625 * k * k;
-            } else if(k < (2 / 2.75)) {
+            }
+            else if (k < (2 / 2.75)) {
                 return 7.5625 * (k -= (1.5 / 2.75)) * k + 0.75;
-            } else if(k < (2.5 / 2.75)) {
+            }
+            else if (k < (2.5 / 2.75)) {
                 return 7.5625 * (k -= (2.25 / 2.75)) * k + 0.9375;
-            } else {
+            }
+            else {
                 return 7.5625 * (k -= (2.625 / 2.75)) * k + 0.984375;
             }
         },
         InOut: function(k) {
-            if(k < 0.5) return game.Tween.Easing.Bounce.In(k * 2) * 0.5;
+            if (k < 0.5) return game.Tween.Easing.Bounce.In(k * 2) * 0.5;
             return game.Tween.Easing.Bounce.Out(k * 2 - 1) * 0.5 + 0.5;
         }
     }
@@ -554,8 +563,8 @@ game.Tween.Interpolation = {
             f = m * k,
             i = Math.floor(f),
             fn = game.Tween.Interpolation.Utils.Linear;
-        if(k < 0) return fn(v[0], v[1], f);
-        if(k > 1) return fn(v[m], v[m - 1], m - f);
+        if (k < 0) return fn(v[0], v[1], f);
+        if (k > 1) return fn(v[m], v[m - 1], m - f);
         return fn(v[i], v[i + 1 > m ? m : i + 1], f - i);
     },
 
@@ -576,12 +585,13 @@ game.Tween.Interpolation = {
             f = m * k,
             i = Math.floor(f),
             fn = game.Tween.Interpolation.Utils.CatmullRom;
-        if(v[0] === v[m]) {
-            if(k < 0) i = Math.floor(f = m * (1 + k));
+        if (v[0] === v[m]) {
+            if (k < 0) i = Math.floor(f = m * (1 + k));
             return fn(v[(i - 1 + m) % m], v[i], v[(i + 1) % m], v[(i + 2) % m], f - i);
-        } else {
-            if(k < 0) return v[0] - (fn(v[0], v[0], v[1], v[1], -f) - v[0]);
-            if(k > 1) return v[m] - (fn(v[m], v[m], v[m - 1], v[m - 1], f - m) - v[m]);
+        }
+        else {
+            if (k < 0) return v[0] - (fn(v[0], v[0], v[1], v[1], -f) - v[0]);
+            if (k > 1) return v[m] - (fn(v[m], v[m], v[m - 1], v[m - 1], f - m) - v[m]);
             return fn(v[i ? i - 1 : 0], v[i], v[m < i + 1 ? m : i + 1], v[m < i + 2 ? m : i + 2], f - i);
         }
     },
@@ -601,7 +611,7 @@ game.Tween.Interpolation = {
             return function(n) {
                 var s = 1,
                     i;
-                if(a[n]) return a[n];
+                if (a[n]) return a[n];
                 for (i = n; i > 1; i--) s *= i;
                 return a[n] = s;
             };
@@ -648,12 +658,12 @@ game.TweenGroup = game.Class.extend({
         @method tweenComplete
     **/
     tweenComplete: function() {
-        if(this.complete) return;
+        if (this.complete) return;
         for (var i = 0; i < this.tweens.length; i++) {
-            if(this.tweens[i].isPlaying) return;
+            if (this.tweens[i].isPlaying) return;
         }
         this.complete = true;
-        if(typeof(this.onComplete) === 'function') this.onComplete();
+        if (typeof this.onComplete === 'function') this.onComplete();
     },
 
     /**
@@ -697,13 +707,13 @@ game.TweenGroup = game.Class.extend({
         @param {Boolean} endTween Set started tweens to end values
     **/
     stop: function(doComplete, endTween) {
-        if(this.complete) return;
+        if (this.complete) return;
 
         for (var i = 0; i < this.tweens.length; i++) {
             this.tweens[i].stop(endTween);
         }
         
-        if(!this.complete && doComplete) this.tweenComplete();
+        if (!this.complete && doComplete) this.tweenComplete();
         this.complete = true;
     }
 });

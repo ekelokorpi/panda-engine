@@ -5,7 +5,8 @@
 game.module(
     'engine.debug'
 )
-.body(function() { 'use strict';
+.body(function() {
+'use strict';
 
 /**
     DebugDraw will draw all interactive sprite hit areas and physic shapes.
@@ -43,14 +44,15 @@ game.DebugDraw = game.Class.extend({
         var grap = new game.Graphics();
         grap.beginFill(game.DebugDraw.spriteColor);
 
-        if(sprite.hitArea) {
-            if(sprite.hitArea instanceof game.HitRectangle) {
+        if (sprite.hitArea) {
+            if (sprite.hitArea instanceof game.HitRectangle) {
                 grap.drawRect(sprite.hitArea.x, sprite.hitArea.y, sprite.hitArea.width, sprite.hitArea.height);
             }
             else if (sprite.hitArea instanceof game.HitCircle) {
                 grap.drawCircle(sprite.hitArea.x, sprite.hitArea.y, sprite.hitArea.radius);
             }
-        } else grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
+        }
+        else grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
 
         grap.target = sprite;
         grap.alpha = game.DebugDraw.spriteAlpha;
@@ -77,16 +79,15 @@ game.DebugDraw = game.Class.extend({
         sprite.clear();
         sprite.beginFill(game.DebugDraw.shapeColor);
 
-        if(body.shape instanceof game.Rectangle) {
-            sprite.drawRect(-body.shape.width/2, -body.shape.height/2, body.shape.width, body.shape.height);
+        if (body.shape instanceof game.Rectangle) {
+            sprite.drawRect(-body.shape.width / 2, -body.shape.height / 2, body.shape.width, body.shape.height);
             sprite.width = body.shape.width;
             sprite.height = body.shape.height;
         }
-        if(body.shape instanceof game.Circle) {
+        if (body.shape instanceof game.Circle) {
             sprite.drawCircle(0, 0, body.shape.radius);
             sprite.radius = body.shape.radius;
-        }
-        // TODO add support for game.Line
+        } // TODO add support for game.Line
     },
 
     /**
@@ -95,34 +96,35 @@ game.DebugDraw = game.Class.extend({
     **/
     update: function() {
         for (var i = this.container.children.length - 1; i >= 0; i--) {
-            if(game.modules['plugins.p2'] && this.container.children[i].target instanceof game.Body) {
+            if (game.modules['plugins.p2'] && this.container.children[i].target instanceof game.Body) {
                 this.updateP2(this.container.children[i]);
                 continue;
             }
             
             this.container.children[i].rotation = this.container.children[i].target.rotation;
 
-            if(game.modules['engine.physics'] && this.container.children[i].target instanceof game.Body) {
-                if(this.container.children[i].width !== this.container.children[i].target.shape.width ||
+            if (game.modules['engine.physics'] && this.container.children[i].target instanceof game.Body) {
+                if (this.container.children[i].width !== this.container.children[i].target.shape.width ||
                     this.container.children[i].height !== this.container.children[i].target.shape.height) {
                     this.drawDebugSprite(this.container.children[i], this.container.children[i].target);
                 }
-                if(this.container.children[i].radius !== this.container.children[i].target.shape.radius) {
+                if (this.container.children[i].radius !== this.container.children[i].target.shape.radius) {
                     this.drawDebugSprite(this.container.children[i], this.container.children[i].target);
                 }
 
                 this.container.children[i].position.x = this.container.children[i].target.position.x + game.scene.stage.position.x;
                 this.container.children[i].position.y = this.container.children[i].target.position.y + game.scene.stage.position.y;
-                if(!this.container.children[i].target.world) {
+                if (!this.container.children[i].target.world) {
                     this.container.removeChild(this.container.children[i]);
                 }
-            } else {
-                if(this.container.children[i].target.parent) this.container.children[i].target.updateTransform();
+            }
+            else {
+                if (this.container.children[i].target.parent) this.container.children[i].target.updateTransform();
                 this.container.children[i].position.x = this.container.children[i].target.worldTransform.tx;
                 this.container.children[i].position.y = this.container.children[i].target.worldTransform.ty;
                 this.container.children[i].scale.x = this.container.children[i].target.scale.x;
                 this.container.children[i].scale.y = this.container.children[i].target.scale.y;
-                if(!this.container.children[i].target.parent) {
+                if (!this.container.children[i].target.parent) {
                     this.container.removeChild(this.container.children[i]);
                 }
             }
@@ -173,7 +175,7 @@ game.Debug = game.Class.extend({
     fpsText: null,
 
     init: function() {
-        this.fpsText = new game.Text('0', {fill: game.Debug.color});
+        this.fpsText = new game.Text('0', { fill: game.Debug.color });
         this.fpsText.position.set(game.Debug.position.x, game.Debug.position.y);
         game.system.stage.addChild(this.fpsText);
     },
@@ -181,9 +183,9 @@ game.Debug = game.Class.extend({
     update: function() {
         this.frames++;
 
-        if(game.Timer.last >= this.last + game.Debug.frequency) {
+        if (game.Timer.last >= this.last + game.Debug.frequency) {
             this.fps = (Math.round((this.frames * 1000) / (game.Timer.last - this.last))).toString();
-            if(this.fps !== this.fpsText.text) this.fpsText.setText(this.fps.toString());
+            if (this.fps !== this.fpsText.text) this.fpsText.setText(this.fps.toString());
             this.last = game.Timer.last;
             this.frames = 0;
         }

@@ -8,7 +8,8 @@ game.module(
 .require(
     'engine.renderer'
 )
-.body(function() { 'use strict';
+.body(function() {
+'use strict';
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
@@ -23,7 +24,7 @@ game.Sprite = PIXI.Sprite.extend({
     debugDraw: true,
 
     init: function(id, x, y, settings) {
-        if(typeof(id) === 'string') {
+        if (typeof id === 'string') {
             id = game.assets[id] || id;
             id = game.Texture.fromFrame(id);
         }
@@ -31,19 +32,19 @@ game.Sprite = PIXI.Sprite.extend({
 
         game.merge(this, settings);
 
-        if(typeof(x) === 'number') this.position.x = x;
-        if(typeof(y) === 'number') this.position.y = y;
+        if (typeof x === 'number') this.position.x = x;
+        if (typeof y === 'number') this.position.y = y;
 
         // auto bind touch events for mobile
-        if(game.device.mobile && !this.tap && this.click) this.tap = this.click;
-        if(game.device.mobile && !this.touchmove && this.mousemove) this.touchmove = this.mousemove;
-        if(game.device.mobile && !this.touchstart && this.mousedown) this.touchstart = this.mousedown;
-        if(game.device.mobile && !this.touchend && this.mouseup) this.touchend = this.mouseup;
-        if(game.device.mobile && !this.touchendoutside && this.mouseupoutside) this.touchendoutside = this.mouseupoutside;
+        if (game.device.mobile && !this.tap && this.click) this.tap = this.click;
+        if (game.device.mobile && !this.touchmove && this.mousemove) this.touchmove = this.mousemove;
+        if (game.device.mobile && !this.touchstart && this.mousedown) this.touchstart = this.mousedown;
+        if (game.device.mobile && !this.touchend && this.mouseup) this.touchend = this.mouseup;
+        if (game.device.mobile && !this.touchendoutside && this.mouseupoutside) this.touchendoutside = this.mouseupoutside;
     },
 
     setTexture: function(id) {
-        if(typeof(id) === 'string') {
+        if (typeof id === 'string') {
             id = game.assets[id] || id;
             id = game.Texture.fromFrame(id);
         }
@@ -55,12 +56,12 @@ game.Sprite = PIXI.Sprite.extend({
         @method remove
     **/
     remove: function() {
-        if(this.parent) this.parent.removeChild(this);
+        if (this.parent) this.parent.removeChild(this);
     },
 
     addChild: function(obj) {
         this._super(obj);
-        if(game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
+        if (game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
     }
 });
 
@@ -77,7 +78,7 @@ game.Container = PIXI.DisplayObjectContainer.extend({
         @method remove
     **/
     remove: function() {
-        if(this.parent) this.parent.removeChild(this);
+        if (this.parent) this.parent.removeChild(this);
     },
 
     /**
@@ -86,7 +87,7 @@ game.Container = PIXI.DisplayObjectContainer.extend({
     **/
     addChild: function(obj) {
         this._super(obj);
-        if(game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
+        if (game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
     }
 });
 
@@ -109,7 +110,7 @@ game.Texture.fromFrame = PIXI.Texture.fromFrame;
     @param {Object} [settings]
 **/
 game.TilingSprite = PIXI.TilingSprite.extend({
-    speed: {x: 0, y: 0},
+    speed: { x: 0, y: 0 },
 
     init: function(path, width, height, settings) {
         path = game.assets[path] || path;

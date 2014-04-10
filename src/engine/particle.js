@@ -5,7 +5,8 @@
 game.module(
     'engine.particle'
 )
-.body(function() { 'use strict';
+.body(function() {
+'use strict';
 
 /**
     @class Particle
@@ -250,7 +251,7 @@ game.Emitter = game.Class.extend({
         @property {Object} spriteSettings
     **/
     spriteSettings: {
-        anchor: {x: 0.5, y: 0.5},
+        anchor: { x: 0.5, y: 0.5 },
     },
     /**
         @property {game.Point} velocityLimit
@@ -274,11 +275,11 @@ game.Emitter = game.Class.extend({
         @param {Boolean} resetVec Reset vector values.
     **/
     reset: function(resetVec) {
-        for(var name in this) {
-            if(typeof this[name] === 'number') {
+        for (var name in this) {
+            if (typeof this[name] === 'number') {
                 this[name] = game.Emitter.prototype[name];
             }
-            if(this[name] instanceof game.Point && resetVec) {
+            if (this[name] instanceof game.Point && resetVec) {
                 this[name].set(0, 0);
             }
         }
@@ -296,11 +297,11 @@ game.Emitter = game.Class.extend({
 
     /**
         Add particle to emitter.
-        @method addParticle 
+        @method addParticle
     **/
     addParticle: function() {
         var particle = game.pool.get(this.poolName);
-        if(!particle) particle = new game.Particle();
+        if (!particle) particle = new game.Particle();
 
         particle.position.x = this.position.x + this.getVariance(this.positionVar.x);
         particle.position.y = this.position.y + this.getVariance(this.positionVar.y);
@@ -311,7 +312,7 @@ game.Emitter = game.Class.extend({
 
         particle.setVeloctity(angle, speed);
 
-        if(this.angleVar !== this.accelAngleVar) angleVar = this.getVariance(this.accelAngleVar);
+        if (this.angleVar !== this.accelAngleVar) angleVar = this.getVariance(this.accelAngleVar);
 
         angle = this.accelAngle + angleVar;
         speed = this.accelSpeed + this.getVariance(this.accelSpeedVar);
@@ -320,9 +321,10 @@ game.Emitter = game.Class.extend({
 
         particle.life = this.life + this.getVariance(this.lifeVar);
 
-        if(!particle.sprite) {
+        if (!particle.sprite) {
             particle.sprite = new game.Sprite(this.textures.random(), particle.position.x, particle.position.y, this.spriteSettings);
-        } else {
+        }
+        else {
             particle.sprite.setTexture(this.textures.random());
             particle.sprite.position.x = particle.position.x;
             particle.sprite.position.y = particle.position.y;
@@ -332,21 +334,23 @@ game.Emitter = game.Class.extend({
         particle.rotate = this.rotate + this.getVariance(this.rotateVar);
         particle.velRotate = this.velRotate + this.getVariance(this.velRotateVar);
 
-        if(this.startAlpha !== this.endAlpha) {
+        if (this.startAlpha !== this.endAlpha) {
             particle.deltaAlpha = this.endAlpha - this.startAlpha;
             particle.deltaAlpha /= particle.life;
-        } else particle.deltaAlpha = 0;
+        }
+        else particle.deltaAlpha = 0;
 
         particle.sprite.alpha = this.startAlpha;
 
         var startScale = this.startScale + this.getVariance(this.startScaleVar);
-        if(this.startScale !== this.endScale) {
+        if (this.startScale !== this.endScale) {
             particle.deltaScale = (this.endScale + this.getVariance(this.endScaleVar)) - startScale;
             particle.deltaScale /= particle.life;
-        } else particle.deltaScale = 0;
+        }
+        else particle.deltaScale = 0;
         particle.sprite.scale.x = particle.sprite.scale.y = startScale;
 
-        if(this.container) this.container.addChild(particle.sprite);
+        if (this.container) this.container.addChild(particle.sprite);
 
         this.particles.push(particle);
     },
@@ -356,12 +360,12 @@ game.Emitter = game.Class.extend({
         @method updateParticle
     **/
     updateParticle: function(particle) {
-        if(particle.life > 0) {
+        if (particle.life > 0) {
             particle.life -= game.system.delta;
-            if(particle.life <= 0) return this.removeParticle(particle);
+            if (particle.life <= 0) return this.removeParticle(particle);
         }
 
-        if(this.targetForce > 0) {
+        if (this.targetForce > 0) {
             particle.accel.set(this.target.x - particle.position.x, this.target.y - particle.position.y);
             var len = Math.sqrt(particle.accel.x * particle.accel.x + particle.accel.y * particle.accel.y);
             particle.accel.x /= len || 1;
@@ -373,12 +377,12 @@ game.Emitter = game.Class.extend({
         particle.velocity.x += particle.accel.x * game.system.delta;
         particle.velocity.y += particle.accel.y * game.system.delta;
         
-        if(this.velocityLimit.x > 0 || this.velocityLimit.y > 0) {
+        if (this.velocityLimit.x > 0 || this.velocityLimit.y > 0) {
             particle.velocity.x = particle.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
             particle.velocity.y = particle.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
         }
 
-        if(particle.velRotate) {
+        if (particle.velRotate) {
             var c = Math.cos(particle.velRotate * game.system.delta);
             var s = Math.sin(particle.velRotate * game.system.delta);
             
@@ -391,8 +395,8 @@ game.Emitter = game.Class.extend({
         particle.position.x += particle.velocity.x * game.scale * game.system.delta;
         particle.position.y += particle.velocity.y * game.scale * game.system.delta;
 
-        if(particle.deltaAlpha) particle.sprite.alpha = Math.max(0, particle.sprite.alpha + particle.deltaAlpha * game.system.delta);
-        if(particle.deltaScale) particle.sprite.scale.x = particle.sprite.scale.y += particle.deltaScale * game.system.delta;
+        if (particle.deltaAlpha) particle.sprite.alpha = Math.max(0, particle.sprite.alpha + particle.deltaAlpha * game.system.delta);
+        if (particle.deltaScale) particle.sprite.scale.x = particle.sprite.scale.y += particle.deltaScale * game.system.delta;
         particle.sprite.rotation += particle.rotate * game.system.delta;
         particle.sprite.position.x = particle.position.x;
         particle.sprite.position.y = particle.position.y;
@@ -403,7 +407,7 @@ game.Emitter = game.Class.extend({
         @method removeParticle
     **/
     removeParticle: function(particle) {
-        if(particle.sprite.parent) particle.sprite.parent.removeChild(particle.sprite);
+        if (particle.sprite.parent) particle.sprite.parent.removeChild(particle.sprite);
         game.pool.put(this.poolName, particle);
         this.particles.erase(particle);
     },
@@ -426,11 +430,11 @@ game.Emitter = game.Class.extend({
     **/
     update: function() {
         this.durationTimer += game.system.delta;
-        if(this.duration > 0) this.active = this.durationTimer < this.duration;
+        if (this.duration > 0) this.active = this.durationTimer < this.duration;
 
-        if(this.rate && this.active) {
+        if (this.rate && this.active) {
             this.rateTimer += game.system.delta;
-            if(this.rateTimer >= this.rate) {
+            if (this.rateTimer >= this.rate) {
                 this.rateTimer = 0;
                 this.emit(this.count);
             }

@@ -1,11 +1,12 @@
-/**    
+/**
     @module storage
     @namespace game
 **/
 game.module(
     'engine.storage'
 )
-.body(function() { 'use strict';
+.body(function() {
+'use strict';
 
 /**
     Local storage.
@@ -53,8 +54,8 @@ game.Storage = game.Class.extend({
         @method reset
     **/
     reset: function() {
-        for(var i in localStorage) {
-            if(i.indexOf(this.id+'.') !== -1) localStorage.removeItem(i);
+        for (var i in localStorage) {
+            if (i.indexOf(this.id + '.') !== -1) localStorage.removeItem(i);
         }
     }
 });

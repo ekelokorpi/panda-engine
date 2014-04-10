@@ -5,7 +5,8 @@
 game.module(
     'engine.timer'
 )
-.body(function(){ 'use strict';
+.body(function() {
+'use strict';
 
 /**
     Basic timer.
@@ -31,7 +32,7 @@ game.Timer = game.Class.extend({
         @param {Number} ms
     **/
     set: function(ms) {
-        if(typeof(ms) !== 'number') ms = 0;
+        if (typeof ms  !== 'number') ms = 0;
         this.target = ms || 0;
         this.reset();
     },
@@ -69,7 +70,7 @@ game.Timer = game.Class.extend({
         @method pause
     **/
     pause: function() {
-        if(!this.pauseTime) this.pauseTime = game.Timer.time;
+        if (!this.pauseTime) this.pauseTime = game.Timer.time;
     },
 
     /**
@@ -77,7 +78,7 @@ game.Timer = game.Class.extend({
         @method resume
     **/
     resume: function() {
-        if(this.pauseTime) {
+        if (this.pauseTime) {
             this.base += game.Timer.time - this.pauseTime;
             this.pauseTime = 0;
         }
@@ -91,7 +92,7 @@ game.Timer.maxStep = 50;
 
 game.Timer.update = function() {
     var now = Date.now();
-    if(!game.Timer.last) game.Timer.last = now;
+    if (!game.Timer.last) game.Timer.last = now;
     game.Timer.time += Math.min((now - game.Timer.last), game.Timer.maxStep) * game.Timer.speedFactor;
     game.Timer.last = now;
 };
