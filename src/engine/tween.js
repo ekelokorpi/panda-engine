@@ -5,11 +5,10 @@
 game.module(
     'engine.tween'
 )
-.body(function() {
-
-// Based on https://github.com/sole/tween.js/
+.body(function() { 'use strict';
 
 /**
+    Based on https://github.com/sole/tween.js/
     @class TweenEngine
     @extends game.Class
 **/

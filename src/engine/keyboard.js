@@ -5,7 +5,7 @@
 game.module(
     'engine.keyboard'
 )
-.body(function() {
+.body(function() { 'use strict';
 
 /**
     @class Keyboard

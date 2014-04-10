@@ -8,7 +8,7 @@ game.module(
 .require(
     'engine.renderer'
 )
-.body(function() {
+.body(function() { 'use strict';
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
