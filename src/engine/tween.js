@@ -284,13 +284,13 @@ game.Tween = game.Class.extend({
     },
     
     /**
-     * @method onRepeat
-     * @param {Function} callback
-     */
-     onRepeat: function(callback) {
-         this.onRepeatCallback = callback;
-         return this;
-     },
+        @method onRepeat
+        @param {Function} callback
+    **/
+    onRepeat: function(callback) {
+        this.onRepeatCallback = callback;
+        return this;
+    },
 
     update: function() {
         if(this.paused) return true;
@@ -350,7 +350,7 @@ game.Tween = game.Class.extend({
                 }
                 if(!this.delayRepeat) this.delayTime = 0;
                 this.startTime = this.originalStartTime + this.repeats * (this.duration + this.delayTime);
-                if (this.onRepeatCallback !== null) {
+                if(this.onRepeatCallback !== null) {
                     this.onRepeatCallback.call(this.object);
                 }
                 return true;
@@ -360,7 +360,7 @@ game.Tween = game.Class.extend({
                     this.onCompleteCallback.call(this.object);
                 }
                 for (var i = 0, numChainedTweens = this.chainedTweens.length; i < numChainedTweens; i++) {
-                    this.chainedTweens[i].start(time);
+                    this.chainedTweens[i].start();
                 }
                 return false;
             }
