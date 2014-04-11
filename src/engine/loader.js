@@ -55,7 +55,7 @@ game.Loader = game.Class.extend({
             this.assets.push(game.Loader.getPath(game.resources[i]));
         }
 
-        if(game.Audio) {
+        if (game.Audio) {
             for (var name in game.Audio.queue) {
                 this.sounds.push(name);
             }
