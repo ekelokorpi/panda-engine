@@ -55,8 +55,10 @@ game.Loader = game.Class.extend({
             this.assets.push(game.Loader.getPath(game.resources[i]));
         }
 
-        for (var name in game.Audio.queue) {
-            this.sounds.push(name);
+        if(game.Audio) {
+            for (var name in game.Audio.queue) {
+                this.sounds.push(name);
+            }
         }
 
         if (this.assets.length > 0) {
@@ -197,7 +199,7 @@ game.Loader = game.Class.extend({
             }
         }
         game.resources.length = 0;
-        game.Audio.resources = {};
+        if (game.Audio) game.Audio.resources = {};
         game.Timer.time = Number.MIN_VALUE;
         game.clearGameLoop(this.loopId);
         game.system.setScene(this.scene);
