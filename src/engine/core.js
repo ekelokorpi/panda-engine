@@ -421,6 +421,7 @@ var core = {
     },
 
     boot: function() {
+        this.coreModules = this.config.coreModules || this.coreModules;
         this.module('engine.core');
 
         if (document.location.href.match(/\?nocache/)) this.nocache = '?' + Date.now();
@@ -512,8 +513,6 @@ var core = {
         this.config.sourceFolder = this.config.sourceFolder || 'src';
         this.config.mediaFolder = this.config.mediaFolder ? this.config.mediaFolder + '/' : '';
 
-        this.coreModules = this.config.coreModules || this.coreModules;
-
         var metaTags = document.getElementsByTagName('meta');
         var viewportFound = false;
 
@@ -551,7 +550,7 @@ var core = {
 window.game = core;
 
 (function() {
-    if (typeof global !== 'undefined' && global.game) return;
+    if (typeof global !== 'undefined' && global.game) return game.coreModules = core.coreModules;
 
     var elem = document.createElement('canvas');
     var canvasSupported = !!(elem.getContext && elem.getContext('2d'));
