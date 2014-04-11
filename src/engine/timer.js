@@ -32,7 +32,7 @@ game.Timer = game.Class.extend({
         @param {Number} ms
     **/
     set: function(ms) {
-        if (typeof ms  !== 'number') ms = 0;
+        if (typeof ms !== 'number') ms = 0;
         this.target = ms || 0;
         this.reset();
     },

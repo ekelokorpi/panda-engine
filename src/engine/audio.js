@@ -107,7 +107,7 @@ game.Audio = game.Class.extend({
             this.loadError.bind(this, path)
         );
     },
-
+    
     load: function(path, callback) {
         if (!game.Audio.enabled) return callback ? callback() : false;
 

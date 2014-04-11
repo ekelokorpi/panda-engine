@@ -510,7 +510,7 @@ var core = {
         }
 
         this.config.sourceFolder = this.config.sourceFolder || 'src';
-        this.config.mediaFolder = this.config.mediaFolder ?  this.config.mediaFolder + '/' : '';
+        this.config.mediaFolder = this.config.mediaFolder ? this.config.mediaFolder + '/' : '';
 
         this.coreModules = this.config.coreModules || this.coreModules;
 
