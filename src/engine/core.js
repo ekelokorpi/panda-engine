@@ -36,7 +36,7 @@ var core = {
     **/
     config: window.pandaConfig || {},
     /**
-        List of modules, that are required from core.
+        List of modules, that are loaded from core.
         @property {Array} coreModules
     **/
     coreModules: [
@@ -114,6 +114,11 @@ var core = {
         return this.json[this.assets[id]];
     },
 
+    /**
+        Copy object
+        @method copy
+        @param {Object} object
+    **/
     copy: function(object) {
         var l, c, i;
         if (
@@ -140,25 +145,25 @@ var core = {
         }
     },
 
-    merge: function(original, extended) {
-        for (var key in extended) {
-            var ext = extended[key];
+    merge: function(to, from) {
+        for (var key in from) {
+            var ext = from[key];
             if (
                 typeof ext !== 'object' ||
                 ext instanceof HTMLElement ||
                 ext instanceof game.Class ||
                 ext instanceof game.Container
             ) {
-                original[key] = ext;
+                to[key] = ext;
             }
             else {
-                if (!original[key] || typeof original[key] !== 'object') {
-                    original[key] = (ext instanceof Array) ? [] : {};
+                if (!to[key] || typeof to[key] !== 'object') {
+                    to[key] = (ext instanceof Array) ? [] : {};
                 }
-                game.merge(original[key], ext);
+                game.merge(to[key], ext);
             }
         }
-        return original;
+        return to;
     },
 
     ksort: function(obj) {
