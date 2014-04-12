@@ -437,6 +437,9 @@ var core = {
             height: window.screen.availHeight * this.device.pixelRatio
         };
 
+        // iPod
+        this.device.iPod = /iPod/i.test(navigator.userAgent);
+
         // iPhone
         this.device.iPhone = /iPhone/i.test(navigator.userAgent);
         this.device.iPhone4 = (this.device.iPhone && this.device.pixelRatio === 2);
@@ -447,7 +450,7 @@ var core = {
         this.device.iPadRetina = (this.device.iPad && this.device.pixelRatio === 2);
 
         // iOS
-        this.device.iOS = this.device.iPhone || this.device.iPad;
+        this.device.iOS = this.device.iPod || this.device.iPhone || this.device.iPad;
         this.device.iOS5 = (this.device.iOS && /OS 5/i.test(navigator.userAgent));
         this.device.iOS6 = (this.device.iOS && /OS 6/i.test(navigator.userAgent));
         this.device.iOS7 = (this.device.iOS && /OS 7/i.test(navigator.userAgent));
