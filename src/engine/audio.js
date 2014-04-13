@@ -394,7 +394,7 @@ game.Audio = game.Class.extend({
         if (this.currentMusic) {
             if (this.context) {
                 // Web Audio
-                this.play(this.currentMusic);
+                this.play(this.currentMusic, this.musicVolume, true);
             }
             else {
                 // HTML5 Audio
