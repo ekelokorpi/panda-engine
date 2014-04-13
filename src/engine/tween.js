@@ -21,13 +21,17 @@ game.TweenEngine = game.Class.extend({
     tweens: [],
 
     /**
+        Remove all tweens.
         @method removeAll
     **/
     removeAll: function() {
-        this.tweens.length = 0;
+        for (var i = 0; i < this.tweens.length; i++) {
+            this.tweens[i].shouldRemove = true;
+        }
     },
     
     /**
+        Stop all tweens for specific object.
         @method stopTweensForObject
         @param {Object} object
     **/
@@ -38,6 +42,7 @@ game.TweenEngine = game.Class.extend({
     },
 
     /**
+        Get first tween for specific object.
         @method getTweenForObject
         @param {Object} object
     **/
@@ -62,7 +67,7 @@ game.TweenEngine = game.Class.extend({
     **/
     remove: function(tween) {
         var i = this.tweens.indexOf(tween);
-        if (i !== -1) this.tweens.splice(i, 1);
+        if (i !== -1) this.tweens[i].shouldRemove = true;
     },
 
     /**
@@ -116,6 +121,7 @@ game.Tween = game.Class.extend({
     onCompleteCallback: null,
     onRepeatCallback: null,
     currentTime: 0,
+    shouldRemove: false,
 
     init: function(object) {
         if (!object) throw('No object defined for tween');
@@ -293,6 +299,7 @@ game.Tween = game.Class.extend({
     },
 
     update: function() {
+        if (this.shouldRemove) return false;
         if (this.paused) return true;
 
         this.currentTime += game.system.delta * 1000;
