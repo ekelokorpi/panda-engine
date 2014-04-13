@@ -14,7 +14,7 @@ game.module(
 **/
 game.Analytics = game.Class.extend({
     init: function(id) {
-        if (!navigator.onLine) return;
+        if (!navigator.onLine || game.device.cocoonJS) return;
         if (!id) throw('Analytics id not set.');
         
         (function(i, s, o, g, r, a, m) {
@@ -41,7 +41,7 @@ game.Analytics = game.Class.extend({
         @param {String} action
     **/
     event: function(category, action) {
-        if (!navigator.onLine) return;
+        if (!navigator.onLine || game.device.cocoonJS) return;
         ga('send', 'event', category, action);
     }
 });
