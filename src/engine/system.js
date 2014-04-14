@@ -560,30 +560,37 @@ game.System.LANDSCAPE = 1;
 game.System.orientation = game.System.PORTRAIT;
 /**
     Body background color.
+    @attribute {String} bgColor
 **/
 game.System.bgColor = '#000000';
 /**
     Body background color for mobile.
+    @attribute {String} bgColorMobile
 **/
 game.System.bgColorMobile = null;
 /**
     Body background color for mobile rotate screen.
+    @attribute {String} bgColorRotate
 **/
 game.System.bgColorRotate = null;
 /**
     Body background image.
+    @attribute {String} bgImage
 **/
 game.System.bgImage = null;
 /**
     Body background image for mobile.
+    @attribute {String} bgImageMobile
 **/
 game.System.bgImageMobile = null;
 /**
     Body background image for mobile rotate screen.
+    @attribute {String} bgImageRotate
 **/
 game.System.bgImageRotate = null;
 /**
     Body background image position.
+    @attribute {String} bgPosition
 **/
 game.System.bgPosition = null;
 /**
