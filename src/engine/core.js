@@ -36,7 +36,7 @@ var core = {
     **/
     config: window.pandaConfig || {},
     /**
-        List of modules, that are loaded from core.
+        Configurable list of modules, that are loaded from core.
         @property {Array} coreModules
     **/
     coreModules: [
@@ -124,22 +124,22 @@ var core = {
         if (
             !object || typeof object !== 'object' ||
             object instanceof HTMLElement ||
-            object instanceof game.Class ||
-            (game.Container && object instanceof game.Container)
+            object instanceof this.Class ||
+            (this.Container && object instanceof this.Container)
         ) {
             return object;
         }
         else if (object instanceof Array) {
             c = [];
             for (i = 0, l = object.length; i < l; i++) {
-                c[i] = game.copy(object[i]);
+                c[i] = this.copy(object[i]);
             }
             return c;
         }
         else {
             c = {};
             for (i in object) {
-                c[i] = game.copy(object[i]);
+                c[i] = this.copy(object[i]);
             }
             return c;
         }
@@ -151,8 +151,8 @@ var core = {
             if (
                 typeof ext !== 'object' ||
                 ext instanceof HTMLElement ||
-                ext instanceof game.Class ||
-                ext instanceof game.Container
+                ext instanceof this.Class ||
+                ext instanceof this.Container
             ) {
                 to[key] = ext;
             }
@@ -160,7 +160,7 @@ var core = {
                 if (!to[key] || typeof to[key] !== 'object') {
                     to[key] = (ext instanceof Array) ? [] : {};
                 }
-                game.merge(to[key], ext);
+                this.merge(to[key], ext);
             }
         }
         return to;
@@ -202,8 +202,8 @@ var core = {
         @method fullscreen
     **/
     fullscreen: function() {
-        if (game.system.canvas.requestFullscreen) game.system.canvas.requestFullscreen();
-        if (game.system.canvas.requestFullScreen) game.system.canvas.requestFullScreen();
+        if (this.system.canvas.requestFullscreen) this.system.canvas.requestFullscreen();
+        if (this.system.canvas.requestFullScreen) this.system.canvas.requestFullScreen();
     },
 
     /**
@@ -211,7 +211,7 @@ var core = {
         @return {Boolean} Return true, if browser supports fullscreen mode.
     **/
     fullscreenSupport: function() {
-        return !!(game.system.canvas.requestFullscreen || game.system.canvas.requestFullScreen);
+        return !!(this.system.canvas.requestFullscreen || this.system.canvas.requestFullScreen);
     },
 
     /**
@@ -239,7 +239,7 @@ var core = {
     addAudio: function(path, id) {
         id = id || path;
         path = this.config.mediaFolder + path + this.nocache;
-        game.Audio.queue[path] = id;
+        this.Audio.queue[path] = id;
         return id;
     },
 
@@ -301,22 +301,22 @@ var core = {
     start: function(scene, width, height, loaderClass, canvasId) {
         if (this.loadQueue.length > 0) throw('Core not ready.');
 
-        this.system = new game.System(width, height, canvasId);
+        this.system = new this.System(width, height, canvasId);
 
-        if (game.Audio) this.audio = new game.Audio();
-        if (game.Pool) this.pool = new game.Pool();
-        if (game.DebugDraw && game.DebugDraw.enabled) this.debugDraw = new game.DebugDraw();
-        if (game.Storage && game.Storage.id) this.storage = new game.Storage(game.Storage.id);
-        if (game.Analytics && game.Analytics.id) this.analytics = new game.Analytics(game.Analytics.id);
-        if (game.TweenEngine) game.tweenEngine = new game.TweenEngine();
+        if (this.Audio) this.audio = new this.Audio();
+        if (this.Pool) this.pool = new this.Pool();
+        if (this.DebugDraw && this.DebugDraw.enabled) this.debugDraw = new this.DebugDraw();
+        if (this.Storage && this.Storage.id) this.storage = new this.Storage(this.Storage.id);
+        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics(this.Analytics.id);
+        if (this.TweenEngine) this.tweenEngine = new this.TweenEngine();
 
         // Load plugins
         for (var name in this.plugins) {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this.loader = loaderClass || game.Loader;
-        var loader = new this.loader(window[game.System.startScene] || game[game.System.startScene] || scene);
+        this.loader = loaderClass || this.Loader;
+        var loader = new this.loader(window[this.System.startScene] || this[this.System.startScene] || scene);
         loader.start();
     },
 
@@ -355,9 +355,10 @@ var core = {
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
+        var me = this;
         script.onload = function() {
-            game.waitForLoad--;
-            game.loadModules();
+            me.waitForLoad--;
+            me.loadModules();
         };
         script.onerror = function() {
             throw('Failed to load module ' + name + ' at ' + path + ' required from ' + requiredFrom);
@@ -367,30 +368,30 @@ var core = {
 
     loadModules: function() {
         var moduleLoaded, i, j, module, name, dependenciesLoaded;
-        for (i = 0; i < game.loadQueue.length; i++) {
-            module = game.loadQueue[i];
+        for (i = 0; i < this.loadQueue.length; i++) {
+            module = this.loadQueue[i];
             dependenciesLoaded = true;
 
             for (j = 0; j < module.requires.length; j++) {
                 name = module.requires[j];
-                if (!game.modules[name]) {
+                if (!this.modules[name]) {
                     dependenciesLoaded = false;
-                    game.loadScript(name, module.name);
+                    this.loadScript(name, module.name);
                 }
-                else if (!game.modules[name].loaded) {
+                else if (!this.modules[name].loaded) {
                     dependenciesLoaded = false;
                 }
             }
 
             if (dependenciesLoaded && module.body) {
-                game.loadQueue.splice(i, 1);
-                if (game.loadQueue.length === 0) {
+                this.loadQueue.splice(i, 1);
+                if (this.loadQueue.length === 0) {
                     // Last module loaded, parse config
                     for (var c in this.config) {
                         var m = c.ucfirst();
-                        if (game[m]) {
+                        if (this[m]) {
                             for (var o in this.config[c]) {
-                                game[m][o] = this.config[c][o];
+                                this[m][o] = this.config[c][o];
                             }
                         }
                     }
@@ -403,20 +404,20 @@ var core = {
         }
 
         if (moduleLoaded && this.loadQueue.length > 0) {
-            game.loadModules();
+            this.loadModules();
         }
-        else if (game.waitForLoad === 0 && game.loadQueue.length !== 0) {
+        else if (this.waitForLoad === 0 && this.loadQueue.length !== 0) {
             var unresolved = [];
-            for (i = 0; i < game.loadQueue.length; i++) {
+            for (i = 0; i < this.loadQueue.length; i++) {
                 var unloaded = [];
-                var requires = game.loadQueue[i].requires;
+                var requires = this.loadQueue[i].requires;
                 for (j = 0; j < requires.length; j++) {
-                    module = game.modules[requires[j]];
+                    module = this.modules[requires[j]];
                     if (!module || !module.loaded) {
                         unloaded.push(requires[j]);
                     }
                 }
-                unresolved.push(game.loadQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
+                unresolved.push(this.loadQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
             }
             throw('Unresolved modules:\n' + unresolved.join('\n'));
         }
@@ -528,6 +529,7 @@ var core = {
             if (metaTags[i].name === 'viewport') viewportFound = true;
         }
 
+        // Add viewport meta, if none found
         if (!viewportFound) {
             var viewport = document.createElement('meta');
             viewport.name = 'viewport';
@@ -541,21 +543,21 @@ var core = {
             this.DOMReady();
         }
         else {
-            document.addEventListener('DOMContentLoaded', this.DOMReady, false);
-            window.addEventListener('load', this.DOMReady, false);
+            document.addEventListener('DOMContentLoaded', this.DOMReady.bind(this), false);
+            window.addEventListener('load', this.DOMReady.bind(this), false);
         }
     },
 
     DOMReady: function() {
-        if (!game.DOMLoaded) {
-            if (!document.body) return setTimeout(game.DOMReady, 13);
-            game.DOMLoaded = true;
-            game.loadModules();
+        if (!this.DOMLoaded) {
+            if (!document.body) return setTimeout(this.DOMReady.bind(this), 13);
+            this.DOMLoaded = true;
+            this.loadModules();
         }
     }
 };
 
-window.game = core;
+window.game = window.panda = core;
 
 (function() {
     if (typeof global !== 'undefined' && global.game) return game.coreModules = core.coreModules;
