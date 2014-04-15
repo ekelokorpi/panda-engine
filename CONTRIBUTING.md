@@ -4,6 +4,6 @@
 
 2. Make sure your code style is valid
 
-    $ panda test
-    Checking code style...
-    Your code is valid!
+        $ panda test
+        Checking code style...
+        Your code is valid!
