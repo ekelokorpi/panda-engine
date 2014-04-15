@@ -191,6 +191,9 @@ game.System = game.Class.extend({
             if (typeof game.System.backgroundColor === 'object') {
                 game.System.bgColorMobile = game.System.backgroundColor.mobile;
                 game.System.bgColorRotate = game.System.backgroundColor.rotate;
+            }
+            // Deprecated
+            if (typeof game.System.backgroundImage === 'object') {
                 game.System.bgImageMobile = game.System.backgroundImage.mobile;
                 game.System.bgImageRotate = game.System.backgroundImage.rotate;
             }
