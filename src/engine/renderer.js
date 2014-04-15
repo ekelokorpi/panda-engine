@@ -1,8 +1,8 @@
 game.module(
     'engine.renderer'
 )
-.body(function() { 'use strict';
-/* jshint ignore:start */
+.body(function() {
+'use strict';
 
 /**
  * @license
@@ -21,7 +21,7 @@ game.module(
 
 (function(){
 
-    var root = window;
+var root = window;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -14536,8 +14536,6 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
     }
 }).call(this);
 
-/* jshint ignore:end */
-
 PIXI.FlashClip = function(clipName)
 {
     var textures = [];
@@ -14553,28 +14551,28 @@ PIXI.FlashClip = function(clipName)
 PIXI.FlashClip.prototype = Object.create( PIXI.MovieClip.prototype );
 PIXI.FlashClip.prototype.constructor = PIXI.FlashClip;
 
-PIXI.WindowsPhoneLoaders = {};
+// PIXI.WindowsPhoneLoaders = {};
 
-window.PIXIwindowsPhoneFileLoaded = function(file, data) {
-    if(PIXI.WindowsPhoneLoaders[file]) {
-        PIXI.WindowsPhoneLoaders[file].ajaxRequest = {};
-        PIXI.WindowsPhoneLoaders[file].ajaxRequest.readyState = 4;
-        PIXI.WindowsPhoneLoaders[file].ajaxRequest.status = 200;
-        PIXI.WindowsPhoneLoaders[file].ajaxRequest.responseText = data;
-        PIXI.WindowsPhoneLoaders[file].ajaxRequest.responseXML = '';
-        if(PIXI.WindowsPhoneLoaders[file].onJSONLoaded) PIXI.WindowsPhoneLoaders[file].onJSONLoaded();
-        if(PIXI.WindowsPhoneLoaders[file].onXMLLoaded) PIXI.WindowsPhoneLoaders[file].onXMLLoaded();
-    }
-};
+// window.PIXIwindowsPhoneFileLoaded = function(file, data) {
+//     if(PIXI.WindowsPhoneLoaders[file]) {
+//         PIXI.WindowsPhoneLoaders[file].ajaxRequest = {};
+//         PIXI.WindowsPhoneLoaders[file].ajaxRequest.readyState = 4;
+//         PIXI.WindowsPhoneLoaders[file].ajaxRequest.status = 200;
+//         PIXI.WindowsPhoneLoaders[file].ajaxRequest.responseText = data;
+//         PIXI.WindowsPhoneLoaders[file].ajaxRequest.responseXML = '';
+//         if(PIXI.WindowsPhoneLoaders[file].onJSONLoaded) PIXI.WindowsPhoneLoaders[file].onJSONLoaded();
+//         if(PIXI.WindowsPhoneLoaders[file].onXMLLoaded) PIXI.WindowsPhoneLoaders[file].onXMLLoaded();
+//     }
+// };
 
-window.PIXIwindowsPhoneFix = function() {
-    if(typeof(window.external) !== 'undefined' && typeof(window.external.notify) === 'unknown' && /Windows Phone/i.test(navigator.userAgent)) {
-        PIXI.WindowsPhoneLoaders[this.url] = this;
-        window.external.notify('GetResource?file=' + this.url + ';callback=PIXI_WindowsPhone_fileLoaded');
-        return true;
-    }
-    return false;
-};
+// window.PIXIwindowsPhoneFix = function() {
+//     if(typeof(window.external) !== 'undefined' && typeof(window.external.notify) === 'unknown' && /Windows Phone/i.test(navigator.userAgent)) {
+//         PIXI.WindowsPhoneLoaders[this.url] = this;
+//         window.external.notify('GetResource?file=' + this.url + ';callback=PIXI_WindowsPhone_fileLoaded');
+//         return true;
+//     }
+//     return false;
+// };
 
 PIXI.extend = function(prop) {
     var name;
