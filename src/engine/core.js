@@ -1,3 +1,4 @@
+
 // Panda.js HTML5 game engine
 
 // created by Eemeli Kelokorpi
@@ -775,7 +776,8 @@ if (typeof exports !== 'undefined') {
         exports = module.exports = core;
     }
     exports.core = core;
-} else {
+}
+else {
     window.game = window.panda = core;
     core.boot();
 }
