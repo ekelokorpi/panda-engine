@@ -1,0 +1,16 @@
+{
+    "name": "panda.js",
+    "version": "1.3.2",
+    "description": "Free open source HTML5 game engine for mobile and desktop with Canvas and WebGL rendering.",
+    "main": "src/engine/core.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ekelokorpi/panda.js.git"
+    },
+    "author": "Eemeli Kelokorpi <eemeli.kelokorpi@gmail.com> (http://www.pandajs.net/)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ekelokorpi/panda.js/issues"
+    },
+    "homepage": "http://www.pandajs.net/"
+}

@@ -34,7 +34,7 @@ var core = {
         Engine settings.
         @property {Object} config
     **/
-    config: window.pandaConfig || {},
+    config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
     /**
         Configurable list of modules, that are loaded from core.
         @property {Array} coreModules
@@ -109,6 +109,8 @@ var core = {
     loadQueue: [],
     waitForLoad: 0,
     DOMLoaded: false,
+    next: 1,
+    anims: {},
 
     getJSON: function(id) {
         return this.json[this.assets[id]];
@@ -299,7 +301,7 @@ var core = {
         @param {String} [canvasId] Id of canvas element.
     **/
     start: function(scene, width, height, loaderClass, canvasId) {
-        if (this.loadQueue.length > 0) throw('Core not ready.');
+        if (this.loadQueue.length > 0) throw('Core not ready');
 
         this.system = new this.System(width, height, canvasId);
 
@@ -426,9 +428,104 @@ var core = {
         }
     },
 
+    setGameLoop: function(callback, element) {
+        if (window.requestAnimationFrame) {
+            var current = this.next++;
+            this.anims[current] = true;
+
+            var me = this;
+            var animate = function() {
+                if (!me.anims[current]) return;
+                window.requestAnimationFrame(animate, element);
+                callback();
+            };
+            window.requestAnimationFrame(animate, element);
+            return current;
+        }
+        else {
+            return window.setInterval(callback, 1000 / 60);
+        }
+    },
+
+    clearGameLoop: function(id) {
+        if (window.requestAnimationFrame) {
+            delete this.anims[id];
+        }
+        else {
+            window.clearInterval(id);
+        }
+    },
+
     boot: function() {
+        // Test canvas support
+        var elem = document.createElement('canvas');
+        var canvasSupported = !!(elem.getContext && elem.getContext('2d'));
+        if (!canvasSupported) {
+            if (core.config.noCanvasURL) window.location = core.config.noCanvasURL;
+            else throw('Canvas not supported');
+        }
+
+        // Native object extensions
+        Number.prototype.limit = function(min, max) {
+            var i = this;
+            if (i < min) i = min;
+            if (i > max) i = max;
+            return i;
+        };
+
+        Number.prototype.round = function(precision) {
+            if (precision) precision = Math.pow(10, precision);
+            else precision = 1;
+            return Math.round(this * precision) / precision;
+        };
+
+        Array.prototype.erase = function(item) {
+            for (var i = this.length; i >= 0; i--) {
+                if (this[i] === item) this.splice(i, 1);
+            }
+            return this;
+        };
+
+        Array.prototype.random = function() {
+            return this[Math.floor(Math.random() * this.length)];
+        };
+
+        // http://jsperf.com/array-shuffle-comparator/2
+        Array.prototype.shuffle = function() {
+            var len = this.length;
+            var i = len;
+            while (i--) {
+                var p = parseInt(Math.random() * len);
+                var t = this[i];
+                this[i] = this[p];
+                this[p] = t;
+            }
+
+            return this;
+        };
+
+        // http://jsperf.com/function-bind-performance
+        Function.prototype.bind = function(context) {
+            var fn = this, linked = [];
+            Array.prototype.push.apply(linked, arguments);
+            linked.shift();
+
+            return function() {
+                var args = [];
+                Array.prototype.push.apply(args, linked);
+                Array.prototype.push.apply(args, arguments);
+                return fn.apply(context, args);
+            };
+        };
+
+        String.prototype.ucfirst = function() {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        };
+
         this.coreModules = this.config.coreModules || this.coreModules;
         this.module('engine.core');
+
+        game.normalizeVendorAttribute(window, 'requestAnimationFrame');
 
         if (document.location.href.match(/\?nocache/)) this.nocache = '?' + Date.now();
 
@@ -557,127 +654,96 @@ var core = {
     }
 };
 
-window.game = window.panda = core;
+// http://ejohn.org/blog/simple-javascript-inheritance/
+var initializing = false;
+var fnTest = /xyz/.test(function() {
+    var xyz; return xyz;
+}) ? /\b_super\b/ : /[\D|\d]*/;
 
-(function() {
-    if (typeof global !== 'undefined' && global.game) return game.coreModules = core.coreModules;
+/**
+    Base class.
+    @class Class
+**/
+core.Class = function() {};
+/**
+    Extend class.
+    @method extend
+    @return {game.Class} Returns extended class
+**/
+core.Class.extend = function(prop) {
+    var parent = this.prototype;
+    initializing = true;
+    var prototype = new this();
+    initializing = false;
 
-    var elem = document.createElement('canvas');
-    var canvasSupported = !!(elem.getContext && elem.getContext('2d'));
-    if (!canvasSupported && core.config.noCanvasURL) window.location = core.config.noCanvasURL;
-
-    Number.prototype.limit = function(min, max) {
-        var i = this;
-        if (i < min) i = min;
-        if (i > max) i = max;
-        return i;
-    };
-
-    Number.prototype.round = function(precision) {
-        if (precision) precision = Math.pow(10, precision);
-        else precision = 1;
-        return Math.round(this * precision) / precision;
-    };
-
-    Array.prototype.erase = function(item) {
-        for (var i = this.length; i >= 0; i--) {
-            if (this[i] === item) this.splice(i, 1);
-        }
-        return this;
-    };
-
-    Array.prototype.random = function() {
-        return this[Math.floor(Math.random() * this.length)];
-    };
-
-    // http://jsperf.com/array-shuffle-comparator/2
-    Array.prototype.shuffle = function() {
-        var len = this.length;
-        var i = len;
-        while (i--) {
-            var p = parseInt(Math.random() * len);
-            var t = this[i];
-            this[i] = this[p];
-            this[p] = t;
-        }
-
-        return this;
-    };
-
-    // http://jsperf.com/function-bind-performance
-    Function.prototype.bind = function(context) {
-        var fn = this, linked = [];
-        Array.prototype.push.apply(linked, arguments);
-        linked.shift();
-
+    var makeFn = function(name, fn) {
         return function() {
-            var args = [];
-            Array.prototype.push.apply(args, linked);
-            Array.prototype.push.apply(args, arguments);
-            return fn.apply(context, args);
+            /**
+                Call functions parent function.
+                @method _super
+            **/
+            var tmp = this._super;
+            this._super = parent[name];
+            var ret = fn.apply(this, arguments);
+            this._super = tmp;
+            return ret;
         };
     };
 
-    String.prototype.ucfirst = function() {
-        return this.charAt(0).toUpperCase() + this.slice(1);
-    };
-
-    game.normalizeVendorAttribute(window, 'requestAnimationFrame');
-    if (window.requestAnimationFrame) {
-        var next = 1, anims = {};
-
-        game.setGameLoop = function(callback, element) {
-            var current = next++;
-            anims[current] = true;
-
-            var animate = function() {
-                if (!anims[current]) return;
-                window.requestAnimationFrame(animate, element);
-                callback();
-            };
-            window.requestAnimationFrame(animate, element);
-            return current;
-        };
-
-        game.clearGameLoop = function(id) {
-            delete anims[id];
-        };
-    }
-    else {
-        game.setGameLoop = function(callback) {
-            return window.setInterval(callback, 1000 / 60);
-        };
-        game.clearGameLoop = function(id) {
-            window.clearInterval(id);
-        };
+    for (var name in prop) {
+        if (
+            typeof prop[name] === 'function' &&
+            typeof parent[name] === 'function' &&
+            fnTest.test(prop[name])
+        ) {
+            prototype[name] = makeFn(name, prop[name]);
+        }
+        else {
+            prototype[name] = prop[name];
+        }
     }
 
-    // http://ejohn.org/blog/simple-javascript-inheritance/
-    var initializing = false;
-    var fnTest = /xyz/.test(function() {
-        var xyz; return xyz;
-    }) ? /\b_super\b/ : /[\D|\d]*/;
+    function Class() {
+        if (!initializing) {
+            if (this.staticInit) {
+                /**
+                    This method is called before init.
+                    @method staticInit
+                **/
+                var obj = this.staticInit.apply(this, arguments);
+                if (obj) {
+                    return obj;
+                }
+            }
+            for (var p in this) {
+                if (typeof this[p] === 'object') {
+                    this[p] = core.copy(this[p]);
+                }
+            }
+            if (this.init) {
+                /**
+                    This method is called, when you create new instance of the class.
+                    @method init
+                **/
+                this.init.apply(this, arguments);
+            }
+        }
+        return this;
+    }
 
+    Class.prototype = prototype;
+    Class.prototype.constructor = Class;
+    Class.extend = core.Class.extend;
     /**
-        @class Class
+        Inject class.
+        @method inject
     **/
-    game.Class = function() {};
-    /**
-        @method extend
-        @return {game.Class} Returns extended class
-    **/
-    game.Class.extend = function(prop) {
-        var parent = this.prototype;
-        initializing = true;
-        var prototype = new this();
-        initializing = false;
+    Class.inject = function(prop) {
+        var proto = this.prototype;
+        var parent = {};
 
         var makeFn = function(name, fn) {
             return function() {
-                /**
-                    Call functions parent function.
-                    @method _super
-                **/
                 var tmp = this._super;
                 this._super = parent[name];
                 var ret = fn.apply(this, arguments);
@@ -689,81 +755,27 @@ window.game = window.panda = core;
         for (var name in prop) {
             if (
                 typeof prop[name] === 'function' &&
-                typeof parent[name] === 'function' &&
+                typeof proto[name] === 'function' &&
                 fnTest.test(prop[name])
             ) {
-                prototype[name] = makeFn(name, prop[name]);
+                parent[name] = proto[name];
+                proto[name] = makeFn(name, prop[name]);
             }
             else {
-                prototype[name] = prop[name];
+                proto[name] = prop[name];
             }
         }
-
-        function Class() {
-            if (!initializing) {
-                if (this.staticInit) {
-                    /**
-                        This method is called before init.
-                        @method staticInit
-                    **/
-                    var obj = this.staticInit.apply(this, arguments);
-                    if (obj) {
-                        return obj;
-                    }
-                }
-                for (var p in this) {
-                    if (typeof this[p] === 'object') {
-                        this[p] = game.copy(this[p]);
-                    }
-                }
-                if (this.init) {
-                    /**
-                        This method is called, when you create new instance of the class.
-                        @method init
-                    **/
-                    this.init.apply(this, arguments);
-                }
-            }
-            return this;
-        }
-
-        Class.prototype = prototype;
-        Class.prototype.constructor = Class;
-        Class.extend = game.Class.extend;
-        /**
-            @method inject
-        **/
-        Class.inject = function(prop) {
-            var proto = this.prototype;
-            var parent = {};
-
-            var makeFn = function(name, fn) {
-                return function() {
-                    var tmp = this._super;
-                    this._super = parent[name];
-                    var ret = fn.apply(this, arguments);
-                    this._super = tmp;
-                    return ret;
-                };
-            };
-
-            for (var name in prop) {
-                if (
-                    typeof prop[name] === 'function' &&
-                    typeof proto[name] === 'function' &&
-                    fnTest.test(prop[name])
-                ) {
-                    parent[name] = proto[name];
-                    proto[name] = makeFn(name, prop[name]);
-                }
-                else {
-                    proto[name] = prop[name];
-                }
-            }
-        };
-
-        return Class;
     };
 
-    game.boot();
-})();
+    return Class;
+};
+
+if (typeof exports !== 'undefined') {
+    if (typeof module !== 'undefined' && module.exports) {
+        exports = module.exports = core;
+    }
+    exports.core = core;
+} else {
+    window.game = window.panda = core;
+    core.boot();
+}
