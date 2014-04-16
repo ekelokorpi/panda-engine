@@ -182,6 +182,11 @@ game.Loader = game.Class.extend({
         @method ready
     **/
     ready: function() {
+        for(var name in game.plugins) {
+            if(typeof game.plugins[name].ready == 'function') {
+                game.plugins[name].ready();
+            }
+        }
         this.setScene();
     },
 
