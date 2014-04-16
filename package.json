@@ -1,6 +1,6 @@
 {
     "name": "panda.js",
-    "version": "1.3.2",
+    "version": "1.4.0",
     "description": "Free open source HTML5 game engine for mobile and desktop with Canvas and WebGL rendering.",
     "main": "src/engine/core.js",
     "repository": {
