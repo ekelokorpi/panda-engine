@@ -113,12 +113,17 @@ var core = {
     next: 1,
     anims: {},
 
+    /**
+        Get JSON data.
+        @method getJSON
+        @param {String} id
+    **/
     getJSON: function(id) {
         return this.json[this.assets[id]];
     },
 
     /**
-        Copy object
+        Copy object.
         @method copy
         @param {Object} object
     **/
@@ -210,6 +215,7 @@ var core = {
     },
 
     /**
+        Test fullscreen support.
         @method fullscreenSupport
         @return {Boolean} Return true, if browser supports fullscreen mode.
     **/
@@ -269,7 +275,7 @@ var core = {
     },
 
     /**
-        Require modules for module.
+        Require module.
         @method require
         @param {Array} modules
     **/
@@ -400,7 +406,7 @@ var core = {
                     }
                 }
                 module.loaded = true;
-                module.body();
+                module.body(this);
                 moduleLoaded = true;
                 i--;
             }
@@ -666,9 +672,11 @@ var fnTest = /xyz/.test(function() {
     @class Class
 **/
 core.Class = function() {};
+
 /**
     Extend class.
     @method extend
+    @param {Object} prop
     @return {game.Class} Returns extended class
 **/
 core.Class.extend = function(prop) {
@@ -682,6 +690,7 @@ core.Class.extend = function(prop) {
             /**
                 Call functions parent function.
                 @method _super
+                @param {Array} arguments
             **/
             var tmp = this._super;
             this._super = parent[name];
@@ -710,6 +719,7 @@ core.Class.extend = function(prop) {
                 /**
                     This method is called before init.
                     @method staticInit
+                    @param {Array} arguments
                 **/
                 var obj = this.staticInit.apply(this, arguments);
                 if (obj) {
@@ -725,6 +735,7 @@ core.Class.extend = function(prop) {
                 /**
                     This method is called, when you create new instance of the class.
                     @method init
+                    @param {Array} arguments
                 **/
                 this.init.apply(this, arguments);
             }
@@ -738,6 +749,7 @@ core.Class.extend = function(prop) {
     /**
         Inject class.
         @method inject
+        @param {Object} prop
     **/
     Class.inject = function(prop) {
         var proto = this.prototype;
