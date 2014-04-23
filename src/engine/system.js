@@ -83,6 +83,8 @@ game.System = game.Class.extend({
     init: function(width, height, canvasId) {
         width = width || game.System.width;
         height = height || game.System.height;
+        if (width === 'window') width = window.innerWidth;
+        if (height === 'window') height = window.innerHeight;
         if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
