@@ -601,15 +601,13 @@ var core = {
             this.device.flash = !!navigator.plugins['Shockwave Flash'];
         }
 
-        // This is going to be used on Windows Phone App
-        // if (this.device.wp) {
-        //     if (typeof windowexternal.notify) !== 'undefined') {
-        //         window.console.log = function(message) {
-        //             window.external.notify(message);
-        //         };
-        //     }
-        // }
-
+        // Console log for Windows Phone 8 App
+        if (this.device.wpApp) {
+            window.console.log = function(message) {
+                window.external.notify(message);
+            };
+        }
+    
         var i;
         if (this.device.iOS && this.config.iOS) {
             for (i in this.config.iOS) this.config[i] = this.config.iOS[i];
