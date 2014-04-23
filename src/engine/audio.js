@@ -58,7 +58,9 @@ game.Audio = game.Class.extend({
         if (game.device.iOS5) game.Audio.enabled = false;
 
         // Disable audio on Windows Phone
-        if (game.device.wp) game.Audio.enabled = false;
+        if (game.device.wp && !game.device.wpApp) game.Audio.enabled = false;
+
+        if (game.device.wpApp) return;
 
         // Disable audio on Android 2.x.x
         if (game.device.android2) game.Audio.enabled = false;
@@ -123,6 +125,7 @@ game.Audio = game.Class.extend({
         }
         // HTML5 Audio
         else {
+            if (game.device.wpApp) return this.loaded(path, callback);
             var audio = new Audio(realPath);
             if (game.device.ie) {
                 // Sometimes IE fails to trigger events, when loading audio
@@ -148,6 +151,7 @@ game.Audio = game.Class.extend({
         this.sources[id] = {
             clips: [],
             audio: audio,
+            path: path
         };
 
         if (audio instanceof Audio) {
@@ -285,6 +289,12 @@ game.Audio = game.Class.extend({
         if (!game.Audio.enabled) return;
         if (this.soundMuted) return;
 
+        if (game.device.wpApp) {
+            var path = this.sources[id].path.replace(/[^\.]+$/, 'wav');
+            window.external.notify('PlaySound?file=' + path);
+            return;
+        }
+
         volume = volume || 1;
         this.play(id, volume * this.soundVolume, loop, callback, rate);
     },
@@ -355,6 +365,12 @@ game.Audio = game.Class.extend({
         if (!game.Audio.enabled) return;
         if (this.musicMuted) return;
 
+        if (game.device.wpApp) {
+            var path = this.sources[id].path.replace(/[^\.]+$/, 'mp3');
+            window.external.notify('PlayMusic?file=' + path);
+            return;
+        }
+
         // Stop current music before playing new
         if (this.currentMusic) this.stop(this.currentMusic);
         this.currentMusic = id;
@@ -369,6 +385,11 @@ game.Audio = game.Class.extend({
     **/
     stopMusic: function() {
         if (!game.Audio.enabled) return;
+
+        if (game.device.wpApp) {
+            window.external.notify('StopMusic');
+            return;
+        }
 
         if (this.currentMusic) this.stop(this.currentMusic);
         this.currentMusic = null;
