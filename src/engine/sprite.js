@@ -66,6 +66,43 @@ game.Sprite = PIXI.Sprite.extend({
 });
 
 /**
+    Spine animation.
+    @class Spine
+    @constructor
+    @param {String} id
+    @param {Object} [settings]
+**/
+game.Spine = PIXI.Spine.extend({
+    init: function(id, settings) {
+        this._super(game.assets[id] || id);
+        game.merge(this, settings);
+    },
+
+    /**
+        Play animation.
+        @method play
+        @param {String} anim Name of animation.
+        @param {Boolean} loop Animation looping.
+        @param {Boolean} after Start after current animation.
+    **/
+    play: function(anim, loop, after) {
+        if (after) this.state.addAnimationByName(anim, !!loop);
+        else this.state.setAnimationByName(anim, !!loop);
+    },
+
+    /**
+        Mix two animations for smooth transition.
+        @method mix
+        @param {String} from Animation name to mix from.
+        @param {String} to Animation name to mix to.
+        @param {Number} value Percent of mix.
+    **/
+    mix: function(from, to, value) {
+        this.stateData.setMixByName(from, to, value / 100);
+    }
+});
+
+/**
     Sprite container.
     http://www.goodboydigital.com/pixijs/docs/classes/DisplayObjectContainer.html
     @class Container
