@@ -587,6 +587,7 @@ var core = {
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
+        if (this.device.wpApp) this.device.mobile = false;
 
         if (typeof navigator.plugins === 'undefined' || navigator.plugins.length === 0) {
             try {

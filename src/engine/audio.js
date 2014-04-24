@@ -291,7 +291,7 @@ game.Audio = game.Class.extend({
 
         if (game.device.wpApp) {
             var path = this.sources[id].path.replace(/[^\.]+$/, 'wav');
-            window.external.notify('PlaySound?file=' + path);
+            window.external.notify('PlaySound?file=' + path + ';loop=' + !!loop);
             return;
         }
 
@@ -306,6 +306,18 @@ game.Audio = game.Class.extend({
     **/
     stopSound: function(id) {
         if (!game.Audio.enabled) return;
+
+        if (game.device.wpApp) {
+            if (id) {
+                var path = this.sources[id].path.replace(/[^\.]+$/, 'wav');
+                window.external.notify('StopSound?file=' + path);
+                return;
+            }
+            else {
+                window.external.notify('StopSound');
+                return;
+            }
+        }
 
         if (id) {
             // Stop specific sound
