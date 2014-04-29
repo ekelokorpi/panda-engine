@@ -27,7 +27,7 @@ game.Storage = game.Class.extend({
         @param {String} value
     **/
     set: function(key, value) {
-        localStorage[this.id + '.' + key] = value;
+        localStorage[this.id + '.' + key] = this._encode(value);
     },
 
     /**
@@ -37,7 +37,7 @@ game.Storage = game.Class.extend({
         @return {String} value
     **/
     get: function(key) {
-        return localStorage[this.id + '.' + key];
+        return this._decode(localStorage[this.id + '.' + key]);
     },
 
     /**
@@ -57,6 +57,31 @@ game.Storage = game.Class.extend({
         for (var i in localStorage) {
             if (i.indexOf(this.id + '.') !== -1) localStorage.removeItem(i);
         }
+    },
+
+    /**
+     * Json Serialization
+     * @url https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+     */
+    /**
+        Implement JSON.stringify serialization
+     **/
+    _encode: function(obj) {
+        if(typeof obj === 'object') {
+            return JSON.stringify(obj);
+        }
+        return obj;
+    },
+
+    /**
+        Implement JSON.parse unserialization
+     **/
+    _decode: function(str) {
+        var index = str.indexOf('{', 0);
+        if(index == 0) {
+            return JSON.parse(str);
+        }
+        return str;
     }
 });
 
