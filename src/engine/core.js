@@ -1,4 +1,3 @@
-
 // Panda.js HTML5 game engine
 
 // created by Eemeli Kelokorpi
@@ -637,7 +636,8 @@ var core = {
         if (!viewportFound) {
             var viewport = document.createElement('meta');
             viewport.name = 'viewport';
-            var content = 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no';
+            var content = 'width=device-width,height=device-height';
+            content += ',initial-scale=1.0,maximum-scale=1.0,user-scalable=no';
             if (this.device.iOS71) content += ',minimal-ui';
             viewport.content = content;
             document.getElementsByTagName('head')[0].appendChild(viewport);
