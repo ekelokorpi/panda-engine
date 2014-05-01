@@ -1,4 +1,3 @@
-
 // Panda.js HTML5 game engine
 
 // created by Eemeli Kelokorpi
@@ -30,7 +29,7 @@ var core = {
         Current engine version.
         @property {String} version
     **/
-    version: '1.4.0',
+    version: '1.5.0',
     /**
         Engine settings.
         @property {Object} config
