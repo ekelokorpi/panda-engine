@@ -609,7 +609,7 @@ game.System.rotateMsg = 'Please rotate your device';
 /**
     Rotate image for mobile.
     @attribute {URL} rotateImg
-    @default null
+    @default rotate.png
 **/
 game.System.rotateImg = 'rotate.png';
 /**
