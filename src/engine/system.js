@@ -85,6 +85,8 @@ game.System = game.Class.extend({
         height = height || game.System.height;
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
+        if (game.System.orientation === 'landscape') game.System.orientation = game.System.LANDSCAPE;
+        if (game.System.orientation === 'portrait') game.System.orientation = game.System.PORTRAIT;
         if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
