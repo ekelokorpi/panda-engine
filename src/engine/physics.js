@@ -127,7 +127,7 @@ game.World = game.Class.extend({
         for (i = this.collisionGroups.length - 1; i >= 0; i--) {
             if (this.collisionGroups[i]) {
                 for (j = this.collisionGroups[i].length - 1; j >= 0; j--) {
-                    if (typeof this.collisionGroups[i][j].collideAgainst === 'number') this.collide(this.collisionGroups[i][j]);
+                    if (this.collisionGroups[i][j] && typeof this.collisionGroups[i][j].collideAgainst === 'number') this.collide(this.collisionGroups[i][j]);
                 }
             }
         }
