@@ -129,7 +129,7 @@ game.Tween = game.Class.extend({
         this.object = object;
 
         this.easingFunction = game.Tween.Easing.Linear.None;
-        this.interpolationFunction = game.Tween.Interpolation.Liner;
+        this.interpolationFunction = game.Tween.Interpolation.Linear;
 
         for (var field in object) {
             this.valuesStart[field] = parseFloat(object[field], 10);
