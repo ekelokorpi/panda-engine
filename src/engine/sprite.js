@@ -73,6 +73,8 @@ game.Sprite = PIXI.Sprite.extend({
     @param {Object} [settings]
 **/
 game.Spine = PIXI.Spine.extend({
+    onComplete: null,
+
     init: function(id, settings) {
         this._super(game.assets[id] || id);
         game.merge(this, settings);
@@ -99,6 +101,12 @@ game.Spine = PIXI.Spine.extend({
     **/
     mix: function(from, to, value) {
         this.stateData.setMixByName(from, to, value / 100);
+    },
+
+    update: function() {
+        if(this.onComplete && this.state.isComplete()) {
+            this.onComplete();
+        }
     }
 });
 
