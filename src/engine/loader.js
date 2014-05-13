@@ -200,6 +200,7 @@ game.Loader = game.Class.extend({
         }
         game.resources.length = 0;
         if (game.Audio) game.Audio.resources = {};
+        game.system.timer.last = 0;
         game.Timer.time = Number.MIN_VALUE;
         game.clearGameLoop(this.loopId);
         game.system.setScene(this.scene);
