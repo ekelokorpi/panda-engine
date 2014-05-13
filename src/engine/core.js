@@ -623,7 +623,7 @@ var core = {
         }
 
         this.config.sourceFolder = this.config.sourceFolder || 'src';
-        this.config.mediaFolder = this.config.mediaFolder ? this.config.mediaFolder + '/' : '';
+        this.config.mediaFolder = this.config.mediaFolder ? this.config.mediaFolder + '/' : 'media/';
 
         var metaTags = document.getElementsByTagName('meta');
         var viewportFound = false;
