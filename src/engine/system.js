@@ -90,22 +90,6 @@ game.System = game.Class.extend({
         if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
-        if (typeof game.System.aspectRatio === 'string') {
-            var ratio = game.System.aspectRatio.split(':');
-            if (ratio.length === 2) {
-                if (window.innerWidth / window.innerHeight > ratio[0] / ratio[1]) {
-                    height = window.innerHeight;
-                    width = (height / ratio[1]) * ratio[0];
-                }
-                else {
-                    width = window.innerWidth;
-                    height = (width / ratio[0]) * ratio[1];
-                }
-                game.System.hires = false;
-                game.System.scale = false;
-            }
-        }
-
         if (game.System.hires) {
             if (typeof game.System.hiresWidth === 'number' && typeof game.System.hiresHeight === 'number') {
                 if (window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
@@ -630,8 +614,5 @@ game.System.transparent = false;
     @default false
 **/
 game.System.antialias = false;
-
-// Testing, is this useful?
-game.System.aspectRatio = null;
 
 });
