@@ -552,50 +552,57 @@ game.System.orientation = game.System.PORTRAIT;
 /**
     Body background color.
     @attribute {String} bgColor
+    @default null
 **/
-game.System.bgColor = '#000000';
+game.System.bgColor = null;
 /**
     Body background color for mobile.
     @attribute {String} bgColorMobile
+    @default null
 **/
 game.System.bgColorMobile = null;
 /**
     Body background color for mobile rotate screen.
     @attribute {String} bgColorRotate
+    @default null
 **/
 game.System.bgColorRotate = null;
 /**
     Body background image.
     @attribute {String} bgImage
+    @default null
 **/
 game.System.bgImage = null;
 /**
     Body background image for mobile.
     @attribute {String} bgImageMobile
+    @default null
 **/
 game.System.bgImageMobile = null;
 /**
     Body background image for mobile rotate screen.
     @attribute {String} bgImageRotate
+    @default null
 **/
 game.System.bgImageRotate = null;
 /**
     Body background image position.
     @attribute {String} bgPosition
+    @default null
 **/
 game.System.bgPosition = null;
 /**
     Rotate message for mobile.
     @attribute {String} rotateMsg
-    @default Please rotate your device
+    @default null
 **/
-game.System.rotateMsg = 'Please rotate your device';
+game.System.rotateMsg = null;
 /**
     Rotate image for mobile.
     @attribute {URL} rotateImg
-    @default rotate.png
+    @default null
 **/
-game.System.rotateImg = 'rotate.png';
+game.System.rotateImg = null;
 /**
     Enable WebGL renderer.
     @attribute {Boolean} webGL
