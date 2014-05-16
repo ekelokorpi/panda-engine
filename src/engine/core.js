@@ -574,7 +574,6 @@ var core = {
         this.device.wp7 = /Windows Phone OS 7/i.test(navigator.userAgent);
         this.device.wp8 = /Windows Phone 8/i.test(navigator.userAgent);
         this.device.wp = this.device.wp7 || this.device.wp8;
-        this.device.wpApp = (this.device.wp && typeof window.external !== 'undefined' && typeof window.external.notify !== 'undefined');
 
         // Windows Tablet
         this.device.wt = (this.device.ie && /Tablet/i.test(navigator.userAgent));
@@ -587,7 +586,6 @@ var core = {
         this.device.facebook = /FB/i.test(navigator.userAgent);
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
-        if (this.device.wpApp) this.device.mobile = false;
 
         if (typeof navigator.plugins === 'undefined' || navigator.plugins.length === 0) {
             try {
@@ -600,13 +598,6 @@ var core = {
         }
         else {
             this.device.flash = !!navigator.plugins['Shockwave Flash'];
-        }
-
-        // Console log for Windows Phone 8 App
-        if (this.device.wpApp) {
-            window.console.log = function(message) {
-                window.external.notify(message);
-            };
         }
     
         var i;
