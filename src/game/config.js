@@ -3,6 +3,7 @@ pandaConfig = {
     mediaFolder: 'media',
     outputFile: 'game.min.js',
     system: {
+        orientation: 'portrait',
         rotateMsg: 'Please rotate your device',
         rotateImg: 'rotate.png',
         bgColor: '#000000'
