@@ -319,6 +319,7 @@ game.System = game.Class.extend({
             div.style.bottom = 0;
             div.style.margin = 'auto';
             div.style.display = 'none';
+            div.id = 'panda-rotate';
             game.System.rotateDiv = div;
             document.body.appendChild(game.System.rotateDiv);
 
