@@ -601,6 +601,18 @@ var core = {
         }
     
         var i;
+        if (this.device.iPod && this.config.iPod) {
+            for (i in this.config.iPod) this.config[i] = this.config.iPod[i];
+        }
+
+        if (this.device.iPhone && this.config.iPhone) {
+            for (i in this.config.iPhone) this.config[i] = this.config.iPhone[i];
+        }
+
+        if (this.device.iPad && this.config.iPad) {
+            for (i in this.config.iPad) this.config[i] = this.config.iPad[i];
+        }
+
         if (this.device.iOS && this.config.iOS) {
             for (i in this.config.iOS) this.config[i] = this.config.iOS[i];
         }
