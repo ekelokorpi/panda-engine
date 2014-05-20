@@ -52,7 +52,7 @@ game.Loader = game.Class.extend({
 
         for (var i = 0; i < game.resources.length; i++) {
             if (game.TextureCache[game.resources[i]]) continue;
-            this.assets.push(game.Loader.getPath(game.resources[i]));
+            this.assets.push(this.getPath(game.resources[i]));
         }
 
         if (game.Audio) {
@@ -240,17 +240,12 @@ game.Loader = game.Class.extend({
 
     render: function() {
         game.system.renderer.render(this.stage);
+    },
+
+    getPath: function(path) {
+        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@2x.') : path;
     }
 });
-
-/**
-    Used to load correct file when in Retina/HiRes mode.
-    @attribute {Function} getPath
-    @param {String} path
-**/
-game.Loader.getPath = function(path) {
-    return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@2x.') : path;
-};
 
 /**
     Minimum time to show preloader, in milliseconds.
@@ -276,9 +271,9 @@ game.Loader.barColor = 0xe6e7e8;
 /**
     Use tween on loader logo.
     @attribute {Boolean} tween
-    @default true
+    @default false
 **/
-game.Loader.logoTween = true;
+game.Loader.logoTween = false;
 
 /**
     Logo to show in loader.
