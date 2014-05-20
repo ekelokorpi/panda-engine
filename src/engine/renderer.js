@@ -14740,6 +14740,7 @@ game.RenderTexture = PIXI.RenderTexture;
 game.Point = PIXI.Point;
 game.CanvasRenderer = PIXI.CanvasRenderer;
 game.autoDetectRenderer = PIXI.autoDetectRenderer;
-game.Stage = PIXI.Stage; 
+game.Stage = PIXI.Stage;
+game.blendModes = PIXI.blendModes;
 
 });
