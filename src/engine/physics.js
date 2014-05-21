@@ -65,8 +65,7 @@ game.World = game.Class.extend({
     removeBody: function(body) {
         if (!body.world) return;
         body.world = null;
-        if (typeof body.collisionGroup === 'number') this.removeBodyCollision(body);
-        this.bodies.erase(body);
+        body._remove = true;
     },
 
     /**
@@ -123,6 +122,10 @@ game.World = game.Class.extend({
         var i, j;
         for (i = this.bodies.length - 1; i >= 0; i--) {
             this.bodies[i].update();
+            if (this.bodies[i]._remove) {
+                if (typeof this.bodies[i].collisionGroup === 'number') this.removeBodyCollision(this.bodies[i]);
+                this.bodies.splice(i, 1);
+            }
         }
         for (i = this.collisionGroups.length - 1; i >= 0; i--) {
             if (this.collisionGroups[i]) {
