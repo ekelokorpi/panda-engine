@@ -328,33 +328,6 @@ var core = {
         loader.start();
     },
 
-    Math: {
-        /**
-            Distance between two points.
-            @method Math.distance
-            @param {Number} x
-            @param {Number} y
-            @param {Number} x2
-            @param {Number} y2
-            @return {Number}
-        **/
-        distance: function(x, y, x2, y2) {
-            x = x2 - x;
-            y = y2 - y;
-            return Math.sqrt(x * x + y * y);
-        },
-
-        /**
-            Generate random number between `min` and `max`.
-            @method Math.random
-            @param {Number} min
-            @param {Number} max
-        **/
-        random: function(min, max) {
-            return Math.random() * (max - min) + min;
-        }
-    },
-
     loadScript: function(name, requiredFrom) {
         this.modules[name] = true;
         this.waitForLoad++;
@@ -470,6 +443,19 @@ var core = {
             if (core.config.noCanvasURL) window.location = core.config.noCanvasURL;
             else throw('Canvas not supported');
         }
+
+        // Native Math extensions
+        Math.distance = function(x, y, x2, y2) {
+            x = x2 - x;
+            y = y2 - y;
+            return Math.sqrt(x * x + y * y);
+        };
+
+        Math.randomBetween = function(min, max) {
+            return Math.random() * (max - min) + min;
+        };
+
+        this.Math = Math;
 
         // Native object extensions
         Number.prototype.limit = function(min, max) {
