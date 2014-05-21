@@ -24,7 +24,7 @@ game.Storage = game.Class.extend({
         Set value to local storage.
         @method set
         @param {String} key
-        @param {String} value
+        @param {String|Object} value
     **/
     set: function(key, value) {
         localStorage[this.id + '.' + key] = this.encode(value);
@@ -61,12 +61,13 @@ game.Storage = game.Class.extend({
 
     encode: function(obj) {
         if (typeof obj === 'object') return JSON.stringify(obj);
-        else return obj;
+        return obj;
     },
 
     decode: function(str) {
+        if (typeof str === 'undefined') return;
         if (str.indexOf('{') === 0) return JSON.parse(str);
-        else return str;
+        return str;
     }
 });
 
