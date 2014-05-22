@@ -363,7 +363,7 @@ game.System = game.Class.extend({
             }
         }
 
-        if (typeof window.onorientationchange !== 'undefined') {
+        if (typeof window.onorientationchange !== 'undefined' && !game.device.android) {
             window.onorientationchange = this.onResize.bind(this);
         }
         else {
