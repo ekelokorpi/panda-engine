@@ -323,9 +323,8 @@ var core = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this.loader = loaderClass || this.Loader;
-        var loader = new this.loader(window[this.System.startScene] || this[this.System.startScene] || scene);
-        loader.start();
+        this.loader = new (loaderClass || this.Loader)(window[this.System.startScene] || this[this.System.startScene] || scene);
+        if (!this.system.rotateScreenVisible) this.loader.start();
     },
 
     loadScript: function(name, requiredFrom) {

@@ -90,19 +90,6 @@ game.System = game.Class.extend({
         if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
-        if (game.System.resizeToFill && game.device.mobile) {
-            var innerWidth = window.innerWidth;
-            var innerHeight = window.innerHeight;
-
-            if (game.device.iPad && innerHeight === 671) innerHeight = 672; // iOS 7 bugfix
-            if (game.device.iPhone && innerHeight === 320) innerHeight = 319; // iOS 7 bugfix
-
-            if (innerWidth / innerHeight !== width / height) {
-                if (game.System.orientation === game.System.LANDSCAPE) width = height * (innerWidth / innerHeight);
-                else height = width * (innerHeight / innerWidth);
-            }
-        }
-
         if (game.System.hires) {
             if (typeof game.System.hiresWidth === 'number' && typeof game.System.hiresHeight === 'number') {
                 if (window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
@@ -431,8 +418,25 @@ game.System = game.Class.extend({
             var width = window.innerWidth;
             var height = window.innerHeight;
 
-            // iPad iOS 7.0 landscape innerHeight bugfix
+            // iOS 7 innerHeight bugfix
             if (game.device.iPad && height === 671 && this.orientation === game.System.LANDSCAPE) height = 672;
+            if (game.device.iPhone && height === 320 && this.orientation === game.System.LANDSCAPE) height = 319;
+            if (game.device.iPhone && height === 256 && this.orientation === game.System.LANDSCAPE) height = 319;
+
+            if (game.System.resizeToFill && !this.rotateScreenVisible) {
+                if (width / height !== this.width / this.height) {
+                    // Wrong ratio, need to resize
+                    if (this.orientation === game.System.LANDSCAPE) {
+                        this.width = this.height * (width / height);
+                        this.ratio = this.width / this.height;
+                    }
+                    else {
+                        this.height = this.width * (height / width);
+                        this.ratio = this.height / this.width;
+                    }
+                    this.renderer.resize(this.width, this.height);
+                }
+            }
 
             if (game.System.orientation === game.System.LANDSCAPE) {
                 this.canvas.style.height = height + 'px';
@@ -443,9 +447,9 @@ game.System = game.Class.extend({
                 this.canvas.style.height = width * this.ratio + 'px';
             }
 
-            if (game.device.iOS71) setTimeout(this.onResize.bind(this), 100);
-
             if (!game.device.ejecta) window.scroll(0, 1);
+
+            if (!this.rotateScreenVisible && game.loader && !game.loader.started) game.loader.start();
         }
         else {
             // Desktop resize

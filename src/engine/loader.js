@@ -45,6 +45,7 @@ game.Loader = game.Class.extend({
         @property {Array} assets
     **/
     sounds: [],
+    started: false,
     
     init: function(scene) {
         this.scene = scene || SceneGame;
@@ -111,6 +112,8 @@ game.Loader = game.Class.extend({
         @method start
     **/
     start: function() {
+        this.started = true;
+
         if (game.scene) {
             for (var i = this.stage.children.length - 1; i >= 0; i--) {
                 this.stage.removeChild(this.stage.children[i]);
