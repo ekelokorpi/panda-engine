@@ -90,6 +90,19 @@ game.System = game.Class.extend({
         if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
+        if (game.System.resizeToFill && game.device.mobile) {
+            var innerWidth = window.innerWidth;
+            var innerHeight = window.innerHeight;
+
+            if (game.device.iPad && innerHeight === 671) innerHeight = 672; // iOS 7 bugfix
+            if (game.device.iPhone && innerHeight === 320) innerHeight = 319; // iOS 7 bugfix
+
+            if (innerWidth / innerHeight !== width / height) {
+                if (game.System.orientation === game.System.LANDSCAPE) width = height * (innerWidth / innerHeight);
+                else height = width * (innerHeight / innerWidth);
+            }
+        }
+
         if (game.System.hires) {
             if (typeof game.System.hiresWidth === 'number' && typeof game.System.hiresHeight === 'number') {
                 if (window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
@@ -622,5 +635,12 @@ game.System.transparent = false;
     @default false
 **/
 game.System.antialias = false;
+
+/**
+    Resize canvas to fill screen on mobile.
+    @attribute {Boolean} resizeToFill
+    @default false
+**/
+game.System.resizeToFill = false;
 
 });
