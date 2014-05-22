@@ -323,7 +323,7 @@ var core = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this.loader = new (loaderClass || this.Loader)(window[this.System.startScene] || this[this.System.startScene] || scene);
+        this.loader = new (loaderClass || this.Loader)(scene);
         if (!this.system.rotateScreenVisible) this.loader.start();
     },
 
