@@ -86,16 +86,16 @@ game.Loader = game.Class.extend({
 
         var barBg = new game.Graphics();
         barBg.beginFill(game.Loader.barBg);
-        barBg.drawRect(0, 0, 200, 20);
-        barBg.position.set(game.system.width / 2 - 100, game.system.height / 2 - 10);
-        if (this.logo) barBg.position.y += this.logo.height / 2 + 30;
+        barBg.drawRect(0, 0, game.Loader.barWidth, game.Loader.barHeight);
+        barBg.position.set(game.system.width / 2 - (game.Loader.barWidth / 2), game.system.height / 2 - (game.Loader.barHeight / 2));
+        if (this.logo) barBg.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
         this.stage.addChild(barBg);
 
         this.bar = new game.Graphics();
         this.bar.beginFill(game.Loader.barColor);
-        this.bar.drawRect(0, 0, 200, 20);
-        this.bar.position.set(game.system.width / 2 - 100, game.system.height / 2 - 10);
-        if (this.logo) this.bar.position.y += this.logo.height / 2 + 30;
+        this.bar.drawRect(0, 0, game.Loader.barWidth, game.Loader.barHeight);
+        this.bar.position.set(game.system.width / 2 - (game.Loader.barWidth / 2), game.system.height / 2 - (game.Loader.barHeight / 2));
+        if (this.logo) this.bar.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
         this.bar.scale.x = this.percent / 100;
         this.stage.addChild(this.bar);
 
@@ -106,8 +106,8 @@ game.Loader = game.Class.extend({
                 .to({ rotation: 0.1 }, 500)
                 .easing(game.Tween.Easing.Cubic.InOut)
                 .repeat()
-                .yoyo();
-            tween.start();
+                .yoyo()
+                .start();
         }
     },
 
@@ -274,6 +274,27 @@ game.Loader.barBg = 0x231f20;
     @default 0xe6e7e8
 **/
 game.Loader.barColor = 0xe6e7e8;
+
+/**
+    Width of the loading bar.
+    @attribute {Number} barWidth
+    @default 200
+**/
+game.Loader.barWidth = 200;
+
+/**
+    Height of the loading bar.
+    @attribute {Number} barHeight
+    @default 20
+**/
+game.Loader.barHeight = 20;
+
+/**
+    Margin of the loading bar.
+    @attribute {Number} barMargin
+    @default 10
+**/
+game.Loader.barMargin = 10;
 
 /**
     Use tween on loader logo.
