@@ -647,4 +647,11 @@ game.System.antialias = false;
 **/
 game.System.resizeToFill = false;
 
+/**
+    Default start scene.
+    @attribute {String} startScene
+    @default SceneGame
+**/
+game.System.startScene = 'SceneGame';
+
 });

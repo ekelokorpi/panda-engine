@@ -45,10 +45,14 @@ game.Loader = game.Class.extend({
         @property {Array} assets
     **/
     sounds: [],
+    /**
+        Is loader started.
+        @property {Boolean} started
+    **/
     started: false,
     
     init: function(scene) {
-        this.scene = scene || SceneGame;
+        this.scene = scene || window[game.System.startScene] || game[game.System.startScene];
         this.stage = game.system.stage;
 
         for (var i = 0; i < game.resources.length; i++) {
