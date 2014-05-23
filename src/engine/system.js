@@ -90,6 +90,17 @@ game.System = game.Class.extend({
         if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
+        if (game.System.resizeToFill && navigator.isCocoonJS) {
+            if (window.innerWidth / window.innerHeight !== width / height) {
+                if (game.System.orientation === game.System.LANDSCAPE) {
+                    width = height * (window.innerWidth / window.innerHeight);
+                }
+                else {
+                    height = width * (window.innerHeight / window.innerWidth);
+                }
+            }
+        }
+
         if (game.System.hires) {
             if (typeof game.System.hiresWidth === 'number' && typeof game.System.hiresHeight === 'number') {
                 if (window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
