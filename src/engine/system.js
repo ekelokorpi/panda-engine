@@ -90,6 +90,17 @@ game.System = game.Class.extend({
         if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
         if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
 
+        if (game.System.resizeToFill && navigator.isCocoonJS) {
+            if (window.innerWidth / window.innerHeight !== width / height) {
+                if (game.System.orientation === game.System.LANDSCAPE) {
+                    width = height * (window.innerWidth / window.innerHeight);
+                }
+                else {
+                    height = width * (window.innerHeight / window.innerWidth);
+                }
+            }
+        }
+
         if (game.System.hires) {
             if (typeof game.System.hiresWidth === 'number' && typeof game.System.hiresHeight === 'number') {
                 if (window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
@@ -418,11 +429,10 @@ game.System = game.Class.extend({
             var width = window.innerWidth;
             var height = window.innerHeight;
 
-            // iOS 7 innerHeight bugfix
-            if (game.device.iPad && height === 671 && this.orientation === game.System.LANDSCAPE) height = 672;
-            if (game.device.iPhone && height === 320 && this.orientation === game.System.LANDSCAPE) height = 319;
-            if (game.device.iPhone && height === 256 && this.orientation === game.System.LANDSCAPE) height = 319;
-
+            // iOS 7 retina innerHeight bugfix
+            if (game.device.iOS7 && window.innerHeight === 256) height = 319;
+            if (game.device.iOS7 && game.device.pixelRatio === 2 && this.orientation === game.System.LANDSCAPE) height += 2;
+            
             if (game.System.resizeToFill && !this.rotateScreenVisible) {
                 if (width / height !== this.width / this.height) {
                     // Wrong ratio, need to resize

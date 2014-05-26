@@ -121,10 +121,12 @@ game.World = game.Class.extend({
     update: function() {
         var i, j;
         for (i = this.bodies.length - 1; i >= 0; i--) {
-            this.bodies[i].update();
             if (this.bodies[i]._remove) {
                 if (typeof this.bodies[i].collisionGroup === 'number') this.removeBodyCollision(this.bodies[i]);
                 this.bodies.splice(i, 1);
+            }
+            else {
+                this.bodies[i].update();
             }
         }
         for (i = this.collisionGroups.length - 1; i >= 0; i--) {
