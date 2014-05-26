@@ -50,8 +50,14 @@ game.Loader = game.Class.extend({
         @property {Boolean} started
     **/
     started: false,
+    /**
+        Enable dynamic mode.
+        @property {Boolean} dynamic
+    **/
+    dynamic: false,
     
-    init: function(scene) {
+    init: function(scene, settings) {
+        game.merge(this, settings);
         this.scene = scene || window[game.System.startScene] || game[game.System.startScene];
         this.stage = game.system.stage;
 
@@ -118,36 +124,38 @@ game.Loader = game.Class.extend({
     start: function() {
         this.started = true;
 
-        if (game.scene) {
-            for (var i = this.stage.children.length - 1; i >= 0; i--) {
-                this.stage.removeChild(this.stage.children[i]);
+        if (!this.dynamic) {
+            if (game.scene) {
+                for (var i = this.stage.children.length - 1; i >= 0; i--) {
+                    this.stage.removeChild(this.stage.children[i]);
+                }
+                this.stage.setBackgroundColor(this.backgroundColor);
+
+                this.stage.interactive = false; // this is not working, bug?
+
+                this.stage.mousemove = this.stage.touchmove = null;
+                this.stage.click = this.stage.tap = null;
+                this.stage.mousedown = this.stage.touchstart = null;
+                this.stage.mouseup = this.stage.mouseupoutside = this.stage.touchend = this.stage.touchendoutside = null;
+                this.stage.mouseout = null;
             }
-            this.stage.setBackgroundColor(this.backgroundColor);
+            if (game.audio) game.audio.stopAll();
 
-            this.stage.interactive = false; // this is not working, bug?
+            if (typeof this.backgroundColor === 'number') {
+                var bg = new game.Graphics();
+                bg.beginFill(this.backgroundColor);
+                bg.drawRect(0, 0, game.system.width, game.system.height);
+                this.stage.addChild(bg);
+            }
+            
+            this.initStage();
 
-            this.stage.mousemove = this.stage.touchmove = null;
-            this.stage.click = this.stage.tap = null;
-            this.stage.mousedown = this.stage.touchstart = null;
-            this.stage.mouseup = this.stage.mouseupoutside = this.stage.touchend = this.stage.touchendoutside = null;
-            this.stage.mouseout = null;
+            if (!game.scene) this.loopId = game.setGameLoop(this.run.bind(this), game.system.canvas);
+            else game.scene = this;
         }
-        if (game.audio) game.audio.stopAll();
-
-        if (typeof this.backgroundColor === 'number') {
-            var bg = new game.Graphics();
-            bg.beginFill(this.backgroundColor);
-            bg.drawRect(0, 0, game.system.width, game.system.height);
-            this.stage.addChild(bg);
-        }
-        
-        this.initStage();
 
         if (this.assets.length > 0) this.loader.load();
         else this.loadAudio();
-        
-        if (!game.scene) this.loopId = game.setGameLoop(this.run.bind(this), game.system.canvas);
-        else game.scene = this;
     },
 
     /**
@@ -168,6 +176,8 @@ game.Loader = game.Class.extend({
         this.loaded++;
         this.percent = Math.round(this.loaded / (this.assets.length + this.sounds.length) * 100);
         this.onPercentChange();
+
+        if (this.dynamic && this.loaded === (this.assets.length + this.sounds.length)) this.ready();
     },
 
     /**
@@ -193,7 +203,8 @@ game.Loader = game.Class.extend({
         @method ready
     **/
     ready: function() {
-        this.setScene();
+        if (!this.dynamic) return this.setScene();
+        if (typeof this.callback === 'function') this.callback();
     },
 
     /**
