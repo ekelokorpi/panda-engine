@@ -429,11 +429,10 @@ game.System = game.Class.extend({
             var width = window.innerWidth;
             var height = window.innerHeight;
 
-            // iOS 7 innerHeight bugfix
-            if (game.device.iPad && height === 671 && this.orientation === game.System.LANDSCAPE) height = 672;
-            if (game.device.iPhone && height === 320 && this.orientation === game.System.LANDSCAPE) height = 319;
-            if (game.device.iPhone && height === 256 && this.orientation === game.System.LANDSCAPE) height = 319;
-
+            // iOS 7 retina innerHeight bugfix
+            if (game.device.iOS7 && window.innerHeight === 256) height = 319;
+            if (game.device.iOS7 && game.device.pixelRatio === 2 && this.orientation === game.System.LANDSCAPE) height += 2;
+            
             if (game.System.resizeToFill && !this.rotateScreenVisible) {
                 if (width / height !== this.width / this.height) {
                     // Wrong ratio, need to resize
