@@ -38,14 +38,14 @@ game.Loader = game.Class.extend({
     backgroundColor: 0x000000,
     /**
         List of assets to load.
-        @property {Array} assets
+        @property {Array} assetQueue
     **/
-    assets: [],
+    assetQueue: [],
     /**
         List of sounds to load.
-        @property {Array} assets
+        @property {Array} soundQueue
     **/
-    sounds: [],
+    soundQueue: [],
     /**
         Is loader started.
         @property {Boolean} started
@@ -78,23 +78,23 @@ game.Loader = game.Class.extend({
 
         for (var i = 0; i < game.assetQueue.length; i++) {
             if (game.TextureCache[game.assetQueue[i]]) continue;
-            this.assets.push(this.getPath(game.assetQueue[i]));
+            this.assetQueue.push(this.getPath(game.assetQueue[i]));
         }
 
         if (game.Audio) {
             for (var name in game.audioQueue) {
-                this.sounds.push(name);
+                this.soundQueue.push(name);
             }
         }
 
-        if (this.assets.length > 0) {
-            this.loader = new game.AssetLoader(this.assets, true);
+        if (this.assetQueue.length > 0) {
+            this.loader = new game.AssetLoader(this.assetQueue, true);
             this.loader.onProgress = this.progress.bind(this);
             this.loader.onComplete = this.loadAudio.bind(this);
             this.loader.onError = this.error.bind(this);
         }
 
-        if (this.assets.length === 0 && this.sounds.length === 0) this.percent = 100;
+        if (this.assetQueue.length === 0 && this.soundQueue.length === 0) this.percent = 100;
     },
 
     initStage: function() {
@@ -169,7 +169,7 @@ game.Loader = game.Class.extend({
             else game.scene = this;
         }
 
-        if (this.assets.length > 0) this.loader.load();
+        if (this.assetQueue.length > 0) this.loader.load();
         else this.loadAudio();
     },
 
@@ -189,10 +189,10 @@ game.Loader = game.Class.extend({
     progress: function(loader) {
         if (loader && loader.json && !loader.json.frames && !loader.json.bones) game.json[loader.url] = loader.json;
         this.loaded++;
-        this.percent = Math.round(this.loaded / (this.assets.length + this.sounds.length) * 100);
+        this.percent = Math.round(this.loaded / (this.assetQueue.length + this.soundQueue.length) * 100);
         this.onPercentChange();
 
-        if (this.dynamic && this.loaded === (this.assets.length + this.sounds.length)) this.ready();
+        if (this.dynamic && this.loaded === (this.assetQueue.length + this.soundQueue.length)) this.ready();
     },
 
     /**
@@ -208,8 +208,8 @@ game.Loader = game.Class.extend({
         @method loadAudio
     **/
     loadAudio: function() {
-        for (var i = this.sounds.length - 1; i >= 0; i--) {
-            game.audio.load(this.sounds[i], this.progress.bind(this));
+        for (var i = this.soundQueue.length - 1; i >= 0; i--) {
+            game.audio.load(this.soundQueue[i], this.progress.bind(this));
         }
     },
 
@@ -267,7 +267,7 @@ game.Loader = game.Class.extend({
                 this.ready();
             }
         }
-        else if (this.loaded === this.assets.length + this.sounds.length) {
+        else if (this.loaded === this.assetQueue.length + this.soundQueue.length) {
             // Everything loaded
             var loadTime = Date.now() - this.startTime;
             var waitTime = Math.max(100, game.Loader.timeout - loadTime);
