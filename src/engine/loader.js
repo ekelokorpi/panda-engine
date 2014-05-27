@@ -58,11 +58,21 @@ game.Loader = game.Class.extend({
         @default true
     **/
     dynamic: true,
+    /**
+        Callback function for loader.
+        @property {Function} callback
+        @default null
+    **/
+    callback: null,
     
-    init: function(scene) {
-        this.scene = scene || window[game.System.startScene] || game[game.System.startScene];
-        game.System.startScene = null;
-        if (this.scene) this.dynamic = false;
+    init: function(callback) {
+        if (callback && callback.prototype.init || game.System.startScene) {
+            this.scene = callback || window[game.System.startScene] || game[game.System.startScene];
+            this.dynamic = false;
+            game.System.startScene = null;
+        } else {
+            this.callback = callback;
+        }
 
         this.stage = game.system.stage;
 
