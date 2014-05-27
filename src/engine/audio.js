@@ -139,11 +139,11 @@ game.Audio = game.Class.extend({
     },
 
     loaded: function(path, callback, audio) {
-        if (this.sources[game.Audio.queue[path]]) throw('Duplicate audio source: ' + game.Audio.queue[path]);
-        if (!game.Audio.queue[path]) throw('Cannot find audio resource: ' + path);
+        if (this.sources[game.audioQueue[path]]) throw('Duplicate audio source: ' + game.audioQueue[path]);
+        if (!game.audioQueue[path]) throw('Cannot find audio resource: ' + path);
 
         // Get id for path
-        var id = game.Audio.queue[path];
+        var id = game.audioQueue[path];
 
         this.sources[id] = {
             clips: [],
@@ -456,7 +456,5 @@ game.Audio.formats = [
     { ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"' },
     { ext: 'ogg', type: 'audio/ogg; codecs="vorbis"' }
 ];
-
-game.Audio.queue = {};
 
 });

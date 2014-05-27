@@ -103,7 +103,6 @@ var core = {
     json: {},
     renderer: null,
     modules: {},
-    resources: [],
     nocache: '',
     current: null,
     loadQueue: [],
@@ -111,6 +110,9 @@ var core = {
     DOMLoaded: false,
     next: 1,
     anims: {},
+
+    assetQueue: [],
+    audioQueue: {},
 
     /**
         Get JSON data.
@@ -233,7 +235,7 @@ var core = {
         id = id || path;
         path = this.config.mediaFolder + path + this.nocache;
         this.assets[id] = path;
-        if (this.resources.indexOf(path) === -1) this.resources.push(path);
+        if (this.assetQueue.indexOf(path) === -1) this.assetQueue.push(path);
         return id;
     },
 
@@ -247,7 +249,7 @@ var core = {
     addAudio: function(path, id) {
         id = id || path;
         path = this.config.mediaFolder + path + this.nocache;
-        this.Audio.queue[path] = id;
+        this.audioQueue[path] = id;
         return id;
     },
 

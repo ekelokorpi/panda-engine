@@ -17,6 +17,7 @@ game.Loader = game.Class.extend({
     /**
         Scene to start, when loader is finished.
         @property {game.Scene} scene
+        @default null
     **/
     scene: null,
     /**
@@ -48,26 +49,30 @@ game.Loader = game.Class.extend({
     /**
         Is loader started.
         @property {Boolean} started
+        @default false
     **/
     started: false,
     /**
         Enable dynamic mode.
         @property {Boolean} dynamic
+        @default true
     **/
-    dynamic: false,
+    dynamic: true,
     
-    init: function(scene, settings) {
-        game.merge(this, settings);
+    init: function(scene) {
         this.scene = scene || window[game.System.startScene] || game[game.System.startScene];
+        game.System.startScene = null;
+        if (this.scene) this.dynamic = false;
+
         this.stage = game.system.stage;
 
-        for (var i = 0; i < game.resources.length; i++) {
-            if (game.TextureCache[game.resources[i]]) continue;
-            this.assets.push(this.getPath(game.resources[i]));
+        for (var i = 0; i < game.assetQueue.length; i++) {
+            if (game.TextureCache[game.assetQueue[i]]) continue;
+            this.assets.push(this.getPath(game.assetQueue[i]));
         }
 
         if (game.Audio) {
-            for (var name in game.Audio.queue) {
+            for (var name in game.audioQueue) {
                 this.sounds.push(name);
             }
         }
@@ -203,6 +208,18 @@ game.Loader = game.Class.extend({
         @method ready
     **/
     ready: function() {
+        if (game.system.retina || game.system.hires) {
+            for (var i in game.TextureCache) {
+                if (i.indexOf('@2x') !== -1) {
+                    game.TextureCache[i.replace('@2x', '')] = game.TextureCache[i];
+                    delete game.TextureCache[i];
+                }
+            }
+        }
+
+        game.assetQueue.length = 0;
+        if (game.Audio) game.audioQueue = {};
+
         if (!this.dynamic) return this.setScene();
         if (typeof this.callback === 'function') this.callback();
     },
@@ -212,26 +229,18 @@ game.Loader = game.Class.extend({
         @method setScene
     **/
     setScene: function() {
-        if (game.system.retina || game.system.hires) {
-            for (var i in game.TextureCache) {
-                if (i.indexOf('@2x') !== -1) {
-                    game.TextureCache[i.replace('@2x', '')] = game.TextureCache[i];
-                    delete game.TextureCache[i];
-                }
-            }
-        }
-        game.resources.length = 0;
-        if (game.Audio) game.Audio.resources = {};
         game.system.timer.last = 0;
         game.Timer.time = Number.MIN_VALUE;
-        game.clearGameLoop(this.loopId);
+        if (this.loopId) game.clearGameLoop(this.loopId);
         game.system.setScene(this.scene);
     },
 
     run: function() {
-        this.last = game.Timer.time;
-        game.Timer.update();
-        game.system.delta = (game.Timer.time - this.last) / 1000;
+        if (this.loopId) {
+            this.last = game.Timer.time;
+            game.Timer.update();
+            game.system.delta = (game.Timer.time - this.last) / 1000;
+        }
 
         this.update();
         this.render();
