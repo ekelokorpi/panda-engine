@@ -105,20 +105,20 @@ game.Loader = game.Class.extend({
             this.stage.addChild(this.logo);
         }
 
-        var barBg = new game.Graphics();
-        barBg.beginFill(game.Loader.barBg);
-        barBg.drawRect(0, 0, game.Loader.barWidth, game.Loader.barHeight);
-        barBg.position.set(game.system.width / 2 - (game.Loader.barWidth / 2), game.system.height / 2 - (game.Loader.barHeight / 2));
-        if (this.logo) barBg.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
-        this.stage.addChild(barBg);
+        this.barBg = new game.Graphics();
+        this.barBg.beginFill(game.Loader.barBg);
+        this.barBg.drawRect(0, 0, game.Loader.barWidth, game.Loader.barHeight);
+        this.barBg.position.set(game.system.width / 2 - (game.Loader.barWidth / 2), game.system.height / 2 - (game.Loader.barHeight / 2));
+        if (this.logo) this.barBg.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
+        this.stage.addChild(this.barBg);
 
-        this.bar = new game.Graphics();
-        this.bar.beginFill(game.Loader.barColor);
-        this.bar.drawRect(0, 0, game.Loader.barWidth, game.Loader.barHeight);
-        this.bar.position.set(game.system.width / 2 - (game.Loader.barWidth / 2), game.system.height / 2 - (game.Loader.barHeight / 2));
-        if (this.logo) this.bar.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
-        this.bar.scale.x = this.percent / 100;
-        this.stage.addChild(this.bar);
+        this.barFg = new game.Graphics();
+        this.barFg.beginFill(game.Loader.barColor);
+        this.barFg.drawRect(0, 0, game.Loader.barWidth, game.Loader.barHeight);
+        this.barFg.position.set(game.system.width / 2 - (game.Loader.barWidth / 2), game.system.height / 2 - (game.Loader.barHeight / 2));
+        if (this.logo) this.barFg.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
+        this.barFg.scale.x = this.percent / 100;
+        this.stage.addChild(this.barFg);
 
         if (game.Tween && game.Loader.logoTween && this.logo) {
             this.logo.rotation = -0.1;
@@ -200,7 +200,7 @@ game.Loader = game.Class.extend({
         @method onPercentChange
     **/
     onPercentChange: function() {
-        if (this.bar) this.bar.scale.x = this.percent / 100;
+        if (this.barFg) this.barFg.scale.x = this.percent / 100;
     },
 
     /**
