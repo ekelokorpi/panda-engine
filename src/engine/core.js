@@ -29,7 +29,7 @@ var core = {
         Current engine version.
         @property {String} version
     **/
-    version: '1.5.0',
+    version: '1.5.2',
     /**
         Engine settings.
         @property {Object} config
@@ -456,7 +456,11 @@ var core = {
             return Math.random() * (max - min) + min;
         };
 
-        this.Math = Math;
+        Math.randomInt = function(min, max) {
+            return Math.round(Math.randomBetween(min, max));
+        };
+
+        this.Math = Math; // deprecated
 
         // Native object extensions
         Number.prototype.limit = function(min, max) {
