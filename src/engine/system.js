@@ -369,8 +369,8 @@ game.System = game.Class.extend({
                 var maxHeight = game.System.maxHeight === 'auto' ? this.retina ? this.height / 2 : this.height : game.System.maxHeight;
                 if (game.System.minWidth) this.canvas.style.minWidth = minWidth + 'px';
                 if (game.System.minHeight) this.canvas.style.minHeight = minHeight + 'px';
-                if (game.System.maxWidth) this.canvas.style.maxWidth = maxWidth + 'px';
-                if (game.System.maxHeight) this.canvas.style.maxHeight = maxHeight + 'px';
+                if (game.System.maxWidth && !game.System.scaleToFit) this.canvas.style.maxWidth = maxWidth + 'px';
+                if (game.System.maxHeight && !game.System.scaleToFit) this.canvas.style.maxHeight = maxHeight + 'px';
             }
         }
 
@@ -464,7 +464,7 @@ game.System = game.Class.extend({
         else {
             // Desktop resize
             if (window.innerWidth === 0) return; // Chrome bug
-            if (window.innerWidth < this.width || window.innerHeight < this.height) {
+            if (window.innerWidth < this.width || window.innerHeight < this.height || game.System.scaleToFit) {
                 if (window.innerWidth / this.width < window.innerHeight / this.height) {
                     this.canvas.style.width = window.innerWidth + 'px';
                     this.canvas.style.height = window.innerWidth * (this.height / this.width) + 'px';
@@ -663,5 +663,11 @@ game.System.resizeToFill = false;
     @default SceneGame
 **/
 game.System.startScene = 'SceneGame';
+/**
+    Scale canvas to fit window size on desktop.
+    @attribute {Boolean} scaleToFit
+    @default false
+**/
+game.System.scaleToFit = false;
 
 });
