@@ -345,6 +345,7 @@ game.System = game.Class.extend({
                 };
                 img.src = game.config.mediaFolder + game.System.rotateImg;
                 img.style.position = 'relative';
+                img.style.maxWidth = '100%';
             }
         }
         else {
