@@ -70,7 +70,8 @@ game.Loader = game.Class.extend({
             this.scene = callback || window[game.System.startScene] || game[game.System.startScene];
             this.dynamic = false;
             game.System.startScene = null;
-        } else {
+        }
+        else {
             this.callback = callback;
         }
 
