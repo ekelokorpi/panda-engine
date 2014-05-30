@@ -591,29 +591,10 @@ var core = {
             this.device.flash = !!navigator.plugins['Shockwave Flash'];
         }
     
-        var i;
-        if (this.device.iPod && this.config.iPod) {
-            for (i in this.config.iPod) this.config[i] = this.config.iPod[i];
-        }
-
-        if (this.device.iPhone && this.config.iPhone) {
-            for (i in this.config.iPhone) this.config[i] = this.config.iPhone[i];
-        }
-
-        if (this.device.iPad && this.config.iPad) {
-            for (i in this.config.iPad) this.config[i] = this.config.iPad[i];
-        }
-
-        if (this.device.iOS && this.config.iOS) {
-            for (i in this.config.iOS) this.config[i] = this.config.iOS[i];
-        }
-
-        if (this.device.android && this.config.android) {
-            for (i in this.config.android) this.config[i] = this.config.android[i];
-        }
-
-        if (this.device.wp && this.config.wp) {
-            for (i in this.config.wp) this.config[i] = this.config.wp[i];
+        for (var i in this.device) {
+            if (this.device[i] && this.config[i]) {
+                for (var o in this.config[i]) this.merge(this.config[o], this.config[i][o]);
+            }
         }
 
         this.config.sourceFolder = this.config.sourceFolder || 'src';
