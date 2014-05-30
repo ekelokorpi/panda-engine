@@ -124,7 +124,7 @@ game.System = game.Class.extend({
 
         this.width = width;
         this.height = height;
-        this.canvasId = canvasId || this.canvasId;
+        this.canvasId = canvasId || game.System.canvasId || this.canvasId;
         this.timer = new game.Timer();
 
         if (!document.getElementById(this.canvasId)) {
@@ -670,5 +670,11 @@ game.System.startScene = 'SceneGame';
     @default false
 **/
 game.System.scaleToFit = false;
+/**
+    Canvas id for game.
+    @attribute {String} canvasId
+    @default null
+**/
+game.System.canvasId = null;
 
 });
