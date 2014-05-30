@@ -20,11 +20,17 @@ game.Camera = game.Class.extend({
     },
     threshold: 1.0,
     /**
-        Camera speed.
-        @property {Number} speed
+        Camera maximum move speed.
+        @property {Number} maxSpeed
+        @default 200
+    **/
+    maxSpeed: 200,
+    /**
+        Camera acceleration speed.
+        @property {Number} acceleration
         @default 3
     **/
-    speed: 3,
+    acceleration: 3,
     /**
         Camera move limit.
         @property {game.Point} limit
@@ -40,19 +46,24 @@ game.Camera = game.Class.extend({
     /**
         Camera target.
         @property {game.Container} target
+        @default null
     **/
     target: null,
     /**
         Container, that the camera is moving.
         @property {game.Container} container
+        @default null
     **/
     container: null,
     
-    init: function() {
+    init: function(x, y) {
         this.position = new game.Point();
-        this.limit = new game.Point(game.system.width, game.system.height);
+        this.limit = new game.Point();
         this.offset = new game.Point(game.system.width / 2, game.system.height / 2);
-        this.sensor.position = new game.Point();
+        this.sensor.position = new game.Point(this.offset.x, this.offset.y);
+        if (x && y) this.setPosition(x, y);
+
+        game.scene.addObject(this);
     },
 
     /**
@@ -60,9 +71,31 @@ game.Camera = game.Class.extend({
         @method target
         @param {game.Container} target
     **/
-    setTarget: function(target) {
+    follow: function(target) {
         this.target = target;
         this.sensor.position.set(this.target.position.x, this.target.position.y);
+    },
+
+    addTo: function(container) {
+        this.container = container;
+        this.container.position.set(-this.position.x, -this.position.y);
+        return this;
+    },
+
+    setPosition: function(x, y) {
+        this.position.set(x - this.offset.x, y - this.offset.y);
+
+        if (this.limit.x) this.position.x = this.position.x.limit(0, this.limit.x - game.system.width);
+        if (this.limit.y) this.position.y = this.position.y.limit(0, this.limit.y - game.system.height);
+        if (this.container) this.container.position.set(-this.position.x, -this.position.y);
+    },
+
+    pan: function(x, y, speed) {
+        this.target = null;
+
+        game.scene.addTween(this.sensor.position, {
+            x: x, y: y
+        }, speed || 1000).start();
     },
 
     moveSensor: function() {
@@ -82,32 +115,29 @@ game.Camera = game.Class.extend({
     },
 
     moveCamera: function() {
-        var changeX = this.position.x - this.sensor.position.x + this.offset.x;
-        var changeY = this.position.y - this.sensor.position.y + this.offset.y;
+        var changeX = (this.position.x - this.sensor.position.x + this.offset.x).limit(-this.maxSpeed, this.maxSpeed);
+        var changeY = (this.position.y - this.sensor.position.y + this.offset.y).limit(-this.maxSpeed, this.maxSpeed);
 
         if (changeX > this.threshold ||
             changeX < -this.threshold ||
             changeY > this.threshold ||
             changeY < -this.threshold
         ) {
-            this.position.x -= changeX * this.speed * game.system.delta;
-            this.position.x = this.position.x.limit(0, this.limit.x - game.system.width);
-            this.position.y -= changeY * this.speed * game.system.delta;
-            this.position.y = this.position.y.limit(0, this.limit.y - game.system.height);
-            if (this.debugBox) this.debugBox.alpha = 0.3;
+            this.setPosition(
+                this.position.x + this.offset.x - changeX * this.acceleration * game.system.delta,
+                this.position.y + this.offset.y - changeY * this.acceleration * game.system.delta
+            );
+            if (this.debugBox) this.debugBox.alpha = 0.4;
         }
         else {
-            if (this.debugBox) this.debugBox.alpha = 0.1;
+            if (this.debugBox) this.debugBox.alpha = 0.2;
         }
     },
 
     update: function() {
-        if (!this.target) return;
+        if (this.target) this.moveSensor();
 
-        this.moveSensor();
         this.moveCamera();
-
-        if (this.container) this.container.position.set(-this.position.x, -this.position.y);
 
         if (game.debugDraw && !this.debugBox) {
             this.debugBox = new game.Graphics();
