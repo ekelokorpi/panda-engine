@@ -120,8 +120,6 @@ game.System = game.Class.extend({
             game.scale = 2;
         }
 
-        if (typeof game.System.resize !== 'undefined') game.System.scale = game.System.resize; // Deprecated
-
         this.width = width;
         this.height = height;
         this.canvasId = canvasId || game.System.canvasId || this.canvasId;
@@ -132,9 +130,6 @@ game.System = game.Class.extend({
             canvas.id = this.canvasId;
             document.body.appendChild(canvas);
         }
-
-        // Deprecated
-        if (game.System.canvas === false) game.System.webGL = true;
 
         if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
         else this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
@@ -186,17 +181,6 @@ game.System = game.Class.extend({
         }, false);
 
         if (!navigator.isCocoonJS) {
-            // Deprecated
-            if (typeof game.System.backgroundColor === 'object') {
-                game.System.bgColorMobile = game.System.backgroundColor.mobile;
-                game.System.bgColorRotate = game.System.backgroundColor.rotate;
-            }
-            // Deprecated
-            if (typeof game.System.backgroundImage === 'object') {
-                game.System.bgImageMobile = game.System.backgroundImage.mobile;
-                game.System.bgImageRotate = game.System.backgroundImage.rotate;
-            }
-
             if (game.System.bgColor && !game.System.bgColorMobile) game.System.bgColorMobile = game.System.bgColor;
             if (game.System.bgColorMobile && !game.System.bgColorRotate) game.System.bgColorRotate = game.System.bgColorMobile;
 

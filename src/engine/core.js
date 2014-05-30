@@ -460,8 +460,6 @@ var core = {
             return Math.round(Math.randomBetween(min, max));
         };
 
-        this.Math = Math; // deprecated
-
         // Native object extensions
         Number.prototype.limit = function(min, max) {
             var i = this;
