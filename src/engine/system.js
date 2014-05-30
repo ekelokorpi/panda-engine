@@ -69,15 +69,7 @@ game.System = game.Class.extend({
         @property {Number} gameLoopId
     **/
     gameLoopId: 0,
-    /**
-        New scene to be set on end of run loop.
-        @property {game.Scene} newSceneClass
-    **/
     newSceneClass: null,
-    /**
-        Is game engine running.
-        @property {Boolean} running
-    **/
     running: false,
 
     init: function(width, height, canvasId) {
@@ -244,10 +236,11 @@ game.System = game.Class.extend({
         else this.setSceneNow(sceneClass);
     },
 
-    setSceneNow: function(SceneClass) {
+    setSceneNow: function(sceneClass) {
         if (game.tweenEngine) game.tweenEngine.tweens.length = 0;
-        game.scene = new (SceneClass)();
+        game.scene = new (sceneClass)();
         if (game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
+        this.newSceneClass = null;
         this.startRunLoop();
     },
 
@@ -271,11 +264,7 @@ game.System = game.Class.extend({
         game.scene.run();
 
         if (this.debug) this.debug.update();
-
-        if (this.newSceneClass) {
-            this.setSceneNow(this.newSceneClass);
-            this.newSceneClass = null;
-        }
+        if (this.newSceneClass) this.setSceneNow(this.newSceneClass);
     },
 
     resize: function(width, height) {
