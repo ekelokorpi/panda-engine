@@ -174,6 +174,11 @@ game.TilingSprite = PIXI.TilingSprite.extend({
     update: function() {
         this.tilePosition.x += this.speed.x * game.system.delta;
         this.tilePosition.y += this.speed.y * game.system.delta;
+    },
+
+    addTo: function(container) {
+        container.addChild(this);
+        return this;
     }
 });
 
