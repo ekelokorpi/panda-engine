@@ -62,6 +62,16 @@ game.Sprite = PIXI.Sprite.extend({
     addChild: function(obj) {
         this._super(obj);
         if (game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
+    },
+
+    /**
+        Add sprite to container.
+        @method addTo
+        @param {game.Container} container
+    **/
+    addTo: function(container) {
+        container.addChild(this);
+        return this;
     }
 });
 
