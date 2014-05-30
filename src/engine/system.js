@@ -334,14 +334,14 @@ game.System = game.Class.extend({
         }
         else {
             // Desktop center
-            this.canvas.style.position = 'absolute';
+            if (game.System.center || game.System.left || game.System.top) this.canvas.style.position = 'absolute';
             if (game.System.center) {
                 this.canvas.style.top = 0;
                 this.canvas.style.left = 0;
                 this.canvas.style.bottom = 0;
                 this.canvas.style.right = 0;
             }
-            else {
+            else if (game.System.left || game.System.top) {
                 this.canvas.style.left = game.System.left + 'px';
                 this.canvas.style.top = game.System.top + 'px';
             }
