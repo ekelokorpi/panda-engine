@@ -34,7 +34,7 @@ game.Storage = game.Class.extend({
         Get key from local storage.
         @method get
         @param {String} key
-        @param {*} defaultValue
+        @param {*} [defaultValue]
         @return {*} value
     **/
     get: function(key, defaultValue) {
