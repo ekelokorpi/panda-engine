@@ -41,7 +41,11 @@ game.Storage = game.Class.extend({
         var raw = localStorage.getItem(this.id + '.' + key);
         if (raw === null)
             return defaultValue;
-        return this.decode(raw);
+        try { // backwards compatibility
+            return this.decode(raw);
+        } catch(ex) {
+            return raw;
+        }
     },
 
     /**
