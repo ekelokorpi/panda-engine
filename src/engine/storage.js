@@ -39,11 +39,11 @@ game.Storage = game.Class.extend({
     **/
     get: function(key, defaultValue) {
         var raw = localStorage.getItem(this.id + '.' + key);
-        if (raw === null)
-            return defaultValue;
-        try { // backwards compatibility
+        if (raw === null) return defaultValue;
+        try {
             return this.decode(raw);
-        } catch(ex) {
+        }
+        catch (err) {
             return raw;
         }
     },
@@ -52,9 +52,9 @@ game.Storage = game.Class.extend({
         Check if a key is in local storage.
         @method has
         @param {String} key
-        @return {boolean}
+        @return {Boolean}
     **/
-    has: function has(key) {
+    has: function(key) {
         return localStorage.getItem(this.id + '.' + key) !== null;
     },
 
@@ -72,10 +72,9 @@ game.Storage = game.Class.extend({
         @method reset
     **/
     reset: function() {
-        for (var i=0, l=localStorage.length; i<l; i++) {
+        for (var i = localStorage.length - 1; i >= 0; i--) {
             var key = localStorage.key(i);
-            if (key.indexOf(this.id + '.') !== -1)
-                localStorage.removeItem(key);
+            if (key.indexOf(this.id + '.') !== -1) localStorage.removeItem(key);
         }
     },
 
