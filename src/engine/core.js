@@ -40,18 +40,22 @@ var core = {
         @property {Array} coreModules
     **/
     coreModules: [
-        'engine.loader',
-        'engine.timer',
-        'engine.system',
+        'engine.analytics',
         'engine.audio',
-        'engine.renderer',
-        'engine.sprite',
+        'engine.camera',
         'engine.debug',
-        'engine.storage',
-        'engine.tween',
-        'engine.scene',
+        'engine.keyboard',
+        'engine.loader',
+        'engine.particle',
+        'engine.physics',
         'engine.pool',
-        'engine.analytics'
+        'engine.renderer',
+        'engine.scene',
+        'engine.sprite',
+        'engine.storage',
+        'engine.system',
+        'engine.timer',
+        'engine.tween'
     ],
     /**
         Scale factor for Retina and HiRes mode.
@@ -269,6 +273,11 @@ var core = {
         this.loadQueue.push(this.current);
 
         if (this.current.name === 'engine.core') {
+            if (this.config.ignoreModules) {
+                for (var i = this.coreModules.length - 1; i >= 0; i--) {
+                    if (this.config.ignoreModules.indexOf(this.coreModules[i]) !== -1) this.coreModules.splice(i, 1);
+                }
+            }
             this.current.requires = this.coreModules;
             this.body(function() {});
         }
