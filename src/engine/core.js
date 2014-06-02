@@ -29,7 +29,7 @@ var core = {
         Current engine version.
         @property {String} version
     **/
-    version: '1.5.2',
+    version: '1.6.0',
     /**
         Engine settings.
         @property {Object} config
