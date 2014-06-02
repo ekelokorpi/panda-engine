@@ -31,12 +31,6 @@ game.Loader = game.Class.extend({
     **/
     percent: 0,
     /**
-        Background color of preloader.
-        @property {Number} backgroundColor
-        @default 0x000000
-    **/
-    backgroundColor: 0x000000,
-    /**
         List of assets to load.
         @property {Array} assetQueue
     **/
@@ -145,7 +139,7 @@ game.Loader = game.Class.extend({
                 for (var i = this.stage.children.length - 1; i >= 0; i--) {
                     this.stage.removeChild(this.stage.children[i]);
                 }
-                this.stage.setBackgroundColor(this.backgroundColor);
+                this.stage.setBackgroundColor(game.Loader.bgColor);
 
                 this.stage.interactive = false; // this is not working, bug?
 
@@ -157,9 +151,9 @@ game.Loader = game.Class.extend({
             }
             if (game.audio) game.audio.stopAll();
 
-            if (typeof this.backgroundColor === 'number') {
+            if (typeof game.Loader.bgColor === 'number') {
                 var bg = new game.Graphics();
-                bg.beginFill(this.backgroundColor);
+                bg.beginFill(game.Loader.bgColor);
                 bg.drawRect(0, 0, game.system.width, game.system.height);
                 this.stage.addChild(bg);
             }
@@ -286,21 +280,28 @@ game.Loader = game.Class.extend({
 });
 
 /**
-    Minimum time to show preloader, in milliseconds.
+    Loader background color.
+    @attribute {Number} bgColor
+    @default 0x000000
+**/
+game.Loader.bgColor = 0x000000;
+
+/**
+    Minimum time to show loader, in milliseconds.
     @attribute {Number} timeout
     @default 500
 **/
 game.Loader.timeout = 500;
 
 /**
-    Background color of the loading bar.
+    Loading bar background color.
     @attribute {Number} barBg
     @default 0x231f20
 **/
 game.Loader.barBg = 0x231f20;
 
 /**
-    Color of the loading bar.
+    Loading bar color.
     @attribute {Number} barColor
     @default 0xe6e7e8
 **/
@@ -318,10 +319,10 @@ game.Loader.barWidth = 200;
     @attribute {Number} barHeight
     @default 20
 **/
-game.Loader.barHeight = 20;
+game.Loader.barHeight = 21;
 
 /**
-    Margin of the loading bar.
+    Loading bar margin from logo.
     @attribute {Number} barMargin
     @default 10
 **/
@@ -335,7 +336,7 @@ game.Loader.barMargin = 10;
 game.Loader.logoTween = false;
 
 /**
-    Logo to show in loader.
+    Loader logo dataURI.
     @attribute {String} logo
     @default null
 **/
