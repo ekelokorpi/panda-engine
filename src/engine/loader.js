@@ -109,8 +109,8 @@ game.Loader = game.Class.extend({
 
         this.barFg = new game.Graphics();
         this.barFg.beginFill(game.Loader.barColor);
-        this.barFg.drawRect(0, 0, game.Loader.barWidth, game.Loader.barHeight);
-        this.barFg.position.set(game.system.width / 2 - (game.Loader.barWidth / 2), game.system.height / 2 - (game.Loader.barHeight / 2));
+        this.barFg.drawRect(0, 0, game.Loader.barWidth + 2, game.Loader.barHeight + 2);
+        this.barFg.position.set(game.system.width / 2 - (game.Loader.barWidth / 2) - 1, game.system.height / 2 - (game.Loader.barHeight / 2) - 1);
         if (this.logo) this.barFg.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
         this.barFg.scale.x = this.percent / 100;
         this.stage.addChild(this.barFg);
@@ -319,7 +319,7 @@ game.Loader.barWidth = 200;
     @attribute {Number} barHeight
     @default 20
 **/
-game.Loader.barHeight = 21;
+game.Loader.barHeight = 20;
 
 /**
     Loading bar margin from logo.
