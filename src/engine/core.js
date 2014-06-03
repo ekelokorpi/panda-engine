@@ -557,6 +557,7 @@ var core = {
         this.device.iOS6 = (this.device.iOS && /OS 6/i.test(navigator.userAgent));
         this.device.iOS7 = (this.device.iOS && /OS 7/i.test(navigator.userAgent));
         this.device.iOS71 = (this.device.iOS && /OS 7_1/i.test(navigator.userAgent));
+        this.device.iOS8 = (this.device.iOS && /OS 8/i.test(navigator.userAgent));
 
         // Android
         this.device.android = /android/i.test(navigator.userAgent);
