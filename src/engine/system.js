@@ -77,14 +77,15 @@ game.System = game.Class.extend({
         height = height || game.System.height;
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
-        if (game.System.orientation === 'landscape') game.System.orientation = game.System.LANDSCAPE;
-        if (game.System.orientation === 'portrait') game.System.orientation = game.System.PORTRAIT;
-        if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
-        if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 928 : 672);
+        // Deprecated
+        if (game.System.orientation === game.System.LANDSCAPE) game.System.orientation = 'landscape';
+        if (game.System.orientation === game.System.PORTRAIT) game.System.orientation = 'portrait';
+        if (!width) width = (game.System.orientation === 'portrait' ? 768 : 1024);
+        if (!height) height = (game.System.orientation === 'portrait' ? 928 : 672);
 
         if (game.System.resizeToFill && navigator.isCocoonJS) {
             if (window.innerWidth / window.innerHeight !== width / height) {
-                if (game.System.orientation === game.System.LANDSCAPE) {
+                if (game.System.orientation === 'landscape') {
                     width = height * (window.innerWidth / window.innerHeight);
                 }
                 else {
@@ -276,7 +277,7 @@ game.System = game.Class.extend({
     },
 
     initResize: function() {
-        this.ratio = game.System.orientation === game.System.LANDSCAPE ? this.width / this.height : this.height / this.width;
+        this.ratio = game.System.orientation === 'landscape' ? this.width / this.height : this.height / this.width;
 
         if (game.System.center) this.canvas.style.margin = 'auto';
 
@@ -359,10 +360,10 @@ game.System = game.Class.extend({
     },
 
     checkOrientation: function() {
-        this.orientation = window.innerWidth < window.innerHeight ? game.System.PORTRAIT : game.System.LANDSCAPE;
+        this.orientation = window.innerWidth < window.innerHeight ? 'portrait' : 'landscape';
         if (game.device.android2 && window.innerWidth === 320 && window.innerHeight === 251) {
             // Android 2.3 portrait fix
-            this.orientation = game.System.PORTRAIT;
+            this.orientation = 'portrait';
         }
         this.rotateScreenVisible = game.System.orientation !== this.orientation ? true : false;
 
@@ -405,13 +406,13 @@ game.System = game.Class.extend({
 
             // iOS innerHeight bug fixes
             if (game.device.iOS7 && window.innerHeight === 256) height = 319;
-            if (game.device.iOS7 && game.device.pixelRatio === 2 && this.orientation === game.System.LANDSCAPE) height += 2;
+            if (game.device.iOS7 && game.device.pixelRatio === 2 && this.orientation === 'landscape') height += 2;
             if (game.device.iPad && height === 671) height = 672;
             
             if (game.System.resizeToFill && !this.rotateScreenVisible) {
                 if (width / height !== this.width / this.height) {
                     // Wrong ratio, need to resize
-                    if (this.orientation === game.System.LANDSCAPE) {
+                    if (this.orientation === 'landscape') {
                         this.width = this.height * (width / height);
                         this.ratio = this.width / this.height;
                     }
@@ -423,7 +424,7 @@ game.System = game.Class.extend({
                 }
             }
 
-            if (game.System.orientation === game.System.LANDSCAPE) {
+            if (game.System.orientation === 'landscape') {
                 this.canvas.style.height = height + 'px';
                 this.canvas.style.width = height * this.ratio + 'px';
             }
@@ -544,14 +545,14 @@ game.System.retina = false;
     @default true
 **/
 game.System.pauseOnHide = true;
-game.System.PORTRAIT = 0;
-game.System.LANDSCAPE = 1;
+game.System.PORTRAIT = 0; // Deprecated
+game.System.LANDSCAPE = 1; // Deprecated
 /**
     Mobile orientation for the game.
-    @attribute {LANDSCAPE|PORTRAIT} orientation
-    @default game.System.PORTRAIT
+    @attribute {String} orientation
+    @default landscape
 **/
-game.System.orientation = game.System.PORTRAIT;
+game.System.orientation = 'landscape';
 /**
     Body background color.
     @attribute {String} bgColor
