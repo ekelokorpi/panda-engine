@@ -168,7 +168,7 @@ game.Camera = game.Class.extend({
 
         this.moveCamera();
 
-        if (game.debugDraw && !this.debugBox) {
+        if (game.debugDraw && game.Camera.debug && !this.debugBox) {
             this.debugBox = new game.Graphics();
             this.debugBox.beginFill(0xff00ff);
             this.debugBox.alpha = 0.3;
@@ -181,5 +181,7 @@ game.Camera = game.Class.extend({
         }
     }
 });
+
+game.Camera.debug = false;
 
 });
