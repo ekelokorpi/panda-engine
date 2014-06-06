@@ -163,8 +163,8 @@ game.System = game.Class.extend({
             document.addEventListener(visibilityChange, function() {
                 if (game.System.pauseOnHide) {
                     var hidden = !!game.getVendorAttribute(document, 'hidden');
-                    if (hidden) game.system.pause();
-                    else game.system.resume();
+                    if (hidden) game.system.pause(true);
+                    else game.system.resume(true);
                 }
             }, false);
         }
@@ -210,9 +210,12 @@ game.System = game.Class.extend({
         Pause game engine.
         @method pause
     **/
-    pause: function() {
+    pause: function(onHide) {
         if (this.paused) return;
-        this.paused = true;
+
+        if (onHide) this.pausedOnHide = true;
+        else this.paused = true;
+
         if (game.scene) game.scene.pause();
     },
 
@@ -220,9 +223,13 @@ game.System = game.Class.extend({
         Resume paused game engine.
         @method resume
     **/
-    resume: function() {
-        if (!this.paused) return;
-        this.paused = false;
+    resume: function(onHide) {
+        if (onHide && this.paused) return;
+        if (!onHide && !this.paused) return;
+        
+        if (onHide) this.pausedOnHide = false;
+        else this.paused = false;
+
         game.Timer.last = Date.now();
         if (game.scene) game.scene.resume();
     },
@@ -257,7 +264,7 @@ game.System = game.Class.extend({
     },
 
     run: function() {
-        if (this.paused) return;
+        if (this.paused || this.pausedOnHide) return;
 
         game.Timer.update();
         this.delta = this.timer.delta() / 1000;
