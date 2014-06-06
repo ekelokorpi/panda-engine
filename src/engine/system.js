@@ -80,7 +80,7 @@ game.System = game.Class.extend({
         if (game.System.orientation === 'landscape') game.System.orientation = game.System.LANDSCAPE;
         if (game.System.orientation === 'portrait') game.System.orientation = game.System.PORTRAIT;
         if (!width) width = (game.System.orientation === game.System.PORTRAIT ? 768 : 1024);
-        if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 927 : 672);
+        if (!height) height = (game.System.orientation === game.System.PORTRAIT ? 928 : 672);
 
         if (game.System.resizeToFill && navigator.isCocoonJS) {
             if (window.innerWidth / window.innerHeight !== width / height) {
