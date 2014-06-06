@@ -1,6 +1,5 @@
 pandaConfig = {
     system: {
-        orientation: 'portrait',
         rotateImg: 'rotate.png',
         bgColor: '#000000'
     },
