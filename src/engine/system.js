@@ -247,7 +247,7 @@ game.System = game.Class.extend({
     setSceneNow: function(sceneClass) {
         if (game.tweenEngine) game.tweenEngine.tweens.length = 0;
         game.scene = new (sceneClass)();
-        if (game.Debug && game.Debug.enabled && !navigator.isCocoonJS) this.debug = new game.Debug();
+        if (game.Debug && game.Debug.enabled && !navigator.isCocoonJS && !this.debug) this.debug = new game.Debug();
         this.newSceneClass = null;
         this.startRunLoop();
     },
