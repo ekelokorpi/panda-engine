@@ -109,7 +109,7 @@ game.Camera = game.Class.extend({
             this.speed.y = 0;
         }
 
-        if (this.container) this.container.position.set(-this.position.x, -this.position.y);
+        if (this.container) this.container.position.set(~~-this.position.x, ~~-this.position.y);
     },
 
     moveSensor: function() {
