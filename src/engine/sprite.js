@@ -25,7 +25,7 @@ game.Sprite = PIXI.Sprite.extend({
 
     init: function(id, x, y, settings) {
         if (typeof id === 'string') {
-            id = game.assets[id] || id;
+            id = game.paths[id] || id;
             id = game.Texture.fromFrame(id);
         }
         this._super(id);
@@ -45,7 +45,7 @@ game.Sprite = PIXI.Sprite.extend({
 
     setTexture: function(id) {
         if (typeof id === 'string') {
-            id = game.assets[id] || id;
+            id = game.paths[id] || id;
             id = game.Texture.fromFrame(id);
         }
         this._super(id);
@@ -84,7 +84,7 @@ game.Sprite = PIXI.Sprite.extend({
 **/
 game.Spine = PIXI.Spine.extend({
     init: function(id, settings) {
-        this._super(game.assets[id] || id);
+        this._super(game.paths[id] || id);
         game.merge(this, settings);
     },
 
@@ -145,7 +145,7 @@ game.Container = PIXI.DisplayObjectContainer.extend({
 
 game.Texture = PIXI.Texture.extend();
 game.Texture.fromImage = function(id, crossorigin) {
-    id = game.assets[id] || id;
+    id = game.paths[id] || id;
     return PIXI.Texture.fromImage(id, crossorigin);
 };
 game.Texture.fromCanvas = PIXI.Texture.fromCanvas;
@@ -165,7 +165,7 @@ game.TilingSprite = PIXI.TilingSprite.extend({
     speed: { x: 0, y: 0 },
 
     init: function(path, width, height, settings) {
-        path = game.assets[path] || path;
+        path = game.paths[path] || path;
         var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
         this._super(texture, width || texture.width, height || texture.height);
         game.merge(this, settings);

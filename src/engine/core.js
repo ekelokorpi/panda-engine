@@ -102,21 +102,20 @@ var core = {
         @property {Object} device
     **/
     device: {},
-    assets: {},
+    paths: {},
     plugins: {},
     json: {},
-    renderer: null,
     modules: {},
+    renderer: null,
     nocache: '',
     current: null,
-    loadQueue: [],
     waitForLoad: 0,
     DOMLoaded: false,
     next: 1,
     anims: {},
-
+    moduleQueue: [],
     assetQueue: [],
-    audioQueue: {},
+    audioQueue: [],
 
     /**
         Get JSON data.
@@ -124,7 +123,7 @@ var core = {
         @param {String} id
     **/
     getJSON: function(id) {
-        return this.json[this.assets[id]];
+        return this.json[this.paths[id]];
     },
 
     /**
@@ -236,11 +235,7 @@ var core = {
         @return {String} id
     **/
     addAsset: function(path, id) {
-        id = id || path;
-        path = this.config.mediaFolder + path + this.nocache;
-        this.assets[id] = path;
-        if (this.assetQueue.indexOf(path) === -1) this.assetQueue.push(path);
-        return id;
+        this.addFileToQueue(path, id, 'assetQueue');
     },
 
     /**
@@ -251,9 +246,15 @@ var core = {
         @return {String} id
     **/
     addAudio: function(path, id) {
+        this.addFileToQueue(path, id, 'audioQueue');
+    },
+
+    addFileToQueue: function(path, id, queue) {
         id = id || path;
         path = this.config.mediaFolder + path + this.nocache;
-        this.audioQueue[path] = id;
+        if (this.paths[id]) throw('Id ' + id + ' already found');
+        this.paths[id] = path;
+        if (this[queue].indexOf(path) === -1) this[queue].push(path);
         return id;
     },
 
@@ -270,7 +271,7 @@ var core = {
         this.current = { name: name, requires: [], loaded: false, body: null, version: version };
         if (name === 'game.main') this.current.requires.push('engine.core');
         this.modules[name] = this.current;
-        this.loadQueue.push(this.current);
+        this.moduleQueue.push(this.current);
 
         if (this.current.name === 'engine.core') {
             if (this.config.ignoreModules) {
@@ -318,7 +319,7 @@ var core = {
         @param {String} [canvasId] Id of canvas element.
     **/
     start: function(scene, width, height, loaderClass, canvasId) {
-        if (this.loadQueue.length > 0) throw('Core not ready');
+        if (this.moduleQueue.length > 0) throw('Core not ready');
 
         this.system = new this.System(width, height, canvasId);
 
@@ -359,8 +360,8 @@ var core = {
 
     loadModules: function() {
         var moduleLoaded, i, j, module, name, dependenciesLoaded;
-        for (i = 0; i < this.loadQueue.length; i++) {
-            module = this.loadQueue[i];
+        for (i = 0; i < this.moduleQueue.length; i++) {
+            module = this.moduleQueue[i];
             dependenciesLoaded = true;
 
             for (j = 0; j < module.requires.length; j++) {
@@ -375,8 +376,8 @@ var core = {
             }
 
             if (dependenciesLoaded && module.body) {
-                this.loadQueue.splice(i, 1);
-                if (this.loadQueue.length === 0) {
+                this.moduleQueue.splice(i, 1);
+                if (this.moduleQueue.length === 0) {
                     // Last module loaded, parse config
                     for (var c in this.config) {
                         var m = c.ucfirst();
@@ -394,21 +395,21 @@ var core = {
             }
         }
 
-        if (moduleLoaded && this.loadQueue.length > 0) {
+        if (moduleLoaded && this.moduleQueue.length > 0) {
             this.loadModules();
         }
-        else if (this.waitForLoad === 0 && this.loadQueue.length !== 0) {
+        else if (this.waitForLoad === 0 && this.moduleQueue.length !== 0) {
             var unresolved = [];
-            for (i = 0; i < this.loadQueue.length; i++) {
+            for (i = 0; i < this.moduleQueue.length; i++) {
                 var unloaded = [];
-                var requires = this.loadQueue[i].requires;
+                var requires = this.moduleQueue[i].requires;
                 for (j = 0; j < requires.length; j++) {
                     module = this.modules[requires[j]];
                     if (!module || !module.loaded) {
                         unloaded.push(requires[j]);
                     }
                 }
-                unresolved.push(this.loadQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
+                unresolved.push(this.moduleQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
             }
             throw('Unresolved modules:\n' + unresolved.join('\n'));
         }

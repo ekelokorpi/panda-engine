@@ -76,10 +76,8 @@ game.Loader = game.Class.extend({
             this.assetQueue.push(this.getPath(game.assetQueue[i]));
         }
 
-        if (game.Audio) {
-            for (var name in game.audioQueue) {
-                this.soundQueue.push(name);
-            }
+        for (var i = 0; i < game.audioQueue.length; i++) {
+            this.soundQueue.push(game.audioQueue[i]);
         }
 
         if (this.assetQueue.length > 0) {
@@ -223,7 +221,7 @@ game.Loader = game.Class.extend({
         }
 
         game.assetQueue.length = 0;
-        if (game.Audio) game.audioQueue = {};
+        game.audioQueue.length = 0;
 
         if (!this.dynamic) return this.setScene();
         if (typeof this.callback === 'function') this.callback();
