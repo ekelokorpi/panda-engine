@@ -66,6 +66,14 @@ game.Camera = game.Class.extend({
         if (x && y) this.setPosition(x, y);
 
         game.scene.addObject(this);
+
+        if (game.debugDraw && game.Camera.debug) {
+            this.debugBox = new game.Graphics();
+            this.debugBox.beginFill(game.Camera.debugColor);
+            this.debugBox.alpha = game.Camera.debugAlpha;
+            this.debugBox.drawRect(-this.sensorWidth / 2, -this.sensorHeight / 2, this.sensorWidth, this.sensorHeight);
+            game.system.stage.addChild(this.debugBox);
+        }
     },
 
     /**
@@ -136,7 +144,7 @@ game.Camera = game.Class.extend({
 
         if (this.debugBox) {
             this.debugBox.clear();
-            this.debugBox.beginFill(0xff00ff);
+            this.debugBox.beginFill(game.Camera.debugColor);
             this.debugBox.drawRect(-this.sensorWidth / 2, -this.sensorHeight / 2, this.sensorWidth, this.sensorHeight);
         }
     },
@@ -154,12 +162,12 @@ game.Camera = game.Class.extend({
                 this.position.x + this.offset.x - this.speed.x * this.acceleration * game.system.delta,
                 this.position.y + this.offset.y - this.speed.y * this.acceleration * game.system.delta
             );
-            if (this.debugBox) this.debugBox.alpha = 0.4;
+            if (this.debugBox) this.debugBox.alpha = game.Camera.debugAlpha * 2;
         }
         else {
             this.speed.x = 0;
             this.speed.y = 0;
-            if (this.debugBox) this.debugBox.alpha = 0.2;
+            if (this.debugBox) this.debugBox.alpha = game.Camera.debugAlpha;
         }
     },
 
@@ -168,20 +176,12 @@ game.Camera = game.Class.extend({
 
         this.moveCamera();
 
-        if (game.debugDraw && game.Camera.debug && !this.debugBox) {
-            this.debugBox = new game.Graphics();
-            this.debugBox.beginFill(0xff00ff);
-            this.debugBox.alpha = 0.3;
-            this.debugBox.drawRect(-this.sensorWidth / 2, -this.sensorHeight / 2, this.sensorWidth, this.sensorHeight);
-            game.system.stage.addChild(this.debugBox);
-        }
-
-        if (this.debugBox) {
-            this.debugBox.position.set(this.sensorPosition.x - this.position.x, this.sensorPosition.y - this.position.y);
-        }
+        if (this.debugBox) this.debugBox.position.set(this.sensorPosition.x - this.position.x, this.sensorPosition.y - this.position.y);
     }
 });
 
 game.Camera.debug = false;
+game.Camera.debugColor = 0xff00ff;
+game.Camera.debugAlpha = 0.2;
 
 });
