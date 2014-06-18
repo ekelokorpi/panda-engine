@@ -15,13 +15,12 @@ game.module(
     @extends game.Class
 **/
 game.DebugDraw = game.Class.extend({
-    /**
-        @property {game.Container} container
-    **/
-    container: null,
+    spriteContainer: null,
+    bodyContainer: null,
 
     init: function() {
-        this.container = new game.Container();
+        this.spriteContainer = new game.Container();
+        this.bodyContainer = new game.Container();
     },
 
     /**
@@ -29,10 +28,15 @@ game.DebugDraw = game.Class.extend({
         @method reset
     **/
     reset: function() {
-        for (var i = this.container.children.length - 1; i >= 0; i--) {
-            this.container.removeChild(this.container.children[i]);
+        for (var i = this.spriteContainer.children.length - 1; i >= 0; i--) {
+            this.spriteContainer.removeChild(this.spriteContainer.children[i]);
         }
-        game.system.stage.addChild(this.container);
+        game.system.stage.addChild(this.spriteContainer);
+
+        for (var i = this.bodyContainer.children.length - 1; i >= 0; i--) {
+            this.bodyContainer.removeChild(this.bodyContainer.children[i]);
+        }
+        game.system.stage.addChild(this.bodyContainer);
     },
 
     /**
@@ -52,13 +56,15 @@ game.DebugDraw = game.Class.extend({
                 grap.drawCircle(sprite.hitArea.x, sprite.hitArea.y, sprite.hitArea.radius);
             }
         }
-        else grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
+        else {
+            grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
+        }
 
         grap.position.x = sprite.position.x;
         grap.position.y = sprite.position.y;
         grap.target = sprite;
         grap.alpha = game.DebugDraw.spriteAlpha;
-        this.container.addChild(grap);
+        this.spriteContainer.addChild(grap);
     },
 
     /**
@@ -73,13 +79,13 @@ game.DebugDraw = game.Class.extend({
         sprite.position.x = body.position.x;
         sprite.position.y = body.position.y;
         sprite.target = body;
-        sprite.alpha = game.DebugDraw.shapeAlpha;
-        this.container.addChild(sprite);
+        sprite.alpha = game.DebugDraw.bodyAlpha;
+        this.bodyContainer.addChild(sprite);
     },
 
     drawDebugSprite: function(sprite, body) {
         sprite.clear();
-        sprite.beginFill(game.DebugDraw.shapeColor);
+        sprite.beginFill(game.DebugDraw.bodyColor);
 
         if (body.shape instanceof game.Rectangle) {
             sprite.drawRect(-body.shape.width / 2, -body.shape.height / 2, body.shape.width, body.shape.height);
@@ -97,39 +103,44 @@ game.DebugDraw = game.Class.extend({
         @method update
     **/
     update: function() {
-        for (var i = this.container.children.length - 1; i >= 0; i--) {
-            if (game.modules['plugins.p2'] && this.container.children[i].target instanceof game.Body) {
-                this.updateP2(this.container.children[i]);
+        for (var i = this.bodyContainer.children.length - 1; i >= 0; i--) {
+            if (game.modules['plugins.p2']) {
+                this.updateP2(this.bodyContainer.children[i]);
                 continue;
             }
-            
-            this.container.children[i].rotation = this.container.children[i].target.rotation;
 
-            if (game.modules['engine.physics'] && this.container.children[i].target instanceof game.Body) {
-                if (this.container.children[i].width !== this.container.children[i].target.shape.width ||
-                    this.container.children[i].height !== this.container.children[i].target.shape.height) {
-                    this.drawDebugSprite(this.container.children[i], this.container.children[i].target);
-                }
-                if (this.container.children[i].radius !== this.container.children[i].target.shape.radius) {
-                    this.drawDebugSprite(this.container.children[i], this.container.children[i].target);
-                }
+            this.bodyContainer.children[i].rotation = this.bodyContainer.children[i].target.rotation;
 
-                this.container.children[i].position.x = this.container.children[i].target.position.x + game.scene.stage.position.x;
-                this.container.children[i].position.y = this.container.children[i].target.position.y + game.scene.stage.position.y;
-                if (!this.container.children[i].target.world) {
-                    this.container.removeChild(this.container.children[i]);
-                }
+            if (this.bodyContainer.children[i].width !== this.bodyContainer.children[i].target.shape.width ||
+                this.bodyContainer.children[i].height !== this.bodyContainer.children[i].target.shape.height) {
+                this.drawDebugSprite(this.bodyContainer.children[i], this.bodyContainer.children[i].target);
             }
-            else {
-                if (this.container.children[i].target.parent) this.container.children[i].target.updateTransform();
-                this.container.children[i].visible = this.container.children[i].target.worldVisible;
-                this.container.children[i].position.x = this.container.children[i].target.worldTransform.tx;
-                this.container.children[i].position.y = this.container.children[i].target.worldTransform.ty;
-                this.container.children[i].scale.x = this.container.children[i].target.scale.x;
-                this.container.children[i].scale.y = this.container.children[i].target.scale.y;
-                if (!this.container.children[i].target.parent) {
-                    this.container.removeChild(this.container.children[i]);
-                }
+
+            if (this.bodyContainer.children[i].radius !== this.bodyContainer.children[i].target.shape.radius) {
+                this.drawDebugSprite(this.bodyContainer.children[i], this.bodyContainer.children[i].target);
+            }
+
+            this.bodyContainer.children[i].position.x = this.bodyContainer.children[i].target.position.x;
+            this.bodyContainer.children[i].position.y = this.bodyContainer.children[i].target.position.y;
+
+            if (!this.bodyContainer.children[i].target.world) {
+                this.bodyContainer.removeChild(this.bodyContainer.children[i]);
+            }
+        }
+
+        for (var i = this.spriteContainer.children.length - 1; i >= 0; i--) {
+            this.spriteContainer.children[i].rotation = this.spriteContainer.children[i].target.rotation;
+
+            if (this.spriteContainer.children[i].target.parent) this.spriteContainer.children[i].target.updateTransform();
+
+            this.spriteContainer.children[i].visible = this.spriteContainer.children[i].target.worldVisible;
+            this.spriteContainer.children[i].position.x = this.spriteContainer.children[i].target.worldTransform.tx;
+            this.spriteContainer.children[i].position.y = this.spriteContainer.children[i].target.worldTransform.ty;
+            this.spriteContainer.children[i].scale.x = this.spriteContainer.children[i].target.scale.x;
+            this.spriteContainer.children[i].scale.y = this.spriteContainer.children[i].target.scale.y;
+
+            if (!this.spriteContainer.children[i].target.parent) {
+                this.spriteContainer.removeChild(this.spriteContainer.children[i]);
             }
         }
     }
@@ -148,17 +159,17 @@ game.DebugDraw.spriteColor = 0xff0000;
 **/
 game.DebugDraw.spriteAlpha = 0.3;
 /**
-    Color of DebugDraw shapes.
-    @attribute {Number} shapeColor
+    Color of DebugDraw bodies.
+    @attribute {Number} bodyColor
     @default 0x0000ff
 **/
-game.DebugDraw.shapeColor = 0x0000ff;
+game.DebugDraw.bodyColor = 0x0000ff;
 /**
-    Alpha of DebugDraw shapes.
-    @attribute {Number} shapeAlpha
+    Alpha of DebugDraw bodies.
+    @attribute {Number} bodyAlpha
     @default 0.3
 **/
-game.DebugDraw.shapeAlpha = 0.3;
+game.DebugDraw.bodyAlpha = 0.3;
 /**
     Enable DebugDraw.
     @attribute {Boolean} enabled
