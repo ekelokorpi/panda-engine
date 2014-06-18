@@ -54,6 +54,8 @@ game.DebugDraw = game.Class.extend({
         }
         else grap.drawRect(-sprite.width * sprite.anchor.x, -sprite.height * sprite.anchor.y, sprite.width, sprite.height);
 
+        grap.position.x = sprite.position.x;
+        grap.position.y = sprite.position.y;
         grap.target = sprite;
         grap.alpha = game.DebugDraw.spriteAlpha;
         this.container.addChild(grap);
@@ -120,6 +122,7 @@ game.DebugDraw = game.Class.extend({
             }
             else {
                 if (this.container.children[i].target.parent) this.container.children[i].target.updateTransform();
+                this.container.children[i].visible = this.container.children[i].target.worldVisible;
                 this.container.children[i].position.x = this.container.children[i].target.worldTransform.tx;
                 this.container.children[i].position.y = this.container.children[i].target.worldTransform.ty;
                 this.container.children[i].scale.x = this.container.children[i].target.scale.x;
