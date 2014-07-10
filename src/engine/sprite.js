@@ -190,12 +190,14 @@ game.TilingSprite = PIXI.TilingSprite.extend({
     @param {Array} textures
 **/
 game.Animation = PIXI.MovieClip.extend({
-    init: function() {
-        var frames = Array.prototype.slice.call(arguments);
+    init: function(textures) {
+        if (typeof textures === 'string') {
+            var frames = Array.prototype.slice.call(arguments);
 
-        var textures = [];
-        for (var i = 0; i < frames.length; i++) {
-            textures.push(game.Texture.fromImage(frames[i]));
+            var textures = [];
+            for (var i = 0; i < frames.length; i++) {
+                textures.push(game.Texture.fromImage(frames[i]));
+            }
         }
 
         this._super(textures);
