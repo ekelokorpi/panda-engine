@@ -235,7 +235,7 @@ var core = {
         @return {String} id
     **/
     addAsset: function(path, id) {
-        this.addFileToQueue(path, id, 'assetQueue');
+        return this.addFileToQueue(path, id, 'assetQueue');
     },
 
     /**
@@ -246,13 +246,13 @@ var core = {
         @return {String} id
     **/
     addAudio: function(path, id) {
-        this.addFileToQueue(path, id, 'audioQueue');
+        return this.addFileToQueue(path, id, 'audioQueue');
     },
 
     addFileToQueue: function(path, id, queue) {
         id = id || path;
         path = this.config.mediaFolder + path + this.nocache;
-        if (this.paths[id]) throw('Id ' + id + ' already found');
+        if (this.paths[id]) return id;
         this.paths[id] = path;
         if (this[queue].indexOf(path) === -1) this[queue].push(path);
         return id;
