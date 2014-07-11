@@ -12,6 +12,8 @@ game.module(
     Dynamic loader for assets and audio.
     @class Loader
     @extends game.Class
+    @constructor
+    @param {game.Scene|Function} param
 **/
 game.Loader = game.Class.extend({
     /**
@@ -52,11 +54,6 @@ game.Loader = game.Class.extend({
         @default true
     **/
     dynamic: true,
-    /**
-        Callback function for loader.
-        @property {Function} callback
-        @default null
-    **/
     callback: null,
     
     init: function(callback) {
@@ -125,6 +122,11 @@ game.Loader = game.Class.extend({
         }
     },
 
+    onComplete: function(callback) {
+        this.callback = callback;
+        return this;
+    },
+
     /**
         Start loader.
         @method start
@@ -164,6 +166,8 @@ game.Loader = game.Class.extend({
 
         if (this.assetQueue.length > 0) this.loader.load();
         else this.loadAudio();
+
+        return this;
     },
 
     /**
