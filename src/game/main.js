@@ -12,7 +12,7 @@ SceneGame = game.Scene.extend({
         var logo = new game.Sprite('logo.png');
         logo.anchor.set(0.5, 0.5);
         logo.position.set(game.system.width / 2, game.system.height / 2);
-        this.stage.addChild(logo);
+        logo.addTo(this.stage);
     }
 });
 
