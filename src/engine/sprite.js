@@ -74,7 +74,7 @@ game.Sprite = PIXI.Sprite.extend({
     },
 
     /**
-        Add sprite to container.
+        Add to container.
         @method addTo
         @param {game.Container} container
     **/
@@ -122,7 +122,6 @@ game.Spine = PIXI.Spine.extend({
 });
 
 /**
-    Sprite container.
     http://www.goodboydigital.com/pixijs/docs/classes/DisplayObjectContainer.html
     @class Container
 **/
@@ -146,6 +145,11 @@ game.Container = PIXI.DisplayObjectContainer.extend({
         if (game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
     },
 
+    /**
+        Add to container.
+        @method addTo
+        @param {game.Container} container
+    **/
     addTo: function(container) {
         container.addChild(this);
         return this;
@@ -180,11 +184,20 @@ game.TilingSprite = PIXI.TilingSprite.extend({
         game.merge(this, settings);
     },
 
+    /**
+        Update tile position with speed.
+        @method update
+    **/
     update: function() {
         this.tilePosition.x += this.speed.x * game.system.delta;
         this.tilePosition.y += this.speed.y * game.system.delta;
     },
 
+    /**
+        Add to container.
+        @method addTo
+        @param {game.Container} container
+    **/
     addTo: function(container) {
         container.addChild(this);
         return this;
