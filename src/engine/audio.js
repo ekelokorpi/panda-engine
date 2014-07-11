@@ -353,7 +353,7 @@ game.Audio = game.Class.extend({
     **/
     playMusic: function(id, volume) {
         if (!game.Audio.enabled) return;
-        if (this.musicMuted) return;
+        if (this.musicMuted) return this.currentMusic = id;
 
         // Stop current music before playing new
         if (this.currentMusic) this.stop(this.currentMusic);
