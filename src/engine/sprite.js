@@ -35,7 +35,7 @@ game.Sprite = PIXI.Sprite.extend({
         if (typeof x === 'number') this.position.x = x;
         if (typeof y === 'number') this.position.y = y;
 
-        // auto bind touch events for mobile
+        // Auto bind touch events for mobile
         if (game.device.mobile && !this.tap && this.click) this.tap = this.click;
         if (game.device.mobile && !this.touchmove && this.mousemove) this.touchmove = this.mousemove;
         if (game.device.mobile && !this.touchstart && this.mousedown) this.touchstart = this.mousedown;
@@ -52,6 +52,15 @@ game.Sprite = PIXI.Sprite.extend({
     },
 
     /**
+        Position sprite to system center.
+        @method center
+    **/
+    center: function() {
+        this.position.x = game.system.width / 2 - this.width / 2 + this.width * this.anchor.x;
+        this.position.y = game.system.height / 2 - this.height / 2 + this.height * this.anchor.y;
+    },
+
+    /**
         Remove sprite from it's parent.
         @method remove
     **/
@@ -61,7 +70,7 @@ game.Sprite = PIXI.Sprite.extend({
 
     addChild: function(obj) {
         this._super(obj);
-        if (game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
+        if (game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
     },
 
     /**
