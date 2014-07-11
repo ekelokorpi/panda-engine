@@ -91,9 +91,9 @@ game.TweenEngine = game.Class.extend({
 game.Tween = game.Class.extend({
     /**
         Is tween playing.
-        @property {Boolean} isPlaying
+        @property {Boolean} playing
     **/
-    isPlaying: false,
+    playing: false,
     /**
         Is tween paused.
         @property {Boolean} paused
@@ -152,7 +152,7 @@ game.Tween = game.Class.extend({
     **/
     start: function() {
         game.tweenEngine.add(this);
-        this.isPlaying = true;
+        this.playing = true;
         this.onStartCallbackFired = false;
         this.startTime = this.delayTime;
         this.originalStartTime = this.startTime;
@@ -178,11 +178,11 @@ game.Tween = game.Class.extend({
         @method stop
     **/
     stop: function() {
-        if (!this.isPlaying) {
+        if (!this.playing) {
             return this;
         }
         game.tweenEngine.remove(this);
-        this.isPlaying = false;
+        this.playing = false;
         this.stopChainedTweens();
         return this;
     },
@@ -240,7 +240,13 @@ game.Tween = game.Class.extend({
         @param {Function} easing
     **/
     easing: function(easing) {
-        this.easingFunction = easing;
+        if (typeof easing === 'string') {
+            easing = easing.split('.');
+            this.easingFunction = game.Tween.Easing[easing[0]][easing[1]];
+        }
+        else {
+            this.easingFunction = easing;
+        }
         return this;
     },
 
@@ -364,7 +370,7 @@ game.Tween = game.Class.extend({
                 return true;
             }
             else {
-                this.isPlaying = false;
+                this.playing = false;
                 if (this.onCompleteCallback !== null) {
                     this.onCompleteCallback.call(this.object);
                 }
@@ -686,7 +692,7 @@ game.TweenGroup = game.Class.extend({
     tweenComplete: function() {
         if (this.complete) return;
         for (var i = 0; i < this.tweens.length; i++) {
-            if (this.tweens[i].isPlaying) return;
+            if (this.tweens[i].playing) return;
         }
         this.complete = true;
         if (typeof this.onComplete === 'function') this.onComplete();
