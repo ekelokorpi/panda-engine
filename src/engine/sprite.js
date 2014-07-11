@@ -175,9 +175,8 @@ game.Texture.fromFrame = PIXI.Texture.fromFrame;
     @param {Object} [settings]
 **/
 game.TilingSprite = PIXI.TilingSprite.extend({
-    speed: { x: 0, y: 0 },
-
     init: function(path, width, height, settings) {
+        this.speed = new game.Point();
         path = game.paths[path] || path;
         var texture = path instanceof PIXI.Texture ? path : PIXI.Texture.fromFrame(this.path || path);
         this._super(texture, width || texture.width, height || texture.height);
