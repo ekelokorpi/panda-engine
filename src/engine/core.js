@@ -13,7 +13,6 @@
     @requires timer
     @requires system
     @requires audio
-    @requires sprite
     @requires debug
     @requires storage
     @requires tween
@@ -52,7 +51,6 @@ var game = {
         'engine.pool',
         'engine.renderer',
         'engine.scene',
-        'engine.sprite',
         'engine.storage',
         'engine.system',
         'engine.timer',

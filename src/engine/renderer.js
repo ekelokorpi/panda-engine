@@ -7,7 +7,8 @@ game.module(
 .body(function() {
 'use strict';
 
-PIXI.extend = function(prop) {
+// Used to extend PIXI classes
+game.PIXI.extend = function(prop) {
     var name;
     var proto = this.prototype;
     var base = this.prototype.base || this;
@@ -60,33 +61,253 @@ PIXI.extend = function(prop) {
     Class.prototype.constructor = Class;
     Class.prototype.base = base;
     
-    Class.extend = PIXI.extend;
+    Class.extend = game.PIXI.extend;
 
     return Class;
 };
 
-for (var i in PIXI) {
-    if (PIXI[i].prototype instanceof Object) {
-        PIXI[i].extend = PIXI.extend;
+for (var i in game.PIXI) {
+    if (game.PIXI[i].prototype instanceof Object) {
+        game.PIXI[i].extend = game.PIXI.extend;
     }
 }
 
-game.AssetLoader = PIXI.AssetLoader;
-game.Text = PIXI.Text;
-game.MovieClip = PIXI.MovieClip;
-game.FlashClip = PIXI.FlashClip;
-game.BitmapText = PIXI.BitmapText;
-game.Graphics = PIXI.Graphics;
-game.HitRectangle = PIXI.Rectangle;
-game.HitCircle = PIXI.Circle;
-game.HitEllipse = PIXI.Ellipse;
-game.HitPolygon = PIXI.Polygon;
-game.TextureCache = PIXI.TextureCache;
-game.RenderTexture = PIXI.RenderTexture;
-game.Point = PIXI.Point;
-game.CanvasRenderer = PIXI.CanvasRenderer;
-game.autoDetectRenderer = PIXI.autoDetectRenderer;
-game.Stage = PIXI.Stage;
-game.blendModes = PIXI.blendModes;
+game.AssetLoader = game.PIXI.AssetLoader;
+game.Text = game.PIXI.Text;
+game.MovieClip = game.PIXI.MovieClip;
+game.FlashClip = game.PIXI.FlashClip;
+game.BitmapText = game.PIXI.BitmapText;
+game.Graphics = game.PIXI.Graphics;
+game.HitRectangle = game.PIXI.Rectangle;
+game.HitCircle = game.PIXI.Circle;
+game.HitEllipse = game.PIXI.Ellipse;
+game.HitPolygon = game.PIXI.Polygon;
+game.TextureCache = game.PIXI.TextureCache;
+game.RenderTexture = game.PIXI.RenderTexture;
+game.Point = game.PIXI.Point;
+game.CanvasRenderer = game.PIXI.CanvasRenderer;
+game.autoDetectRenderer = game.PIXI.autoDetectRenderer;
+game.Stage = game.PIXI.Stage;
+game.blendModes = game.PIXI.blendModes;
+
+/**
+    http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
+    @class Sprite
+    @constructor
+    @param {String} id
+    @param {Number} [x]
+    @param {Number} [y]
+    @param {Object} [settings]
+**/
+game.Sprite = game.PIXI.Sprite.extend({
+    debugDraw: true,
+
+    init: function(id, x, y, settings) {
+        if (typeof id === 'string') {
+            id = game.paths[id] || id;
+            id = game.Texture.fromFrame(id);
+        }
+        this._super(id);
+
+        game.merge(this, settings);
+
+        if (typeof x === 'number') this.position.x = x;
+        if (typeof y === 'number') this.position.y = y;
+
+        // Auto bind touch events for mobile
+        if (game.device.mobile && !this.tap && this.click) this.tap = this.click;
+        if (game.device.mobile && !this.touchmove && this.mousemove) this.touchmove = this.mousemove;
+        if (game.device.mobile && !this.touchstart && this.mousedown) this.touchstart = this.mousedown;
+        if (game.device.mobile && !this.touchend && this.mouseup) this.touchend = this.mouseup;
+        if (game.device.mobile && !this.touchendoutside && this.mouseupoutside) this.touchendoutside = this.mouseupoutside;
+    },
+
+    setTexture: function(id) {
+        if (typeof id === 'string') {
+            id = game.paths[id] || id;
+            id = game.Texture.fromFrame(id);
+        }
+        this._super(id);
+    },
+
+    /**
+        Position sprite to system center.
+        @method center
+    **/
+    center: function() {
+        this.position.x = game.system.width / 2 - this.width / 2 + this.width * this.anchor.x;
+        this.position.y = game.system.height / 2 - this.height / 2 + this.height * this.anchor.y;
+        return this;
+    },
+
+    /**
+        Remove sprite from it's parent.
+        @method remove
+    **/
+    remove: function() {
+        if (this.parent) this.parent.removeChild(this);
+    },
+
+    addChild: function(obj) {
+        this._super(obj);
+        if (game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
+    },
+
+    /**
+        Add to container.
+        @method addTo
+        @param {game.Container} container
+    **/
+    addTo: function(container) {
+        container.addChild(this);
+        return this;
+    }
+});
+
+/**
+    Spine animation.
+    @class Spine
+    @constructor
+    @param {String} id
+    @param {Object} [settings]
+**/
+game.Spine = game.PIXI.Spine.extend({
+    init: function(id, settings) {
+        this._super(game.paths[id] || id);
+        game.merge(this, settings);
+    },
+
+    /**
+        Play animation.
+        @method play
+        @param {String} anim Name of animation.
+        @param {Boolean} loop Animation looping.
+        @param {Boolean} after Start after current animation.
+    **/
+    play: function(anim, loop, after) {
+        if (after) this.state.addAnimationByName(anim, !!loop);
+        else this.state.setAnimationByName(anim, !!loop);
+    },
+
+    /**
+        Mix two animations for smooth transition.
+        @method mix
+        @param {String} from Animation name to mix from.
+        @param {String} to Animation name to mix to.
+        @param {Number} value Percent of mix.
+    **/
+    mix: function(from, to, value) {
+        this.stateData.setMixByName(from, to, value / 100);
+    }
+});
+
+/**
+    http://www.goodboydigital.com/pixijs/docs/classes/DisplayObjectContainer.html
+    @class Container
+**/
+game.Container = game.PIXI.DisplayObjectContainer.extend({
+    debugDraw: true,
+    
+    /**
+        Remove container from it's parent.
+        @method remove
+    **/
+    remove: function() {
+        if (this.parent) this.parent.removeChild(this);
+    },
+
+    /**
+        Add object to container.
+        @method addChild
+    **/
+    addChild: function(obj) {
+        this._super(obj);
+        if (game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
+    },
+
+    /**
+        Add to container.
+        @method addTo
+        @param {game.Container} container
+    **/
+    addTo: function(container) {
+        container.addChild(this);
+        return this;
+    }
+});
+
+game.Texture = game.PIXI.Texture.extend();
+game.Texture.fromImage = function(id, crossorigin) {
+    id = game.paths[id] || id;
+    return game.PIXI.Texture.fromImage(id, crossorigin);
+};
+game.Texture.fromCanvas = game.PIXI.Texture.fromCanvas;
+game.Texture.fromFrame = game.PIXI.Texture.fromFrame;
+
+/**
+    Tiling sprite.
+    http://www.goodboydigital.com/pixijs/docs/classes/TilingSprite.html
+    @class TilingSprite
+    @constructor
+    @param {String|game.Texture} texture
+    @param {Number} width
+    @param {Number} height
+    @param {Object} [settings]
+**/
+game.TilingSprite = game.PIXI.TilingSprite.extend({
+    /**
+        @property {game.Point} speed
+    **/
+    speed: null,
+
+    init: function(path, width, height, settings) {
+        this.speed = new game.Point();
+        path = game.paths[path] || path;
+        var texture = path instanceof game.Texture ? path : game.Texture.fromFrame(this.path || path);
+        this._super(texture, width || texture.width, height || texture.height);
+        game.merge(this, settings);
+    },
+
+    /**
+        Update tile position with speed.
+        @method update
+    **/
+    update: function() {
+        this.tilePosition.x += this.speed.x * game.system.delta;
+        this.tilePosition.y += this.speed.y * game.system.delta;
+    },
+
+    /**
+        Add to container.
+        @method addTo
+        @param {game.Container} container
+    **/
+    addTo: function(container) {
+        container.addChild(this);
+        return this;
+    }
+});
+
+/**
+    Sprite animation.
+    http://www.goodboydigital.com/pixijs/docs/classes/MovieClip.html
+    @class Animation
+    @constructor
+    @param {Array} textures
+**/
+game.Animation = game.PIXI.MovieClip.extend({
+    init: function(textures) {
+        if (typeof textures === 'string') {
+            var frames = Array.prototype.slice.call(arguments);
+
+            var textures = [];
+            for (var i = 0; i < frames.length; i++) {
+                textures.push(game.Texture.fromImage(frames[i]));
+            }
+        }
+
+        this._super(textures);
+    }
+});
 
 });

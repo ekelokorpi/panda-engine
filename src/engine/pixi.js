@@ -20,7 +20,7 @@ game.module(
 
 (function(){
 
-    var root = window;
+    var root = game;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
