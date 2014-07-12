@@ -58,6 +58,7 @@ game.Sprite = PIXI.Sprite.extend({
     center: function() {
         this.position.x = game.system.width / 2 - this.width / 2 + this.width * this.anchor.x;
         this.position.y = game.system.height / 2 - this.height / 2 + this.height * this.anchor.y;
+        return this;
     },
 
     /**
@@ -175,6 +176,11 @@ game.Texture.fromFrame = PIXI.Texture.fromFrame;
     @param {Object} [settings]
 **/
 game.TilingSprite = PIXI.TilingSprite.extend({
+    /**
+        @property {game.Point} speed
+    **/
+    speed: null,
+
     init: function(path, width, height, settings) {
         this.speed = new game.Point();
         path = game.paths[path] || path;
