@@ -7,7 +7,7 @@
 'use strict';
 
 /**
-    @module core
+    @module game
     @namespace game
     @requires loader
     @requires timer
@@ -24,12 +24,12 @@
 /**
     @class Core
 **/
-var core = {
+var game = {
     /**
         Current engine version.
         @property {String} version
     **/
-    version: '1.6.0',
+    version: '1.7.0',
     /**
         Engine settings.
         @property {Object} config
@@ -48,6 +48,7 @@ var core = {
         'engine.loader',
         'engine.particle',
         'engine.physics',
+        'engine.pixi',
         'engine.pool',
         'engine.renderer',
         'engine.scene',
@@ -451,7 +452,7 @@ var core = {
         var elem = document.createElement('canvas');
         var canvasSupported = !!(elem.getContext && elem.getContext('2d'));
         if (!canvasSupported) {
-            if (core.config.noCanvasURL) window.location = core.config.noCanvasURL;
+            if (game.config.noCanvasURL) window.location = game.config.noCanvasURL;
             else throw('Canvas not supported');
         }
 
@@ -645,8 +646,8 @@ var core = {
 };
 
 // http://ejohn.org/blog/simple-javascript-inheritance/
-var initializing = false;
-var fnTest = /xyz/.test(function() {
+game.initializing = false;
+game.fnTest = /xyz/.test(function() {
     var xyz; return xyz;
 }) ? /\b_super\b/ : /[\D|\d]*/;
 
@@ -654,7 +655,7 @@ var fnTest = /xyz/.test(function() {
     Base class.
     @class Class
 **/
-core.Class = function() {};
+game.Class = function() {};
 
 /**
     Extend class.
@@ -662,11 +663,11 @@ core.Class = function() {};
     @param {Object} prop
     @return {game.Class} Returns extended class
 **/
-core.Class.extend = function(prop) {
+game.Class.extend = function(prop) {
     var parent = this.prototype;
-    initializing = true;
+    game.initializing = true;
     var prototype = new this();
-    initializing = false;
+    game.initializing = false;
 
     var makeFn = function(name, fn) {
         return function() {
@@ -687,7 +688,7 @@ core.Class.extend = function(prop) {
         if (
             typeof prop[name] === 'function' &&
             typeof parent[name] === 'function' &&
-            fnTest.test(prop[name])
+            game.fnTest.test(prop[name])
         ) {
             prototype[name] = makeFn(name, prop[name]);
         }
@@ -697,7 +698,7 @@ core.Class.extend = function(prop) {
     }
 
     function Class() {
-        if (!initializing) {
+        if (!game.initializing) {
             if (this.staticInit) {
                 /**
                     This method is called before init.
@@ -711,7 +712,7 @@ core.Class.extend = function(prop) {
             }
             for (var p in this) {
                 if (typeof this[p] === 'object') {
-                    this[p] = core.copy(this[p]);
+                    this[p] = game.copy(this[p]);
                 }
             }
             if (this.init) {
@@ -728,7 +729,7 @@ core.Class.extend = function(prop) {
 
     Class.prototype = prototype;
     Class.prototype.constructor = Class;
-    Class.extend = core.Class.extend;
+    Class.extend = game.Class.extend;
     /**
         Inject class.
         @method inject
@@ -752,7 +753,7 @@ core.Class.extend = function(prop) {
             if (
                 typeof prop[name] === 'function' &&
                 typeof proto[name] === 'function' &&
-                fnTest.test(prop[name])
+                game.fnTest.test(prop[name])
             ) {
                 parent[name] = proto[name];
                 proto[name] = makeFn(name, prop[name]);
@@ -766,13 +767,4 @@ core.Class.extend = function(prop) {
     return Class;
 };
 
-if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
-        exports = module.exports = core;
-    }
-    exports.core = core;
-}
-else {
-    window.game = window.panda = core;
-    core.boot();
-}
+game.boot();
