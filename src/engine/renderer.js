@@ -75,7 +75,6 @@ for (var i in game.PIXI) {
 game.AssetLoader = game.PIXI.AssetLoader;
 game.Text = game.PIXI.Text;
 game.MovieClip = game.PIXI.MovieClip;
-game.FlashClip = game.PIXI.FlashClip;
 game.BitmapText = game.PIXI.BitmapText;
 game.Graphics = game.PIXI.Graphics;
 game.HitRectangle = game.PIXI.Rectangle;
