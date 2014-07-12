@@ -7,6 +7,8 @@ game.module(
 .body(function() {
 'use strict';
 
+game.PIXI.dontSayHello = true;
+
 // Used to extend PIXI classes
 game.PIXI.extend = function(prop) {
     var name;
@@ -74,9 +76,6 @@ for (var i in game.PIXI) {
 
 game.AssetLoader = game.PIXI.AssetLoader;
 game.Text = game.PIXI.Text;
-game.MovieClip = game.PIXI.MovieClip;
-game.BitmapText = game.PIXI.BitmapText;
-game.Graphics = game.PIXI.Graphics;
 game.HitRectangle = game.PIXI.Rectangle;
 game.HitCircle = game.PIXI.Circle;
 game.HitEllipse = game.PIXI.Ellipse;
@@ -161,6 +160,20 @@ game.Sprite = game.PIXI.Sprite.extend({
         container.addChild(this);
         return this;
     }
+});
+
+game.Graphics = game.PIXI.Graphics.extend({
+    addTo: function(container) {
+        container.addChild(this);
+        return this;
+    }
+});
+
+game.BitmapText = game.PIXI.BitmapText.extend({
+    addTo: function(container) {
+        container.addChild(this);
+        return this;
+    } 
 });
 
 /**
