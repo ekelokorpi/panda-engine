@@ -765,4 +765,5 @@ game.Class.extend = function(prop) {
     return Class;
 };
 
-game.boot();
+if (typeof exports !== 'undefined') exports = module.exports = game;
+else game.boot();
