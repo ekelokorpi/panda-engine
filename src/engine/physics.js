@@ -192,14 +192,18 @@ game.CollisionSolver = game.Class.extend({
             return dist < (circle.shape.radius * circle.shape.radius);
         }
         if (a.shape instanceof game.Line && b.shape instanceof game.Line) {
-            var a1x = a.position.x - Math.sin(a.shape.rotation) * (a.shape.length / 2);
-            var a1y = a.position.y - Math.cos(a.shape.rotation) * (a.shape.length / 2);
-            var a2x = a.position.x + Math.sin(a.shape.rotation) * (a.shape.length / 2);
-            var a2y = a.position.y + Math.cos(a.shape.rotation) * (a.shape.length / 2);
-            var b1x = b.position.x - Math.sin(b.shape.rotation) * (b.shape.length / 2);
-            var b1y = b.position.y - Math.cos(b.shape.rotation) * (b.shape.length / 2);
-            var b2x = b.position.x + Math.sin(b.shape.rotation) * (b.shape.length / 2);
-            var b2y = b.position.y + Math.cos(b.shape.rotation) * (b.shape.length / 2);
+            var sinA = Math.sin(a.shape.rotation);
+            var cosA = Math.cos(a.shape.rotation);
+            var sinB = Math.sin(b.shape.rotation);
+            var cosB = Math.cos(b.shape.rotation);
+            var a1x = a.position.x - sinA * (a.shape.length / 2);
+            var a1y = a.position.y - cosA * (a.shape.length / 2);
+            var a2x = a.position.x + sinA * (a.shape.length / 2);
+            var a2y = a.position.y + cosA * (a.shape.length / 2);
+            var b1x = b.position.x - sinB * (b.shape.length / 2);
+            var b1y = b.position.y - cosB * (b.shape.length / 2);
+            var b2x = b.position.x + sinB * (b.shape.length / 2);
+            var b2y = b.position.y + cosB * (b.shape.length / 2);
 
             var ub = (b2y - b1y) * (a2x - a1x) - (b2x - b1x) * (a2y - a1y);
 
