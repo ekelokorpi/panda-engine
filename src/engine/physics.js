@@ -164,7 +164,7 @@ game.CollisionSolver = game.Class.extend({
         @method hitTest
         @param {game.Body} a
         @param {game.Body} b
-        @return {Boolean}
+        @return {Boolean} return true, if bodies hit.
     **/
     hitTest: function(a, b) {
         if (a.shape instanceof game.Rectangle && b.shape instanceof game.Rectangle) {
@@ -372,6 +372,7 @@ game.Body = game.Class.extend({
     /**
         Body's maximum velocity.
         @property {game.Vector} velocityLimit
+        @default 500,500
     **/
     velocityLimit: null,
     /**
@@ -420,7 +421,7 @@ game.Body = game.Class.extend({
     /**
         This is called, when body collides with another body.
         @method collide
-        @param {game.Body} bodyB
+        @param {game.Body} bodyB body that it collided with.
         @return {Boolean} Return true, to apply hit response.
     **/
     collide: function() {
@@ -428,9 +429,9 @@ game.Body = game.Class.extend({
     },
 
     /**
-        This is called, when collision has been resolved.
+        This is called after hit response.
         @method afterCollide
-        @param {game.Body} bodyB
+        @param {game.Body} bodyB body that it collided with.
     **/
     afterCollide: function() {
     },
@@ -456,7 +457,6 @@ game.Body = game.Class.extend({
     },
 
     /**
-        Update body's position and velocity.
         @method update
     **/
     update: function() {
