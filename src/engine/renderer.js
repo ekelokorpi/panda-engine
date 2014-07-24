@@ -1,3 +1,7 @@
+/**
+    @module renderer
+    @namespace game
+**/
 game.module(
     'engine.renderer'
 )
