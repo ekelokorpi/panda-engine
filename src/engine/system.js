@@ -421,11 +421,11 @@ game.System = game.Class.extend({
                 if (width / height !== this.width / this.height) {
                     // Wrong ratio, need to resize
                     if (this.orientation === 'landscape') {
-                        this.width = this.height * (width / height);
+                        this.width = Math.round(this.height * (width / height));
                         this.ratio = this.width / this.height;
                     }
                     else {
-                        this.height = this.width * (height / width);
+                        this.height = Math.round(this.width * (height / width));
                         this.ratio = this.height / this.width;
                     }
                     this.renderer.resize(this.width, this.height);
