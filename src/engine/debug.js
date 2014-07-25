@@ -250,9 +250,4 @@ game.Debug.position = {
     y: 10
 };
 
-if (game.Debug.enabled) {
-    console.log('Panda.js ' + game.version);
-    console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
-}
-
 });

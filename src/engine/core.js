@@ -322,6 +322,12 @@ var game = {
 
         this.system = new this.System(width, height, canvasId);
 
+        if (game.Debug.enabled) {
+            console.log('Panda.js ' + game.version);
+            console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
+            console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer');
+        }
+
         if (this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.DebugDraw && this.DebugDraw.enabled) this.debugDraw = new this.DebugDraw();
