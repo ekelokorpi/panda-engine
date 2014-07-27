@@ -177,7 +177,7 @@ game.BitmapText = game.PIXI.BitmapText.extend({
     addTo: function(container) {
         container.addChild(this);
         return this;
-    } 
+    }
 });
 
 /**
