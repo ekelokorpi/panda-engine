@@ -124,6 +124,8 @@ game.System = game.Class.extend({
             document.body.appendChild(canvas);
         }
 
+        game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
+
         if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
         else this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
 
@@ -659,5 +661,11 @@ game.System.scaleToFit = false;
     @default null
 **/
 game.System.canvasId = null;
+/**
+    Canvas scale mode.
+    @attribute {String} scaleMode
+    @default linear
+**/
+game.System.scaleMode = 'linear';
 
 });
