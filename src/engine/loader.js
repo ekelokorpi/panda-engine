@@ -73,8 +73,10 @@ game.Loader = game.Class.extend({
             this.assetQueue.push(this.getPath(game.assetQueue[i]));
         }
 
-        for (var i = 0; i < game.audioQueue.length; i++) {
-            this.soundQueue.push(game.audioQueue[i]);
+        if (game.Audio.enabled) {
+            for (var i = 0; i < game.audioQueue.length; i++) {
+                this.soundQueue.push(game.audioQueue[i]);
+            }
         }
 
         if (this.assetQueue.length > 0) {
