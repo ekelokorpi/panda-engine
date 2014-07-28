@@ -195,6 +195,7 @@ game.Audio = game.Class.extend({
             this.sources[id].audio.volume = gainNode.gain.value; // Store volume info for pauses
             this.sources[id].audio.loop = audio.loop; // Store loop info for pauses
             this.sources[id].audio.startTime = this.context.currentTime - this.sources[id].audio.pauseTime || 0;
+            return audio;
         }
         // HTML5 Audio
         else {
@@ -205,6 +206,7 @@ game.Audio = game.Class.extend({
             else this.sources[id].audio.onended = null;
             this.sources[id].audio.currentTime = 0;
             this.sources[id].audio.play();
+            return this.sources[id].audio;
         }
     },
 
@@ -286,7 +288,7 @@ game.Audio = game.Class.extend({
         if (this.soundMuted) return;
 
         volume = volume || 1;
-        this.play(id, volume * this.soundVolume, loop, callback, rate);
+        return this.play(id, volume * this.soundVolume, loop, callback, rate);
     },
 
     /**
@@ -360,7 +362,7 @@ game.Audio = game.Class.extend({
         this.currentMusic = id;
 
         volume = volume || 1;
-        this.play(id, volume * this.musicVolume, true);
+        return this.play(id, volume * this.musicVolume, true);
     },
 
     /**
