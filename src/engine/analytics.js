@@ -9,11 +9,22 @@ game.module(
 'use strict';
 
 /**
+    Google Analytics tracking.
     @class Analytics
     @extends game.Class
+    @constructor
+    @param {String} id
 **/
 game.Analytics = game.Class.extend({
+    /**
+        Analytics tracking id.
+        @property {String} trackId
+    **/
     trackId: null,
+    /**
+        User id used on CocoonJS analytics.
+        @property {Number} userId
+    **/
     userId: null,
 
     init: function(id) {
@@ -48,6 +59,10 @@ game.Analytics = game.Class.extend({
         }
     },
 
+    /**
+        Generate user id.
+        @method guid
+    **/
     guid: function() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -81,13 +96,13 @@ game.Analytics = game.Class.extend({
 });
 
 /**
-    Tracking id for Analytics.
+    Tracking id for analytics.
     @attribute {String} id
 **/
 game.Analytics.id = '';
 
 /**
-    Enable Analytics on CocoonJS.
+    Enable analytics on CocoonJS.
     @attribute {Boolean} cocoonJS
     @default false
 **/
