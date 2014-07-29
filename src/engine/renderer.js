@@ -305,13 +305,35 @@ game.TilingSprite = game.PIXI.TilingSprite.extend({
 });
 
 /**
-    Sprite animation.
-    http://www.goodboydigital.com/pixijs/docs/classes/MovieClip.html
+    Frame by frame animation.
     @class Animation
+    @extends game.Container
     @constructor
     @param {Array} textures
 **/
 game.Animation = game.PIXI.MovieClip.extend({
+    /**
+        @property {Number} animationSpeed
+        @default 1
+    **/
+    /**
+        @property {Array} textures
+    **/
+    /**
+        @property {Boolean} loop
+    **/
+    /**
+        @property {Number} currentFrame
+    **/
+    /**
+        @property {Boolean} playing
+    **/
+    /**
+        @property {Number} totalFrames
+    **/
+    /**
+        @property {Function} onComplete
+    **/
     init: function(textures) {
         if (typeof textures === 'string') {
             var frames = Array.prototype.slice.call(arguments);
@@ -325,15 +347,23 @@ game.Animation = game.PIXI.MovieClip.extend({
         this._super(textures);
     },
 
-    /**
-        Add to container.
-        @method addTo
-        @param {game.Container} container
-    **/
     addTo: function(container) {
         container.addChild(this);
         return this;
     }
+
+    /**
+        @method play
+    **/
+    /**
+        @method stop
+    **/
+    /**
+        @method gotoAndPlay
+    **/
+    /**
+        @method gotoAndStop
+    **/
 });
 
 });

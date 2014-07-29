@@ -9,6 +9,7 @@ game.module(
 'use strict';
 
 /**
+    Audio manager.
     @class Audio
     @extends game.Class
 **/
