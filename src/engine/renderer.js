@@ -323,6 +323,16 @@ game.Animation = game.PIXI.MovieClip.extend({
         }
 
         this._super(textures);
+    },
+
+    /**
+        Add to container.
+        @method addTo
+        @param {game.Container} container
+    **/
+    addTo: function(container) {
+        container.addChild(this);
+        return this;
     }
 });
 
