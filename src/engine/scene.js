@@ -267,11 +267,11 @@ game.Scene = game.Class.extend({
     },
 
     pause: function() {
-        if (game.audio) game.audio.pauseAll();
+        // if (game.audio) game.audio.pauseAll();
     },
 
     resume: function() {
-        if (game.audio) game.audio.resumeAll();
+        // if (game.audio) game.audio.resumeAll();
     }
 });
 

@@ -151,7 +151,6 @@ game.Loader = game.Class.extend({
                 this.stage.mouseup = this.stage.mouseupoutside = this.stage.touchend = this.stage.touchendoutside = null;
                 this.stage.mouseout = null;
             }
-            if (game.audio) game.audio.stopAll();
 
             if (typeof game.Loader.bgColor === 'number') {
                 var bg = new game.Graphics();
