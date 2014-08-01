@@ -537,7 +537,7 @@ var game = {
 
         game.normalizeVendorAttribute(window, 'requestAnimationFrame');
 
-        if (document.location.href.match(/\?nocache/)) this.nocache = '?' + Date.now();
+        if (document.location.href.match(/\?nocache/) || this.config.disableCache) this.nocache = '?' + Date.now();
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
