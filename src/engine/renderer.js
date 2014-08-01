@@ -279,7 +279,7 @@ game.TilingSprite = game.PIXI.TilingSprite.extend({
     init: function(path, width, height, settings) {
         this.speed = new game.Point();
         path = game.paths[path] || path;
-        var texture = path instanceof game.Texture ? path : game.Texture.fromFrame(this.path || path);
+        var texture = path instanceof game.Texture ? path : path instanceof game.RenderTexture ? path : game.Texture.fromFrame(this.path || path);
         this._super(texture, width || texture.width, height || texture.height);
         game.merge(this, settings);
     },
