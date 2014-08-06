@@ -72,6 +72,7 @@ game.Loader = game.Class.extend({
             if (game.TextureCache[game.assetQueue[i]]) continue;
             this.assetQueue.push(this.getPath(game.assetQueue[i]));
         }
+        game.assetQueue.length = 0;
 
         if (game.Audio.enabled) {
             for (var i = 0; i < game.audioQueue.length; i++) {
