@@ -71,6 +71,7 @@ game.Scene = game.Class.extend({
             game.audio.stopMusic();
             game.audio.stopSound();
             game.audio.pausedSounds.length = 0;
+            game.audio.playingSounds.length = 0;
         }
 
         if (game.debugDraw) game.debugDraw.reset();
