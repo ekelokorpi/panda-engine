@@ -16,6 +16,7 @@ game.module(
 game.Audio = game.Class.extend({
     audioId: 0,
     audioObjects: {},
+    systemPaused: [],
     /**
         Current audio format.
         @property {String} format
@@ -641,6 +642,25 @@ game.Audio = game.Class.extend({
     **/
     isMusicPlaying: function() {
         return !!this.currentMusic;
+    },
+
+    systemPause: function() {
+        this.pauseMusic();
+
+        for (var i = this.playingSounds.length - 1; i >= 0; i--) {
+            this.pause(this.playingSounds[i]);
+            this.systemPaused.push(this.playingSounds[i]);
+        }
+    },
+
+    systemResume: function() {
+        this.resumeMusic();
+
+        for (var i = this.systemPaused.length - 1; i >= 0; i--) {
+            this.resume(this.systemPaused[i]);
+        }
+
+        this.systemPaused.length = 0;
     }
 });
 
