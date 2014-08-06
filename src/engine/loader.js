@@ -77,6 +77,7 @@ game.Loader = game.Class.extend({
             for (var i = 0; i < game.audioQueue.length; i++) {
                 this.soundQueue.push(game.audioQueue[i]);
             }
+            game.audioQueue.length = 0;
         }
 
         if (this.assetQueue.length > 0) {
