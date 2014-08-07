@@ -77,11 +77,6 @@ game.System = game.Class.extend({
         height = height || game.System.height;
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
-        // Deprecated
-        if (game.System.orientation === game.System.LANDSCAPE) game.System.orientation = 'landscape';
-        if (game.System.orientation === game.System.PORTRAIT) game.System.orientation = 'portrait';
-        if (!width) width = (game.System.orientation === 'portrait' ? 768 : 1024);
-        if (!height) height = (game.System.orientation === 'portrait' ? 928 : 672);
 
         if (game.System.resizeToFill && navigator.isCocoonJS) {
             if (window.innerWidth / window.innerHeight !== width / height) {
@@ -555,14 +550,24 @@ game.System.retina = false;
     @default true
 **/
 game.System.pauseOnHide = true;
-game.System.PORTRAIT = 0; // Deprecated
-game.System.LANDSCAPE = 1; // Deprecated
 /**
     Mobile orientation for the game.
     @attribute {String} orientation
     @default landscape
 **/
 game.System.orientation = 'landscape';
+/**
+    System width.
+    @attribute {Number} width
+    @default 1024
+**/
+game.System.width = 1024;
+/**
+    System height.
+    @attribute {Number} height
+    @default 768
+**/
+game.System.height = 768;
 /**
     Body background color.
     @attribute {String} bgColor
@@ -635,14 +640,12 @@ game.System.transparent = false;
     @default false
 **/
 game.System.antialias = false;
-
 /**
     Resize canvas to fill screen on mobile.
     @attribute {Boolean} resizeToFill
     @default false
 **/
 game.System.resizeToFill = false;
-
 /**
     Default start scene.
     @attribute {String} startScene
