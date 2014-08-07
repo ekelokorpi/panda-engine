@@ -650,6 +650,21 @@ var game = {
             this.DOMLoaded = true;
             this.loadModules();
         }
+    },
+
+    createClass: function(name, extend, content) {
+        if (game[name]) throw 'Class ' + name + ' already exist';
+
+        if (typeof extend === 'object') {
+            content = extend;
+            extend = 'Class';
+        }
+
+        return game[name] = game[extend].extend(content);
+    },
+
+    createScene: function(name, content) {
+        return this.createClass('Scene' + name, 'Scene', content);
     }
 };
 
