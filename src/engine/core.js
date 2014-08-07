@@ -322,14 +322,17 @@ var game = {
 
         this.system = new this.System(width, height, canvasId);
 
+        if (this.Audio) this.audio = new this.Audio();
+
         if (game.Debug.enabled) {
             console.log('Panda.js ' + game.version);
             console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
-            console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer');
+            console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer ' + this.system.width + 'x' + this.system.height);
+            if (this.audio) console.log('Audio engine: ' + (this.audio.context ? 'Web Audio' : 'HTML5 Audio'));
+            else console.log('Audio disabled');
             if (this.config.version) console.log((this.config.name ? this.config.name : 'Game') + ' ' + this.config.version);
         }
 
-        if (this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.DebugDraw && this.DebugDraw.enabled) this.debugDraw = new this.DebugDraw();
         if (this.Storage && this.Storage.id) this.storage = new this.Storage(this.Storage.id);
