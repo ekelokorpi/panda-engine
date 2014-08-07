@@ -344,7 +344,7 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this.loader = new (this.config.loader || game[this.config.loader] || loaderClass || this.Loader)(scene);
+        this.loader = new (loaderClass || this.Loader)(scene);
         if (!this.system.rotateScreenVisible) this.loader.start();
     },
 
@@ -665,6 +665,14 @@ var game = {
 
     createScene: function(name, content) {
         return this.createClass('Scene' + name, 'Scene', content);
+    },
+
+    addAttributes: function(className, attributes) {
+        if (!this[className]) throw 'Class ' + className + ' not found';
+
+        for (var name in attributes) {
+            this[className][name] = attributes[name];
+        }
     }
 };
 
