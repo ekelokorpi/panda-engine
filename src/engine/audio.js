@@ -241,7 +241,7 @@ game.Audio = game.Class.extend({
 
         // Web Audio
         if (this.context) {
-            audio.stop();
+            audio.stop(0);
         }
         // HTML5 Audio
         else {
@@ -266,7 +266,7 @@ game.Audio = game.Class.extend({
         // Web Audio
         if (this.context) {
             audio.onended = null;
-            audio.stop();
+            audio.stop(0);
             audio.pauseTime = (this.context.currentTime - audio.startTime) % audio.buffer.duration;
         }
         // HTML5 Audio
