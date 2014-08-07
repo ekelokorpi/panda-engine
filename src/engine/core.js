@@ -344,7 +344,7 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this.loader = new (loaderClass || this.Loader)(scene);
+        this.loader = new (this.config.loader || game[this.config.loader] || loaderClass || this.Loader)(scene);
         if (!this.system.rotateScreenVisible) this.loader.start();
     },
 
