@@ -237,6 +237,7 @@ game.System = game.Class.extend({
         @param {game.Scene} sceneClass
     **/
     setScene: function(sceneClass) {
+        if (typeof sceneClass === 'string') sceneClass = game['Scene' + sceneClass];
         if (this.running) this.newSceneClass = sceneClass;
         else this.setSceneNow(sceneClass);
     },
@@ -649,9 +650,9 @@ game.System.resizeToFill = false;
 /**
     Default start scene.
     @attribute {String} startScene
-    @default SceneGame
+    @default Game
 **/
-game.System.startScene = 'SceneGame';
+game.System.startScene = 'Game';
 /**
     Scale canvas to fit window size on desktop.
     @attribute {Boolean} scaleToFit
