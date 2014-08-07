@@ -113,17 +113,6 @@ game.Loader = game.Class.extend({
         if (this.logo) this.barFg.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
         this.barFg.scale.x = this.percent / 100;
         this.stage.addChild(this.barFg);
-
-        if (game.Tween && game.Loader.logoTween && this.logo) {
-            this.logo.rotation = -0.1;
-
-            var tween = new game.Tween(this.logo)
-                .to({ rotation: 0.1 }, 500)
-                .easing(game.Tween.Easing.Cubic.InOut)
-                .repeat()
-                .yoyo()
-                .start();
-        }
     },
 
     onComplete: function(callback) {
@@ -290,56 +279,42 @@ game.Loader = game.Class.extend({
     @default 0x000000
 **/
 game.Loader.bgColor = 0x000000;
-
 /**
     Minimum time to show loader, in milliseconds.
     @attribute {Number} timeout
     @default 500
 **/
 game.Loader.timeout = 500;
-
 /**
     Loading bar background color.
     @attribute {Number} barBg
     @default 0x231f20
 **/
 game.Loader.barBg = 0x231f20;
-
 /**
     Loading bar color.
     @attribute {Number} barColor
     @default 0xe6e7e8
 **/
 game.Loader.barColor = 0xe6e7e8;
-
 /**
     Width of the loading bar.
     @attribute {Number} barWidth
     @default 200
 **/
 game.Loader.barWidth = 200;
-
 /**
     Height of the loading bar.
     @attribute {Number} barHeight
     @default 20
 **/
 game.Loader.barHeight = 20;
-
 /**
     Loading bar margin from logo.
     @attribute {Number} barMargin
     @default 10
 **/
 game.Loader.barMargin = 10;
-
-/**
-    Use tween on loader logo.
-    @attribute {Boolean} tween
-    @default false
-**/
-game.Loader.logoTween = false;
-
 /**
     Loader logo dataURI.
     @attribute {String} logo
