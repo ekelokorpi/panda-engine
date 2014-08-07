@@ -135,10 +135,14 @@ game.Sprite = game.PIXI.Sprite.extend({
     /**
         Position sprite to system center.
         @method center
+        @param {Number} offsetX
+        @param {Number} offsetY
     **/
-    center: function() {
+    center: function(offsetX, offsetY) {
         this.position.x = game.system.width / 2 - this.width / 2 + this.width * this.anchor.x;
         this.position.y = game.system.height / 2 - this.height / 2 + this.height * this.anchor.y;
+        this.position.x += offsetX || 0;
+        this.position.y += offsetY || 0;
         return this;
     },
 
