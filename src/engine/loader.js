@@ -58,7 +58,7 @@ game.Loader = game.Class.extend({
     
     init: function(callback) {
         if (callback && callback.prototype.init || game.System.startScene) {
-            this.scene = callback || game[game.System.startScene] || window[game.System.startScene];
+            this.scene = callback || game[game.System.startScene] || window[game.System.startScene] || game['Scene' + game.System.startScene];
             this.dynamic = false;
             game.System.startScene = null;
         }
