@@ -326,6 +326,7 @@ var game = {
             console.log('Panda.js ' + game.version);
             console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
             console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer');
+            if (this.config.version) console.log((this.config.name ? this.config.name : 'Game') + ' ' + this.config.version);
         }
 
         if (this.Audio) this.audio = new this.Audio();
