@@ -456,15 +456,12 @@ var game = {
     },
 
     boot: function() {
-        // Test canvas support
-        var elem = document.createElement('canvas');
-        var canvasSupported = !!(elem.getContext && elem.getContext('2d'));
-        if (!canvasSupported) {
-            if (game.config.noCanvasURL) window.location = game.config.noCanvasURL;
-            else throw('Canvas not supported');
+        if (game.config.noCanvasURL) {
+            var canvas = document.createElement('canvas');
+            var canvasSupported = !!(canvas.getContext && canvas.getContext('2d'));
+            if (!canvasSupported) window.location = game.config.noCanvasURL;
         }
 
-        // Native Math extensions
         Math.distance = function(x, y, x2, y2) {
             x = x2 - x;
             y = y2 - y;
@@ -475,11 +472,6 @@ var game = {
             return Math.random() * (max - min) + min;
         };
 
-        Math.randomInt = function(min, max) {
-            return Math.round(Math.randomBetween(min, max));
-        };
-
-        // Native object extensions
         Number.prototype.limit = function(min, max) {
             var i = this;
             if (i < min) i = min;
