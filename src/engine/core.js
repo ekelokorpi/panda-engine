@@ -328,7 +328,7 @@ var game = {
             console.log('Panda.js ' + game.version);
             console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
             console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer ' + this.system.width + 'x' + this.system.height);
-            if (this.audio) console.log('Audio engine: ' + (this.audio.context ? 'Web Audio' : 'HTML5 Audio'));
+            if (this.Audio && this.Audio.enabled) console.log((this.audio.context ? 'Web Audio' : 'HTML5 Audio') + ' engine');
             else console.log('Audio disabled');
             if (this.config.version) console.log((this.config.name ? this.config.name : 'Game') + ' ' + this.config.version);
         }
