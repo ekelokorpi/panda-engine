@@ -238,6 +238,17 @@ var game = {
     },
 
     /**
+        Add multiple assets to loader.
+        @method addAssets
+        @param {Array} assets
+    **/
+    addAssets: function(assets) {
+        for (var i = 0; i < assets.length; i++) {
+            this.addAsset(assets[i]);
+        }
+    },
+
+    /**
         Add audio to loader.
         @method addAudio
         @param {String} path
