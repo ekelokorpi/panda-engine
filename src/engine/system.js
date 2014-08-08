@@ -421,16 +421,14 @@ game.System = game.Class.extend({
             if (game.device.iOS7 && game.device.pixelRatio === 2 && this.orientation === 'landscape') height += 2;
             if (game.device.iPad && height === 671) height = 672;
             
-            if (game.System.resizeToFill && !this.rotateScreenVisible) {
+            if (game.System.resizeToFill && !this.rotateScreenVisible && game.System.rotateScreen) {
                 if (width / height !== this.width / this.height) {
                     // Wrong ratio, need to resize
                     if (this.orientation === 'landscape') {
-                        this.width = Math.round(this.height * (width / height));
-                        this.ratio = this.width / this.height;
+                        this.width = Math.ceil(this.height * (width / height));
                     }
                     else {
-                        this.height = Math.round(this.width * (height / width));
-                        this.ratio = this.height / this.width;
+                        this.height = Math.ceil(this.width * (height / width));
                     }
                     this.renderer.resize(this.width, this.height);
                 }
@@ -438,44 +436,24 @@ game.System = game.Class.extend({
 
             // Landscape game
             if (this.width > this.height) {
-                // Landscape system
-                if (this.orientation === 'landscape') {
-                    if (height * this.ratio <= width) {
-                        // Full height
-                        this.canvas.style.height = height + 'px';
-                        this.canvas.style.width = height * this.width / this.height + 'px';
-                    }
-                    else {
-                        // Full width
-                        this.canvas.style.width = width + 'px';
-                        this.canvas.style.height = width * this.height / this.width + 'px';
-                    }
+                if (this.orientation === 'landscape' && height * this.ratio <= width) {
+                    this.canvas.style.height = height + 'px';
+                    this.canvas.style.width = height * this.width / this.height + 'px';
                 }
-                // Portrait system
                 else {
                     this.canvas.style.width = width + 'px';
-                    this.canvas.style.height = width * this.ratio + 'px';
+                    this.canvas.style.height = width * this.height / this.width + 'px';
                 }
             }
             // Portrait game
             else {
-                // Portrait system
-                if (this.orientation === 'portrait') {
-                    if (width * this.ratio <= height) {
-                        // Full width
-                        this.canvas.style.width = width + 'px';
-                        this.canvas.style.height = width * this.height / this.width + 'px';
-                    }
-                    else {
-                        // Full height
-                        this.canvas.style.height = height + 'px';
-                        this.canvas.style.width = height * this.width / this.height + 'px';
-                    }
+                if (this.orientation === 'portrait' && width * this.ratio <= height) {
+                    this.canvas.style.width = width + 'px';
+                    this.canvas.style.height = width * this.height / this.width + 'px';
                 }
-                // Landscape system
                 else {
                     this.canvas.style.height = height + 'px';
-                    this.canvas.style.width = height * this.ratio + 'px';
+                    this.canvas.style.width = height * this.width / this.height + 'px';
                 }
             }
 
