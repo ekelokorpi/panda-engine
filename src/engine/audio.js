@@ -347,6 +347,9 @@ game.Audio = game.Class.extend({
         }
         // HTML5 Audio
         else {
+            for (var name in this.sources) {
+                if (this.sources[name].audio === audio) return name;
+            }
         }
 
         return false;
