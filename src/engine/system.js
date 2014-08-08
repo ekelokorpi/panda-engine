@@ -295,7 +295,7 @@ game.System = game.Class.extend({
                 e.preventDefault();
             }, false);
 
-            if (game.System.useRotateScreen) {
+            if (game.System.rotateScreen) {
                 var div = document.createElement('div');
                 div.innerHTML = game.System.rotateImg ? '' : game.System.rotateMsg;
                 div.style.position = 'absolute';
@@ -375,7 +375,7 @@ game.System = game.Class.extend({
         else if (this.width < this.height && this.orientation !== 'portrait') this.rotateScreenVisible = true;
         else this.rotateScreenVisible = false;
 
-        if (!game.System.useRotateScreen) this.rotateScreenVisible = false;
+        if (!game.System.rotateScreen) this.rotateScreenVisible = false;
 
         this.canvas.style.display = this.rotateScreenVisible ? 'none' : 'block';
         if (game.System.rotateDiv) game.System.rotateDiv.style.display = this.rotateScreenVisible ? 'block' : 'none';
@@ -593,10 +593,10 @@ game.System.retina = false;
 game.System.pauseOnHide = true;
 /**
     Use rotate screen on mobile.
-    @attribute {Boolean} useRotateScreen
+    @attribute {Boolean} rotateScreen
     @default true
 **/
-game.System.useRotateScreen = true;
+game.System.rotateScreen = true;
 /**
     System width.
     @attribute {Number} width
