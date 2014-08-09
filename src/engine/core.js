@@ -479,8 +479,14 @@ var game = {
             return Math.sqrt(x * x + y * y);
         };
 
+        Math._random = Math.random;
+        // Deprecated
         Math.randomBetween = function(min, max) {
-            return Math.random() * (max - min) + min;
+            return Math._random() * (max - min) + min;
+        };
+        Math.random = function(min, max) {
+            if (typeof max === 'number') return Math._random() * (max - min) + min;
+            else return Math._random(min);
         };
 
         Number.prototype.limit = function(min, max) {
