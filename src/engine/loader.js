@@ -282,9 +282,9 @@ game.Loader.bgColor = 0x000000;
 /**
     Minimum time to show loader, in milliseconds.
     @attribute {Number} timeout
-    @default 500
+    @default 200
 **/
-game.Loader.timeout = 500;
+game.Loader.timeout = 200;
 /**
     Loading bar background color.
     @attribute {Number} barBg
