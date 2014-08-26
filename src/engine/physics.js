@@ -266,35 +266,34 @@ game.CollisionSolver = game.Class.extend({
     **/
     hitResponse: function(a, b) {
         if (a.shape instanceof game.Rectangle && b.shape instanceof game.Rectangle) {
-            // TODO can this be optimized?
             if (a.last.y + a.shape.height / 2 <= b.last.y - b.shape.height / 2) {
-                if (a.collide(b)) {
+                if (a.collide(b, 'UP')) {
                     a.position.y = b.position.y - b.shape.height / 2 - a.shape.height / 2;
                     return true;
                 }
             }
             else if (a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
-                if (a.collide(b)) {
+                if (a.collide(b, 'DOWN')) {
                     a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
                     return true;
                 }
             }
             else if (a.last.x + a.shape.width / 2 <= b.last.x - b.shape.width / 2) {
-                if (a.collide(b)) {
+                if (a.collide(b, 'LEFT')) {
                     a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
                     return true;
                 }
             }
             else if (a.last.x - a.shape.width / 2 >= b.last.x + b.shape.width / 2) {
-                if (a.collide(b)) {
+                if (a.collide(b, 'RIGHT')) {
                     a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
                     return true;
                 }
             }
         }
         else if (a.shape instanceof game.Circle && b.shape instanceof game.Circle) {
-            if (a.collide(b)) {
-                var angle = b.position.angle(a.position);
+            var angle = b.position.angle(a.position);
+            if (a.collide(b, angle)) {
                 var dist = a.shape.radius + b.shape.radius;
 
                 a.position.x = b.position.x + Math.cos(angle) * dist;
