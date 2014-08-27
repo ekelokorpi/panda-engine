@@ -91,6 +91,7 @@ game.CanvasRenderer = game.PIXI.CanvasRenderer;
 game.autoDetectRenderer = game.PIXI.autoDetectRenderer;
 game.Stage = game.PIXI.Stage;
 game.blendModes = game.PIXI.blendModes;
+game.BaseTexture = game.PIXI.BaseTexture;
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
@@ -354,7 +355,11 @@ game.Animation = game.PIXI.MovieClip.extend({
     addTo: function(container) {
         container.addChild(this);
         return this;
-    }
+    },
+
+    remove: function() {
+        if (this.parent) this.parent.removeChild(this);
+    },
 
     /**
         @method play
