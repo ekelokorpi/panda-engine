@@ -77,15 +77,10 @@ game.System = game.Class.extend({
         height = height || game.System.height;
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
-        // Deprecated
-        if (game.System.orientation === game.System.LANDSCAPE) game.System.orientation = 'landscape';
-        if (game.System.orientation === game.System.PORTRAIT) game.System.orientation = 'portrait';
-        if (!width) width = (game.System.orientation === 'portrait' ? 768 : 1024);
-        if (!height) height = (game.System.orientation === 'portrait' ? 928 : 672);
 
         if (game.System.resizeToFill && navigator.isCocoonJS) {
             if (window.innerWidth / window.innerHeight !== width / height) {
-                if (game.System.orientation === 'landscape') {
+                if (this.width > this.height) {
                     width = height * (window.innerWidth / window.innerHeight);
                 }
                 else {
@@ -147,6 +142,12 @@ game.System = game.Class.extend({
             this.canvas.style.height = height + 'px';
         }
 
+        window.addEventListener('devicemotion', function(event) {
+            game.accelerometer = game.accel = event.accelerationIncludingGravity;
+        }, false);
+
+        game.renderer = this.renderer;
+
         if (!navigator.isCocoonJS) {
             var visibilityChange;
             if (typeof document.hidden !== 'undefined') {
@@ -169,13 +170,7 @@ game.System = game.Class.extend({
                     else game.system.resume(true);
                 }
             }, false);
-        }
 
-        window.addEventListener('devicemotion', function(event) {
-            game.accelerometer = game.accel = event.accelerationIncludingGravity;
-        }, false);
-
-        if (!navigator.isCocoonJS) {
             if (game.System.bgColor && !game.System.bgColorMobile) game.System.bgColorMobile = game.System.bgColor;
             if (game.System.bgColorMobile && !game.System.bgColorRotate) game.System.bgColorRotate = game.System.bgColorMobile;
 
@@ -187,15 +182,12 @@ game.System = game.Class.extend({
                 if (game.System.bgImage) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImage + ')';
             }
             if (game.System.bgPosition) document.body.style.backgroundPosition = game.System.bgPosition;
-        }
 
-        if (navigator.isCocoonJS) {
+            this.initResize();
+        }
+        else {
             this.canvas.style.cssText = 'idtkscale:' + game.System.idtkScale + ';';
         }
-
-        game.renderer = this.renderer;
-
-        if (!navigator.isCocoonJS) this.initResize();
     },
 
     /**
@@ -242,6 +234,7 @@ game.System = game.Class.extend({
         @param {game.Scene} sceneClass
     **/
     setScene: function(sceneClass) {
+        if (typeof sceneClass === 'string') sceneClass = game['Scene' + sceneClass];
         if (this.running) this.newSceneClass = sceneClass;
         else this.setSceneNow(sceneClass);
     },
@@ -286,7 +279,7 @@ game.System = game.Class.extend({
     },
 
     initResize: function() {
-        this.ratio = game.System.orientation === 'landscape' ? this.width / this.height : this.height / this.width;
+        this.ratio = this.width > this.height ? this.width / this.height : this.height / this.width;
 
         if (game.System.center) this.canvas.style.margin = 'auto';
 
@@ -302,34 +295,36 @@ game.System = game.Class.extend({
                 e.preventDefault();
             }, false);
 
-            var div = document.createElement('div');
-            div.innerHTML = game.System.rotateImg ? '' : game.System.rotateMsg;
-            div.style.position = 'absolute';
-            div.style.height = '12px';
-            div.style.textAlign = 'center';
-            div.style.left = 0;
-            div.style.right = 0;
-            div.style.top = 0;
-            div.style.bottom = 0;
-            div.style.margin = 'auto';
-            div.style.display = 'none';
-            div.id = 'panda-rotate';
-            game.System.rotateDiv = div;
-            document.body.appendChild(game.System.rotateDiv);
+            if (game.System.rotateScreen) {
+                var div = document.createElement('div');
+                div.innerHTML = game.System.rotateImg ? '' : game.System.rotateMsg;
+                div.style.position = 'absolute';
+                div.style.height = '12px';
+                div.style.textAlign = 'center';
+                div.style.left = 0;
+                div.style.right = 0;
+                div.style.top = 0;
+                div.style.bottom = 0;
+                div.style.margin = 'auto';
+                div.style.display = 'none';
+                div.id = 'panda-rotate';
+                game.System.rotateDiv = div;
+                document.body.appendChild(game.System.rotateDiv);
 
-            if (game.System.rotateImg) {
-                var img = new Image();
-                var me = this;
-                img.onload = function() {
-                    div.image = img;
-                    div.style.height = img.height + 'px';
-                    div.appendChild(img);
-                    me.resizeRotateImage();
-                };
-                if (game.System.rotateImg.indexOf('data:') === 0) img.src = game.System.rotateImg;
-                else img.src = game.config.mediaFolder + game.System.rotateImg;
-                img.style.position = 'relative';
-                img.style.maxWidth = '100%';
+                if (game.System.rotateImg) {
+                    var img = new Image();
+                    var me = this;
+                    img.onload = function() {
+                        div.image = img;
+                        div.style.height = img.height + 'px';
+                        div.appendChild(img);
+                        me.resizeRotateImage();
+                    };
+                    if (game.System.rotateImg.indexOf('data:') === 0) img.src = game.System.rotateImg;
+                    else img.src = game.config.mediaFolder + game.System.rotateImg;
+                    img.style.position = 'relative';
+                    img.style.maxWidth = '100%';
+                }
             }
         }
         else {
@@ -375,10 +370,15 @@ game.System = game.Class.extend({
             // Android 2.3 portrait fix
             this.orientation = 'portrait';
         }
-        this.rotateScreenVisible = game.System.orientation !== this.orientation ? true : false;
+        
+        if (this.width > this.height && this.orientation !== 'landscape') this.rotateScreenVisible = true;
+        else if (this.width < this.height && this.orientation !== 'portrait') this.rotateScreenVisible = true;
+        else this.rotateScreenVisible = false;
+
+        if (!game.System.rotateScreen) this.rotateScreenVisible = false;
 
         this.canvas.style.display = this.rotateScreenVisible ? 'none' : 'block';
-        game.System.rotateDiv.style.display = this.rotateScreenVisible ? 'block' : 'none';
+        if (game.System.rotateDiv) game.System.rotateDiv.style.display = this.rotateScreenVisible ? 'block' : 'none';
 
         if (this.rotateScreenVisible && game.System.bgColorRotate) document.body.style.backgroundColor = game.System.bgColorRotate;
         if (!this.rotateScreenVisible && game.System.bgColorMobile) document.body.style.backgroundColor = game.System.bgColorMobile;
@@ -410,6 +410,8 @@ game.System = game.Class.extend({
         if (!game.System.scale) return;
 
         if (game.device.mobile) {
+            this.ratio = this.orientation === 'landscape' ? this.width / this.height : this.height / this.width;
+
             // Mobile resize
             var width = window.innerWidth;
             var height = window.innerHeight;
@@ -419,28 +421,40 @@ game.System = game.Class.extend({
             if (game.device.iOS7 && game.device.pixelRatio === 2 && this.orientation === 'landscape') height += 2;
             if (game.device.iPad && height === 671) height = 672;
             
-            if (game.System.resizeToFill && !this.rotateScreenVisible) {
+            if (game.System.resizeToFill && !this.rotateScreenVisible && game.System.rotateScreen) {
                 if (width / height !== this.width / this.height) {
                     // Wrong ratio, need to resize
                     if (this.orientation === 'landscape') {
-                        this.width = Math.round(this.height * (width / height));
-                        this.ratio = this.width / this.height;
+                        this.width = Math.ceil(this.height * (width / height));
                     }
                     else {
-                        this.height = Math.round(this.width * (height / width));
-                        this.ratio = this.height / this.width;
+                        this.height = Math.ceil(this.width * (height / width));
                     }
                     this.renderer.resize(this.width, this.height);
                 }
             }
 
-            if (game.System.orientation === 'landscape') {
-                this.canvas.style.height = height + 'px';
-                this.canvas.style.width = height * this.ratio + 'px';
+            // Landscape game
+            if (this.width > this.height) {
+                if (this.orientation === 'landscape' && height * this.ratio <= width) {
+                    this.canvas.style.height = height + 'px';
+                    this.canvas.style.width = height * this.width / this.height + 'px';
+                }
+                else {
+                    this.canvas.style.width = width + 'px';
+                    this.canvas.style.height = width * this.height / this.width + 'px';
+                }
             }
+            // Portrait game
             else {
-                this.canvas.style.width = width + 'px';
-                this.canvas.style.height = width * this.ratio + 'px';
+                if (this.orientation === 'portrait' && width * this.ratio <= height) {
+                    this.canvas.style.width = width + 'px';
+                    this.canvas.style.height = width * this.height / this.width + 'px';
+                }
+                else {
+                    this.canvas.style.height = height + 'px';
+                    this.canvas.style.width = height * this.width / this.height + 'px';
+                }
             }
 
             if (!game.device.ejecta) window.scroll(0, 1);
@@ -555,14 +569,24 @@ game.System.retina = false;
     @default true
 **/
 game.System.pauseOnHide = true;
-game.System.PORTRAIT = 0; // Deprecated
-game.System.LANDSCAPE = 1; // Deprecated
 /**
-    Mobile orientation for the game.
-    @attribute {String} orientation
-    @default landscape
+    Use rotate screen on mobile.
+    @attribute {Boolean} rotateScreen
+    @default true
 **/
-game.System.orientation = 'landscape';
+game.System.rotateScreen = true;
+/**
+    System width.
+    @attribute {Number} width
+    @default 1024
+**/
+game.System.width = 1024;
+/**
+    System height.
+    @attribute {Number} height
+    @default 768
+**/
+game.System.height = 768;
 /**
     Body background color.
     @attribute {String} bgColor
@@ -608,9 +632,9 @@ game.System.bgPosition = null;
 /**
     Rotate message for mobile.
     @attribute {String} rotateMsg
-    @default null
+    @default Please rotate your device
 **/
-game.System.rotateMsg = null;
+game.System.rotateMsg = 'Please rotate your device';
 /**
     Rotate image for mobile.
     @attribute {URL} rotateImg
@@ -635,20 +659,18 @@ game.System.transparent = false;
     @default false
 **/
 game.System.antialias = false;
-
 /**
     Resize canvas to fill screen on mobile.
     @attribute {Boolean} resizeToFill
     @default false
 **/
 game.System.resizeToFill = false;
-
 /**
     Default start scene.
     @attribute {String} startScene
-    @default SceneGame
+    @default Game
 **/
-game.System.startScene = 'SceneGame';
+game.System.startScene = 'Game';
 /**
     Scale canvas to fit window size on desktop.
     @attribute {Boolean} scaleToFit

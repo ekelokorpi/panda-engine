@@ -28,7 +28,7 @@ var game = {
         Current engine version.
         @property {String} version
     **/
-    version: '1.7.1',
+    version: '1.8.0',
     /**
         Engine settings.
         @property {Object} config
@@ -238,6 +238,17 @@ var game = {
     },
 
     /**
+        Add multiple assets to loader.
+        @method addAssets
+        @param {Array} assets
+    **/
+    addAssets: function(assets) {
+        for (var i = 0; i < assets.length; i++) {
+            this.addAsset(assets[i]);
+        }
+    },
+
+    /**
         Add audio to loader.
         @method addAudio
         @param {String} path
@@ -322,13 +333,17 @@ var game = {
 
         this.system = new this.System(width, height, canvasId);
 
+        if (this.Audio) this.audio = new this.Audio();
+
         if (game.Debug.enabled) {
             console.log('Panda.js ' + game.version);
             console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
-            console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer');
+            console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer ' + this.system.width + 'x' + this.system.height);
+            if (this.Audio && this.Audio.enabled) console.log((this.audio.context ? 'Web Audio' : 'HTML5 Audio') + ' engine');
+            else console.log('Audio disabled');
+            if (this.config.version) console.log((this.config.name ? this.config.name : 'Game') + ' ' + this.config.version);
         }
 
-        if (this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.DebugDraw && this.DebugDraw.enabled) this.debugDraw = new this.DebugDraw();
         if (this.Storage && this.Storage.id) this.storage = new this.Storage(this.Storage.id);
@@ -452,30 +467,28 @@ var game = {
     },
 
     boot: function() {
-        // Test canvas support
-        var elem = document.createElement('canvas');
-        var canvasSupported = !!(elem.getContext && elem.getContext('2d'));
-        if (!canvasSupported) {
-            if (game.config.noCanvasURL) window.location = game.config.noCanvasURL;
-            else throw('Canvas not supported');
+        if (game.config.noCanvasURL) {
+            var canvas = document.createElement('canvas');
+            var canvasSupported = !!(canvas.getContext && canvas.getContext('2d'));
+            if (!canvasSupported) window.location = game.config.noCanvasURL;
         }
 
-        // Native Math extensions
         Math.distance = function(x, y, x2, y2) {
             x = x2 - x;
             y = y2 - y;
             return Math.sqrt(x * x + y * y);
         };
 
+        Math._random = Math.random;
+        // Deprecated
         Math.randomBetween = function(min, max) {
-            return Math.random() * (max - min) + min;
+            return Math._random() * (max - min) + min;
+        };
+        Math.random = function(min, max) {
+            if (typeof max === 'number') return Math._random() * (max - min) + min;
+            else return Math._random(min);
         };
 
-        Math.randomInt = function(min, max) {
-            return Math.round(Math.randomBetween(min, max));
-        };
-
-        // Native object extensions
         Number.prototype.limit = function(min, max) {
             var i = this;
             if (i < min) i = min;
@@ -537,7 +550,7 @@ var game = {
 
         game.normalizeVendorAttribute(window, 'requestAnimationFrame');
 
-        if (document.location.href.match(/\?nocache/)) this.nocache = '?' + Date.now();
+        if (document.location.href.match(/\?nocache/) || this.config.disableCache) this.nocache = '?' + Date.now();
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
@@ -645,6 +658,29 @@ var game = {
             if (!document.body) return setTimeout(this.DOMReady.bind(this), 13);
             this.DOMLoaded = true;
             this.loadModules();
+        }
+    },
+
+    createClass: function(name, extend, content) {
+        if (game[name]) throw 'Class ' + name + ' already exist';
+
+        if (typeof extend === 'object') {
+            content = extend;
+            extend = 'Class';
+        }
+
+        return game[name] = game[extend].extend(content);
+    },
+
+    createScene: function(name, content) {
+        return this.createClass('Scene' + name, 'Scene', content);
+    },
+
+    addAttributes: function(className, attributes) {
+        if (!this[className]) throw 'Class ' + className + ' not found';
+
+        for (var name in attributes) {
+            this[className][name] = attributes[name];
         }
     }
 };

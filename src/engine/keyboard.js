@@ -204,23 +204,26 @@ game.Keyboard = game.Class.extend({
         @method keydown
     **/
     keydown: function(event) {
-        if (game.Keyboard.preventDefault) event.preventDefault();
-
         if (!this.keys[event.keyCode]) return; // unkown key
         if (this.keysDown[this.keys[event.keyCode]]) return; // key already down
 
         this.keysDown[this.keys[event.keyCode]] = true;
-        if (game.scene) game.scene.keydown(this.keys[event.keyCode], !!this.keysDown['SHIFT'], !!this.keysDown['CTRL'], !!this.keysDown['ALT']);
+        if (game.scene) {
+            var prevent = game.scene.keydown(this.keys[event.keyCode], !!this.keysDown['SHIFT'], !!this.keysDown['CTRL'], !!this.keysDown['ALT']);
+            if (prevent) event.preventDefault();
+        }
     },
 
     /**
         @method keyup
     **/
     keyup: function(event) {
-        if (game.Keyboard.preventDefault) event.preventDefault();
         
         this.keysDown[this.keys[event.keyCode]] = false;
-        if (game.scene) game.scene.keyup(this.keys[event.keyCode]);
+        if (game.scene) {
+            var prevent = game.scene.keyup(this.keys[event.keyCode]);
+            if (prevent) event.preventDefault();
+        }
     },
 
     /**
@@ -232,13 +235,6 @@ game.Keyboard = game.Class.extend({
         return (this.keysDown[key]);
     }
 });
-
-/**
-    Prevent default keyboard action.
-    @attribute {Boolean} preventDefault
-    @default false
-**/
-game.Keyboard.preventDefault = false;
 
 game.keyboard = new game.Keyboard();
 

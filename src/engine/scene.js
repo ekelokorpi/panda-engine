@@ -67,6 +67,13 @@ game.Scene = game.Class.extend({
         this.stage = new game.Container();
         game.system.stage.addChild(this.stage);
 
+        if (game.audio && game.Scene.stopAudioOnInit) {
+            game.audio.stopMusic();
+            game.audio.stopSound();
+            game.audio.pausedSounds.length = 0;
+            game.audio.playingSounds.length = 0;
+        }
+
         if (game.debugDraw) game.debugDraw.reset();
     },
     
@@ -149,6 +156,18 @@ game.Scene = game.Class.extend({
     },
 
     /**
+        Remove timer from scene.
+        @method removeTimer
+        @param {game.Timer} timer
+        @param {Boolean} doCallback
+    **/
+    removeTimer: function(timer, doCallback) {
+        if (!doCallback) timer.callback = null;
+        timer.repeat = false;
+        timer.set(0);
+    },
+
+    /**
         Shorthand for adding tween.
         @method addTween
         @param {Object} obj
@@ -163,18 +182,6 @@ game.Scene = game.Class.extend({
             tween[i](settings[i]);
         }
         return tween;
-    },
-
-    /**
-        Remove timer from scene.
-        @method removeTimer
-        @param {game.Timer} timer
-        @param {Boolean} doCallback
-    **/
-    removeTimer: function(timer, doCallback) {
-        if (!doCallback) timer.callback = null;
-        timer.repeat = false;
-        timer.set(0);
     },
     
     /**
@@ -267,12 +274,19 @@ game.Scene = game.Class.extend({
     },
 
     pause: function() {
-        if (game.audio) game.audio.pauseAll();
+        if (game.audio) game.audio.systemPause();
     },
 
     resume: function() {
-        if (game.audio) game.audio.resumeAll();
+        if (game.audio) game.audio.systemResume();
     }
 });
+
+/**
+    Stop all audio, when new scene is inited
+    @attribute {Boolean} stopAudioOnInit
+    @default true
+**/
+game.Scene.stopAudioOnInit = true;
 
 });

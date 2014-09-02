@@ -92,12 +92,9 @@ game.DebugDraw = game.Class.extend({
 
         if (body.shape instanceof game.Rectangle) {
             sprite.drawRect(-body.shape.width / 2, -body.shape.height / 2, body.shape.width, body.shape.height);
-            sprite.width = body.shape.width;
-            sprite.height = body.shape.height;
         }
         if (body.shape instanceof game.Circle) {
             sprite.drawCircle(0, 0, body.shape.radius);
-            sprite.radius = body.shape.radius;
         } // TODO add support for game.Line
     },
 

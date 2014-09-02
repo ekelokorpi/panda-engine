@@ -14,17 +14,20 @@ game.module(
     @extends game.Class
 **/
 game.Audio = game.Class.extend({
+    audioId: 0,
+    audioObjects: {},
+    systemPaused: [],
     /**
         Current audio format.
         @property {String} format
     **/
     format: null,
     /**
-        Is sound muted.
-        @property {Boolean} soundMuted
-        @default false
+        List of playing sounds.
+        @property {Array} playingSounds
     **/
-    soundMuted: false,
+    playingSounds: [],
+    pausedSounds: [],
     /**
         Main sound volume.
         @property {Number} soundVolume
@@ -32,8 +35,8 @@ game.Audio = game.Class.extend({
     **/
     soundVolume: 1.0,
     /**
-        Id of current music.
-        @property {String} currentMusic
+        Current music.
+        @property {Object} currentMusic
     **/
     currentMusic: null,
     /**
@@ -49,19 +52,20 @@ game.Audio = game.Class.extend({
     **/
     musicVolume: 1.0,
     sources: {},
+    // Web Audio
     context: null,
     gainNode: null,
 
     init: function() {
         game.normalizeVendorAttribute(window, 'AudioContext');
 
-        // Disable audio on iOS 5.x.x
+        // Disable audio on iOS 5
         if (game.device.iOS5) game.Audio.enabled = false;
 
         // Disable audio on Windows Phone
         if (game.device.wp) game.Audio.enabled = false;
 
-        // Disable audio on Android 2.x.x
+        // Disable audio on Android 2
         if (game.device.android2) game.Audio.enabled = false;
 
         // Disable audio on mobile, when offline and not CocoonJS
@@ -105,14 +109,14 @@ game.Audio = game.Class.extend({
         this.context.decodeAudioData(
             request.response,
             this.loaded.bind(this, path, callback),
-            this.loadError.bind(this, path)
+            this.error.bind(this, path)
         );
     },
     
     load: function(path, callback) {
-        if (!game.Audio.enabled) return callback ? callback() : false;
+        if (!game.Audio.enabled) return;
 
-        var realPath = this.getPath(path);
+        var realPath = path.replace(/[^\.]+$/, this.format + game.nocache);
 
         // Web Audio
         if (this.context) {
@@ -132,7 +136,7 @@ game.Audio = game.Class.extend({
             else {
                 audio.loadCallback = this.loaded.bind(this, path, callback, audio);
                 audio.addEventListener('canplaythrough', audio.loadCallback, false);
-                audio.addEventListener('error', this.loadError.bind(this, path), false);
+                audio.addEventListener('error', this.error.bind(this, path), false);
             }
             audio.preload = 'auto';
             audio.load();
@@ -146,7 +150,6 @@ game.Audio = game.Class.extend({
         if (!id) throw('No id found for audio source');
 
         this.sources[id] = {
-            clips: [],
             audio: audio,
             path: path
         };
@@ -158,297 +161,521 @@ game.Audio = game.Class.extend({
             }, false);
         }
 
-        if (callback) callback(path);
+        if (typeof callback === 'function') callback(path);
     },
 
-    loadError: function(path) {
+    error: function(path) {
         throw('Error loading: ' + path);
     },
 
-    getPath: function(path) {
-        return path.replace(/[^\.]+$/, this.format + game.nocache);
+    onended: function(id) {
+        var index = this.playingSounds.indexOf(id);
+        if (index !== -1) this.playingSounds.splice(index, 1);
+
+        if (id === this.currentMusic) this.currentMusic = null;
+
+        var audio = this.audioObjects[id];
+        if (!audio) return false;
+
+        if (typeof audio.callback === 'function') audio.callback();
+
+        delete this.audioObjects[id];
     },
 
-    play: function(id, volume, loop, callback, rate) {
-        if (!this.sources[id]) throw('Cannot find audio: ' + id);
+    play: function(name, loop, volume, callback, rate, time, audioId) {
+        if (!game.Audio.enabled) return false;
+
+        if (typeof volume !== 'number') volume = 1;
+        if (typeof rate !== 'number') rate = 1;
+
+        if (!audioId) {
+            this.audioId++;
+            audioId = this.audioId;
+        }
 
         // Web Audio
         if (this.context) {
             var audio = this.context.createBufferSource();
-            audio.buffer = this.sources[id].audio;
+            audio.buffer = this.sources[name].audio;
             audio.loop = !!loop;
-            audio.playbackRate.value = rate || 1;
-            if (typeof callback === 'function') audio.onended = callback.bind(this);
-            else audio.onended = null;
+            audio.playbackRate.value = rate;
+            audio.callback = callback;
+            audio.onended = this.onended.bind(this, audioId);
 
             var gainNode;
             if (this.context.createGain) gainNode = this.context.createGain();
             else if (this.context.createGainNode) gainNode = this.context.createGainNode();
-            gainNode.gain.value = volume || 1;
+            gainNode.gain.value = volume;
 
             gainNode.connect(this.gainNode);
             audio.connect(gainNode);
+            audio.gainNode = gainNode;
 
-            if (audio.start) audio.start(0, this.sources[id].audio.pauseTime || 0);
-            else if (audio.noteOn) audio.noteOn(0, this.sources[id].audio.pauseTime || 0);
-
-            this.sources[id].clips.push(audio);
-            this.sources[id].audio.volume = gainNode.gain.value; // Store volume info for pauses
-            this.sources[id].audio.loop = audio.loop; // Store loop info for pauses
-            this.sources[id].audio.startTime = this.context.currentTime - this.sources[id].audio.pauseTime || 0;
-            return audio;
+            var startTime = time || 0;
+            audio.start(0, startTime);
+            audio.startTime = this.context.currentTime - startTime;
         }
         // HTML5 Audio
         else {
-            this.sources[id].audio.volume = volume || 1;
-            this.sources[id].audio.loop = loop;
-            this.sources[id].audio.playing = true;
-            if (typeof callback === 'function') this.sources[id].audio.onended = callback.bind(this);
-            else this.sources[id].audio.onended = null;
-            this.sources[id].audio.currentTime = 0;
-            this.sources[id].audio.play();
-            return this.sources[id].audio;
+            this.sources[name].audio.volume = volume;
+            this.sources[name].audio.loop = loop;
+            this.sources[name].audio.playing = true;
+            this.sources[name].audio.callback = callback;
+            this.sources[name].audio.onended = this.onended.bind(this, this.audioId);
+            this.sources[name].audio.currentTime = 0;
+            this.sources[name].audio.play();
+            var audio = this.sources[name].audio;
         }
+
+        this.audioObjects[audioId] = audio;
+        return audioId;
     },
 
-    stop: function(id) {
-        if (!this.sources[id]) throw('Cannot find source: ' + id);
+    stop: function(id, skipCallback) {
+        if (!game.Audio.enabled) return false;
+
+        var audio = this.audioObjects[id];
+        if (!audio) return false;
+
+        if (skipCallback) audio.callback = null;
 
         // Web Audio
         if (this.context) {
-            // Stop all source clips
-            for (var i = 0; i < this.sources[id].clips.length; i++) {
-                if (this.sources[id].clips[i].stop) this.sources[id].clips[i].stop(true);
-                else if (this.sources[id].clips[i].noteOff) this.sources[id].clips[i].noteOff(true);
-            }
-            this.sources[id].clips.length = 0;
-            this.sources[id].audio.pauseTime = 0;
+            audio.stop(0);
         }
         // HTML5 Audio
         else {
-            if (navigator.isCocoonJS) this.sources[id].audio.volume = 0;
-            else this.sources[id].audio.pause();
-            this.sources[id].audio.playing = false;
-            this.sources[id].audio.currentTime = 0;
+            // Is this fixed on CocoonJS ?
+            if (navigator.isCocoonJS) audio.volume = 0;
+            else audio.pause();
+            audio.playing = false;
+            audio.currentTime = 0;
         }
+
+        delete this.audioObjects[id];
+
+        return true;
     },
 
     pause: function(id) {
-        if (!this.sources[id]) throw('Cannot find source: ' + id);
+        if (!game.Audio.enabled) return false;
+
+        var audio = this.audioObjects[id];
+        if (!audio) return false;
 
         // Web Audio
         if (this.context) {
-            if (this.sources[id].clips.length === 0) return;
-            // Stop all source clips
-            for (var i = 0; i < this.sources[id].clips.length; i++) {
-                if (this.sources[id].clips[i].stop) this.sources[id].clips[i].stop(true);
-                else if (this.sources[id].clips[i].noteOff) this.sources[id].clips[i].noteOff(true);
-            }
-            this.sources[id].clips.length = 0;
-            this.sources[id].audio.pauseTime = (this.context.currentTime - this.sources[id].audio.startTime) % this.sources[id].audio.duration;
-
-            if (this.context.currentTime > this.sources[id].audio.startTime + this.sources[id].audio.duration && !this.sources[id].audio.loop) {
-                // Trying to pause completed not looping sound
-                this.sources[id].audio.pauseTime = 0;
-            }
+            audio.onended = null;
+            audio.stop(0);
+            audio.pauseTime = (this.context.currentTime - audio.startTime) % audio.buffer.duration;
         }
         // HTML5 Audio
         else {
-            if (this.sources[id].audio.currentTime > 0 && this.sources[id].audio.currentTime < this.sources[id].audio.duration || this.sources[id].audio.loop) {
-                this.sources[id].audio.pause();
+            if (audio.currentTime > 0 && audio.currentTime < audio.duration || audio.loop) {
+                audio.pause();
             }
         }
+
+        return true;
     },
 
     resume: function(id) {
-        if (!this.sources[id]) throw('Cannot find source: ' + id);
+        if (!game.Audio.enabled) return false;
+
+        var audio = this.audioObjects[id];
+        if (!audio) return false;
 
         // Web Audio
         if (this.context) {
-            if (this.sources[id].audio.pauseTime) {
-                this.play(id, this.sources[id].audio.volume, this.sources[id].audio.loop);
-                this.sources[id].audio.pauseTime = 0;
+            if (audio.pauseTime) {
+                var audioName = this.getNameForAudio(audio);
+                this.play(audioName, audio.loop, audio.gainNode.gain.value, audio.callback, audio.playbackRate, audio.pauseTime, id);
+            }
+            else return false;
+        }
+        // HTML5 Audio
+        else {
+            if (audio.playing) audio.play();
+            else return false;
+        }
+
+        return true;
+    },
+
+    mute: function(id) {
+        if (!game.Audio.enabled) return false;
+
+        var audio = this.audioObjects[id];
+        if (!audio) return false;
+
+        // Web Audio
+        if (this.context) {
+            audio.gainNode.gain.value = 0;
+        }
+        // HTML5 Audio
+        else {
+            audio.volume = 0;
+        }
+
+        return true;
+    },
+
+    unmute: function(id, volume) {
+        if (!game.Audio.enabled) return false;
+
+        var audio = this.audioObjects[id];
+        if (!audio) return false;
+
+        // Web Audio
+        if (this.context) {
+            audio.gainNode.gain.value = volume || 1;
+        }
+        // HTML5 Audio
+        else {
+            audio.volume = volume || 1;
+        }
+
+        return true;
+    },
+
+    getNameForAudio: function(audio) {
+        // Web Audio
+        if (this.context) {
+            for (var name in this.sources) {
+                if (this.sources[name].audio === audio.buffer) return name;
             }
         }
         // HTML5 Audio
         else {
-            if (this.sources[id].audio.playing) this.sources[id].audio.play();
+            for (var name in this.sources) {
+                if (this.sources[name].audio === audio) return name;
+            }
         }
+
+        return false;
     },
 
     /**
+        Play sound.
         @method playSound
-        @param {String} id Id of the sound
-        @param {Boolean} [loop] Should the sound loop
-        @param {Number} [volume] Sound volume
-        @param {Function} [callback] Callback when sound if finished
-        @param {Number} [rate] Only on Web Audio
+        @param {String} name Name of sound
+        @param {Boolean} [loop] Sound looping
+        @param {Function} [callback] Callback when sound is finished
+        @param {Number} [rate] Playback rate (Web Audio)
+        @return {Number} id
     **/
-    playSound: function(id, loop, volume, callback, rate) {
-        if (!game.Audio.enabled) return;
-        if (this.soundMuted) return;
+    playSound: function(name, loop, callback, rate) {
+        if (!game.Audio.enabled) return false;
 
-        volume = volume || 1;
-        return this.play(id, volume * this.soundVolume, loop, callback, rate);
+        var id = this.play(name, loop, this.soundVolume, callback, rate);
+        this.playingSounds.push(id);
+
+        return id;
     },
 
     /**
         Stop specific or all sounds.
         @method stopSound
-        @param {String} id Id of the sound
+        @param {Number} [id] Id of sound
+        @param {Boolean} [skipCallback] Skip callback function
+        @return {Boolean}
     **/
-    stopSound: function(id) {
-        if (!game.Audio.enabled) return;
+    stopSound: function(id, skipCallback) {
+        if (!game.Audio.enabled) return false;
 
         if (id) {
-            // Stop specific sound
-            this.stop(id);
+            return this.stop(id, !!skipCallback);
         }
         else {
-            // Stop all sounds
-            for (id in this.sources) {
-                if (id !== this.currentMusic) this.stop(id);
+            for (var i = this.playingSounds.length - 1; i >= 0; i--) {
+                this.stop(this.playingSounds[i], !!skipCallback);
             }
+            return true;
         }
     },
 
     /**
         Pause specific or all sounds.
         @method pauseSound
-        @param {String} [id] Id of the sound
+        @param {Number} [id] Id of sound
+        @return {Boolean} Return false, if sound is not playing
     **/
     pauseSound: function(id) {
-        if (!game.Audio.enabled) return;
+        if (!game.Audio.enabled) return false;
 
         if (id) {
+            var index = this.playingSounds.indexOf(id);
+            if (index === -1) return false;
+
             this.pause(id);
+            this.playingSounds.splice(index, 1);
+            this.pausedSounds.push(id);
         }
         else {
-            // Pause all sounds
-            for (id in this.sources) {
-                if (id !== this.currentMusic) this.pause(id);
+            for (var i = this.playingSounds.length - 1; i >= 0; i--) {
+                this.pause(this.playingSounds[i]);
+                this.pausedSounds.push(this.playingSounds[i]);
             }
+            this.playingSounds.length = 0;
         }
+
+        return true;
     },
 
     /**
+        Resume sound.
         @method resumeSound
-        @param {String} [id]
+        @param {Number} id Id of sound
+        @return {Boolean} Return false, if sound is not paused
     **/
     resumeSound: function(id) {
-        if (!game.Audio.enabled) return;
+        if (!game.Audio.enabled) return false;
+
+        var index = this.pausedSounds.indexOf(id);
+        if (index === -1) return false;
+
+        this.resume(id);
+        this.playingSounds.push(id);
+        this.pausedSounds.splice(index, 1);
+        
+        return true;
+    },
+
+    /**
+        Mute specific sound or all sounds.
+        @method muteSound
+        @param {Number} [id] Id of sound
+        @return {Boolean}
+    **/
+    muteSound: function(id) {
+        if (!game.Audio.enabled) return false;
 
         if (id) {
-            this.resume(id);
+            return this.mute(id);
         }
         else {
-            // Resume all sounds
-            for (id in this.sources) {
-                if (id !== this.currentMusic) this.resume(id);
+            for (var i = this.playingSounds.length - 1; i >= 0; i--) {
+                this.mute(this.playingSounds[i]);
             }
+            return true;
         }
     },
 
     /**
-        @method playMusic
-        @param {String} id
-        @param {Number} volume
+        Unmute specific sound or all sounds.
+        @method unmuteSound
+        @param {Number} [id] Id of sound
+        @return {Boolean}
     **/
-    playMusic: function(id, volume) {
-        if (!game.Audio.enabled) return;
-        if (this.musicMuted) return this.currentMusic = id;
+    unmuteSound: function(id) {
+        if (!game.Audio.enabled) return false;
 
-        // Stop current music before playing new
+        if (id) {
+            return this.unmute(id, this.soundVolume);
+        }
+        else {
+            for (var i = this.playingSounds.length - 1; i >= 0; i--) {
+                this.unmute(this.playingSounds[i], this.soundVolume);
+            }
+            return true;
+        }
+    },
+
+    /**
+        Play music.
+        @method playMusic
+        @param {Number} name Name of music
+        @param {Boolean} [loop] Music looping
+        @return {Boolean}
+    **/
+    playMusic: function(name, loop) {
+        if (!game.Audio.enabled) return false;
+
+        var volume = this.musicMuted ? 0 : this.musicVolume;
+        
+        if (typeof loop === 'undefined') loop = true;
+
         if (this.currentMusic) this.stop(this.currentMusic);
-        this.currentMusic = id;
-
-        volume = volume || 1;
-        return this.play(id, volume * this.musicVolume, true);
+        
+        this.currentMusic = this.play(name, !!loop, volume);
+        
+        return !!this.currentMusic;
     },
 
     /**
         Stop current music.
         @method stopMusic
+        @return {Boolean}
     **/
     stopMusic: function() {
-        if (!game.Audio.enabled) return;
+        if (!game.Audio.enabled) return false;
 
-        if (this.currentMusic) this.stop(this.currentMusic);
-        this.currentMusic = null;
+        if (this.currentMusic) {
+            var stop = this.stop(this.currentMusic);
+            this.currentMusic = null;
+            return !!stop;
+        }
+
+        return false;
     },
 
     /**
         Pause current music.
         @method pauseMusic
+        @return {Boolean}
     **/
     pauseMusic: function() {
-        if (!game.Audio.enabled) return;
+        if (!game.Audio.enabled) return false;
 
-        if (this.currentMusic) this.pause(this.currentMusic);
+        if (this.currentMusic) return this.pause(this.currentMusic);
+        return false;
     },
 
     /**
         Resume current music.
         @method resumeMusic
+        @return {Boolean}
     **/
     resumeMusic: function() {
-        if (!game.Audio.enabled) return;
+        return this.resume(this.currentMusic);
+    },
 
-        if (this.currentMusic) {
+    /**
+        Mute current music.
+        @method muteMusic
+    **/
+    muteMusic: function() {
+        if (!game.Audio.enabled) return false;
+
+        this.musicMuted = true;
+        if (this.currentMusic) this.mute(this.currentMusic);
+    },
+
+    /**
+        Unmute current music.
+        @method unmuteMusic
+    **/
+    unmuteMusic: function() {
+        if (!game.Audio.enabled) return false;
+
+        this.musicMuted = false;
+        if (this.currentMusic) this.unmute(this.currentMusic, this.musicVolume);
+    },
+
+    /**
+        Change main sound volume.
+        @method setSoundVolume
+        @param {Number} value
+    **/
+    setSoundVolume: function(value) {
+        if (!game.Audio.enabled) return false;
+
+        this.soundVolume = value;
+
+        for (var i = this.playingSounds.length - 1; i >= 0; i--) {
             if (this.context) {
-                // Web Audio
-                this.play(this.currentMusic, this.musicVolume, true);
+                this.playingSounds[i].gainNode.gain.value = this.soundVolume;
             }
             else {
-                // HTML5 Audio
-                if (this.sources[this.currentMusic].audio.playing) this.sources[this.currentMusic].audio.play();
+                this.playingSounds[i].volume = this.soundVolume;
+            }
+        }
+
+        for (var i = this.pausedSounds.length - 1; i >= 0; i--) {
+            if (this.context) {
+                this.pausedSounds[i].gainNode.gain.value = this.soundVolume;
+            }
+            else {
+                this.pausedSounds[i].volume = this.soundVolume;
             }
         }
     },
 
     /**
-        Pause all sounds and music
-        @method pauseAll
+        Change music volume.
+        @method setMusicVolume
+        @param {Number} value
+        @return {Boolean}
     **/
-    pauseAll: function() {
-        if (!game.Audio.enabled) return;
+    setMusicVolume: function(value) {
+        if (!game.Audio.enabled) return false;
 
-        if (!this.soundMuted) this.pauseSound();
-        if (!this.musicMuted) this.pauseMusic();
+        this.musicVolume = value;
+
+        if (!this.currentMusic) return false;
+
+        if (this.context) {
+            this.currentMusic.gainNode.gain.value = this.musicVolume;
+        }
+        else {
+            this.currentMusic.volume = this.musicVolume;
+        }
+
+        return true;
     },
 
     /**
-        Resume all sounds and music
-        @method resumeAll
+        Change audio playback rate (Web Audio).
+        @method setPlaybackRate
+        @param {Object} audio
+        @param {Number} rate
     **/
-    resumeAll: function() {
-        if (!game.Audio.enabled) return;
+    setPlaybackRate: function(audio, rate) {
+        if (!game.Audio.enabled) return false;
 
-        if (!this.soundMuted) this.resumeSound();
-        if (!this.musicMuted) this.resumeMusic();
+        if (audio && this.context) {
+            audio.playbackRate.value = rate || 1;
+        }
     },
 
     /**
-        Stop all sounds and music
-        @method stopAll
+        Check if sound is playing.
+        @method isSoundPlaying
+        @param {Number} id
+        @return {Boolean}
     **/
-    stopAll: function() {
-        if (!game.Audio.enabled) return;
+    isSoundPlaying: function(id) {
+        return this.playingSounds.indexOf(id) !== -1 ? true : false;
+    },
 
-        if (!this.soundMuted) this.stopSound();
-        if (!this.musicMuted) this.stopMusic();
+    /**
+        Check if music is playing.
+        @method isMusicPlaying
+        @return {Boolean}
+    **/
+    isMusicPlaying: function() {
+        return !!this.currentMusic;
+    },
+
+    systemPause: function() {
+        this.pauseMusic();
+
+        for (var i = this.playingSounds.length - 1; i >= 0; i--) {
+            this.pause(this.playingSounds[i]);
+            this.systemPaused.push(this.playingSounds[i]);
+        }
+    },
+
+    systemResume: function() {
+        this.resumeMusic();
+
+        for (var i = this.systemPaused.length - 1; i >= 0; i--) {
+            this.resume(this.systemPaused[i]);
+        }
+
+        this.systemPaused.length = 0;
     }
 });
 
 /**
-    Is audio enabled.
+    Enable audio.
     @attribute {Boolean} enabled
     @default true
 **/
 game.Audio.enabled = true;
 
 /**
-    Is Web Audio enabled.
+    Enable Web Audio.
     @attribute {Boolean} webAudio
     @default true
 **/

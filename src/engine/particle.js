@@ -451,6 +451,15 @@ game.Emitter = game.Class.extend({
     **/
     remove: function() {
         this._remove = true;
+    },
+
+    /**
+        Add emitter to container.
+        @method addTo
+        @param {game.Container} container
+    **/
+    addTo: function(container) {
+        this.container = container;
     }
 });
 

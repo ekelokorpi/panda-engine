@@ -91,6 +91,7 @@ game.CanvasRenderer = game.PIXI.CanvasRenderer;
 game.autoDetectRenderer = game.PIXI.autoDetectRenderer;
 game.Stage = game.PIXI.Stage;
 game.blendModes = game.PIXI.blendModes;
+game.BaseTexture = game.PIXI.BaseTexture;
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
@@ -135,10 +136,14 @@ game.Sprite = game.PIXI.Sprite.extend({
     /**
         Position sprite to system center.
         @method center
+        @param {Number} offsetX
+        @param {Number} offsetY
     **/
-    center: function() {
+    center: function(offsetX, offsetY) {
         this.position.x = game.system.width / 2 - this.width / 2 + this.width * this.anchor.x;
         this.position.y = game.system.height / 2 - this.height / 2 + this.height * this.anchor.y;
+        this.position.x += offsetX || 0;
+        this.position.y += offsetY || 0;
         return this;
     },
 
@@ -279,7 +284,7 @@ game.TilingSprite = game.PIXI.TilingSprite.extend({
     init: function(path, width, height, settings) {
         this.speed = new game.Point();
         path = game.paths[path] || path;
-        var texture = path instanceof game.Texture ? path : game.Texture.fromFrame(this.path || path);
+        var texture = path instanceof game.Texture ? path : path instanceof game.RenderTexture ? path : game.Texture.fromFrame(this.path || path);
         this._super(texture, width || texture.width, height || texture.height);
         game.merge(this, settings);
     },
@@ -350,7 +355,11 @@ game.Animation = game.PIXI.MovieClip.extend({
     addTo: function(container) {
         container.addChild(this);
         return this;
-    }
+    },
+
+    remove: function() {
+        if (this.parent) this.parent.removeChild(this);
+    },
 
     /**
         @method play
