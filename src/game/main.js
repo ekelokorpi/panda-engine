@@ -5,7 +5,7 @@ game.module(
 
 game.addAsset('logo.png');
 
-game.createScene('Game', {
+game.createScene('Main', {
     backgroundColor: 0xb9bec7,
 
     init: function() {

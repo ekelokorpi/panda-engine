@@ -668,9 +668,9 @@ game.System.resizeToFill = false;
 /**
     Default start scene.
     @attribute {String} startScene
-    @default Game
+    @default Main
 **/
-game.System.startScene = 'Game';
+game.System.startScene = 'Main';
 /**
     Scale canvas to fit window size on desktop.
     @attribute {Boolean} scaleToFit
