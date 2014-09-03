@@ -429,13 +429,10 @@ game.Emitter = game.Class.extend({
         @method update
     **/
     update: function() {
-        var i;
-
         if (this._remove) {
-            while (this.particles.length > 0) {
-                this.removeParticle(this.particles[0]);
+            for (var i = this.particles.length - 1; i >= 0; i--) {
+                this.removeParticle(this.particles[i]);
             }
-
             return;
         }
 
@@ -450,7 +447,7 @@ game.Emitter = game.Class.extend({
             }
         }
 
-        for (i = this.particles.length - 1; i >= 0; i--) {
+        for (var i = this.particles.length - 1; i >= 0; i--) {
             this.updateParticle(this.particles[i]);
         }
     },
