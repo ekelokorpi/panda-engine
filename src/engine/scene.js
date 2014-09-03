@@ -136,7 +136,7 @@ game.Scene = game.Class.extend({
         @param {game.Emitter} emitter
     **/
     removeEmitter: function(emitter) {
-        emitter._remove = true;
+        emitter.remove();
     },
 
     /**
