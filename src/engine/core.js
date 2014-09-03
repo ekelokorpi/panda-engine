@@ -184,6 +184,7 @@ var game = {
         for (i in obj) {
             keys.push(i);
         }
+        
         keys.sort();
         for (i = 0; i < keys.length; i++) {
             result[keys[i]] = obj[keys[i]];
@@ -272,13 +273,12 @@ var game = {
         Define new module.
         @method module
         @param {String} name
-        @param {String} [version]
     **/
-    module: function(name, version) {
+    module: function(name) {
         if (this.current) throw('Module ' + this.current.name + ' has no body');
         if (this.modules[name] && this.modules[name].body) throw('Module ' + name + ' is already defined');
 
-        this.current = { name: name, requires: [], loaded: false, body: null, version: version };
+        this.current = { name: name, requires: [], loaded: false, body: null };
         if (name === 'game.main') this.current.requires.push('engine.core');
         this.modules[name] = this.current;
         this.moduleQueue.push(this.current);
@@ -322,16 +322,11 @@ var game = {
     /**
         Start the game engine.
         @method start
-        @param {game.Scene} [scene] Starting scene.
-        @param {Number} [width] Width of canvas.
-        @param {Number} [height] Height of canvas.
-        @param {game.Loader} [loaderClass] Custom loader class.
-        @param {String} [canvasId] Id of canvas element.
     **/
-    start: function(scene, width, height, loaderClass, canvasId) {
+    start: function(scene, width, height) {
         if (this.moduleQueue.length > 0) throw('Core not ready');
 
-        this.system = new this.System(width, height, canvasId);
+        this.system = new this.System(width, height);
 
         if (this.Audio) this.audio = new this.Audio();
 
@@ -355,7 +350,7 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this.loader = new (loaderClass || this.Loader)(scene);
+        this.loader = new (this.Loader)(scene);
         if (!this.system.rotateScreenVisible) this.loader.start();
     },
 
@@ -412,6 +407,7 @@ var game = {
                 module.body(this);
                 moduleLoaded = true;
                 i--;
+                if (this.moduleQueue.length === 0) this.start();
             }
         }
 
