@@ -432,7 +432,6 @@ game.Emitter = game.Class.extend({
         var i;
 
         if (this._remove) {
-            this.active = false;
             while (this.particles.length > 0) {
                 this.removeParticle(this.particles[0]);
             }
