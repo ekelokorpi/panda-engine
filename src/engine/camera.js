@@ -117,24 +117,29 @@ game.Camera = game.Class.extend({
             this.speed.y = 0;
         }
 
-        if (this.container) this.container.position.set(~~-this.position.x, ~~-this.position.y);
+        if (this.container) {
+            this.container.position.x = ~~-this.position.x;
+            this.container.position.y = ~~-this.position.y;
+        }
     },
 
     moveSensor: function() {
-        if (this.sensorWidth < this.target.width || this.sensorHeight < this.target.height) this.setSensor(this.target.width, this.target.height);
+        var targetWidth = Math.abs(this.target.width);
+        var targetHeight = Math.abs(this.target.height);
+        if (this.sensorWidth < targetWidth || this.sensorHeight < targetHeight) this.setSensor(targetWidth, targetHeight);
 
-        if (this.target.position.x < this.sensorPosition.x - this.sensorWidth / 2 + this.target.width / 2) {
-            this.sensorPosition.x = this.target.position.x + this.sensorWidth / 2 - this.target.width / 2;
+        if (this.target.position.x < this.sensorPosition.x - this.sensorWidth / 2 + targetWidth / 2) {
+            this.sensorPosition.x = this.target.position.x + this.sensorWidth / 2 - targetWidth / 2;
         }
-        else if (this.target.position.x + (this.sensorWidth / 2 + this.target.width / 2) > this.sensorPosition.x + this.sensorWidth) {
-            this.sensorPosition.x = this.target.position.x + (this.sensorWidth / 2 + this.target.width / 2) - this.sensorWidth;
+        else if (this.target.position.x + (this.sensorWidth / 2 + targetWidth / 2) > this.sensorPosition.x + this.sensorWidth) {
+            this.sensorPosition.x = this.target.position.x + (this.sensorWidth / 2 + targetWidth / 2) - this.sensorWidth;
         }
 
-        if (this.target.position.y < this.sensorPosition.y - this.sensorHeight / 2 + this.target.height / 2) {
-            this.sensorPosition.y = this.target.position.y + this.sensorHeight / 2 - this.target.height / 2;
+        if (this.target.position.y < this.sensorPosition.y - this.sensorHeight / 2 + targetHeight / 2) {
+            this.sensorPosition.y = this.target.position.y + this.sensorHeight / 2 - targetHeight / 2;
         }
-        else if (this.target.position.y + (this.sensorHeight / 2 + this.target.height / 2) > this.sensorPosition.y + this.sensorHeight) {
-            this.sensorPosition.y = this.target.position.y + (this.sensorHeight / 2 + this.target.height / 2) - this.sensorHeight;
+        else if (this.target.position.y + (this.sensorHeight / 2 + targetHeight / 2) > this.sensorPosition.y + this.sensorHeight) {
+            this.sensorPosition.y = this.target.position.y + (this.sensorHeight / 2 + targetHeight / 2) - this.sensorHeight;
         }
     },
 
