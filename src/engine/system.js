@@ -80,7 +80,7 @@ game.System = game.Class.extend({
 
         if (game.System.resizeToFill && navigator.isCocoonJS) {
             if (window.innerWidth / window.innerHeight !== width / height) {
-                if (this.width > this.height) {
+                if (width > height) {
                     width = height * (window.innerWidth / window.innerHeight);
                 }
                 else {
