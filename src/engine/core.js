@@ -324,7 +324,7 @@ var game = {
         @method start
     **/
     start: function(scene, width, height) {
-        if (this.moduleQueue.length > 0) throw('Core not ready');
+        if (this.moduleQueue.length > 0) return;
 
         this.system = new this.System(width, height);
 
@@ -407,7 +407,7 @@ var game = {
                 module.body(this);
                 moduleLoaded = true;
                 i--;
-                if (this.moduleQueue.length === 0) this.start();
+                if (this.moduleQueue.length === 0 && this.config.autoStart !== false) this.start();
             }
         }
 

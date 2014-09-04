@@ -13,6 +13,4 @@ game.createScene('Main', {
     }
 });
 
-game.start();
-
 });
