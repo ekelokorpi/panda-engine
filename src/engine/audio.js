@@ -574,7 +574,7 @@ game.Audio = game.Class.extend({
 
         for (var i = this.playingSounds.length - 1; i >= 0; i--) {
             if (this.context) {
-                this.playingSounds[i].gainNode.gain.value = this.soundVolume;
+                this.audioObjects[this.playingSounds[i]].gainNode.gain.value = this.soundVolume;
             }
             else {
                 this.playingSounds[i].volume = this.soundVolume;
@@ -583,7 +583,7 @@ game.Audio = game.Class.extend({
 
         for (var i = this.pausedSounds.length - 1; i >= 0; i--) {
             if (this.context) {
-                this.pausedSounds[i].gainNode.gain.value = this.soundVolume;
+                this.audioObjects[this.pausedSounds[i]].gainNode.gain.value = this.soundVolume;
             }
             else {
                 this.pausedSounds[i].volume = this.soundVolume;
