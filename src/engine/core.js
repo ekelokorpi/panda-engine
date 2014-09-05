@@ -407,7 +407,7 @@ var game = {
                 module.body(this);
                 moduleLoaded = true;
                 i--;
-                if (this.moduleQueue.length === 0 && this.config.autoStart !== false) this.start();
+                if (this.moduleQueue.length === 0 && this.config.autoStart !== false && !this.system) this.start();
             }
         }
 
