@@ -67,7 +67,7 @@ game.Scene = game.Class.extend({
         this.stage = new game.Container();
         game.system.stage.addChild(this.stage);
 
-        if (game.audio && game.Scene.stopAudioOnInit) {
+        if (game.audio && game.System.stopAudioOnSceneChange) {
             game.audio.stopMusic();
             game.audio.stopSound();
             game.audio.pausedSounds.length = 0;
@@ -281,12 +281,5 @@ game.Scene = game.Class.extend({
         if (game.audio) game.audio.systemResume();
     }
 });
-
-/**
-    Stop all audio, when new scene is inited
-    @attribute {Boolean} stopAudioOnInit
-    @default true
-**/
-game.Scene.stopAudioOnInit = true;
 
 });
