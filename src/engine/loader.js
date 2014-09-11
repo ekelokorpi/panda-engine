@@ -157,7 +157,8 @@ game.Loader = game.Class.extend({
         }
 
         if (this.assetQueue.length > 0) this.loader.load();
-        else this.loadAudio();
+        else if (this.soundQueue.length > 0) this.loadAudio();
+        else this.ready();
 
         return this;
     },
