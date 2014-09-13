@@ -190,6 +190,39 @@ game.Sprite = game.PIXI.Sprite.extend({
     }
 });
 
+game.SpriteSheet = game.Class.extend({
+    init: function(id, width, height) {
+        this.id = id;
+        this.width = width;
+        this.height = height;
+    },
+
+    frame: function(index) {
+        var sprite = new game.Sprite(this.id);
+        var sx = Math.floor(sprite.width / this.width);
+        var sy = Math.floor(sprite.height / this.height);
+
+        var i = 0;
+        for (var y = 0; y < sy; y++) {
+            for (var x = 0; x < sx; x++) {
+                if (i === index) {
+                    sprite.crop(x * this.width, y * this.height, this.width, this.height);
+                    return sprite;
+                }
+                i++;
+            }
+        }
+    },
+
+    anim: function(index, count) {
+        var textures = [];
+        for (var i = 0; i < count; i++) {
+            textures.push(this.frame(index + i).texture);
+        }
+        return new game.Animation(textures);
+    }
+});
+
 game.Graphics = game.PIXI.Graphics.extend({
     addTo: function(container) {
         container.addChild(this);
