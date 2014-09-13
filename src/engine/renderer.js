@@ -192,20 +192,22 @@ game.Sprite = game.PIXI.Sprite.extend({
 
 game.SpriteSheet = game.Class.extend({
     init: function(id, width, height) {
-        this.id = id;
         this.width = width;
         this.height = height;
+        this.texture = game.TextureCache[game.paths[id]];
+        this.sx = Math.floor(this.texture.width / this.width);
+        this.sy = Math.floor(this.texture.height / this.height);
+        this.frames = this.sx * this.sy;
     },
 
     frame: function(index) {
-        var sprite = new game.Sprite(this.id);
-        var sx = Math.floor(sprite.width / this.width);
-        var sy = Math.floor(sprite.height / this.height);
+        index = index.limit(0, this.frames - 1);
 
         var i = 0;
-        for (var y = 0; y < sy; y++) {
-            for (var x = 0; x < sx; x++) {
+        for (var y = 0; y < this.sy; y++) {
+            for (var x = 0; x < this.sx; x++) {
                 if (i === index) {
+                    var sprite = new game.Sprite(this.texture);
                     sprite.crop(x * this.width, y * this.height, this.width, this.height);
                     return sprite;
                 }
@@ -214,7 +216,9 @@ game.SpriteSheet = game.Class.extend({
         }
     },
 
-    anim: function(index, count) {
+    anim: function(count, index) {
+        index = index || 0;
+        count = count || this.frames;
         var textures = [];
         for (var i = 0; i < count; i++) {
             textures.push(this.frame(index + i).texture);
