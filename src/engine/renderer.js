@@ -149,6 +149,7 @@ game.Sprite = game.PIXI.Sprite.extend({
     crop: function(x, y, width, height) {
         var texture = new game.PIXI.Texture(this.texture, new game.HitRectangle(x, y, width, height));
         this.setTexture(texture);
+        return this;
     },
 
     /**
