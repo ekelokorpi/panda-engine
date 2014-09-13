@@ -125,12 +125,30 @@ game.Sprite = game.PIXI.Sprite.extend({
         if (game.device.mobile && !this.touchendoutside && this.mouseupoutside) this.touchendoutside = this.mouseupoutside;
     },
 
+    /**
+        Change sprite texture.
+        @method setTexture
+        @param {String} id
+    **/
     setTexture: function(id) {
         if (typeof id === 'string') {
             id = game.paths[id] || id;
             id = game.Texture.fromFrame(id);
         }
         this._super(id);
+    },
+
+    /**
+        Crop sprite.
+        @method crop
+        @param {Number} x
+        @param {Number} y
+        @param {Number} width
+        @param {Number} height
+    **/
+    crop: function(x, y, width, height) {
+        var texture = new game.PIXI.Texture(this.texture, new game.HitRectangle(x, y, width, height));
+        this.setTexture(texture);
     },
 
     /**
