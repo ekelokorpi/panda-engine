@@ -577,7 +577,9 @@ var game = {
         // Android
         this.device.android = /android/i.test(navigator.userAgent);
         this.device.android2 = /android 2/i.test(navigator.userAgent);
-
+        var androidVer = navigator.userAgent.match(/Android.*AppleWebKit\/([\d.]+)/);
+        this.device.androidStock = (androidVer && androidVer[1] < 537);
+        
         // Internet Explorer
         this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
         this.device.ie10 = /MSIE 10/i.test(navigator.userAgent);
