@@ -618,7 +618,14 @@ var game = {
     
         for (var i in this.device) {
             if (this.device[i] && this.config[i]) {
-                for (var o in this.config[i]) this.merge(this.config[o], this.config[i][o]);
+                for (var o in this.config[i]) {
+                    if (typeof this.config[i][o] === 'object') {
+                        this.merge(this.config[o], this.config[i][o]);
+                    }
+                    else {
+                        this.config[o] = this.config[i][o];
+                    }
+                }
             }
         }
 
