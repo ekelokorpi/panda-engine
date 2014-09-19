@@ -417,7 +417,7 @@ game.System = game.Class.extend({
             var height = window.innerHeight;
 
             // iOS innerHeight bug fixes
-            if (game.device.iOS7 && window.innerHeight === 256) height = 319;
+            if (game.device.iOS7 && window.innerHeight === 256) height = 320;
             if (game.device.iOS7 && game.device.pixelRatio === 2 && this.orientation === 'landscape') height += 2;
             if (game.device.iPad && height === 671) height = 672;
             
