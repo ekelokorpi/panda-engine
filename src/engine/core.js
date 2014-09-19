@@ -559,7 +559,7 @@ var game = {
 
         // iPhone
         this.device.iPhone = /iPhone/i.test(navigator.userAgent);
-        this.device.iPhone4 = (this.device.iPhone && this.device.pixelRatio === 2);
+        this.device.iPhone4 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 920);
         this.device.iPhone5 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 1096);
 
         // iPad
