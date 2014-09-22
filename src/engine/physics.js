@@ -267,25 +267,25 @@ game.CollisionSolver = game.Class.extend({
     hitResponse: function(a, b) {
         if (a.shape instanceof game.Rectangle && b.shape instanceof game.Rectangle) {
             if (a.last.y + a.shape.height / 2 <= b.last.y - b.shape.height / 2) {
-                if (a.collide(b, 'UP')) {
+                if (a.collide(b, 'DOWN')) {
                     a.position.y = b.position.y - b.shape.height / 2 - a.shape.height / 2;
                     return true;
                 }
             }
             else if (a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
-                if (a.collide(b, 'DOWN')) {
+                if (a.collide(b, 'UP')) {
                     a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
                     return true;
                 }
             }
             else if (a.last.x + a.shape.width / 2 <= b.last.x - b.shape.width / 2) {
-                if (a.collide(b, 'LEFT')) {
+                if (a.collide(b, 'RIGHT')) {
                     a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
                     return true;
                 }
             }
             else if (a.last.x - a.shape.width / 2 >= b.last.x + b.shape.width / 2) {
-                if (a.collide(b, 'RIGHT')) {
+                if (a.collide(b, 'LEFT')) {
                     a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
                     return true;
                 }
