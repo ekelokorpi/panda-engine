@@ -226,7 +226,7 @@ game.Audio = game.Class.extend({
             this.sources[name].audio.playing = true;
             this.sources[name].audio.callback = callback;
             this.sources[name].audio.onended = this.onended.bind(this, this.audioId);
-            // This gives error on IE11
+            // This gives error on IE
             // this.sources[name].audio.currentTime = 0;
             this.sources[name].audio.play();
             var audio = this.sources[name].audio;
@@ -255,7 +255,8 @@ game.Audio = game.Class.extend({
             if (navigator.isCocoonJS) audio.volume = 0;
             else audio.pause();
             audio.playing = false;
-            audio.currentTime = 0;
+            // This gives error on IE
+            // audio.currentTime = 0;
         }
 
         delete this.audioObjects[id];
