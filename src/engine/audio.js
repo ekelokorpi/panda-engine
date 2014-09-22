@@ -114,7 +114,10 @@ game.Audio = game.Class.extend({
     },
     
     load: function(path, callback) {
-        if (!game.Audio.enabled) return;
+        if (!game.Audio.enabled) {
+            if (typeof callback === 'function') callback();
+            return;
+        }
 
         var realPath = path.replace(/[^\.]+$/, this.format + game.nocache);
 
