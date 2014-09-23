@@ -196,8 +196,15 @@ game.Keyboard = game.Class.extend({
         this.keys[122] = 'F11';
         this.keys[123] = 'F12';
 
-        window.addEventListener('keydown', this.keydown.bind(this), false);
-        window.addEventListener('keyup', this.keyup.bind(this), false);
+        window.addEventListener('keydown', this.keydown.bind(this));
+        window.addEventListener('keyup', this.keyup.bind(this));
+        window.addEventListener('blur', this.resetKeys.bind(this));
+    },
+
+    resetKeys: function() {
+        for (var key in this.keysDown) {
+            this.keysDown[key] = false;
+        }
     },
 
     /**
@@ -218,7 +225,6 @@ game.Keyboard = game.Class.extend({
         @method keyup
     **/
     keyup: function(event) {
-        
         this.keysDown[this.keys[event.keyCode]] = false;
         if (game.scene) {
             var prevent = game.scene.keyup(this.keys[event.keyCode]);
