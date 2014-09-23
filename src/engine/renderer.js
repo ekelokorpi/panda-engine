@@ -373,28 +373,6 @@ game.TilingSprite = game.PIXI.TilingSprite.extend({
     @param {Array} textures
 **/
 game.Animation = game.PIXI.MovieClip.extend({
-    /**
-        @property {Number} animationSpeed
-        @default 1
-    **/
-    /**
-        @property {Array} textures
-    **/
-    /**
-        @property {Boolean} loop
-    **/
-    /**
-        @property {Number} currentFrame
-    **/
-    /**
-        @property {Boolean} playing
-    **/
-    /**
-        @property {Number} totalFrames
-    **/
-    /**
-        @property {Function} onComplete
-    **/
     init: function(textures) {
         if (typeof textures === 'string') {
             var frames = Array.prototype.slice.call(arguments);
@@ -408,27 +386,29 @@ game.Animation = game.PIXI.MovieClip.extend({
         this._super(textures);
     },
 
+    /**
+        Add to container.
+        @method addTo
+        @param {game.Container} container
+    **/
     addTo: function(container) {
         container.addChild(this);
         return this;
     },
 
+    /**
+        Remove from it's container.
+        @method remove
+    **/
     remove: function() {
         if (this.parent) this.parent.removeChild(this);
     },
 
-    /**
-        @method play
-    **/
-    /**
-        @method stop
-    **/
-    /**
-        @method gotoAndPlay
-    **/
-    /**
-        @method gotoAndStop
-    **/
+    updateTransform: function() {
+        this.currentFrame -= this.animationSpeed;
+        this.currentFrame += this.animationSpeed * 60 * game.system.delta;
+        this._super();
+    }
 });
 
 });
