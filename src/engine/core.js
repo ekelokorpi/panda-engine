@@ -489,7 +489,7 @@ var game = {
             var i = this;
             if (i < min) i = min;
             if (i > max) i = max;
-            return i;
+            return parseFloat(i);
         };
 
         Number.prototype.round = function(precision) {
