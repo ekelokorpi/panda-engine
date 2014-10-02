@@ -171,6 +171,9 @@ game.System = game.Class.extend({
                 }
             }, false);
 
+            // Fixes iOS8 WebGL background color bug
+            if (game.device.iOS8 && game.System.webGL) game.System.bgColorMobile = '#000000';
+
             if (game.System.bgColor && !game.System.bgColorMobile) game.System.bgColorMobile = game.System.bgColor;
             if (game.System.bgColorMobile && !game.System.bgColorRotate) game.System.bgColorRotate = game.System.bgColorMobile;
 
