@@ -14924,7 +14924,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
         if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1)
         {
             var responseXML = this.ajaxRequest.responseXML;
-            if(!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
+            if(!responseXML || /MSIE/i.test(navigator.userAgent) || navigator.isCocoonJS) {
                 if(typeof(window.DOMParser) === 'function') {
                     var domparser = new DOMParser();
                     responseXML = domparser.parseFromString(this.ajaxRequest.responseText, 'text/xml');
