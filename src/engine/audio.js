@@ -613,7 +613,7 @@ game.Audio = game.Class.extend({
         if (!this.currentMusic) return false;
 
         if (this.context) {
-            this.currentMusic.gainNode.gain.value = this.musicVolume;
+            this.audioObjects[this.currentMusic].gainNode.gain.value = this.musicVolume;
         }
         else {
             this.currentMusic.volume = this.musicVolume;
