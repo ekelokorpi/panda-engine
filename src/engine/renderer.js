@@ -411,4 +411,17 @@ game.Animation = game.PIXI.MovieClip.extend({
     }
 });
 
+game.Animation.fromFrames = function(name, reverse) {
+    var textures = [];
+
+    for (var key in game.TextureCache) {
+        if (key.indexOf(name) !== -1) {
+            if (reverse) textures.unshift(game.TextureCache[key]);
+            else textures.push(game.TextureCache[key]);
+        }
+    }
+
+    return new game.Animation(textures);
+};
+
 });
