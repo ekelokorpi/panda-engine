@@ -204,7 +204,8 @@ game.Keyboard = game.Class.extend({
         @method keydown
     **/
     keydown: function(event) {
-        if (!this.keys[event.keyCode]) return; // unkown key
+    	if(event.keyCode==8){event.preventDefault();}
+        if (!this.keys[event.keyCode]) return; // unknown key
         if (this.keysDown[this.keys[event.keyCode]]) return; // key already down
 
         this.keysDown[this.keys[event.keyCode]] = true;
