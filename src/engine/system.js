@@ -78,7 +78,7 @@ game.System = game.Class.extend({
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
 
-        if (game.System.resizeToFill && navigator.isCocoonJS) {
+        if (game.System.resizeToFill) {
             if (window.innerWidth / window.innerHeight !== width / height) {
                 if (width > height) {
                     width = height * (window.innerWidth / window.innerHeight);
@@ -424,19 +424,6 @@ game.System = game.Class.extend({
             if (game.device.iOS7 && window.innerHeight === 319) height = 320;
             if (game.device.iOS7 && game.device.pixelRatio === 2 && this.orientation === 'landscape') height += 2;
             if (game.device.iPad && height === 671) height = 672;
-            
-            if (game.System.resizeToFill && !this.rotateScreenVisible && game.System.rotateScreen) {
-                if (width / height !== this.width / this.height) {
-                    // Wrong ratio, need to resize
-                    if (this.orientation === 'landscape') {
-                        this.width = Math.ceil(this.height * (width / height));
-                    }
-                    else {
-                        this.height = Math.ceil(this.width * (height / width));
-                    }
-                    this.renderer.resize(this.width, this.height);
-                }
-            }
 
             // Landscape game
             if (this.width > this.height) {
