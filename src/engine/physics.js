@@ -115,7 +115,7 @@ game.World = game.Class.extend({
                 if (!group) break;
                 b = group[i];
                 if (body !== b) this.solver.solve(body, b);
-            }   
+            }
         }
     },
 
