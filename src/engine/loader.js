@@ -13,15 +13,9 @@ game.module(
     @class Loader
     @extends game.Class
     @constructor
-    @param {game.Scene|Function} param
+    @param {Function|String} callback
 **/
 game.Loader = game.Class.extend({
-    /**
-        Scene to start, when loader is finished.
-        @property {game.Scene} scene
-        @default null
-    **/
-    scene: null,
     /**
         Number of files loaded.
         @property {Number} loaded
@@ -57,15 +51,8 @@ game.Loader = game.Class.extend({
     callback: null,
     
     init: function(callback) {
-        if (callback && callback.prototype.init || game.System.startScene) {
-            this.scene = callback || game[game.System.startScene] || window[game.System.startScene] || game['Scene' + game.System.startScene] || window['Scene' + game.System.startScene];
-            this.dynamic = false;
-            game.System.startScene = null;
-        }
-        else {
-            this.callback = callback;
-        }
-
+        if (typeof callback === 'string' || game.System.startScene) this.dynamic = false;
+        this.callback = callback;
         this.stage = game.system.stage;
 
         for (var i = 0; i < game.assetQueue.length; i++) {
@@ -220,8 +207,8 @@ game.Loader = game.Class.extend({
         game.assetQueue.length = 0;
         game.audioQueue.length = 0;
 
-        if (!this.dynamic) return this.setScene();
         if (typeof this.callback === 'function') this.callback();
+        else this.setScene();
     },
 
     /**
@@ -232,7 +219,12 @@ game.Loader = game.Class.extend({
         game.system.timer.last = 0;
         game.Timer.time = Number.MIN_VALUE;
         if (this.loopId) game.clearGameLoop(this.loopId);
-        game.system.setScene(this.scene);
+        if (game.System.startScene) {
+            var startScene = game.System.startScene;
+            game.System.startScene = null;
+            game.system.setScene(startScene);
+        }
+        else game.system.setScene(this.callback);
     },
 
     run: function() {
