@@ -14,6 +14,11 @@ game.module(
 **/
 game.System = game.Class.extend({
     /**
+        Name of current scene.
+        @property {String} currentSceneName
+    **/
+    currentSceneName: null,
+    /**
         Width of the game screen.
         @property {Number} width
     **/
@@ -234,10 +239,11 @@ game.System = game.Class.extend({
     /**
         Change current scene.
         @method setScene
-        @param {game.Scene} sceneClass
+        @param {String} sceneClass
     **/
     setScene: function(sceneClass) {
-        if (typeof sceneClass === 'string') sceneClass = game['Scene' + sceneClass];
+        this.currentSceneName = sceneClass;
+        sceneClass = game['Scene' + sceneClass];
         if (this.running) this.newSceneClass = sceneClass;
         else this.setSceneNow(sceneClass);
     },
