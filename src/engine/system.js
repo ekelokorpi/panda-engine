@@ -83,7 +83,7 @@ game.System = game.Class.extend({
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
 
-        if (game.System.resizeToFill) {
+        if (game.System.resizeToFill && game.device.mobile) {
             if (window.innerWidth / window.innerHeight !== width / height) {
                 if (width > height) {
                     width = height * (window.innerWidth / window.innerHeight);
