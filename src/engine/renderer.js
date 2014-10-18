@@ -405,8 +405,10 @@ game.Animation = game.PIXI.MovieClip.extend({
     },
 
     updateTransform: function() {
-        this.currentFrame -= this.animationSpeed;
-        this.currentFrame += this.animationSpeed * 60 * game.system.delta;
+        if (this.playing) {
+            this.currentFrame -= this.animationSpeed;
+            this.currentFrame += this.animationSpeed * 60 * game.system.delta;
+        }
         this._super();
     }
 });
