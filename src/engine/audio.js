@@ -18,10 +18,10 @@ game.Audio = game.Class.extend({
     audioObjects: {},
     systemPaused: [],
     /**
-        Current audio format.
-        @property {String} format
+        Supported audio formats.
+        @property {Array} formats
     **/
-    format: null,
+    formats: [],
     /**
         List of playing sounds.
         @property {Array} playingSounds
@@ -77,19 +77,18 @@ game.Audio = game.Class.extend({
         // Disable Web Audio if not supported
         if (game.Audio.webAudio && !window.AudioContext) game.Audio.webAudio = false;
 
-        // Get audio format
+        // Get supported audio formats
         if (game.Audio.enabled) {
             var audio = new Audio();
             for (var i = 0; i < game.Audio.formats.length; i++) {
                 if (audio.canPlayType(game.Audio.formats[i].type)) {
-                    this.format = game.Audio.formats[i].ext;
-                    break;
+                    this.formats.push(game.Audio.formats[i].ext);
                 }
             }
         }
 
         // Disable audio if no compatible format found
-        if (!this.format) game.Audio.enabled = false;
+        if (this.formats.length === 0) game.Audio.enabled = false;
 
         // Init Web Audio
         if (game.Audio.enabled && game.Audio.webAudio) {
@@ -119,7 +118,10 @@ game.Audio = game.Class.extend({
             return;
         }
 
-        var realPath = path.replace(/[^\.]+$/, this.format + game.nocache);
+        var ext = path.split('.').pop();
+        if (this.formats.indexOf(ext) === -1) ext = this.formats[0];
+        
+        var realPath = path.replace(/[^\.]+$/, ext + game.nocache);
 
         // Web Audio
         if (this.context) {
@@ -689,9 +691,14 @@ game.Audio.enabled = true;
 **/
 game.Audio.webAudio = true;
 
+/**
+    List of available audio formats.
+    @attribute {Array} formats 
+**/
 game.Audio.formats = [
     { ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"' },
-    { ext: 'ogg', type: 'audio/ogg; codecs="vorbis"' }
+    { ext: 'ogg', type: 'audio/ogg; codecs="vorbis"' },
+    { ext: 'wav', type: 'audio/wav' }
 ];
 
 });
