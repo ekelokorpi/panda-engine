@@ -94,23 +94,24 @@ game.System = game.Class.extend({
             }
         }
 
-        if (game.System.hires) {
-            if (typeof game.System.hiresWidth === 'number' && typeof game.System.hiresHeight === 'number') {
-                if (window.innerWidth >= game.System.hiresWidth && window.innerHeight >= game.System.hiresHeight) {
-                    this.hires = true;
-                }
-            }
-            else if (window.innerWidth >= width * game.System.hiresFactor && window.innerHeight >= height * game.System.hiresFactor) {
+        for (var i = 2; i <= game.System.hires; i *= 2) {
+            if (window.innerWidth >= width * i && window.innerHeight >= height * i) {
                 this.hires = true;
+                game.scale = i;
             }
+        }
+        if (this.hires) {
+            width *= game.scale;
+            height *= game.scale;
         }
         if (game.System.retina && game.device.pixelRatio === 2) {
-            this.retina = true;
-        }
-        if (this.hires || this.retina) {
-            width *= 2;
-            height *= 2;
-            game.scale = 2;
+            // Check if we are already using highest textures
+            if (game.scale < game.System.hires) {
+                this.retina = true;
+                width *= 2;
+                height *= 2;
+                game.scale *= 2;
+            }
         }
 
         this.width = width;
@@ -541,19 +542,11 @@ game.System.idtkScale = 'ScaleAspectFit';
 **/
 game.System.screenCanvas = true;
 /**
-    Use HiRes mode.
-    @attribute {Boolean} hires
-    @default false
+    HiRes mode.
+    @attribute {Number} hires
+    @default 0
 **/
-game.System.hires = false;
-/**
-    Canvas width/height factor, when HiRes mode is enabled.
-    @attribute {Number} hiresFactor
-    @default 1.5
-**/
-game.System.hiresFactor = 1.5;
-game.System.hiresWidth = null;
-game.System.hiresHeight = null;
+game.System.hires = 0;
 /**
     Use Retina mode.
     @attribute {Boolean} retina

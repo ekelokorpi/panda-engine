@@ -196,10 +196,10 @@ game.Loader = game.Class.extend({
         @method ready
     **/
     ready: function() {
-        if (game.system.retina || game.system.hires) {
+        if (game.system.hires || game.system.retina) {
             for (var i in game.TextureCache) {
-                if (i.indexOf('@2x') !== -1) {
-                    game.TextureCache[i.replace('@2x', '')] = game.TextureCache[i];
+                if (i.indexOf('@' + game.scale + 'x') !== -1) {
+                    game.TextureCache[i.replace('@' + game.scale + 'x', '')] = game.TextureCache[i];
                     delete game.TextureCache[i];
                 }
             }
@@ -263,7 +263,7 @@ game.Loader = game.Class.extend({
     },
 
     getPath: function(path) {
-        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@2x.') : path;
+        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
     }
 });
 
