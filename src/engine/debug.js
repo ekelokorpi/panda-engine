@@ -5,9 +5,6 @@
 game.module(
     'engine.debug'
 )
-.require(
-    'engine.pixi'
-)
 .body(function() {
 'use strict';
 
@@ -43,7 +40,7 @@ game.DebugDraw = game.Class.extend({
     },
 
     /**
-        Add sprite to DebugDraw.
+        Add interactive sprite to DebugDraw.
         @method addSprite
         @param {game.Sprite} sprite
     **/
@@ -71,13 +68,13 @@ game.DebugDraw = game.Class.extend({
     },
 
     /**
-        Add body to DebugDraw.
+        Add physic body to DebugDraw.
         @method addBody
         @param {game.Body} body
     **/
     addBody: function(body) {
         var sprite = new game.Graphics();
-        this.drawDebugSprite(sprite, body);
+        this.drawBodySprite(sprite, body);
 
         sprite.position.x = body.position.x;
         sprite.position.y = body.position.y;
@@ -86,16 +83,25 @@ game.DebugDraw = game.Class.extend({
         this.bodyContainer.addChild(sprite);
     },
 
-    drawDebugSprite: function(sprite, body) {
+    /**
+        Draw debug sprite for physics body.
+        @method drawBodySprite
+        @param {game.Graphics} sprite
+        @param {game.Body} body
+    **/
+    drawBodySprite: function(sprite, body) {
         sprite.clear();
         sprite.beginFill(game.DebugDraw.bodyColor);
 
         if (body.shape instanceof game.Rectangle) {
             sprite.drawRect(-body.shape.width / 2, -body.shape.height / 2, body.shape.width, body.shape.height);
         }
-        if (body.shape instanceof game.Circle) {
+        else if (body.shape instanceof game.Circle) {
             sprite.drawCircle(0, 0, body.shape.radius);
-        } // TODO add support for game.Line
+        }
+        else if (body.shape instanceof game.Line) {
+            // TODO
+        }
     },
 
     /**
@@ -103,45 +109,33 @@ game.DebugDraw = game.Class.extend({
         @method update
     **/
     update: function() {
+        var body;
         for (var i = this.bodyContainer.children.length - 1; i >= 0; i--) {
-            if (game.modules['plugins.p2']) {
-                this.updateP2(this.bodyContainer.children[i]);
-                continue;
+            body = this.bodyContainer.children[i];
+            body.rotation = body.target.rotation;
+            if (body.width !== body.target.shape.width ||
+                body.height !== body.target.shape.height) {
+                this.drawBodySprite(body, body.target);
             }
-
-            this.bodyContainer.children[i].rotation = this.bodyContainer.children[i].target.rotation;
-
-            if (this.bodyContainer.children[i].width !== this.bodyContainer.children[i].target.shape.width ||
-                this.bodyContainer.children[i].height !== this.bodyContainer.children[i].target.shape.height) {
-                this.drawDebugSprite(this.bodyContainer.children[i], this.bodyContainer.children[i].target);
+            else if (body.radius !== body.target.shape.radius) {
+                this.drawBodySprite(body, body.target);
             }
-
-            if (this.bodyContainer.children[i].radius !== this.bodyContainer.children[i].target.shape.radius) {
-                this.drawDebugSprite(this.bodyContainer.children[i], this.bodyContainer.children[i].target);
-            }
-
-            this.bodyContainer.children[i].position.x = this.bodyContainer.children[i].target.position.x;
-            this.bodyContainer.children[i].position.y = this.bodyContainer.children[i].target.position.y;
-
-            if (!this.bodyContainer.children[i].target.world) {
-                this.bodyContainer.removeChild(this.bodyContainer.children[i]);
-            }
+            body.position.x = body.target.position.x;
+            body.position.y = body.target.position.y;
+            if (!body.target.world) this.bodyContainer.removeChild(body);
         }
 
+        var sprite;
         for (var i = this.spriteContainer.children.length - 1; i >= 0; i--) {
-            this.spriteContainer.children[i].rotation = this.spriteContainer.children[i].target.rotation;
-
-            if (this.spriteContainer.children[i].target.parent) this.spriteContainer.children[i].target.updateTransform();
-
-            this.spriteContainer.children[i].visible = this.spriteContainer.children[i].target.worldVisible;
-            this.spriteContainer.children[i].position.x = this.spriteContainer.children[i].target.worldTransform.tx;
-            this.spriteContainer.children[i].position.y = this.spriteContainer.children[i].target.worldTransform.ty;
-            this.spriteContainer.children[i].scale.x = this.spriteContainer.children[i].target.scale.x;
-            this.spriteContainer.children[i].scale.y = this.spriteContainer.children[i].target.scale.y;
-
-            if (!this.spriteContainer.children[i].target.parent) {
-                this.spriteContainer.removeChild(this.spriteContainer.children[i]);
-            }
+            sprite = this.spriteContainer.children[i];
+            sprite.rotation = sprite.target.rotation;
+            if (sprite.target.parent) sprite.target.updateTransform();
+            sprite.visible = sprite.target.worldVisible;
+            sprite.position.x = sprite.target.worldTransform.tx;
+            sprite.position.y = sprite.target.worldTransform.ty;
+            sprite.scale.x = sprite.target.scale.x;
+            sprite.scale.y = sprite.target.scale.y;
+            if (!sprite.target.parent) this.spriteContainer.removeChild(sprite);
         }
     }
 });
