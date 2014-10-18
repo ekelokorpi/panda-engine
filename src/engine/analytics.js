@@ -16,17 +16,28 @@ game.module(
     @param {String} id
 **/
 game.Analytics = game.Class.extend({
+    /**
+        Is analytics enabled.
+        @property {Boolean} enabled
+    **/
+    enabled: true,
+    /**
+        Current tracking id.
+        @property {String} trackId
+    **/
     trackId: null,
     userId: null,
 
     init: function(id) {
-        if (!navigator.onLine || game.device.cocoonJS && !game.Analytics.cocoonJS) return;
-        if (!id) throw('Analytics id not set.');
+        if (!navigator.onLine || game.device.cocoonJS && !game.Analytics.cocoonJS) {
+            this.enabled = false;
+            return;
+        }
 
         this.trackId = id;
 
         if (game.device.cocoonJS && game.Analytics.cocoonJS) {
-            this.userId = this.guid();
+            this.userId = 1 * new Date();
             var request = new XMLHttpRequest();
             var params = 'v=1&tid=' + this.trackId + '&cid=' + this.userId + '&t=pageview&dp=%2F';
             request.open('POST', 'http://www.google-analytics.com/collect', true);
@@ -51,13 +62,6 @@ game.Analytics = game.Class.extend({
         }
     },
 
-    guid: function() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-        }
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-    },
-
     /**
         Send event to analytics.
         @method send
@@ -67,7 +71,7 @@ game.Analytics = game.Class.extend({
         @param {String} [value]
     **/
     send: function(category, action, label, value) {
-        if (!navigator.onLine || game.device.cocoonJS && !game.Analytics.cocoonJS) return;
+        if (!this.enabled) return;
 
         if (game.device.cocoonJS && game.Analytics.cocoonJS) {
             var request = new XMLHttpRequest();
@@ -80,11 +84,6 @@ game.Analytics = game.Class.extend({
         else {
             ga('send', 'event', category, action, label, value);
         }
-    },
-
-    // Deprecated
-    event: function(category, action, label, value) {
-        this.send(category, action, label, value);
     }
 });
 
