@@ -216,7 +216,7 @@ game.Keyboard = game.Class.extend({
 
         this.keysDown[this.keys[event.keyCode]] = true;
         if (game.scene) {
-            var prevent = game.scene.keydown(this.keys[event.keyCode], !!this.keysDown['SHIFT'], !!this.keysDown['CTRL'], !!this.keysDown['ALT']);
+            var prevent = game.scene.keydown(this.keys[event.keyCode], this.down('SHIFT'), this.down('CTRL'), this.down('ALT'));
             if (prevent) event.preventDefault();
         }
     },
@@ -226,10 +226,7 @@ game.Keyboard = game.Class.extend({
     **/
     keyup: function(event) {
         this.keysDown[this.keys[event.keyCode]] = false;
-        if (game.scene) {
-            var prevent = game.scene.keyup(this.keys[event.keyCode]);
-            if (prevent) event.preventDefault();
-        }
+        if (game.scene) game.scene.keyup(this.keys[event.keyCode]);
     },
 
     /**
@@ -238,7 +235,7 @@ game.Keyboard = game.Class.extend({
         @return {Boolean}
     **/
     down: function(key) {
-        return (this.keysDown[key]);
+        return !!this.keysDown[key];
     }
 });
 
