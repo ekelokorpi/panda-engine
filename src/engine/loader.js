@@ -128,6 +128,7 @@ game.Loader = game.Class.extend({
                 this.stage.mousedown = this.stage.touchstart = null;
                 this.stage.mouseup = this.stage.mouseupoutside = this.stage.touchend = this.stage.touchendoutside = null;
                 this.stage.mouseout = null;
+                if (game.tweenEngine) game.tweenEngine.removeAll();
             }
 
             if (typeof game.Loader.bgColor === 'number') {
