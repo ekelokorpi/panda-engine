@@ -42,11 +42,13 @@ game.Scene = game.Class.extend({
     /**
         Minimum distance to trigger swipe.
         @property {Number} swipeDist
+        @default 100
     **/
     swipeDist: 100,
     /**
-        Maximum time to trigger swipe.
+        Maximum time to trigger swipe (ms).
         @property {Number} swipeTime
+        @default 500
     **/
     swipeTime: 500,
     
