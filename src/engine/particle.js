@@ -119,11 +119,11 @@ game.Emitter = game.Class.extend({
     **/
     speedVar: 0,
     /**
-        Particle's life in seconds. 0 is forever.
+        Particle's life in ms. 0 is forever.
         @property {Number} life
-        @default 2
+        @default 2000
     **/
-    life: 2,
+    life: 2000,
     /**
         Particle's life variance.
         @property {Number} lifeVar
@@ -336,7 +336,7 @@ game.Emitter = game.Class.extend({
 
         if (this.startAlpha !== this.endAlpha) {
             particle.deltaAlpha = this.endAlpha - this.startAlpha;
-            particle.deltaAlpha /= particle.life;
+            particle.deltaAlpha /= particle.life / 1000;
         }
         else particle.deltaAlpha = 0;
 
@@ -345,7 +345,7 @@ game.Emitter = game.Class.extend({
         var startScale = this.startScale + this.getVariance(this.startScaleVar);
         if (this.startScale !== this.endScale) {
             particle.deltaScale = (this.endScale + this.getVariance(this.endScaleVar)) - startScale;
-            particle.deltaScale /= particle.life;
+            particle.deltaScale /= particle.life / 1000;
         }
         else particle.deltaScale = 0;
         particle.sprite.scale.x = particle.sprite.scale.y = startScale;
@@ -361,7 +361,7 @@ game.Emitter = game.Class.extend({
     **/
     updateParticle: function(particle) {
         if (particle.life > 0) {
-            particle.life -= game.system.delta;
+            particle.life -= game.system.delta * 1000;
             if (particle.life <= 0) return this.removeParticle(particle);
         }
 
