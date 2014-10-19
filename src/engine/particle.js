@@ -59,7 +59,6 @@ game.Particle = game.Class.extend({
 
 /**
     Particle emitter.
-
     @class Emitter
     @extends game.Class
     @constructor
@@ -119,7 +118,7 @@ game.Emitter = game.Class.extend({
     **/
     speedVar: 0,
     /**
-        Particle's life in ms. 0 is forever.
+        Particle's life in ms (0 is forever).
         @property {Number} life
         @default 2000
     **/
@@ -131,18 +130,18 @@ game.Emitter = game.Class.extend({
     **/
     lifeVar: 0,
     /**
-        Emitter duration in ms. 0 is forever.
+        Emitter duration in ms (0 is forever).
         @property {Number} duration
         @default 0
     **/
     duration: 0,
     durationTimer: 0,
     /**
-        Emitter rate.
+        How often to emit new particles in ms.
         @property {Number} rate
-        @default 0.1
+        @default 100
     **/
-    rate: 0.1,
+    rate: 100,
     rateTimer: 0,
     /**
         Emit count of particles.
@@ -440,7 +439,7 @@ game.Emitter = game.Class.extend({
         if (this.duration > 0) this.active = this.durationTimer < this.duration;
 
         if (this.rate && this.active) {
-            this.rateTimer += game.system.delta;
+            this.rateTimer += game.system.delta * 1000;
             if (this.rateTimer >= this.rate) {
                 this.rateTimer = 0;
                 this.emit(this.count);
