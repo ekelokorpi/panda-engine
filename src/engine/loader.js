@@ -32,10 +32,10 @@ game.Loader = game.Class.extend({
     **/
     assetQueue: [],
     /**
-        List of sounds to load.
-        @property {Array} soundQueue
+        List of audios to load.
+        @property {Array} audioQueue
     **/
-    soundQueue: [],
+    audioQueue: [],
     /**
         Is loader started.
         @property {Boolean} started
@@ -48,11 +48,14 @@ game.Loader = game.Class.extend({
         @default true
     **/
     dynamic: true,
+    /**
+        Callback function or scene name for loader.
+        @property {Function|String} callback
+    **/
     callback: null,
     
     init: function(callback) {
-        if (typeof callback === 'string' || game.System.startScene) this.dynamic = false;
-        this.callback = callback;
+        this.onComplete(callback);
         this.stage = game.system.stage;
 
         for (var i = 0; i < game.assetQueue.length; i++) {
@@ -63,7 +66,7 @@ game.Loader = game.Class.extend({
 
         if (game.Audio.enabled) {
             for (var i = 0; i < game.audioQueue.length; i++) {
-                this.soundQueue.push(game.audioQueue[i]);
+                this.audioQueue.push(game.audioQueue[i]);
             }
             game.audioQueue.length = 0;
         }
@@ -75,34 +78,48 @@ game.Loader = game.Class.extend({
             this.loader.onError = this.error.bind(this);
         }
 
-        if (this.assetQueue.length === 0 && this.soundQueue.length === 0) this.percent = 100;
+        if (this.assetQueue.length + this.audioQueue.length === 0) this.percent = 100;
     },
 
+    /**
+        Init loader stage, when not using dynamic mode.
+        @method initStage
+    **/
     initStage: function() {
         if (game.Loader.logo) {
             this.logo = new game.Sprite(game.Texture.fromImage(game.Loader.logo));
-            this.logo.anchor.set(0.5, 1.0);
-            this.logo.position.set(game.system.width / 2, game.system.height / 2 + this.logo.height / 2);
+            this.logo.anchor.set(0.5, 0.5);
+            this.logo.center();
             this.stage.addChild(this.logo);
         }
 
+        var barWidth = game.Loader.barWidth * game.scale;
+        var barHeight = game.Loader.barHeight * game.scale;
+        var barMargin = game.Loader.barMargin * game.scale;
+
         this.barBg = new game.Graphics();
         this.barBg.beginFill(game.Loader.barBg);
-        this.barBg.drawRect(0, 0, game.Loader.barWidth, game.Loader.barHeight);
-        this.barBg.position.set(game.system.width / 2 - (game.Loader.barWidth / 2), game.system.height / 2 - (game.Loader.barHeight / 2));
-        if (this.logo) this.barBg.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
+        this.barBg.drawRect(0, 0, barWidth, barHeight);
+        this.barBg.position.set(game.system.width / 2 - (barWidth / 2), game.system.height / 2 - (barHeight / 2));
+        if (this.logo) this.barBg.position.y += this.logo.height / 2 + barHeight + barMargin;
         this.stage.addChild(this.barBg);
 
         this.barFg = new game.Graphics();
         this.barFg.beginFill(game.Loader.barColor);
-        this.barFg.drawRect(0, 0, game.Loader.barWidth + 2, game.Loader.barHeight + 2);
-        this.barFg.position.set(game.system.width / 2 - (game.Loader.barWidth / 2) - 1, game.system.height / 2 - (game.Loader.barHeight / 2) - 1);
-        if (this.logo) this.barFg.position.y += this.logo.height / 2 + game.Loader.barHeight + game.Loader.barMargin;
+        this.barFg.drawRect(0, 0, barWidth + 2, barHeight + 2);
+        this.barFg.position.set(game.system.width / 2 - (barWidth / 2) - 1, game.system.height / 2 - (barHeight / 2) - 1);
+        if (this.logo) this.barFg.position.y += this.logo.height / 2 + barHeight + barMargin;
         this.barFg.scale.x = this.percent / 100;
         this.stage.addChild(this.barFg);
     },
 
+    /**
+        Set callback function or scene name for loader.
+        @method onComplete
+        @param {Function|String} callback
+    **/
     onComplete: function(callback) {
+        if (typeof callback === 'string' || game.System.startScene) this.dynamic = false;
         this.callback = callback;
         return this;
     },
@@ -114,50 +131,35 @@ game.Loader = game.Class.extend({
     start: function() {
         this.started = true;
 
-        if (!this.dynamic) {
-            if (game.scene) {
-                for (var i = this.stage.children.length - 1; i >= 0; i--) {
-                    this.stage.removeChild(this.stage.children[i]);
-                }
-                this.stage.setBackgroundColor(game.Loader.bgColor);
-
-                this.stage.interactive = false; // this is not working, bug?
-
-                this.stage.mousemove = this.stage.touchmove = null;
-                this.stage.click = this.stage.tap = null;
-                this.stage.mousedown = this.stage.touchstart = null;
-                this.stage.mouseup = this.stage.mouseupoutside = this.stage.touchend = this.stage.touchendoutside = null;
-                this.stage.mouseout = null;
-                if (game.tweenEngine) game.tweenEngine.removeAll();
+        if (!this.dynamic) {    
+            for (var i = this.stage.children.length - 1; i >= 0; i--) {
+                this.stage.removeChild(this.stage.children[i]);
             }
+            this.stage.interactive = false;
+            if (game.tweenEngine) game.tweenEngine.removeAll();
+        
+            this.stage.setBackgroundColor(game.Loader.bgColor);
 
-            if (typeof game.Loader.bgColor === 'number') {
-                var bg = new game.Graphics();
-                bg.beginFill(game.Loader.bgColor);
-                bg.drawRect(0, 0, game.system.width, game.system.height);
-                this.stage.addChild(bg);
-            }
-            
             this.initStage();
 
             if (!game.scene) this.loopId = game.setGameLoop(this.run.bind(this), game.system.canvas);
             else game.scene = this;
         }
 
-        if (this.assetQueue.length > 0) this.loader.load();
-        else if (this.soundQueue.length > 0) this.loadAudio();
-        else this.ready();
+        this.startTime = Date.now();
 
-        return this;
+        if (this.assetQueue.length > 0) this.loader.load();
+        else if (this.audioQueue.length > 0) this.loadAudio();
+        else if (this.dynamic) this.ready();
     },
 
     /**
         Error loading file.
         @method error
-        @param {String} msg
+        @param {String} error
     **/
-    error: function(msg) {
-        if (msg) throw msg;
+    error: function(error) {
+        if (error) throw error;
     },
 
     /**
@@ -167,10 +169,10 @@ game.Loader = game.Class.extend({
     progress: function(loader) {
         if (loader && loader.json) game.json[loader.url] = loader.json;
         this.loaded++;
-        this.percent = Math.round(this.loaded / (this.assetQueue.length + this.soundQueue.length) * 100);
+        this.percent = Math.round(this.loaded / (this.assetQueue.length + this.audioQueue.length) * 100);
         this.onPercentChange();
 
-        if (this.dynamic && this.loaded === (this.assetQueue.length + this.soundQueue.length)) this.ready();
+        if (this.dynamic && this.loaded === this.assetQueue.length + this.audioQueue.length) this.ready();
     },
 
     /**
@@ -186,8 +188,8 @@ game.Loader = game.Class.extend({
         @method loadAudio
     **/
     loadAudio: function() {
-        for (var i = this.soundQueue.length - 1; i >= 0; i--) {
-            game.audio.load(this.soundQueue[i], this.progress.bind(this));
+        for (var i = this.audioQueue.length - 1; i >= 0; i--) {
+            game.audio.load(this.audioQueue[i], this.progress.bind(this));
         }
     },
 
@@ -204,9 +206,6 @@ game.Loader = game.Class.extend({
                 }
             }
         }
-
-        game.assetQueue.length = 0;
-        game.audioQueue.length = 0;
 
         if (typeof this.callback === 'function') this.callback();
         else this.setScene();
@@ -240,21 +239,19 @@ game.Loader = game.Class.extend({
     },
 
     update: function() {
-        if (!this.startTime) this.startTime = Date.now();
         if (game.tweenEngine) game.tweenEngine.update();
 
         if (this._ready) return;
-        if (this.timer) {
-            if (this.timer.time() >= 0) {
+        if (this.timeoutTimer) {
+            if (this.timeoutTimer.time() >= 0) {
                 this._ready = true;
                 this.ready();
             }
         }
-        else if (this.loaded === this.assetQueue.length + this.soundQueue.length) {
-            // Everything loaded
+        else if (this.loaded === this.assetQueue.length + this.audioQueue.length) {
             var loadTime = Date.now() - this.startTime;
-            var waitTime = Math.max(100, game.Loader.timeout - loadTime);
-            this.timer = new game.Timer(waitTime);
+            var waitTime = Math.max(0, game.Loader.timeout - loadTime);
+            this.timeoutTimer = new game.Timer(waitTime);
         }
     },
 

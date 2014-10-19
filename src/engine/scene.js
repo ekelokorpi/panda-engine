@@ -58,6 +58,7 @@ game.Scene = game.Class.extend({
         }
         game.system.stage.setBackgroundColor(this.backgroundColor);
 
+        game.system.stage.interactive = true;
         game.system.stage.mousemove = game.system.stage.touchmove = this._mousemove.bind(this);
         game.system.stage.click = game.system.stage.tap = this.click.bind(this);
         game.system.stage.mousedown = game.system.stage.touchstart = this._mousedown.bind(this);
