@@ -131,7 +131,7 @@ game.Emitter = game.Class.extend({
     **/
     lifeVar: 0,
     /**
-        Emitter duration in seconds. 0 is forever.
+        Emitter duration in ms. 0 is forever.
         @property {Number} duration
         @default 0
     **/
@@ -436,7 +436,7 @@ game.Emitter = game.Class.extend({
             return;
         }
 
-        this.durationTimer += game.system.delta;
+        this.durationTimer += game.system.delta * 1000;
         if (this.duration > 0) this.active = this.durationTimer < this.duration;
 
         if (this.rate && this.active) {
