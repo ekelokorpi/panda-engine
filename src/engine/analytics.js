@@ -37,7 +37,7 @@ game.Analytics = game.Class.extend({
         this.trackId = id;
 
         if (game.device.cocoonJS && game.Analytics.cocoonJS) {
-            this.userId = 1 * new Date();
+            this.userId = Date.now();
             var request = new XMLHttpRequest();
             var params = 'v=1&tid=' + this.trackId + '&cid=' + this.userId + '&t=pageview&dp=%2F';
             request.open('POST', 'http://www.google-analytics.com/collect', true);
