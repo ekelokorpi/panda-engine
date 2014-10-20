@@ -104,11 +104,22 @@ game.DebugDraw = game.Class.extend({
         }
     },
 
-    /**
-        Update DebugDraw sprites.
-        @method update
-    **/
-    update: function() {
+    updateSprites: function() {
+        var sprite;
+        for (var i = this.spriteContainer.children.length - 1; i >= 0; i--) {
+            sprite = this.spriteContainer.children[i];
+            sprite.rotation = sprite.target.rotation;
+            if (sprite.target.parent) sprite.target.updateTransform();
+            sprite.visible = sprite.target.worldVisible;
+            sprite.position.x = sprite.target.worldTransform.tx;
+            sprite.position.y = sprite.target.worldTransform.ty;
+            sprite.scale.x = sprite.target.scale.x;
+            sprite.scale.y = sprite.target.scale.y;
+            if (!sprite.target.parent) this.spriteContainer.removeChild(sprite);
+        }
+    },
+
+    updateBodies: function() {
         var body;
         for (var i = this.bodyContainer.children.length - 1; i >= 0; i--) {
             body = this.bodyContainer.children[i];
@@ -124,19 +135,15 @@ game.DebugDraw = game.Class.extend({
             body.position.y = body.target.position.y;
             if (!body.target.world) this.bodyContainer.removeChild(body);
         }
+    },
 
-        var sprite;
-        for (var i = this.spriteContainer.children.length - 1; i >= 0; i--) {
-            sprite = this.spriteContainer.children[i];
-            sprite.rotation = sprite.target.rotation;
-            if (sprite.target.parent) sprite.target.updateTransform();
-            sprite.visible = sprite.target.worldVisible;
-            sprite.position.x = sprite.target.worldTransform.tx;
-            sprite.position.y = sprite.target.worldTransform.ty;
-            sprite.scale.x = sprite.target.scale.x;
-            sprite.scale.y = sprite.target.scale.y;
-            if (!sprite.target.parent) this.spriteContainer.removeChild(sprite);
-        }
+    /**
+        Update DebugDraw sprites.
+        @method update
+    **/
+    update: function() {
+        this.updateSprites();
+        this.updateBodies();
     }
 });
 
