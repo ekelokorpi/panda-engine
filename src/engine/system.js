@@ -232,16 +232,17 @@ game.System = game.Class.extend({
         Change current scene.
         @method setScene
         @param {game.Scene} sceneClass
+        @param {Object} options
     **/
-    setScene: function(sceneClass) {
+    setScene: function(sceneClass, options) {
         if (typeof sceneClass === 'string') sceneClass = game['Scene' + sceneClass];
-        if (this.running) this.newSceneClass = sceneClass;
-        else this.setSceneNow(sceneClass);
+        if (this.running) this.newSceneClass = {name:sceneClass, options: options};
+        else this.setSceneNow(sceneClass, options);
     },
 
-    setSceneNow: function(sceneClass) {
+    setSceneNow: function(sceneClass, options) {
         if (game.tweenEngine) game.tweenEngine.tweens.length = 0;
-        game.scene = new (sceneClass)();
+        game.scene = new (sceneClass)(options);
         if (game.Debug && game.Debug.enabled && !navigator.isCocoonJS && !this.debug) this.debug = new game.Debug();
         this.newSceneClass = null;
         this.startRunLoop();
@@ -267,7 +268,7 @@ game.System = game.Class.extend({
         game.scene.run();
 
         if (this.debug) this.debug.update();
-        if (this.newSceneClass) this.setSceneNow(this.newSceneClass);
+        if (this.newSceneClass) this.setSceneNow(this.newSceneClass.name, this.newSceneClass.options);
     },
 
     resize: function(width, height) {
