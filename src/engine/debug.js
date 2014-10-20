@@ -99,9 +99,6 @@ game.DebugDraw = game.Class.extend({
         else if (body.shape instanceof game.Circle) {
             sprite.drawCircle(0, 0, body.shape.radius);
         }
-        else if (body.shape instanceof game.Line) {
-            // TODO
-        }
     },
 
     updateSprites: function() {

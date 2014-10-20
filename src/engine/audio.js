@@ -693,7 +693,7 @@ game.Audio.webAudio = true;
 
 /**
     List of available audio formats.
-    @attribute {Array} formats 
+    @attribute {Array} formats
 **/
 game.Audio.formats = [
     { ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"' },

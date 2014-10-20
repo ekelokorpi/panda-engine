@@ -131,7 +131,7 @@ game.Loader = game.Class.extend({
     start: function() {
         this.started = true;
 
-        if (!this.dynamic) {    
+        if (!this.dynamic) {
             for (var i = this.stage.children.length - 1; i >= 0; i--) {
                 this.stage.removeChild(this.stage.children[i]);
             }
