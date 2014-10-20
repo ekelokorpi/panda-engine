@@ -49,7 +49,7 @@ game.Camera = game.Class.extend({
     **/
     speed: null,
     /**
-        Use delta-time if necessary, defaults to false (frame based)
+        Use delta-time if necessary, defaults to true (time-based). Set to false to use frame-based.
         @property {Boolean} useDeltaTime
         @default true
     **/
@@ -63,7 +63,7 @@ game.Camera = game.Class.extend({
     maxX: null,
     minY: null,
     maxY: null,
-    
+
     init: function(x, y) {
         this.position = new game.Point();
         this.speed = new game.Point();
