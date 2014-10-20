@@ -48,6 +48,12 @@ game.Camera = game.Class.extend({
         @property {game.Point} speed
     **/
     speed: null,
+    /**
+        Use delta-time if necessary, defaults to false (frame based)
+        @property {Boolean} useDeltaTime
+        @default true
+    **/
+    useDeltaTime: true,
 
     sensorPosition: null,
     sensorWidth: 200,
@@ -163,9 +169,13 @@ game.Camera = game.Class.extend({
             this.speed.y > this.threshold ||
             this.speed.y < -this.threshold
         ) {
+
+            var time = 0.01;
+            if (this.useDeltaTime) time = game.system.delta;
+
             this.setPosition(
-                this.position.x + this.offset.x - this.speed.x * this.acceleration * game.system.delta,
-                this.position.y + this.offset.y - this.speed.y * this.acceleration * game.system.delta
+                this.position.x + this.offset.x - this.speed.x * this.acceleration * time,
+                this.position.y + this.offset.y - this.speed.y * this.acceleration * time
             );
             if (this.debugBox) this.debugBox.alpha = game.Camera.debugAlpha * 2;
         }
