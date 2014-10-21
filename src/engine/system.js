@@ -74,6 +74,11 @@ game.System = game.Class.extend({
         @property {Number} gameLoopId
     **/
     gameLoopId: 0,
+    /**
+        Is WebGL enabled.
+        @property {Boolean} webGL
+    **/
+    webGL: false,
     newSceneClass: null,
     running: false,
 
@@ -130,6 +135,7 @@ game.System = game.Class.extend({
         if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
         else this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
 
+        this.webGL = !!this.renderer.gl;
         this.canvas = this.renderer.view;
         this.stage = new game.Stage();
 
