@@ -50,9 +50,9 @@ game.Camera = game.Class.extend({
     speed: null,
 
     sensorPosition: null,
-    sensorWidth: 200,
-    sensorHeight: 200,
-    threshold: 1.0,
+    sensorWidth: 0,
+    sensorHeight: 0,
+    threshold: 1,
     minX: null,
     maxX: null,
     minY: null,
@@ -63,6 +63,8 @@ game.Camera = game.Class.extend({
         this.speed = new game.Point();
         this.offset = new game.Point(game.system.width / 2, game.system.height / 2);
         this.sensorPosition = new game.Point(this.offset.x, this.offset.y);
+        this.sensorWidth = 200 * game.scale;
+        this.sensorHeight = 200 * game.scale;
         if (x && y) this.setPosition(x, y);
 
         game.scene.addObject(this);
