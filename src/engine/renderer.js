@@ -238,6 +238,10 @@ game.BitmapText = game.PIXI.BitmapText.extend({
     addTo: function(container) {
         container.addChild(this);
         return this;
+    },
+
+    remove: function() {
+        if (this.parent) this.parent.removeChild(this);
     }
 });
 
