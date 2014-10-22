@@ -94,7 +94,7 @@ game.Loader = game.Class.extend({
             this.logo = new game.Sprite(game.Texture.fromImage(game.Loader.logo));
             this.logo.anchor.set(0.5, 1.0);
             this.logo.center();
-            this.logo.position.y -= barMargin;
+            this.logo.position.y -= barHeight / 2 + barMargin;
             this.stage.addChild(this.logo);
         }
 
