@@ -86,29 +86,28 @@ game.Loader = game.Class.extend({
         @method initStage
     **/
     initStage: function() {
-        if (game.Loader.logo) {
-            this.logo = new game.Sprite(game.Texture.fromImage(game.Loader.logo));
-            this.logo.anchor.set(0.5, 0.5);
-            this.logo.center();
-            this.stage.addChild(this.logo);
-        }
-
         var barWidth = game.Loader.barWidth * game.scale;
         var barHeight = game.Loader.barHeight * game.scale;
         var barMargin = game.Loader.barMargin * game.scale;
+
+        if (game.Loader.logo) {
+            this.logo = new game.Sprite(game.Texture.fromImage(game.Loader.logo));
+            this.logo.anchor.set(0.5, 1.0);
+            this.logo.center();
+            this.logo.position.y -= barMargin;
+            this.stage.addChild(this.logo);
+        }
 
         this.barBg = new game.Graphics();
         this.barBg.beginFill(game.Loader.barBg);
         this.barBg.drawRect(0, 0, barWidth, barHeight);
         this.barBg.position.set(game.system.width / 2 - (barWidth / 2), game.system.height / 2 - (barHeight / 2));
-        if (this.logo) this.barBg.position.y += this.logo.height / 2 + barHeight + barMargin;
         this.stage.addChild(this.barBg);
 
         this.barFg = new game.Graphics();
         this.barFg.beginFill(game.Loader.barColor);
         this.barFg.drawRect(0, 0, barWidth + 2, barHeight + 2);
         this.barFg.position.set(game.system.width / 2 - (barWidth / 2) - 1, game.system.height / 2 - (barHeight / 2) - 1);
-        if (this.logo) this.barFg.position.y += this.logo.height / 2 + barHeight + barMargin;
         this.barFg.scale.x = this.percent / 100;
         this.stage.addChild(this.barFg);
     },
