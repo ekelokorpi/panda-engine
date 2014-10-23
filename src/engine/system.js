@@ -121,8 +121,15 @@ game.System = game.Class.extend({
 
         game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
 
-        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
-        else this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
+        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, {
+            view: document.getElementById(this.canvasId),
+            transparent: game.System.transparent,
+            antialias: game.System.antialias
+        });
+        else this.renderer = new game.CanvasRenderer(width, height, {
+            view: document.getElementById(this.canvasId),
+            transparent: game.System.transparent
+        });
 
         this.webGL = !!this.renderer.gl;
         this.canvas = this.renderer.view;
@@ -171,9 +178,6 @@ game.System = game.Class.extend({
                     else game.system.resume(true);
                 }
             }, false);
-
-            // Fixes iOS8 WebGL background color bug
-            if (game.device.iOS8 && game.System.webGL) game.System.bgColorMobile = '#000000';
 
             if (game.System.bgColor && !game.System.bgColorMobile) game.System.bgColorMobile = game.System.bgColor;
             if (game.System.bgColorMobile && !game.System.bgColorRotate) game.System.bgColorRotate = game.System.bgColorMobile;
