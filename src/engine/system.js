@@ -88,17 +88,6 @@ game.System = game.Class.extend({
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
 
-        if (game.System.resizeToFill && game.device.mobile) {
-            if (window.innerWidth / window.innerHeight !== width / height) {
-                if (width > height) {
-                    width = height * (window.innerWidth / window.innerHeight);
-                }
-                else {
-                    height = width * (window.innerHeight / window.innerWidth);
-                }
-            }
-        }
-
         for (var i = 2; i <= game.System.hires; i *= 2) {
             if (window.innerWidth >= width * i && window.innerHeight >= height * i) {
                 this.hires = true;
@@ -201,7 +190,34 @@ game.System = game.Class.extend({
             this.initResize();
         }
         else {
+            this.resizeToFill();
             this.canvas.style.cssText = 'idtkscale:' + game.System.idtkScale + ';';
+        }
+    },
+
+    resizeToFill: function() {
+        if (!game.System.resizeToFill || !game.device.mobile) return;
+        if (this.rotateScreenVisible) return;
+
+        if (this._resizeToFill) return;
+        this._resizeToFill = true;
+
+        var orientation = this.width > this.height ? 'landscape' : 'portrait';
+        var curOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+        var width = this.width;
+        var height = this.height;
+
+        if (window.innerWidth / window.innerHeight !== this.width / this.height && orientation === curOrientation) {
+            if (width > height) {
+                width = Math.round(height * (window.innerWidth / window.innerHeight));
+            }
+            else {
+                height = Math.round(width * (window.innerHeight / window.innerWidth));
+            }
+        }
+
+        if (this.width !== width || this.height !== height) {
+            this.resize(width, height);
         }
     },
 
@@ -427,6 +443,8 @@ game.System = game.Class.extend({
 
         if (game.device.mobile) {
             this.ratio = this.orientation === 'landscape' ? this.width / this.height : this.height / this.width;
+
+            this.resizeToFill();
 
             // Mobile resize
             var width = window.innerWidth;
