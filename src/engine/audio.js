@@ -62,8 +62,8 @@ game.Audio = game.Class.extend({
         // Disable audio on iOS 5
         if (game.device.iOS5) game.Audio.enabled = false;
 
-        // Disable audio on Windows Phone
-        if (game.device.wp) game.Audio.enabled = false;
+        // Disable audio on Windows Phone 7
+        if (game.device.wp7) game.Audio.enabled = false;
 
         // Disable audio on Android 2
         if (game.device.android2) game.Audio.enabled = false;
