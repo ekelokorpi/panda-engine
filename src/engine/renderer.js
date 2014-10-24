@@ -114,8 +114,8 @@ game.Sprite = game.PIXI.Sprite.extend({
 
         game.merge(this, settings);
 
-        if (typeof x === 'number') this.position.x = x;
-        if (typeof y === 'number') this.position.y = y;
+        if (typeof x === 'number') this.position.x = x * game.scale;
+        if (typeof y === 'number') this.position.y = y * game.scale;
 
         // Auto bind touch events for mobile
         if (game.device.mobile && !this.tap && this.click) this.tap = this.click;
@@ -190,6 +190,13 @@ game.Sprite = game.PIXI.Sprite.extend({
     }
 });
 
+/**
+    @class SpriteSheet
+    @constructor
+    @param {String} id
+    @param {Number} width
+    @param {Number} height
+**/
 game.SpriteSheet = game.Class.extend({
     init: function(id, width, height) {
         this.width = width;
@@ -200,6 +207,10 @@ game.SpriteSheet = game.Class.extend({
         this.frames = this.sx * this.sy;
     },
 
+    /**
+        @method frame
+        @param {Number} index
+    **/
     frame: function(index) {
         index = index.limit(0, this.frames - 1);
 
@@ -216,6 +227,11 @@ game.SpriteSheet = game.Class.extend({
         }
     },
 
+    /**
+        @method anim
+        @param {Number} count
+        @param {Number} index
+    **/
     anim: function(count, index) {
         index = index || 0;
         count = count || this.frames;
