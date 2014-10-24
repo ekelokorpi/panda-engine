@@ -208,8 +208,9 @@ game.SpriteSheet = game.Class.extend({
     },
 
     /**
+        Create sprite from specific frame.
         @method frame
-        @param {Number} index
+        @param {Number} index Frame index
     **/
     frame: function(index) {
         index = index.limit(0, this.frames - 1);
@@ -228,9 +229,10 @@ game.SpriteSheet = game.Class.extend({
     },
 
     /**
+        Create animation from spritesheet.
         @method anim
-        @param {Number} count
-        @param {Number} index
+        @param {Number} count Frame count
+        @param {Number} index Start index
     **/
     anim: function(count, index) {
         index = index || 0;
