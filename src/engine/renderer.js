@@ -12,6 +12,7 @@ game.module(
 'use strict';
 
 game.PIXI.dontSayHello = true;
+game.PIXI.RETINA_PREFIX = false;
 
 // Used to extend PIXI classes
 game.PIXI.extend = function(prop) {
