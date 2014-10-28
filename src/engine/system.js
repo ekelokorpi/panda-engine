@@ -707,11 +707,5 @@ game.System.canvasId = null;
     @default linear
 **/
 game.System.scaleMode = 'linear';
-/**
-    Stop all audio, when scene is changed.
-    @attribute {Boolean} stopAudioOnSceneChange
-    @default true
-**/
-game.System.stopAudioOnSceneChange = true;
 
 });
