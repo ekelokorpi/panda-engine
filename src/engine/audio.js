@@ -87,6 +87,9 @@ game.Audio = game.Class.extend({
             }
         }
 
+        // Remove m4a format on Opera, when using Web Audio (decode fails)
+        if (game.device.opera && game.Audio.webAudio) this.formats.erase('m4a');
+
         // Disable audio if no compatible format found
         if (this.formats.length === 0) game.Audio.enabled = false;
 
