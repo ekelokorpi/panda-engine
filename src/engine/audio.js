@@ -261,8 +261,6 @@ game.Audio = game.Class.extend({
             // audio.currentTime = 0;
         }
 
-        delete this.audioObjects[id];
-
         return true;
     },
 
