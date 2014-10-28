@@ -58,6 +58,9 @@ game.Loader = game.Class.extend({
         this.onComplete(callback);
         this.stage = game.system.stage;
 
+        // Deprecated
+        if (typeof game.Loader.timeout === 'number') game.Loader.time = game.Loader.timeout;
+
         for (var i = 0; i < game.assetQueue.length; i++) {
             if (game.TextureCache[game.assetQueue[i]]) continue;
             this.assetQueue.push(this.getPath(game.assetQueue[i]));
@@ -99,7 +102,7 @@ game.Loader = game.Class.extend({
         }
 
         this.barBg = new game.Graphics();
-        this.barBg.beginFill(game.Loader.barBg);
+        this.barBg.beginFill(game.Loader.barBgColor);
         this.barBg.drawRect(0, 0, barWidth, barHeight);
         this.barBg.position.set(game.system.width / 2 - (barWidth / 2), game.system.height / 2 - (barHeight / 2));
         this.stage.addChild(this.barBg);
@@ -249,7 +252,7 @@ game.Loader = game.Class.extend({
         }
         else if (this.loaded === this.assetQueue.length + this.audioQueue.length) {
             var loadTime = Date.now() - this.startTime;
-            var waitTime = Math.max(0, game.Loader.timeout - loadTime);
+            var waitTime = Math.max(0, game.Loader.time - loadTime);
             this.timeoutTimer = new game.Timer(waitTime);
         }
     },
@@ -271,22 +274,22 @@ game.Loader = game.Class.extend({
 game.Loader.bgColor = 0x000000;
 /**
     Minimum time to show loader, in milliseconds.
-    @attribute {Number} timeout
+    @attribute {Number} time
     @default 200
 **/
-game.Loader.timeout = 200;
+game.Loader.time = 200;
 /**
     Loading bar background color.
     @attribute {Number} barBg
     @default 0x231f20
 **/
-game.Loader.barBg = 0x231f20;
+game.Loader.barBgColor = 0x515e73;
 /**
     Loading bar color.
     @attribute {Number} barColor
     @default 0xe6e7e8
 **/
-game.Loader.barColor = 0xe6e7e8;
+game.Loader.barColor = 0xb9bec7;
 /**
     Width of the loading bar.
     @attribute {Number} barWidth
@@ -306,13 +309,13 @@ game.Loader.barHeight = 20;
 **/
 game.Loader.barMargin = 10;
 /**
-    Loader logo dataURI.
+    Loader logo url.
     @attribute {String} logo
     @default null
 **/
 game.Loader.logo = null;
 /**
-    Threat request as crossorigin.
+    Threat requests as crossorigin.
     @attribute {Boolean} crossorigin
     @default true
 **/
