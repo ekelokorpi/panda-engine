@@ -681,14 +681,12 @@ game.Audio = game.Class.extend({
     @default true
 **/
 game.Audio.enabled = true;
-
 /**
     Enable Web Audio.
     @attribute {Boolean} webAudio
     @default true
 **/
 game.Audio.webAudio = true;
-
 /**
     List of available audio formats.
     @attribute {Array} formats
@@ -698,5 +696,11 @@ game.Audio.formats = [
     { ext: 'ogg', type: 'audio/ogg; codecs="vorbis"' },
     { ext: 'wav', type: 'audio/wav' }
 ];
+/**
+    Stop audio, when changing scene.
+    @attribute {Boolean} stopOnSceneChange
+    @default true
+**/
+game.Audio.stopOnSceneChange = true;
 
 });
