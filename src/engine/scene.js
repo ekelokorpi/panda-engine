@@ -70,9 +70,9 @@ game.Scene = game.Class.extend({
         this.stage = new game.Container();
         game.system.stage.addChild(this.stage);
 
-        if (game.audio && game.System.stopAudioOnSceneChange) {
+        if (game.audio && game.Audio.stopOnSceneChange) {
             game.audio.stopMusic();
-            game.audio.stopSound();
+            game.audio.stopSound(false, true);
             game.audio.pausedSounds.length = 0;
             game.audio.playingSounds.length = 0;
         }
