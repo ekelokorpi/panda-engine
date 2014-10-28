@@ -72,7 +72,7 @@ game.Loader = game.Class.extend({
         }
 
         if (this.assetQueue.length > 0) {
-            this.loader = new game.AssetLoader(this.assetQueue, true);
+            this.loader = new game.AssetLoader(this.assetQueue, game.Loader.crossorigin);
             this.loader.onProgress = this.progress.bind(this);
             this.loader.onComplete = this.loadAudio.bind(this);
             this.loader.onError = this.error.bind(this);
@@ -311,5 +311,11 @@ game.Loader.barMargin = 10;
     @default null
 **/
 game.Loader.logo = null;
+/**
+    Threat request as crossorigin.
+    @attribute {Boolean} crossorigin
+    @default true
+**/
+game.Loader.crossorigin = true;
 
 });
