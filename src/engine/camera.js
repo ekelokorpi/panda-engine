@@ -120,8 +120,8 @@ game.Camera = game.Class.extend({
         }
 
         if (this.container) {
-            this.container.position.x = ~~-this.position.x;
-            this.container.position.y = ~~-this.position.y;
+            this.container.position.x = -this.position.x;
+            this.container.position.y = -this.position.y;
         }
     },
 
