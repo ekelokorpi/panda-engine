@@ -191,6 +191,8 @@ game.Sprite = game.PIXI.Sprite.extend({
     }
 });
 
+game.Sprite.fromImage = game.PIXI.Sprite.fromImage;
+
 /**
     @class SpriteSheet
     @constructor
