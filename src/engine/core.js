@@ -262,7 +262,8 @@ var game = {
 
     addFileToQueue: function(path, id, queue) {
         id = id || path;
-        path = this.config.mediaFolder + path + this.nocache;
+        path = path + this.nocache;
+        if (this.config.mediaFolder) path = this.config.mediaFolder + '/' + path;
         if (this.paths[id]) return id;
         this.paths[id] = path;
         if (this[queue].indexOf(path) === -1) this[queue].push(path);
@@ -358,7 +359,9 @@ var game = {
         this.modules[name] = true;
         this.waitForLoad++;
 
-        var path = this.config.sourceFolder + '/' + name.replace(/\./g, '/') + '.js' + this.nocache;
+        var path = name.replace(/\./g, '/') + '.js' + this.nocache;
+        if (this.config.sourceFolder) path = this.config.sourceFolder + '/' + path;
+
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
@@ -629,8 +632,8 @@ var game = {
             }
         }
 
-        this.config.sourceFolder = this.config.sourceFolder || 'src';
-        this.config.mediaFolder = this.config.mediaFolder ? this.config.mediaFolder + '/' : 'media/';
+        if (typeof this.config.sourceFolder === 'undefined') this.config.sourceFolder = 'src';
+        if (typeof this.config.mediaFolder === 'undefined') this.config.mediaFolder = 'media';
 
         var metaTags = document.getElementsByTagName('meta');
         var viewportFound = false;
