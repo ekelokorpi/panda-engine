@@ -40,6 +40,11 @@ game.Audio = game.Class.extend({
     **/
     currentMusic: null,
     /**
+        Name of current music.
+        @property {String} currentMusicName
+    **/
+    currentMusicName: null,
+    /**
         Is music muted.
         @property {Boolean} musicMuted
         @default false
@@ -180,7 +185,10 @@ game.Audio = game.Class.extend({
         var index = this.playingSounds.indexOf(id);
         if (index !== -1) this.playingSounds.splice(index, 1);
 
-        if (id === this.currentMusic) this.currentMusic = null;
+        if (id === this.currentMusic) {
+            this.currentMusic = null;
+            this.currentMusicName = null;
+        }
 
         var audio = this.audioObjects[id];
         if (!audio) return false;
@@ -509,6 +517,7 @@ game.Audio = game.Class.extend({
         if (this.currentMusic) this.stop(this.currentMusic);
         
         this.currentMusic = this.play(name, !!loop, volume);
+        this.currentMusicName = name;
         
         return !!this.currentMusic;
     },
@@ -524,6 +533,7 @@ game.Audio = game.Class.extend({
         if (this.currentMusic) {
             var stop = this.stop(this.currentMusic);
             this.currentMusic = null;
+            this.currentMusicName = null;
             return !!stop;
         }
 
