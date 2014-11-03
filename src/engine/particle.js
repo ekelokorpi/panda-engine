@@ -257,6 +257,7 @@ game.Emitter = game.Class.extend({
         @default 0
     **/
     velocityLimit: null,
+    callback: null,
 
     init: function(settings) {
         game.pool.create(this.poolName);
@@ -266,6 +267,10 @@ game.Emitter = game.Class.extend({
         this.target = new game.Point();
 
         game.merge(this, settings);
+    },
+
+    onComplete: function(callback) {
+        this.callback = callback;
     },
 
     /**
@@ -436,7 +441,13 @@ game.Emitter = game.Class.extend({
         }
 
         this.durationTimer += game.system.delta * 1000;
-        if (this.duration > 0) this.active = this.durationTimer < this.duration;
+        if (this.duration > 0) {
+            this.active = this.durationTimer < this.duration;
+            if (!this.active && typeof this.callback === 'function') {
+                this.callback();
+                this.callback = null;
+            }
+        }
 
         if (this.rate && this.active) {
             this.rateTimer += game.system.delta * 1000;
