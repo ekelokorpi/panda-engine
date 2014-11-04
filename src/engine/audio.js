@@ -686,6 +686,36 @@ game.Audio = game.Class.extend({
         return !!this.currentMusic;
     },
 
+    /**
+        Toggle sounds on/off.
+        @method toggleSound
+        @return {Boolean}
+    **/
+    toggleSound: function() {
+        if (!game.Audio.enabled) return false;
+
+        this.soundMuted = !this.soundMuted;
+        if (this.soundMuted) this.muteSound();
+        else this.unmuteSound();
+
+        return this.soundMuted;
+    },
+
+    /**
+        Toggle music on/off.
+        @method toggleMusic
+        @return {Boolean}
+    **/
+    toggleMusic: function() {
+        if (!game.Audio.enabled) return false;
+
+        this.musicMuted = !this.musicMuted;
+        if (this.musicMuted) this.muteMusic();
+        else this.unmuteMusic();
+
+        return this.musicMuted;
+    },
+
     systemPause: function() {
         this.pauseMusic();
 
