@@ -87,6 +87,8 @@ game.System = game.Class.extend({
         height = height || game.System.height;
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
+        this.originalWidth = width;
+        this.originalHeight = height;
 
         for (var i = 2; i <= game.System.hires; i *= 2) {
             if (window.innerWidth >= width * i && window.innerHeight >= height * i) {
