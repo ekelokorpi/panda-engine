@@ -549,8 +549,6 @@ var game = {
 
         game.normalizeVendorAttribute(window, 'requestAnimationFrame');
 
-        if (document.location.href.match(/\?nocache/) || this.config.disableCache) this.nocache = '?' + Date.now();
-
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
             width: window.screen.availWidth * this.device.pixelRatio,
@@ -631,6 +629,8 @@ var game = {
                 }
             }
         }
+
+        if (document.location.href.match(/\?nocache/) || this.config.disableCache) this.nocache = '?' + Date.now();
 
         if (typeof this.config.sourceFolder === 'undefined') this.config.sourceFolder = 'src';
         if (typeof this.config.mediaFolder === 'undefined') this.config.mediaFolder = 'media';
