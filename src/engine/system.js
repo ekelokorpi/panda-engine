@@ -79,10 +79,20 @@ game.System = game.Class.extend({
         @property {Boolean} webGL
     **/
     webGL: false,
+    /**
+        Original width.
+        @property {Number} originalWidth
+    **/
+    originalWidth: null,
+    /**
+        Original height.
+        @property {Number} originalHeight
+    **/
+    originalHeight: null,
     newSceneClass: null,
     running: false,
 
-    init: function(width, height, canvasId) {
+    init: function(width, height) {
         width = width || game.System.width;
         height = height || game.System.height;
         if (width === 'window') width = window.innerWidth;
@@ -112,7 +122,7 @@ game.System = game.Class.extend({
 
         this.width = width;
         this.height = height;
-        this.canvasId = canvasId || game.System.canvasId || this.canvasId;
+        this.canvasId = game.System.canvasId || this.canvasId;
         this.timer = new game.Timer();
 
         if (!document.getElementById(this.canvasId)) {
