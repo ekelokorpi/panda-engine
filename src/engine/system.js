@@ -206,22 +206,21 @@ game.System = game.Class.extend({
         if (this._resizeToFill) return;
         this._resizeToFill = true;
 
-        var orientation = this.width > this.height ? 'landscape' : 'portrait';
-        var curOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
-        var width = this.width;
-        var height = this.height;
+        var gameOrientation = this.width > this.height ? 'landscape' : 'portrait';
+        var gameRatio = this.width / this.height;
+        var screenOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+        var screenRatio = window.innerWidth / window.innerHeight;
 
-        if (window.innerWidth / window.innerHeight !== this.width / this.height && orientation === curOrientation) {
-            if (width > height) {
-                width = Math.round(height * (window.innerWidth / window.innerHeight));
+        if (screenRatio !== gameRatio && gameOrientation === screenOrientation) {
+            if (gameRatio < screenRatio) {
+                // Letterbox left/right
+                this.width = Math.round(this.height * (window.innerWidth / window.innerHeight));
             }
             else {
-                height = Math.round(width * (window.innerHeight / window.innerWidth));
+                // Letterbox top/bottom
+                this.height = Math.round(this.width * (window.innerHeight / window.innerWidth));
             }
-        }
-
-        if (this.width !== width || this.height !== height) {
-            this.resize(width, height);
+            this.resize(this.width, this.height);
         }
     },
 
