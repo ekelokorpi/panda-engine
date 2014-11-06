@@ -289,6 +289,7 @@ var game = {
             this.TextureCache[path].destroy(true);
             delete this.TextureCache[path];
         }
+        delete this.paths[id];
     },
 
     /**
@@ -300,6 +301,7 @@ var game = {
             this.TextureCache[key].destroy(true);
             delete this.TextureCache[key];
         }
+        this.paths = {};
     },
 
     /**
