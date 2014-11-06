@@ -271,12 +271,34 @@ var game = {
     },
 
     /**
-        Clear texture cache.
-        @method clearAssets
+        Remove asset from memory.
+        @method removeAsset
+        @param {String} id
     **/
-    clearAssets: function() {
-        for (var key in game.TextureCache) {
-            game.TextureCache[key].destroy(true);
+    removeAsset: function(id) {
+        var path = this.paths[id];
+        if (this.json[path] && this.json[path].frames) {
+            // Sprite sheet
+            for (var key in this.json[path].frames) {
+                this.TextureCache[key].destroy(true);
+                delete this.TextureCache[key];
+            }
+        }
+        else if (this.TextureCache[path]) {
+            // Sprite
+            this.TextureCache[path].destroy(true);
+            delete this.TextureCache[path];
+        }
+    },
+
+    /**
+        Remove all assets from memory.
+        @method removeAssets
+    **/
+    removeAssets: function() {
+        for (var key in this.TextureCache) {
+            this.TextureCache[key].destroy(true);
+            delete this.TextureCache[key];
         }
     },
 
