@@ -1,10 +1,19 @@
+![Panda.js Logo](http://www.pandajs.net/img/panda_178x120.png)
+
 ## Panda.js HTML5 game engine
 
 Free open source HTML5 game engine for mobile and desktop with Canvas and WebGL rendering.
 
 http://www.pandajs.net
 
-### Forum
+### Install
+
+    $ npm install -g pandatool
+    $ mkdir MyPandaGame
+    $ cd MyPandaGame
+    $ panda install
+
+### Support
 
 Join the discussion at official [Panda.js forum](http://www.html5gamedevs.com/forum/19-pandajs/).
 
