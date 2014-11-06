@@ -278,16 +278,21 @@ game.System = game.Class.extend({
         Change current scene.
         @method setScene
         @param {String} sceneClass
+        @param {Boolean} removeAssets
     **/
-    setScene: function(sceneClass) {
+    setScene: function(sceneClass, removeAssets) {
         this.currentSceneName = sceneClass;
         sceneClass = game['Scene' + sceneClass];
-        if (this.running) this.newSceneClass = sceneClass;
-        else this.setSceneNow(sceneClass);
+        if (this.running) {
+            this.newSceneClass = sceneClass;
+            this.removeAssets = removeAssets;
+        }
+        else this.setSceneNow(sceneClass, removeAssets);
     },
 
-    setSceneNow: function(sceneClass) {
+    setSceneNow: function(sceneClass, removeAssets) {
         if (game.tweenEngine) game.tweenEngine.tweens.length = 0;
+        if (removeAssets) game.removeAssets();
         game.scene = new (sceneClass)();
         if (game.Debug && game.Debug.enabled && !navigator.isCocoonJS && !this.debug) this.debug = new game.Debug();
         this.newSceneClass = null;
@@ -314,7 +319,7 @@ game.System = game.Class.extend({
         game.scene.run();
 
         if (this.debug) this.debug.update();
-        if (this.newSceneClass) this.setSceneNow(this.newSceneClass);
+        if (this.newSceneClass) this.setSceneNow(this.newSceneClass, this.removeAssets);
     },
 
     resize: function(width, height) {
