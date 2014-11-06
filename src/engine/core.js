@@ -271,6 +271,16 @@ var game = {
     },
 
     /**
+        Clear texture cache.
+        @method clearAssets
+    **/
+    clearAssets: function() {
+        for (var key in game.TextureCache) {
+            game.TextureCache[key].destroy(true);
+        }
+    },
+
+    /**
         Define new module.
         @method module
         @param {String} name
