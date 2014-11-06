@@ -12,6 +12,7 @@ http://www.pandajs.net
     $ mkdir MyPandaGame
     $ cd MyPandaGame
     $ panda install
+    $ panda start
 
 ### Support
 
