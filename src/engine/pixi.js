@@ -14823,7 +14823,8 @@ PIXI.BaseTexture.prototype.destroy = function()
         delete PIXI.BaseTextureCache[this.imageUrl];
         delete PIXI.TextureCache[this.imageUrl];
         this.imageUrl = null;
-        this.source.src = '';
+        // This will crash CocoonJS, when reloading same texture
+        // this.source.src = '';
     }
     else if (this.source && this.source._pixiId)
     {
