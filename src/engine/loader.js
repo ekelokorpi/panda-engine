@@ -58,9 +58,6 @@ game.Loader = game.Class.extend({
         this.onComplete(callback);
         this.stage = game.system.stage;
 
-        // Deprecated
-        if (typeof game.Loader.timeout === 'number') game.Loader.time = game.Loader.timeout;
-
         for (var i = 0; i < game.assetQueue.length; i++) {
             if (game.TextureCache[game.assetQueue[i]]) continue;
             this.assetQueue.push(this.getPath(game.assetQueue[i]));

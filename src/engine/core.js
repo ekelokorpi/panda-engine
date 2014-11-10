@@ -513,10 +513,6 @@ var game = {
         };
 
         Math._random = Math.random;
-        // Deprecated
-        Math.randomBetween = function(min, max) {
-            return Math._random() * (max - min) + min;
-        };
         Math.random = function(min, max) {
             if (typeof max === 'number') return Math._random() * (max - min) + min;
             else return Math._random(min);
