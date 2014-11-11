@@ -451,4 +451,75 @@ game.Animation.fromFrames = function(name, reverse) {
     return new game.Animation(textures);
 };
 
+/**
+    @class Video
+    @constructor
+    @param {String} source
+**/
+game.Video = game.Class.extend({
+    /**
+        @property {Boolean} loop
+    **/
+    loop: false,
+
+    init: function() {
+        this.videoElem = document.createElement('video');
+        this.videoElem.addEventListener('ended', this._complete.bind(this));
+
+        var urls = Array.prototype.slice.call(arguments);
+        var source;
+        for (var i = 0; i < urls.length; i++) {
+            source = document.createElement('source');
+            source.src = game.config.mediaFolder + '/' + urls[i];
+            this.videoElem.appendChild(source);
+        }
+
+        var videoTexture = game.PIXI.VideoTexture.textureFromVideo(this.videoElem);
+        videoTexture.baseTexture.addEventListener('loaded', this._loaded.bind(this));
+        
+        this.sprite = new game.Sprite(videoTexture);
+    },
+
+    _loaded: function() {
+        if (typeof this.loadCallback === 'function') this.loadCallback();
+    },
+
+    _complete: function() {
+        if (typeof this.completeCallback === 'function') this.completeCallback();
+    },
+
+    /**
+        @method onLoaded
+        @param {Function} callback
+    **/
+    onLoaded: function(callback) {
+        this.loadCallback = callback;
+    },
+
+    /**
+        @method onComplete
+        @param {Function} callback
+    **/
+    onComplete: function(callback) {
+        this.completeCallback = callback;
+    },
+
+    /**
+        @method play
+    **/
+    play: function() {
+        this.videoElem.loop = !!this.loop;
+        this.videoElem.play();
+    },
+
+    /**
+        @method stop
+        @param {Boolean} remove
+    **/
+    stop: function(remove) {
+        this.videoElem.pause();
+        if (remove) this.sprite.remove();
+    }
+});
+
 });
