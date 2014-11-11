@@ -459,8 +459,17 @@ game.Animation.fromFrames = function(name, reverse) {
 game.Video = game.Class.extend({
     /**
         @property {Boolean} loop
+        @default false
     **/
     loop: false,
+    /**
+        @property {Number} width
+    **/
+    width: 0,
+    /**
+        @property {Number} height
+    **/
+    height: 0,
 
     init: function() {
         this.videoElem = document.createElement('video');
@@ -481,6 +490,8 @@ game.Video = game.Class.extend({
     },
 
     _loaded: function() {
+        this.width = this.videoElem.videoWidth;
+        this.height = this.videoElem.videoHeight;
         if (typeof this.loadCallback === 'function') this.loadCallback();
     },
 
