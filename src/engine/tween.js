@@ -141,6 +141,7 @@ game.Tween = game.Class.extend({
     **/
     start: function() {
         game.tweenEngine.add(this);
+        this.currentTime = 0;
         this.playing = true;
         this.onStartCallbackFired = false;
         this.startTime = this.delayTime;
