@@ -316,6 +316,8 @@ game.System = game.Class.extend({
         game.Timer.update();
         this.delta = this.timer.delta() / 1000;
 
+        if (this.debug) this.debug.reset();
+
         game.scene.run();
 
         if (this.debug) this.debug.update();

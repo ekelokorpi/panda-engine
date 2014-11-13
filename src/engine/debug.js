@@ -5,8 +5,96 @@
 game.module(
     'engine.debug'
 )
+.require(
+    'engine.pixi'
+)
 .body(function() {
 'use strict';
+
+/**
+    Show debug box.
+    Automatically enabled, if URL contains `?debug`.
+    @class Debug
+    @extends game.Class
+**/
+game.Debug = game.Class.extend({
+    frames: 0,
+    last: 0,
+    objects: 0,
+
+    init: function() {
+        this.debugDiv = document.createElement('div');
+        this.debugDiv.id = 'pandaDebug';
+        this.debugDiv.style.position = 'absolute';
+        this.debugDiv.style.left = game.Debug.positionX + 'px';
+        this.debugDiv.style.top = game.Debug.positionY + 'px';
+        this.debugDiv.style.zIndex = 9999;
+        this.debugDiv.style.backgroundColor = game.Debug.backgroundColor;
+        this.debugDiv.style.padding = '5px';
+        this.debugDiv.style.color = game.Debug.color;
+        this.debugDiv.style.fontFamily = 'Arial';
+        this.debugDiv.style.fontSize = '16px';
+        document.body.appendChild(this.debugDiv);
+    },
+
+    reset: function() {
+        this.objects = 0;
+    },
+
+    update: function() {
+        this.frames++;
+
+        if (game.Timer.last >= this.last + game.Debug.frequency) {
+            var fps = (Math.round((this.frames * 1000) / (game.Timer.last - this.last)));
+            this.debugDiv.innerHTML = 'FPS: ' + fps + ' OBJECTS: ' + this.objects;
+            this.last = game.Timer.last;
+            this.frames = 0;
+        }
+    }
+});
+
+/**
+    Enable debug box.
+    @attribute {Boolean} enabled
+**/
+game.Debug.enabled = !!document.location.href.toLowerCase().match(/\?debug/);
+/**
+    How often to update debug box (ms).
+    @attribute {Number} frequency
+    @default 500
+**/
+game.Debug.frequency = 500;
+/**
+    Text color of debug box.
+    @attribute {String} color
+    @default red
+**/
+game.Debug.color = 'red';
+/**
+    Background color of debug box.
+    @attribute {String} backgroundColor
+    @default black
+**/
+game.Debug.backgroundColor = 'black';
+/**
+    X position of debug box.
+    @attribute {Number} positionX
+    @default 0
+**/
+game.Debug.positionX = 0;
+/**
+    Y position of debug box.
+    @attribute {Number} positionY
+    @default 0,0
+**/
+game.Debug.positionY = 0;
+
+game.PIXI.DisplayObject.prototype._updateTransform = game.PIXI.DisplayObject.prototype.updateTransform;
+game.PIXI.DisplayObject.prototype.updateTransform = function() {
+    if (game.system.debug) game.system.debug.objects++;
+    this._updateTransform();
+};
+game.PIXI.DisplayObject.prototype.displayObjectUpdateTransform = game.PIXI.DisplayObject.prototype.updateTransform;
 
 /**
     DebugDraw will draw all interactive sprite hit areas and physic shapes.
@@ -173,76 +261,5 @@ game.DebugDraw.bodyAlpha = 0.3;
     @attribute {Boolean} enabled
 **/
 game.DebugDraw.enabled = document.location.href.match(/\?debugdraw/) ? true : false;
-
-/**
-    Show FPS.
-    Automatically enabled, if URL contains `?debug`.
-    @class Debug
-    @extends game.Class
-**/
-game.Debug = game.Class.extend({
-    frames: 0,
-    last: 0,
-    fps: 0,
-    fpsText: null,
-    lastFps: 0,
-
-    init: function() {
-        this.debugDiv = document.createElement('div');
-        this.debugDiv.id = 'pandaDebug';
-        this.debugDiv.style.position = 'absolute';
-        this.debugDiv.style.left = game.Debug.position.x + 'px';
-        this.debugDiv.style.top = game.Debug.position.y + 'px';
-        this.debugDiv.style.zIndex = 9999;
-        this.debugDiv.style.color = game.Debug.color;
-        this.debugDiv.style.fontFamily = 'Arial';
-        this.debugDiv.style.fontSize = '20px';
-        document.body.appendChild(this.debugDiv);
-    },
-
-    update: function() {
-        this.frames++;
-
-        if (game.Timer.last >= this.last + game.Debug.frequency) {
-            this.fps = (Math.round((this.frames * 1000) / (game.Timer.last - this.last))).toString();
-            if (this.fps !== this.lastFps) {
-                this.lastFps = this.fps;
-                this.debugDiv.innerHTML = this.fps;
-            }
-            this.last = game.Timer.last;
-            this.frames = 0;
-        }
-    }
-});
-
-/**
-    Enable fps display.
-    @attribute {Boolean} enabled
-**/
-game.Debug.enabled = !!document.location.href.toLowerCase().match(/\?debug/);
-
-/**
-    How often update fps.
-    @attribute {Number} frequence
-    @default 1000
-**/
-game.Debug.frequency = 1000;
-
-/**
-    Color of fps text.
-    @attribute {String} color
-    @default red
-**/
-game.Debug.color = 'red';
-
-/**
-    Position of fps text.
-    @attribute {Object} position
-    @default 10,10
-**/
-game.Debug.position = {
-    x: 10,
-    y: 10
-};
 
 });
