@@ -375,7 +375,11 @@ game.System = game.Class.extend({
                         me.resizeRotateImage();
                     };
                     if (game.System.rotateImg.indexOf('data:') === 0) img.src = game.System.rotateImg;
-                    else img.src = game.config.mediaFolder + game.System.rotateImg;
+                    else {
+                        var path = game.System.rotateImg;
+                        if (game.config.mediaFolder) path = game.config.mediaFolder + '/' + path;
+                        img.src = path;
+                    }
                     img.style.position = 'relative';
                     img.style.maxWidth = '100%';
                 }
