@@ -34,10 +34,6 @@ var game = {
         @property {Object} config
     **/
     config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
-    /**
-        Configurable list of modules, that are loaded from core.
-        @property {Array} coreModules
-    **/
     coreModules: [
         'engine.analytics',
         'engine.audio',
@@ -574,7 +570,6 @@ var game = {
             return this.charAt(0).toUpperCase() + this.slice(1);
         };
 
-        this.coreModules = this.config.coreModules || this.coreModules;
         this.module('engine.core');
 
         game.normalizeVendorAttribute(window, 'requestAnimationFrame');
