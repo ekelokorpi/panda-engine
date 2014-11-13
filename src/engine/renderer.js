@@ -463,13 +463,15 @@ game.Video = game.Class.extend({
     **/
     loop: false,
     /**
-        @property {Number} width
+        Video element.
+        @property {Video} videoElem
     **/
-    width: 0,
+    videoElem: null,
     /**
-        @property {Number} height
+        Video sprite.
+        @property {game.Sprite} sprite
     **/
-    height: 0,
+    sprite: null,
 
     init: function() {
         this.videoElem = document.createElement('video');
@@ -490,13 +492,11 @@ game.Video = game.Class.extend({
     },
 
     _loaded: function() {
-        this.width = this.videoElem.videoWidth;
-        this.height = this.videoElem.videoHeight;
-        if (typeof this.loadCallback === 'function') this.loadCallback();
+        if (typeof this._loadCallback === 'function') this._loadCallback();
     },
 
     _complete: function() {
-        if (typeof this.completeCallback === 'function') this.completeCallback();
+        if (typeof this._completeCallback === 'function') this._completeCallback();
     },
 
     /**
@@ -504,7 +504,7 @@ game.Video = game.Class.extend({
         @param {Function} callback
     **/
     onLoaded: function(callback) {
-        this.loadCallback = callback;
+        this._loadCallback = callback;
     },
 
     /**
@@ -512,7 +512,7 @@ game.Video = game.Class.extend({
         @param {Function} callback
     **/
     onComplete: function(callback) {
-        this.completeCallback = callback;
+        this._completeCallback = callback;
     },
 
     /**
