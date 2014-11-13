@@ -28,7 +28,7 @@ var game = {
         Current engine version.
         @property {String} version
     **/
-    version: '1.10.1',
+    version: '1.10.1-dev',
     /**
         Engine settings.
         @property {Object} config
