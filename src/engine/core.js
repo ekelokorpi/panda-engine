@@ -365,7 +365,7 @@ var game = {
 
         if (this.Audio) this.audio = new this.Audio();
 
-        if (game.Debug.enabled) {
+        if (game.Debug && game.Debug.enabled) {
             console.log('Panda.js ' + game.version);
             console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
             console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer ' + this.system.width + 'x' + this.system.height);
