@@ -258,12 +258,16 @@ var game = {
 
     addFileToQueue: function(path, id, queue) {
         id = id || path;
-        path = path + this.nocache;
-        if (this.config.mediaFolder) path = this.config.mediaFolder + '/' + path;
+        path = this.getMediaPath(path) + this.nocache;
         if (this.paths[id]) return id;
         this.paths[id] = path;
         if (this[queue].indexOf(path) === -1) this[queue].push(path);
         return id;
+    },
+
+    getMediaPath: function(file) {
+        if (this.config.mediaFolder) file = this.config.mediaFolder + '/' + file;
+        return file;
     },
 
     /**

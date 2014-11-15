@@ -481,7 +481,7 @@ game.Video = game.Class.extend({
         var source;
         for (var i = 0; i < urls.length; i++) {
             source = document.createElement('source');
-            source.src = game.config.mediaFolder + '/' + urls[i];
+            source.src = game.getMediaPath(urls[i]);
             this.videoElem.appendChild(source);
         }
 
