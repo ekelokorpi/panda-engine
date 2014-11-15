@@ -310,8 +310,8 @@ var game = {
         @param {String} name
     **/
     module: function(name) {
-        if (this.current) throw('Module ' + this.current.name + ' has no body');
-        if (this.modules[name] && this.modules[name].body) throw('Module ' + name + ' is already defined');
+        if (this.current) throw 'module ' + this.current.name + ' has no body';
+        if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
 
         this.current = { name: name, requires: [], loaded: false, body: null };
         if (name === 'game.main') this.current.requires.push('engine.core');
@@ -405,7 +405,7 @@ var game = {
             me.loadModules();
         };
         script.onerror = function() {
-            throw('Failed to load module ' + name + ' at ' + path + ' required from ' + requiredFrom);
+            throw 'to load module ' + name + ' at ' + path + ' required from ' + requiredFrom;
         };
         document.getElementsByTagName('head')[0].appendChild(script);
     },
@@ -464,7 +464,7 @@ var game = {
                 }
                 unresolved.push(this.moduleQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
             }
-            throw('Unresolved modules:\n' + unresolved.join('\n'));
+            throw 'unresolved modules:\n' + unresolved.join('\n');
         }
         else {
             this.loadFinished = true;
@@ -699,7 +699,7 @@ var game = {
     },
 
     createClass: function(name, extend, content) {
-        if (game[name]) throw 'Class ' + name + ' already exist';
+        if (game[name]) throw 'class ' + name + ' already created';
 
         if (typeof extend === 'object') {
             content = extend;
@@ -714,7 +714,7 @@ var game = {
     },
 
     addAttributes: function(className, attributes) {
-        if (!this[className]) throw 'Class ' + className + ' not found';
+        if (!this[className]) throw 'class ' + className + ' not found';
 
         for (var name in attributes) {
             this[className][name] = attributes[name];
