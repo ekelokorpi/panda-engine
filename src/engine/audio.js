@@ -9,7 +9,6 @@ game.module(
 'use strict';
 
 /**
-    Audio manager.
     @class Audio
     @extends game.Class
 **/
@@ -38,12 +37,12 @@ game.Audio = game.Class.extend({
     /**
         Main sound volume.
         @property {Number} soundVolume
-        @default 1.0
+        @default 1
     **/
-    soundVolume: 1.0,
+    soundVolume: 1,
     /**
         Current music id.
-        @property {Object} currentMusic
+        @property {Number} currentMusic
     **/
     currentMusic: null,
     /**
@@ -60,9 +59,9 @@ game.Audio = game.Class.extend({
     /**
         Main music volume.
         @property {Number} musicVolume
-        @default 1.0
+        @default 1
     **/
-    musicVolume: 1.0,
+    musicVolume: 1,
     /**
         Is sounds muted.
         @property {Boolean} soundMuted
@@ -110,26 +109,20 @@ game.Audio = game.Class.extend({
         // Init Web Audio
         if (game.Audio.enabled && game.Audio.webAudio) {
             this.context = new AudioContext();
-
-            if (this.context.createGain) this.gainNode = this.context.createGain();
-            else if (this.context.createGainNode) this.gainNode = this.context.createGainNode();
+            this.gainNode = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
             this.gainNode.connect(this.context.destination);
         }
     },
 
-    decode: function(request, path, callback) {
-        if (!this.context) return;
-
-        if (!request.response) throw('Error loading audio: ' + path);
-
+    decode: function(request, path, callback, errorCallback) {
         this.context.decodeAudioData(
             request.response,
             this.loaded.bind(this, path, callback),
-            this.error.bind(this, path)
+            errorCallback
         );
     },
     
-    load: function(path, callback) {
+    load: function(path, callback, errorCallback) {
         if (!game.Audio.enabled) {
             if (typeof callback === 'function') callback();
             return;
@@ -145,7 +138,7 @@ game.Audio = game.Class.extend({
             var request = new XMLHttpRequest();
             request.open('GET', realPath, true);
             request.responseType = 'arraybuffer';
-            request.onload = this.decode.bind(this, request, path, callback);
+            request.onload = this.decode.bind(this, request, path, callback, errorCallback);
             request.send();
         }
         // HTML5 Audio
@@ -158,7 +151,7 @@ game.Audio = game.Class.extend({
             else {
                 audio.loadCallback = this.loaded.bind(this, path, callback, audio);
                 audio.addEventListener('canplaythrough', audio.loadCallback, false);
-                audio.addEventListener('error', this.error.bind(this, path), false);
+                audio.addEventListener('error', errorCallback, false);
             }
             audio.preload = 'auto';
             audio.load();
@@ -167,16 +160,18 @@ game.Audio = game.Class.extend({
 
     loaded: function(path, callback, audio) {
         for (var name in game.paths) {
-            if (game.paths[name] === path) var id = name;
+            if (game.paths[name] === path) {
+                var id = name;
+                break;
+            }
         }
-        if (!id) throw('No id found for audio source');
 
         this.sources[id] = {
             audio: audio,
             path: path
         };
 
-        if (audio instanceof Audio) {
+        if (!this.context) {
             audio.removeEventListener('canplaythrough', audio.loadCallback, false);
             audio.addEventListener('ended', function() {
                 this.playing = false;
@@ -184,10 +179,6 @@ game.Audio = game.Class.extend({
         }
 
         if (typeof callback === 'function') callback(path);
-    },
-
-    error: function(path) {
-        throw('Error loading: ' + path);
     },
 
     onended: function(id) {
@@ -208,42 +199,31 @@ game.Audio = game.Class.extend({
     },
 
     play: function(name, loop, volume, callback, rate, time, audioId) {
-        if (!game.Audio.enabled) return false;
-
-        if (typeof volume !== 'number') volume = 1;
-        if (typeof rate !== 'number') rate = 1;
-
-        if (!audioId) {
-            this.audioId++;
-            audioId = this.audioId;
-        }
+        if (!audioId) audioId = this.audioId++;
 
         // Web Audio
         if (this.context) {
             var audio = this.context.createBufferSource();
             audio.buffer = this.sources[name].audio;
             audio.loop = !!loop;
-            audio.playbackRate.value = rate;
+            audio.playbackRate.value = rate || 1;
             audio.callback = callback;
             audio.onended = this.onended.bind(this, audioId);
 
-            var gainNode;
-            if (this.context.createGain) gainNode = this.context.createGain();
-            else if (this.context.createGainNode) gainNode = this.context.createGainNode();
-            gainNode.gain.value = volume;
-
+            var gainNode = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
+            gainNode.gain.value = volume || 1;
             gainNode.connect(this.gainNode);
             audio.connect(gainNode);
             audio.gainNode = gainNode;
 
             var startTime = time || 0;
-            if (typeof audio.start === 'function') audio.start(0, startTime);
+            if (audio.start) audio.start(0, startTime);
             else audio.noteOn(0, startTime);
             audio.startTime = this.context.currentTime - startTime;
         }
         // HTML5 Audio
         else {
-            this.sources[name].audio.volume = volume;
+            this.sources[name].audio.volume = volume || 1;
             this.sources[name].audio.loop = loop;
             this.sources[name].audio.playing = true;
             this.sources[name].audio.callback = callback;
@@ -258,8 +238,6 @@ game.Audio = game.Class.extend({
     },
 
     stop: function(id, skipCallback) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
