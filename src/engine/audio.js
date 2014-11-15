@@ -150,8 +150,8 @@ game.Audio = game.Class.extend({
             }
             else {
                 audio.loadCallback = this.loaded.bind(this, path, callback, audio);
-                audio.addEventListener('canplaythrough', audio.loadCallback, false);
-                audio.addEventListener('error', errorCallback, false);
+                audio.addEventListener('canplaythrough', audio.loadCallback);
+                audio.addEventListener('error', errorCallback);
             }
             audio.preload = 'auto';
             audio.load();
@@ -172,10 +172,10 @@ game.Audio = game.Class.extend({
         };
 
         if (!this.context) {
-            audio.removeEventListener('canplaythrough', audio.loadCallback, false);
+            audio.removeEventListener('canplaythrough', audio.loadCallback);
             audio.addEventListener('ended', function() {
                 this.playing = false;
-            }, false);
+            });
         }
 
         if (typeof callback === 'function') callback(path);
@@ -227,7 +227,7 @@ game.Audio = game.Class.extend({
             this.sources[name].audio.loop = loop;
             this.sources[name].audio.playing = true;
             this.sources[name].audio.callback = callback;
-            this.sources[name].audio.onended = this.onended.bind(this, this.audioId);
+            this.sources[name].audio.onended = this.onended.bind(this, audioId);
             this.sources[name].audio.currentTime = 0;
             this.sources[name].audio.play();
             var audio = this.sources[name].audio;
@@ -260,8 +260,6 @@ game.Audio = game.Class.extend({
     },
 
     pause: function(id) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
@@ -283,8 +281,6 @@ game.Audio = game.Class.extend({
     },
 
     resume: function(id) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
@@ -306,8 +302,6 @@ game.Audio = game.Class.extend({
     },
 
     mute: function(id) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
@@ -324,8 +318,6 @@ game.Audio = game.Class.extend({
     },
 
     unmute: function(id, volume) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
@@ -634,14 +626,15 @@ game.Audio = game.Class.extend({
     /**
         Change audio playback rate (Web Audio).
         @method setPlaybackRate
-        @param {Object} audio
+        @param {Number} id
         @param {Number} rate
     **/
-    setPlaybackRate: function(audio, rate) {
+    setPlaybackRate: function(id, rate) {
         if (!game.Audio.enabled) return false;
 
-        if (audio && this.context) {
-            audio.playbackRate.value = rate || 1;
+        if (this.context) {
+            var audio = this.audioObjects[id];
+            if (audio) audio.playbackRate.value = rate || 1;
         }
     },
 
