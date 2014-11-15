@@ -199,7 +199,7 @@ game.Audio = game.Class.extend({
     },
 
     play: function(name, loop, volume, callback, rate, time, audioId) {
-        if (!audioId) audioId = this.audioId++;
+        if (typeof audioId !== 'number') audioId = this.audioId++;
 
         // Web Audio
         if (this.context) {
