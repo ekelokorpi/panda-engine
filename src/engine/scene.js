@@ -53,6 +53,13 @@ game.Scene = game.Class.extend({
     swipeTime: 500,
     
     staticInit: function() {
+        if (game.audio && game.Audio.stopOnSceneChange && game.scene) {
+            game.audio.stopMusic();
+            game.audio.stopSound(false, true);
+            game.audio.pausedSounds.length = 0;
+            game.audio.playingSounds.length = 0;
+        }
+        
         game.scene = this;
         
         for (var i = game.system.stage.children.length - 1; i >= 0; i--) {
@@ -69,13 +76,6 @@ game.Scene = game.Class.extend({
 
         this.stage = new game.Container();
         game.system.stage.addChild(this.stage);
-
-        if (game.audio && game.Audio.stopOnSceneChange) {
-            game.audio.stopMusic();
-            game.audio.stopSound(false, true);
-            game.audio.pausedSounds.length = 0;
-            game.audio.playingSounds.length = 0;
-        }
 
         if (game.debugDraw) game.debugDraw.reset();
     },
