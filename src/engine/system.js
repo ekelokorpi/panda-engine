@@ -291,6 +291,7 @@ game.System = game.Class.extend({
     },
 
     setSceneNow: function(sceneClass, removeAssets) {
+        if (game.scene) game.scene.exit();
         if (game.tweenEngine) game.tweenEngine.tweens.length = 0;
         if (removeAssets) game.removeAssets();
         game.scene = new (sceneClass)();

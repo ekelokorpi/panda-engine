@@ -282,6 +282,13 @@ game.Scene = game.Class.extend({
 
     resume: function() {
         if (game.audio) game.audio.systemResume();
+    },
+
+    /**
+        Called, when scene is changed.
+        @method exit
+    **/
+    exit: function() {
     }
 });
 
