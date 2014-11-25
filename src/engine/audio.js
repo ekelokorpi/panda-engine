@@ -13,7 +13,7 @@ game.module(
     @extends game.Class
 **/
 game.Audio = game.Class.extend({
-    audioId: 0,
+    audioId: 1,
     audioObjects: {},
     systemPaused: [],
     sources: {},
