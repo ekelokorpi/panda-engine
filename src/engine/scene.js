@@ -255,7 +255,7 @@ game.Scene = game.Class.extend({
     _swipe: function(event, dir) {
         var time = Date.now() - event.startTime;
         event.startTime = null;
-        if (time <= this.swipeTime) this.swipe(dir);
+        if (time <= this.swipeTime || this.swipeTime === 0) this.swipe(dir);
     },
 
     /**
