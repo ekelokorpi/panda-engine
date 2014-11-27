@@ -201,48 +201,55 @@ game.Sprite.fromImage = game.PIXI.Sprite.fromImage;
     @param {Number} height
 **/
 game.SpriteSheet = game.Class.extend({
+    textures: [],
+
     init: function(id, width, height) {
         this.width = width;
         this.height = height;
-        this.texture = game.TextureCache[game.paths[id]];
-        this.sx = Math.floor(this.texture.width / this.width);
-        this.sy = Math.floor(this.texture.height / this.height);
+        var baseTexture = game.TextureCache[game.paths[id]];
+        this.sx = Math.floor(baseTexture.width / this.width);
+        this.sy = Math.floor(baseTexture.height / this.height);
         this.frames = this.sx * this.sy;
+
+        for (var i = 0; i < this.frames; i++) {
+            var x = (i % this.sx) * this.width;
+            var y = Math.floor(i / this.sx) * this.height;
+            var texture = new game.Texture(baseTexture, new game.HitRectangle(x, y, this.width, this.height));
+            this.textures.push(texture);
+        }
     },
 
     /**
         Create sprite from specific frame.
         @method frame
         @param {Number} index Frame index
+        @return {game.Sprite}
     **/
     frame: function(index) {
         index = index.limit(0, this.frames - 1);
-
-        var i = 0;
-        for (var y = 0; y < this.sy; y++) {
-            for (var x = 0; x < this.sx; x++) {
-                if (i === index) {
-                    var sprite = new game.Sprite(this.texture);
-                    sprite.crop(x * this.width, y * this.height, this.width, this.height);
-                    return sprite;
-                }
-                i++;
-            }
-        }
+        return new game.Sprite(this.textures[index]);
     },
 
     /**
         Create animation from spritesheet.
         @method anim
-        @param {Number} count Frame count
-        @param {Number} index Start index
+        @param {Number|Array} frames List or number of frames
+        @param {Number} startIndex
+        @return {game.Animation}
     **/
-    anim: function(count, index) {
-        index = index || 0;
-        count = count || this.frames;
+    anim: function(frames, startIndex) {
+        startIndex = startIndex || 0;
+        frames = frames || this.frames;
         var textures = [];
-        for (var i = 0; i < count; i++) {
-            textures.push(this.frame(index + i).texture);
+        if (frames.length > 0) {
+            for (var i = 0; i < frames.length; i++) {
+                textures.push(this.textures[startIndex + frames[i]]);
+            }
+        }
+        else {
+            for (var i = 0; i < frames; i++) {
+                textures.push(this.textures[startIndex + i]);
+            }
         }
         return new game.Animation(textures);
     }
