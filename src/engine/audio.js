@@ -228,7 +228,6 @@ game.Audio = game.Class.extend({
             this.sources[name].audio.playing = true;
             this.sources[name].audio.callback = callback;
             this.sources[name].audio.onended = this.onended.bind(this, audioId);
-            this.sources[name].audio.currentTime = 0;
             this.sources[name].audio.play();
             var audio = this.sources[name].audio;
         }
