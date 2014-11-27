@@ -145,7 +145,7 @@ game.Scene = game.Class.extend({
     /**
         Add timer to game scene.
         @method addTimer
-        @param {Number} time Time in seconds
+        @param {Number} time Time in milliseconds
         @param {Function} callback Callback function to run, when timer ends.
         @param {Boolean} repeat
         @return {game.Timer}
