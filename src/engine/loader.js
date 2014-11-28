@@ -206,10 +206,6 @@ game.Loader = game.Class.extend({
         else this.setScene();
     },
 
-    /**
-        Set scene.
-        @method setScene
-    **/
     setScene: function() {
         game.system.timer.last = 0;
         game.Timer.time = Number.MIN_VALUE;
@@ -221,6 +217,8 @@ game.Loader = game.Class.extend({
         }
         else game.system.setScene(this.callback);
     },
+
+    exit: function() {},
 
     run: function() {
         if (this.loopId) {
