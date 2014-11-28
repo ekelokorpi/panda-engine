@@ -1,36 +1,22 @@
 // Panda.js HTML5 game engine
 
 // created by Eemeli Kelokorpi
-// inspired by Impact Game Engine
-// sponsored by Yle
 
 'use strict';
 
 /**
     @module game
     @namespace game
-    @requires loader
-    @requires timer
-    @requires system
-    @requires audio
-    @requires debug
-    @requires storage
-    @requires tween
-    @requires scene
-    @requires pool
-    @requires analytics
 **/
 /**
     @class Core
 **/
 var game = {
     /**
-        Current engine version.
         @property {String} version
     **/
     version: '1.10.1-dev',
     /**
-        Engine settings.
         @property {Object} config
     **/
     config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
@@ -73,10 +59,10 @@ var game = {
     **/
     system: null,
     /**
-        Instance of {{#crossLink "game.SoundManager"}}{{/crossLink}}.
-        @property {game.SoundManager} sound
+        Instance of {{#crossLink "game.Audio"}}{{/crossLink}}.
+        @property {game.Audio} sound
     **/
-    sound: null,
+    audio: null,
     /**
         Instance of {{#crossLink "game.Pool"}}{{/crossLink}}.
         @property {game.Pool} pool
@@ -608,7 +594,7 @@ var game = {
         this.device.android = /android/i.test(navigator.userAgent);
         this.device.android2 = /android 2/i.test(navigator.userAgent);
         var androidVer = navigator.userAgent.match(/Android.*AppleWebKit\/([\d.]+)/);
-        this.device.androidStock = (androidVer && androidVer[1] < 537);
+        this.device.androidStock = !!(androidVer && androidVer[1] < 537);
         
         // Internet Explorer
         this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
