@@ -131,21 +131,7 @@ game.System = game.Class.extend({
             document.body.appendChild(canvas);
         }
 
-        game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
-
-        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, {
-            view: document.getElementById(this.canvasId),
-            transparent: game.System.transparent,
-            antialias: game.System.antialias
-        });
-        else this.renderer = new game.CanvasRenderer(width, height, {
-            view: document.getElementById(this.canvasId),
-            transparent: game.System.transparent
-        });
-
-        this.webGL = !!this.renderer.gl;
-        this.canvas = this.renderer.view;
-        this.stage = new game.Stage();
+        this.initRenderer(width, height);
 
         game.normalizeVendorAttribute(this.canvas, 'requestFullscreen');
         game.normalizeVendorAttribute(this.canvas, 'requestFullScreen');
@@ -209,6 +195,24 @@ game.System = game.Class.extend({
             this.resizeToFill();
             this.canvas.style.cssText = 'idtkscale:' + game.System.idtkScale + ';';
         }
+    },
+
+    initRenderer: function(width, height) {
+        game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
+
+        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, {
+            view: document.getElementById(this.canvasId),
+            transparent: game.System.transparent,
+            antialias: game.System.antialias
+        });
+        else this.renderer = new game.CanvasRenderer(width, height, {
+            view: document.getElementById(this.canvasId),
+            transparent: game.System.transparent
+        });
+
+        this.webGL = !!this.renderer.gl;
+        this.canvas = this.renderer.view;
+        this.stage = new game.Stage();
     },
 
     resizeToFill: function() {
