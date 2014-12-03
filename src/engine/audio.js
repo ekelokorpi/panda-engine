@@ -35,12 +35,6 @@ game.Audio = game.Class.extend({
     **/
     pausedSounds: [],
     /**
-        Main sound volume.
-        @property {Number} soundVolume
-        @default 1
-    **/
-    soundVolume: 1,
-    /**
         Current music id.
         @property {Number} currentMusic
     **/
@@ -56,12 +50,6 @@ game.Audio = game.Class.extend({
         @default false
     **/
     musicMuted: false,
-    /**
-        Main music volume.
-        @property {Number} musicVolume
-        @default 1
-    **/
-    musicVolume: 1,
     /**
         Is sounds muted.
         @property {Boolean} soundMuted
@@ -112,6 +100,9 @@ game.Audio = game.Class.extend({
             this.gainNode = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
             this.gainNode.connect(this.context.destination);
         }
+
+        this.musicVolume = game.Audio.musicVolume;
+        this.soundVolume = game.Audio.soundVolume;
     },
 
     decode: function(request, path, callback, errorCallback) {
@@ -734,5 +725,17 @@ game.Audio.formats = [
     @default true
 **/
 game.Audio.stopOnSceneChange = true;
+/**
+    Sound volume.
+    @attribute {Number} soundVolume
+    @default 1
+**/
+game.Audio.soundVolume = 1;
+/**
+    Music volume.
+    @attribute {Number} musicVolume
+    @default 1
+**/
+game.Audio.musicVolume = 1;
 
 });
