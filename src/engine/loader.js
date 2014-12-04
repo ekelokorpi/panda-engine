@@ -102,13 +102,13 @@ game.Loader = game.Class.extend({
         this.barBg = new game.Graphics();
         this.barBg.beginFill(game.Loader.barBgColor);
         this.barBg.drawRect(0, 0, barWidth, barHeight);
-        this.barBg.position.set(game.system.width / 2 - (barWidth / 2), game.system.height / 2 - (barHeight / 2));
+        this.barBg.position.set(Math.round(game.system.width / 2 - (barWidth / 2)), Math.round(game.system.height / 2 - (barHeight / 2)));
         this.stage.addChild(this.barBg);
 
         this.barFg = new game.Graphics();
         this.barFg.beginFill(game.Loader.barColor);
-        this.barFg.drawRect(0, 0, barWidth + 2, barHeight + 2);
-        this.barFg.position.set(game.system.width / 2 - (barWidth / 2) - 1, game.system.height / 2 - (barHeight / 2) - 1);
+        this.barFg.drawRect(0, 0, barWidth, barHeight);
+        this.barFg.position.set(Math.round(game.system.width / 2 - (barWidth / 2)), Math.round(game.system.height / 2 - (barHeight / 2)));
         this.barFg.scale.x = this.percent / 100;
         this.stage.addChild(this.barFg);
     },
