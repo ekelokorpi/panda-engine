@@ -1,43 +1,25 @@
 // Panda.js HTML5 game engine
 
 // created by Eemeli Kelokorpi
-// inspired by Impact Game Engine
-// sponsored by Yle
 
 'use strict';
 
 /**
     @module game
     @namespace game
-    @requires loader
-    @requires timer
-    @requires system
-    @requires audio
-    @requires debug
-    @requires storage
-    @requires tween
-    @requires scene
-    @requires pool
-    @requires analytics
 **/
 /**
     @class Core
 **/
 var game = {
     /**
-        Current engine version.
         @property {String} version
     **/
-    version: '1.9.0',
+    version: '1.10.1-dev',
     /**
-        Engine settings.
         @property {Object} config
     **/
     config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
-    /**
-        Configurable list of modules, that are loaded from core.
-        @property {Array} coreModules
-    **/
     coreModules: [
         'engine.analytics',
         'engine.audio',
@@ -77,10 +59,10 @@ var game = {
     **/
     system: null,
     /**
-        Instance of {{#crossLink "game.SoundManager"}}{{/crossLink}}.
-        @property {game.SoundManager} sound
+        Instance of {{#crossLink "game.Audio"}}{{/crossLink}}.
+        @property {game.Audio} sound
     **/
-    sound: null,
+    audio: null,
     /**
         Instance of {{#crossLink "game.Pool"}}{{/crossLink}}.
         @property {game.Pool} pool
@@ -262,11 +244,50 @@ var game = {
 
     addFileToQueue: function(path, id, queue) {
         id = id || path;
-        path = this.config.mediaFolder + path + this.nocache;
+        path = this.getMediaPath(path) + this.nocache;
         if (this.paths[id]) return id;
         this.paths[id] = path;
         if (this[queue].indexOf(path) === -1) this[queue].push(path);
         return id;
+    },
+
+    getMediaPath: function(file) {
+        if (this.config.mediaFolder) file = this.config.mediaFolder + '/' + file;
+        return file;
+    },
+
+    /**
+        Remove asset from memory.
+        @method removeAsset
+        @param {String} id
+    **/
+    removeAsset: function(id) {
+        var path = this.paths[id];
+        if (this.json[path] && this.json[path].frames) {
+            // Sprite sheet
+            for (var key in this.json[path].frames) {
+                this.TextureCache[key].destroy(true);
+                delete this.TextureCache[key];
+            }
+        }
+        else if (this.TextureCache[path]) {
+            // Sprite
+            this.TextureCache[path].destroy(true);
+            delete this.TextureCache[path];
+        }
+        delete this.paths[id];
+    },
+
+    /**
+        Remove all assets from memory.
+        @method removeAssets
+    **/
+    removeAssets: function() {
+        for (var key in this.TextureCache) {
+            this.TextureCache[key].destroy(true);
+            delete this.TextureCache[key];
+        }
+        this.paths = {};
     },
 
     /**
@@ -275,8 +296,8 @@ var game = {
         @param {String} name
     **/
     module: function(name) {
-        if (this.current) throw('Module ' + this.current.name + ' has no body');
-        if (this.modules[name] && this.modules[name].body) throw('Module ' + name + ' is already defined');
+        if (this.current) throw 'module ' + this.current.name + ' has no body';
+        if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
 
         this.current = { name: name, requires: [], loaded: false, body: null };
         if (name === 'game.main') this.current.requires.push('engine.core');
@@ -330,7 +351,7 @@ var game = {
 
         if (this.Audio) this.audio = new this.Audio();
 
-        if (game.Debug.enabled) {
+        if (game.Debug && game.Debug.enabled) {
             console.log('Panda.js ' + game.version);
             console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
             console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer ' + this.system.width + 'x' + this.system.height);
@@ -358,7 +379,9 @@ var game = {
         this.modules[name] = true;
         this.waitForLoad++;
 
-        var path = this.config.sourceFolder + '/' + name.replace(/\./g, '/') + '.js' + this.nocache;
+        var path = name.replace(/\./g, '/') + '.js' + this.nocache;
+        if (this.config.sourceFolder) path = this.config.sourceFolder + '/' + path;
+
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
@@ -368,7 +391,7 @@ var game = {
             me.loadModules();
         };
         script.onerror = function() {
-            throw('Failed to load module ' + name + ' at ' + path + ' required from ' + requiredFrom);
+            throw 'to load module ' + name + ' at ' + path + ' required from ' + requiredFrom;
         };
         document.getElementsByTagName('head')[0].appendChild(script);
     },
@@ -427,7 +450,7 @@ var game = {
                 }
                 unresolved.push(this.moduleQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
             }
-            throw('Unresolved modules:\n' + unresolved.join('\n'));
+            throw 'unresolved modules:\n' + unresolved.join('\n');
         }
         else {
             this.loadFinished = true;
@@ -476,10 +499,6 @@ var game = {
         };
 
         Math._random = Math.random;
-        // Deprecated
-        Math.randomBetween = function(min, max) {
-            return Math._random() * (max - min) + min;
-        };
         Math.random = function(min, max) {
             if (typeof max === 'number') return Math._random() * (max - min) + min;
             else return Math._random(min);
@@ -541,12 +560,9 @@ var game = {
             return this.charAt(0).toUpperCase() + this.slice(1);
         };
 
-        this.coreModules = this.config.coreModules || this.coreModules;
         this.module('engine.core');
 
         game.normalizeVendorAttribute(window, 'requestAnimationFrame');
-
-        if (document.location.href.match(/\?nocache/) || this.config.disableCache) this.nocache = '?' + Date.now();
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
@@ -578,7 +594,7 @@ var game = {
         this.device.android = /android/i.test(navigator.userAgent);
         this.device.android2 = /android 2/i.test(navigator.userAgent);
         var androidVer = navigator.userAgent.match(/Android.*AppleWebKit\/([\d.]+)/);
-        this.device.androidStock = (androidVer && androidVer[1] < 537);
+        this.device.androidStock = !!(androidVer && androidVer[1] < 537);
         
         // Internet Explorer
         this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
@@ -595,7 +611,7 @@ var game = {
         this.device.wt = (this.device.ie && /Tablet/i.test(navigator.userAgent));
 
         // Others
-        this.device.opera = /Opera/i.test(navigator.userAgent);
+        this.device.opera = /Opera/i.test(navigator.userAgent) || /OPR/i.test(navigator.userAgent);
         this.device.crosswalk = /Crosswalk/i.test(navigator.userAgent);
         this.device.cocoonJS = !!navigator.isCocoonJS;
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
@@ -629,8 +645,10 @@ var game = {
             }
         }
 
-        this.config.sourceFolder = this.config.sourceFolder || 'src';
-        this.config.mediaFolder = this.config.mediaFolder ? this.config.mediaFolder + '/' : 'media/';
+        if (document.location.href.match(/\?nocache/) || this.config.disableCache) this.nocache = '?' + Date.now();
+
+        if (typeof this.config.sourceFolder === 'undefined') this.config.sourceFolder = 'src';
+        if (typeof this.config.mediaFolder === 'undefined') this.config.mediaFolder = 'media';
 
         var metaTags = document.getElementsByTagName('meta');
         var viewportFound = false;
@@ -667,7 +685,7 @@ var game = {
     },
 
     createClass: function(name, extend, content) {
-        if (game[name]) throw 'Class ' + name + ' already exist';
+        if (game[name]) throw 'class ' + name + ' already created';
 
         if (typeof extend === 'object') {
             content = extend;
@@ -682,7 +700,7 @@ var game = {
     },
 
     addAttributes: function(className, attributes) {
-        if (!this[className]) throw 'Class ' + className + ' not found';
+        if (!this[className]) throw 'class ' + className + ' not found';
 
         for (var name in attributes) {
             this[className][name] = attributes[name];

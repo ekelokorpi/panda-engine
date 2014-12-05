@@ -9,16 +9,18 @@ game.module(
 'use strict';
 
 /**
-    Audio manager.
     @class Audio
     @extends game.Class
 **/
 game.Audio = game.Class.extend({
-    audioId: 0,
+    audioId: 1,
     audioObjects: {},
     systemPaused: [],
+    sources: {},
+    context: null,
+    gainNode: null,
     /**
-        Supported audio formats.
+        List of supported audio formats.
         @property {Array} formats
     **/
     formats: [],
@@ -27,18 +29,21 @@ game.Audio = game.Class.extend({
         @property {Array} playingSounds
     **/
     playingSounds: [],
+    /**
+        List of paused sounds.
+        @property {Array} pausedSounds
+    **/
     pausedSounds: [],
     /**
-        Main sound volume.
-        @property {Number} soundVolume
-        @default 1.0
-    **/
-    soundVolume: 1.0,
-    /**
-        Current music.
-        @property {Object} currentMusic
+        Current music id.
+        @property {Number} currentMusic
     **/
     currentMusic: null,
+    /**
+        Name of current music.
+        @property {String} currentMusicName
+    **/
+    currentMusicName: null,
     /**
         Is music muted.
         @property {Boolean} musicMuted
@@ -46,15 +51,11 @@ game.Audio = game.Class.extend({
     **/
     musicMuted: false,
     /**
-        Main music volume.
-        @property {Number} musicVolume
-        @default 1.0
+        Is sounds muted.
+        @property {Boolean} soundMuted
+        @default false
     **/
-    musicVolume: 1.0,
-    sources: {},
-    // Web Audio
-    context: null,
-    gainNode: null,
+    soundMuted: false,
 
     init: function() {
         game.normalizeVendorAttribute(window, 'AudioContext');
@@ -62,8 +63,8 @@ game.Audio = game.Class.extend({
         // Disable audio on iOS 5
         if (game.device.iOS5) game.Audio.enabled = false;
 
-        // Disable audio on Windows Phone
-        if (game.device.wp) game.Audio.enabled = false;
+        // Disable audio on Windows Phone 7
+        if (game.device.wp7) game.Audio.enabled = false;
 
         // Disable audio on Android 2
         if (game.device.android2) game.Audio.enabled = false;
@@ -87,32 +88,32 @@ game.Audio = game.Class.extend({
             }
         }
 
+        // Remove m4a format on Opera, when using Web Audio (decode fails)
+        if (game.device.opera && game.Audio.webAudio) this.formats.erase('m4a');
+
         // Disable audio if no compatible format found
         if (this.formats.length === 0) game.Audio.enabled = false;
 
         // Init Web Audio
         if (game.Audio.enabled && game.Audio.webAudio) {
             this.context = new AudioContext();
-
-            if (this.context.createGain) this.gainNode = this.context.createGain();
-            else if (this.context.createGainNode) this.gainNode = this.context.createGainNode();
+            this.gainNode = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
             this.gainNode.connect(this.context.destination);
         }
+
+        this.musicVolume = game.Audio.musicVolume;
+        this.soundVolume = game.Audio.soundVolume;
     },
 
-    decode: function(request, path, callback) {
-        if (!this.context) return;
-
-        if (!request.response) throw('Error loading audio: ' + path);
-
+    decode: function(request, path, callback, errorCallback) {
         this.context.decodeAudioData(
             request.response,
             this.loaded.bind(this, path, callback),
-            this.error.bind(this, path)
+            errorCallback
         );
     },
     
-    load: function(path, callback) {
+    load: function(path, callback, errorCallback) {
         if (!game.Audio.enabled) {
             if (typeof callback === 'function') callback();
             return;
@@ -128,7 +129,7 @@ game.Audio = game.Class.extend({
             var request = new XMLHttpRequest();
             request.open('GET', realPath, true);
             request.responseType = 'arraybuffer';
-            request.onload = this.decode.bind(this, request, path, callback);
+            request.onload = this.decode.bind(this, request, path, callback, errorCallback);
             request.send();
         }
         // HTML5 Audio
@@ -140,8 +141,8 @@ game.Audio = game.Class.extend({
             }
             else {
                 audio.loadCallback = this.loaded.bind(this, path, callback, audio);
-                audio.addEventListener('canplaythrough', audio.loadCallback, false);
-                audio.addEventListener('error', this.error.bind(this, path), false);
+                audio.addEventListener('canplaythrough', audio.loadCallback);
+                audio.addEventListener('error', errorCallback);
             }
             audio.preload = 'auto';
             audio.load();
@@ -150,34 +151,35 @@ game.Audio = game.Class.extend({
 
     loaded: function(path, callback, audio) {
         for (var name in game.paths) {
-            if (game.paths[name] === path) var id = name;
+            if (game.paths[name] === path) {
+                var id = name;
+                break;
+            }
         }
-        if (!id) throw('No id found for audio source');
 
         this.sources[id] = {
             audio: audio,
             path: path
         };
 
-        if (audio instanceof Audio) {
-            audio.removeEventListener('canplaythrough', audio.loadCallback, false);
+        if (!this.context) {
+            audio.removeEventListener('canplaythrough', audio.loadCallback);
             audio.addEventListener('ended', function() {
                 this.playing = false;
-            }, false);
+            });
         }
 
         if (typeof callback === 'function') callback(path);
-    },
-
-    error: function(path) {
-        throw('Error loading: ' + path);
     },
 
     onended: function(id) {
         var index = this.playingSounds.indexOf(id);
         if (index !== -1) this.playingSounds.splice(index, 1);
 
-        if (id === this.currentMusic) this.currentMusic = null;
+        if (id === this.currentMusic) {
+            this.currentMusic = null;
+            this.currentMusicName = null;
+        }
 
         var audio = this.audioObjects[id];
         if (!audio) return false;
@@ -188,48 +190,36 @@ game.Audio = game.Class.extend({
     },
 
     play: function(name, loop, volume, callback, rate, time, audioId) {
-        if (!game.Audio.enabled) return false;
-
-        if (typeof volume !== 'number') volume = 1;
-        if (typeof rate !== 'number') rate = 1;
-
-        if (!audioId) {
-            this.audioId++;
-            audioId = this.audioId;
-        }
+        if (typeof audioId !== 'number') audioId = this.audioId++;
 
         // Web Audio
         if (this.context) {
             var audio = this.context.createBufferSource();
             audio.buffer = this.sources[name].audio;
             audio.loop = !!loop;
-            audio.playbackRate.value = rate;
+            audio.playbackRate.value = rate || 1;
             audio.callback = callback;
             audio.onended = this.onended.bind(this, audioId);
 
-            var gainNode;
-            if (this.context.createGain) gainNode = this.context.createGain();
-            else if (this.context.createGainNode) gainNode = this.context.createGainNode();
-            gainNode.gain.value = volume;
-
+            var gainNode = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
+            gainNode.gain.value = typeof volume === 'number' ? volume : 1;
             gainNode.connect(this.gainNode);
             audio.connect(gainNode);
             audio.gainNode = gainNode;
 
             var startTime = time || 0;
-            if (typeof audio.start === 'function') audio.start(0, startTime);
+            if (audio.start) audio.start(0, startTime);
             else audio.noteOn(0, startTime);
             audio.startTime = this.context.currentTime - startTime;
         }
         // HTML5 Audio
         else {
-            this.sources[name].audio.volume = volume;
+            this.sources[name].audio.volume = typeof volume === 'number' ? volume : 1;
             this.sources[name].audio.loop = loop;
             this.sources[name].audio.playing = true;
             this.sources[name].audio.callback = callback;
-            this.sources[name].audio.onended = this.onended.bind(this, this.audioId);
-            // This gives error on IE
-            // this.sources[name].audio.currentTime = 0;
+            this.sources[name].audio.onended = this.onended.bind(this, audioId);
+            if (!game.device.ie) this.sources[name].audio.currentTime = 0;
             this.sources[name].audio.play();
             var audio = this.sources[name].audio;
         }
@@ -239,8 +229,6 @@ game.Audio = game.Class.extend({
     },
 
     stop: function(id, skipCallback) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
@@ -257,18 +245,12 @@ game.Audio = game.Class.extend({
             if (navigator.isCocoonJS) audio.volume = 0;
             else audio.pause();
             audio.playing = false;
-            // This gives error on IE
-            // audio.currentTime = 0;
         }
-
-        delete this.audioObjects[id];
 
         return true;
     },
 
     pause: function(id) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
@@ -290,8 +272,6 @@ game.Audio = game.Class.extend({
     },
 
     resume: function(id) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
@@ -313,8 +293,6 @@ game.Audio = game.Class.extend({
     },
 
     mute: function(id) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
@@ -331,8 +309,6 @@ game.Audio = game.Class.extend({
     },
 
     unmute: function(id, volume) {
-        if (!game.Audio.enabled) return false;
-
         var audio = this.audioObjects[id];
         if (!audio) return false;
 
@@ -377,7 +353,8 @@ game.Audio = game.Class.extend({
     playSound: function(name, loop, callback, rate) {
         if (!game.Audio.enabled) return false;
 
-        var id = this.play(name, loop, this.soundVolume, callback, rate);
+        var volume = this.soundMuted ? 0 : this.soundVolume;
+        var id = this.play(name, loop, volume, callback, rate);
         this.playingSounds.push(id);
 
         return id;
@@ -464,8 +441,13 @@ game.Audio = game.Class.extend({
             return this.mute(id);
         }
         else {
-            for (var i = this.playingSounds.length - 1; i >= 0; i--) {
+            this.soundMuted = true;
+            var i;
+            for (i = this.playingSounds.length - 1; i >= 0; i--) {
                 this.mute(this.playingSounds[i]);
+            }
+            for (i = this.pausedSounds.length - 1; i >= 0; i--) {
+                this.mute(this.pausedSounds[i]);
             }
             return true;
         }
@@ -484,8 +466,13 @@ game.Audio = game.Class.extend({
             return this.unmute(id, this.soundVolume);
         }
         else {
-            for (var i = this.playingSounds.length - 1; i >= 0; i--) {
+            this.soundMuted = false;
+            var i;
+            for (i = this.playingSounds.length - 1; i >= 0; i--) {
                 this.unmute(this.playingSounds[i], this.soundVolume);
+            }
+            for (i = this.pausedSounds.length - 1; i >= 0; i--) {
+                this.unmute(this.pausedSounds[i], this.soundVolume);
             }
             return true;
         }
@@ -508,6 +495,7 @@ game.Audio = game.Class.extend({
         if (this.currentMusic) this.stop(this.currentMusic);
         
         this.currentMusic = this.play(name, !!loop, volume);
+        this.currentMusicName = name;
         
         return !!this.currentMusic;
     },
@@ -523,6 +511,7 @@ game.Audio = game.Class.extend({
         if (this.currentMusic) {
             var stop = this.stop(this.currentMusic);
             this.currentMusic = null;
+            this.currentMusicName = null;
             return !!stop;
         }
 
@@ -582,7 +571,8 @@ game.Audio = game.Class.extend({
 
         this.soundVolume = value;
 
-        for (var i = this.playingSounds.length - 1; i >= 0; i--) {
+        var i;
+        for (i = this.playingSounds.length - 1; i >= 0; i--) {
             if (this.context) {
                 this.audioObjects[this.playingSounds[i]].gainNode.gain.value = this.soundVolume;
             }
@@ -591,7 +581,7 @@ game.Audio = game.Class.extend({
             }
         }
 
-        for (var i = this.pausedSounds.length - 1; i >= 0; i--) {
+        for (i = this.pausedSounds.length - 1; i >= 0; i--) {
             if (this.context) {
                 this.audioObjects[this.pausedSounds[i]].gainNode.gain.value = this.soundVolume;
             }
@@ -627,14 +617,15 @@ game.Audio = game.Class.extend({
     /**
         Change audio playback rate (Web Audio).
         @method setPlaybackRate
-        @param {Object} audio
+        @param {Number} id
         @param {Number} rate
     **/
-    setPlaybackRate: function(audio, rate) {
+    setPlaybackRate: function(id, rate) {
         if (!game.Audio.enabled) return false;
 
-        if (audio && this.context) {
-            audio.playbackRate.value = rate || 1;
+        if (this.context) {
+            var audio = this.audioObjects[id];
+            if (audio) audio.playbackRate.value = rate || 1;
         }
     },
 
@@ -655,6 +646,36 @@ game.Audio = game.Class.extend({
     **/
     isMusicPlaying: function() {
         return !!this.currentMusic;
+    },
+
+    /**
+        Toggle sounds on/off.
+        @method toggleSound
+        @return {Boolean}
+    **/
+    toggleSound: function() {
+        if (!game.Audio.enabled) return false;
+
+        this.soundMuted = !this.soundMuted;
+        if (this.soundMuted) this.muteSound();
+        else this.unmuteSound();
+
+        return this.soundMuted;
+    },
+
+    /**
+        Toggle music on/off.
+        @method toggleMusic
+        @return {Boolean}
+    **/
+    toggleMusic: function() {
+        if (!game.Audio.enabled) return false;
+
+        this.musicMuted = !this.musicMuted;
+        if (this.musicMuted) this.muteMusic();
+        else this.unmuteMusic();
+
+        return this.musicMuted;
     },
 
     systemPause: function() {
@@ -683,22 +704,38 @@ game.Audio = game.Class.extend({
     @default true
 **/
 game.Audio.enabled = true;
-
 /**
     Enable Web Audio.
     @attribute {Boolean} webAudio
     @default true
 **/
 game.Audio.webAudio = true;
-
 /**
     List of available audio formats.
-    @attribute {Array} formats 
+    @attribute {Array} formats
 **/
 game.Audio.formats = [
     { ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"' },
     { ext: 'ogg', type: 'audio/ogg; codecs="vorbis"' },
     { ext: 'wav', type: 'audio/wav' }
 ];
+/**
+    Stop audio, when changing scene.
+    @attribute {Boolean} stopOnSceneChange
+    @default true
+**/
+game.Audio.stopOnSceneChange = true;
+/**
+    Sound volume.
+    @attribute {Number} soundVolume
+    @default 1
+**/
+game.Audio.soundVolume = 1;
+/**
+    Music volume.
+    @attribute {Number} musicVolume
+    @default 1
+**/
+game.Audio.musicVolume = 1;
 
 });

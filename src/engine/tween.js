@@ -1,3 +1,5 @@
+// Based on https://github.com/sole/tween.js/
+
 /**
     @module tween
     @namespace game
@@ -9,7 +11,6 @@ game.module(
 'use strict';
 
 /**
-    Based on https://github.com/sole/tween.js/
     @class TweenEngine
     @extends game.Class
 **/
@@ -53,26 +54,15 @@ game.TweenEngine = game.Class.extend({
         return false;
     },
 
-    /**
-        @method add
-        @param {game.Tween} tween
-    **/
     add: function(tween) {
         this.tweens.push(tween);
     },
 
-    /**
-        @method remove
-        @param {game.Tween} tween
-    **/
     remove: function(tween) {
         var i = this.tweens.indexOf(tween);
         if (i !== -1) this.tweens[i].shouldRemove = true;
     },
 
-    /**
-        @method update
-    **/
     update: function() {
         if (this.tweens.length === 0) return false;
         for (var i = this.tweens.length - 1; i >= 0; i--) {
@@ -124,7 +114,6 @@ game.Tween = game.Class.extend({
     shouldRemove: false,
 
     init: function(object) {
-        if (!object) throw('No object defined for tween');
         if (typeof object !== 'object') throw('Tween parameter must be object');
         this.object = object;
 
@@ -152,6 +141,7 @@ game.Tween = game.Class.extend({
     **/
     start: function() {
         game.tweenEngine.add(this);
+        this.currentTime = 0;
         this.playing = true;
         this.onStartCallbackFired = false;
         this.startTime = this.delayTime;
@@ -187,10 +177,16 @@ game.Tween = game.Class.extend({
         return this;
     },
 
+    /**
+        @method pause
+    **/
     pause: function() {
         this.paused = true;
     },
 
+    /**
+        @method resume
+    **/
     resume: function() {
         this.paused = false;
     },

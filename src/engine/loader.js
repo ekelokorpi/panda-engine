@@ -72,7 +72,7 @@ game.Loader = game.Class.extend({
         }
 
         if (this.assetQueue.length > 0) {
-            this.loader = new game.AssetLoader(this.assetQueue, true);
+            this.loader = new game.AssetLoader(this.assetQueue, game.Loader.crossorigin);
             this.loader.onProgress = this.progress.bind(this);
             this.loader.onComplete = this.loadAudio.bind(this);
             this.loader.onError = this.error.bind(this);
@@ -86,29 +86,29 @@ game.Loader = game.Class.extend({
         @method initStage
     **/
     initStage: function() {
-        if (game.Loader.logo) {
-            this.logo = new game.Sprite(game.Texture.fromImage(game.Loader.logo));
-            this.logo.anchor.set(0.5, 0.5);
-            this.logo.center();
-            this.stage.addChild(this.logo);
-        }
-
         var barWidth = game.Loader.barWidth * game.scale;
         var barHeight = game.Loader.barHeight * game.scale;
         var barMargin = game.Loader.barMargin * game.scale;
 
+        if (game.Loader.logo) {
+            this.logo = new game.Sprite(game.Texture.fromImage(game.Loader.logo));
+            this.logo.anchor.set(0.5, 1.0);
+            this.logo.position.x = game.system.width / 2;
+            this.logo.position.y = game.system.height / 2;
+            this.logo.position.y -= barHeight / 2 + barMargin;
+            this.stage.addChild(this.logo);
+        }
+
         this.barBg = new game.Graphics();
-        this.barBg.beginFill(game.Loader.barBg);
+        this.barBg.beginFill(game.Loader.barBgColor);
         this.barBg.drawRect(0, 0, barWidth, barHeight);
-        this.barBg.position.set(game.system.width / 2 - (barWidth / 2), game.system.height / 2 - (barHeight / 2));
-        if (this.logo) this.barBg.position.y += this.logo.height / 2 + barHeight + barMargin;
+        this.barBg.position.set(Math.round(game.system.width / 2 - (barWidth / 2)), Math.round(game.system.height / 2 - (barHeight / 2)));
         this.stage.addChild(this.barBg);
 
         this.barFg = new game.Graphics();
         this.barFg.beginFill(game.Loader.barColor);
-        this.barFg.drawRect(0, 0, barWidth + 2, barHeight + 2);
-        this.barFg.position.set(game.system.width / 2 - (barWidth / 2) - 1, game.system.height / 2 - (barHeight / 2) - 1);
-        if (this.logo) this.barFg.position.y += this.logo.height / 2 + barHeight + barMargin;
+        this.barFg.drawRect(0, 0, barWidth, barHeight);
+        this.barFg.position.set(Math.round(game.system.width / 2 - (barWidth / 2)), Math.round(game.system.height / 2 - (barHeight / 2)));
         this.barFg.scale.x = this.percent / 100;
         this.stage.addChild(this.barFg);
     },
@@ -131,7 +131,7 @@ game.Loader = game.Class.extend({
     start: function() {
         this.started = true;
 
-        if (!this.dynamic) {    
+        if (!this.dynamic) {
             for (var i = this.stage.children.length - 1; i >= 0; i--) {
                 this.stage.removeChild(this.stage.children[i]);
             }
@@ -153,13 +153,8 @@ game.Loader = game.Class.extend({
         else if (this.dynamic) this.ready();
     },
 
-    /**
-        Error loading file.
-        @method error
-        @param {String} error
-    **/
-    error: function(error) {
-        if (error) throw error;
+    error: function(path) {
+        throw 'loading file ' + path;
     },
 
     /**
@@ -189,7 +184,7 @@ game.Loader = game.Class.extend({
     **/
     loadAudio: function() {
         for (var i = this.audioQueue.length - 1; i >= 0; i--) {
-            game.audio.load(this.audioQueue[i], this.progress.bind(this));
+            game.audio.load(this.audioQueue[i], this.progress.bind(this), this.error.bind(this, this.audioQueue[i]));
         }
     },
 
@@ -211,10 +206,6 @@ game.Loader = game.Class.extend({
         else this.setScene();
     },
 
-    /**
-        Set scene.
-        @method setScene
-    **/
     setScene: function() {
         game.system.timer.last = 0;
         game.Timer.time = Number.MIN_VALUE;
@@ -226,6 +217,8 @@ game.Loader = game.Class.extend({
         }
         else game.system.setScene(this.callback);
     },
+
+    exit: function() {},
 
     run: function() {
         if (this.loopId) {
@@ -250,7 +243,7 @@ game.Loader = game.Class.extend({
         }
         else if (this.loaded === this.assetQueue.length + this.audioQueue.length) {
             var loadTime = Date.now() - this.startTime;
-            var waitTime = Math.max(0, game.Loader.timeout - loadTime);
+            var waitTime = Math.max(0, game.Loader.time - loadTime);
             this.timeoutTimer = new game.Timer(waitTime);
         }
     },
@@ -272,22 +265,22 @@ game.Loader = game.Class.extend({
 game.Loader.bgColor = 0x000000;
 /**
     Minimum time to show loader, in milliseconds.
-    @attribute {Number} timeout
+    @attribute {Number} time
     @default 200
 **/
-game.Loader.timeout = 200;
+game.Loader.time = 200;
 /**
     Loading bar background color.
     @attribute {Number} barBg
     @default 0x231f20
 **/
-game.Loader.barBg = 0x231f20;
+game.Loader.barBgColor = 0x515e73;
 /**
     Loading bar color.
     @attribute {Number} barColor
     @default 0xe6e7e8
 **/
-game.Loader.barColor = 0xe6e7e8;
+game.Loader.barColor = 0xb9bec7;
 /**
     Width of the loading bar.
     @attribute {Number} barWidth
@@ -307,10 +300,16 @@ game.Loader.barHeight = 20;
 **/
 game.Loader.barMargin = 10;
 /**
-    Loader logo dataURI.
+    Loader logo url.
     @attribute {String} logo
     @default null
 **/
 game.Loader.logo = null;
+/**
+    Threat requests as crossorigin.
+    @attribute {Boolean} crossorigin
+    @default true
+**/
+game.Loader.crossorigin = true;
 
 });

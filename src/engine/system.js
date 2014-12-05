@@ -74,25 +74,31 @@ game.System = game.Class.extend({
         @property {Number} gameLoopId
     **/
     gameLoopId: 0,
+    /**
+        Is WebGL enabled.
+        @property {Boolean} webGL
+    **/
+    webGL: false,
+    /**
+        Original width.
+        @property {Number} originalWidth
+    **/
+    originalWidth: null,
+    /**
+        Original height.
+        @property {Number} originalHeight
+    **/
+    originalHeight: null,
     newSceneClass: null,
     running: false,
 
-    init: function(width, height, canvasId) {
+    init: function(width, height) {
         width = width || game.System.width;
         height = height || game.System.height;
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
-
-        if (game.System.resizeToFill && game.device.mobile) {
-            if (window.innerWidth / window.innerHeight !== width / height) {
-                if (width > height) {
-                    width = height * (window.innerWidth / window.innerHeight);
-                }
-                else {
-                    height = width * (window.innerHeight / window.innerWidth);
-                }
-            }
-        }
+        this.originalWidth = width;
+        this.originalHeight = height;
 
         for (var i = 2; i <= game.System.hires; i *= 2) {
             if (window.innerWidth >= width * i && window.innerHeight >= height * i) {
@@ -116,7 +122,7 @@ game.System = game.Class.extend({
 
         this.width = width;
         this.height = height;
-        this.canvasId = canvasId || game.System.canvasId || this.canvasId;
+        this.canvasId = game.System.canvasId || this.canvasId;
         this.timer = new game.Timer();
 
         if (!document.getElementById(this.canvasId)) {
@@ -125,13 +131,7 @@ game.System = game.Class.extend({
             document.body.appendChild(canvas);
         }
 
-        game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
-
-        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent, game.System.antialias);
-        else this.renderer = new game.CanvasRenderer(width, height, document.getElementById(this.canvasId), game.System.transparent);
-
-        this.canvas = this.renderer.view;
-        this.stage = new game.Stage();
+        this.initRenderer(width, height);
 
         game.normalizeVendorAttribute(this.canvas, 'requestFullscreen');
         game.normalizeVendorAttribute(this.canvas, 'requestFullScreen');
@@ -177,9 +177,6 @@ game.System = game.Class.extend({
                 }
             }, false);
 
-            // Fixes iOS8 WebGL background color bug
-            if (game.device.iOS8 && game.System.webGL) game.System.bgColorMobile = '#000000';
-
             if (game.System.bgColor && !game.System.bgColorMobile) game.System.bgColorMobile = game.System.bgColor;
             if (game.System.bgColorMobile && !game.System.bgColorRotate) game.System.bgColorRotate = game.System.bgColorMobile;
 
@@ -188,14 +185,58 @@ game.System = game.Class.extend({
 
             if (!game.device.mobile) {
                 if (game.System.bgColor) document.body.style.backgroundColor = game.System.bgColor;
-                if (game.System.bgImage) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImage + ')';
+                if (game.System.bgImage) document.body.style.backgroundImage = 'url(' + game.getMediaPath(game.System.bgImage) + ')';
             }
             if (game.System.bgPosition) document.body.style.backgroundPosition = game.System.bgPosition;
 
             this.initResize();
         }
         else {
+            this.resizeToFill();
             this.canvas.style.cssText = 'idtkscale:' + game.System.idtkScale + ';';
+        }
+    },
+
+    initRenderer: function(width, height) {
+        game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
+
+        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, {
+            view: document.getElementById(this.canvasId),
+            transparent: game.System.transparent,
+            antialias: game.System.antialias
+        });
+        else this.renderer = new game.CanvasRenderer(width, height, {
+            view: document.getElementById(this.canvasId),
+            transparent: game.System.transparent
+        });
+
+        this.webGL = !!this.renderer.gl;
+        this.canvas = this.renderer.view;
+        this.stage = new game.Stage();
+    },
+
+    resizeToFill: function() {
+        if (!game.System.resizeToFill || !game.device.mobile) return;
+        if (this.rotateScreenVisible) return;
+
+        if (this._resizeToFill) return;
+        this._resizeToFill = true;
+
+        var gameOrientation = this.width > this.height ? 'landscape' : 'portrait';
+        var gameRatio = this.width / this.height;
+        var screenOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+        var screenRatio = window.innerWidth / window.innerHeight;
+
+        if (screenRatio !== gameRatio && gameOrientation === screenOrientation) {
+            if (gameRatio < screenRatio) {
+                // Letterbox left/right
+                this.width = Math.round(this.height * (window.innerWidth / window.innerHeight));
+            }
+            else {
+                // Letterbox top/bottom
+                this.height = Math.round(this.width * (window.innerHeight / window.innerWidth));
+            }
+            this.resize(this.width, this.height);
         }
     },
 
@@ -241,16 +282,22 @@ game.System = game.Class.extend({
         Change current scene.
         @method setScene
         @param {String} sceneClass
+        @param {Boolean} removeAssets
     **/
-    setScene: function(sceneClass) {
+    setScene: function(sceneClass, removeAssets) {
         this.currentSceneName = sceneClass;
         sceneClass = game['Scene' + sceneClass];
-        if (this.running) this.newSceneClass = sceneClass;
-        else this.setSceneNow(sceneClass);
+        if (this.running) {
+            this.newSceneClass = sceneClass;
+            this.removeAssets = removeAssets;
+        }
+        else this.setSceneNow(sceneClass, removeAssets);
     },
 
-    setSceneNow: function(sceneClass) {
+    setSceneNow: function(sceneClass, removeAssets) {
+        if (game.scene) game.scene.exit();
         if (game.tweenEngine) game.tweenEngine.tweens.length = 0;
+        if (removeAssets) game.removeAssets();
         game.scene = new (sceneClass)();
         if (game.Debug && game.Debug.enabled && !navigator.isCocoonJS && !this.debug) this.debug = new game.Debug();
         this.newSceneClass = null;
@@ -274,10 +321,12 @@ game.System = game.Class.extend({
         game.Timer.update();
         this.delta = this.timer.delta() / 1000;
 
+        if (this.debug) this.debug.reset();
+
         game.scene.run();
 
         if (this.debug) this.debug.update();
-        if (this.newSceneClass) this.setSceneNow(this.newSceneClass);
+        if (this.newSceneClass) this.setSceneNow(this.newSceneClass, this.removeAssets);
     },
 
     resize: function(width, height) {
@@ -330,8 +379,12 @@ game.System = game.Class.extend({
                         div.appendChild(img);
                         me.resizeRotateImage();
                     };
-                    if (game.System.rotateImg.indexOf('data:') === 0) img.src = game.System.rotateImg;
-                    else img.src = game.config.mediaFolder + game.System.rotateImg;
+                    if (game.System.rotateImg.indexOf('data:') === 0) {
+                        img.src = game.System.rotateImg;
+                    }
+                    else {
+                        img.src = game.getMediaPath(game.System.rotateImg);
+                    }
                     img.style.position = 'relative';
                     img.style.maxWidth = '100%';
                 }
@@ -393,8 +446,8 @@ game.System = game.Class.extend({
         if (this.rotateScreenVisible && game.System.bgColorRotate) document.body.style.backgroundColor = game.System.bgColorRotate;
         if (!this.rotateScreenVisible && game.System.bgColorMobile) document.body.style.backgroundColor = game.System.bgColorMobile;
 
-        if (this.rotateScreenVisible && game.System.bgImageRotate) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImageRotate + ')';
-        if (!this.rotateScreenVisible && game.System.bgImageMobile) document.body.style.backgroundImage = 'url(' + game.config.mediaFolder + game.System.bgImageMobile + ')';
+        if (this.rotateScreenVisible && game.System.bgImageRotate) document.body.style.backgroundImage = 'url(' + game.getMediaPath(game.System.bgImageRotate) + ')';
+        if (!this.rotateScreenVisible && game.System.bgImageMobile) document.body.style.backgroundImage = 'url(' + game.getMediaPath(game.System.bgImageMobile) + ')';
 
         if (this.rotateScreenVisible && game.system && typeof game.system.pause === 'function') game.system.pause();
         if (!this.rotateScreenVisible && game.system && typeof game.system.resume === 'function') game.system.resume();
@@ -421,6 +474,8 @@ game.System = game.Class.extend({
 
         if (game.device.mobile) {
             this.ratio = this.orientation === 'landscape' ? this.width / this.height : this.height / this.width;
+
+            this.resizeToFill();
 
             // Mobile resize
             var width = window.innerWidth;
@@ -679,11 +734,5 @@ game.System.canvasId = null;
     @default linear
 **/
 game.System.scaleMode = 'linear';
-/**
-    Stop all audio, when scene is changed.
-    @attribute {Boolean} stopAudioOnSceneChange
-    @default true
-**/
-game.System.stopAudioOnSceneChange = true;
 
 });

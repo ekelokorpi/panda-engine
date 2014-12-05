@@ -12,6 +12,7 @@ game.module(
 'use strict';
 
 game.PIXI.dontSayHello = true;
+game.PIXI.RETINA_PREFIX = false;
 
 // Used to extend PIXI classes
 game.PIXI.extend = function(prop) {
@@ -114,8 +115,8 @@ game.Sprite = game.PIXI.Sprite.extend({
 
         game.merge(this, settings);
 
-        if (typeof x === 'number') this.position.x = x;
-        if (typeof y === 'number') this.position.y = y;
+        if (typeof x === 'number') this.position.x = x * game.scale;
+        if (typeof y === 'number') this.position.y = y * game.scale;
 
         // Auto bind touch events for mobile
         if (game.device.mobile && !this.tap && this.click) this.tap = this.click;
@@ -190,38 +191,65 @@ game.Sprite = game.PIXI.Sprite.extend({
     }
 });
 
+game.Sprite.fromImage = game.PIXI.Sprite.fromImage;
+
+/**
+    @class SpriteSheet
+    @constructor
+    @param {String} id
+    @param {Number} width
+    @param {Number} height
+**/
 game.SpriteSheet = game.Class.extend({
+    textures: [],
+
     init: function(id, width, height) {
         this.width = width;
         this.height = height;
-        this.texture = game.TextureCache[game.paths[id]];
-        this.sx = Math.floor(this.texture.width / this.width);
-        this.sy = Math.floor(this.texture.height / this.height);
+        var baseTexture = game.TextureCache[game.paths[id]];
+        this.sx = Math.floor(baseTexture.width / this.width);
+        this.sy = Math.floor(baseTexture.height / this.height);
         this.frames = this.sx * this.sy;
-    },
 
-    frame: function(index) {
-        index = index.limit(0, this.frames - 1);
-
-        var i = 0;
-        for (var y = 0; y < this.sy; y++) {
-            for (var x = 0; x < this.sx; x++) {
-                if (i === index) {
-                    var sprite = new game.Sprite(this.texture);
-                    sprite.crop(x * this.width, y * this.height, this.width, this.height);
-                    return sprite;
-                }
-                i++;
-            }
+        for (var i = 0; i < this.frames; i++) {
+            var x = (i % this.sx) * this.width;
+            var y = Math.floor(i / this.sx) * this.height;
+            var texture = new game.Texture(baseTexture, new game.HitRectangle(x, y, this.width, this.height));
+            this.textures.push(texture);
         }
     },
 
-    anim: function(count, index) {
-        index = index || 0;
-        count = count || this.frames;
+    /**
+        Create sprite from specific frame.
+        @method frame
+        @param {Number} index Frame index
+        @return {game.Sprite}
+    **/
+    frame: function(index) {
+        index = index.limit(0, this.frames - 1);
+        return new game.Sprite(this.textures[index]);
+    },
+
+    /**
+        Create animation from spritesheet.
+        @method anim
+        @param {Number|Array} frames List or number of frames
+        @param {Number} startIndex
+        @return {game.Animation}
+    **/
+    anim: function(frames, startIndex) {
+        startIndex = startIndex || 0;
+        frames = frames || this.frames;
         var textures = [];
-        for (var i = 0; i < count; i++) {
-            textures.push(this.frame(index + i).texture);
+        if (frames.length > 0) {
+            for (var i = 0; i < frames.length; i++) {
+                textures.push(this.textures[startIndex + frames[i]]);
+            }
+        }
+        else {
+            for (var i = 0; i < frames; i++) {
+                textures.push(this.textures[startIndex + i]);
+            }
         }
         return new game.Animation(textures);
     }
@@ -231,6 +259,10 @@ game.Graphics = game.PIXI.Graphics.extend({
     addTo: function(container) {
         container.addChild(this);
         return this;
+    },
+
+    remove: function() {
+        if (this.parent) this.parent.removeChild(this);
     }
 });
 
@@ -238,6 +270,10 @@ game.BitmapText = game.PIXI.BitmapText.extend({
     addTo: function(container) {
         container.addChild(this);
         return this;
+    },
+
+    remove: function() {
+        if (this.parent) this.parent.removeChild(this);
     }
 });
 
@@ -425,5 +461,87 @@ game.Animation.fromFrames = function(name, reverse) {
 
     return new game.Animation(textures);
 };
+
+/**
+    @class Video
+    @constructor
+    @param {String} source
+**/
+game.Video = game.Class.extend({
+    /**
+        @property {Boolean} loop
+        @default false
+    **/
+    loop: false,
+    /**
+        Video element.
+        @property {Video} videoElem
+    **/
+    videoElem: null,
+    /**
+        Video sprite.
+        @property {game.Sprite} sprite
+    **/
+    sprite: null,
+
+    init: function() {
+        this.videoElem = document.createElement('video');
+        this.videoElem.addEventListener('ended', this._complete.bind(this));
+
+        var urls = Array.prototype.slice.call(arguments);
+        var source;
+        for (var i = 0; i < urls.length; i++) {
+            source = document.createElement('source');
+            source.src = game.getMediaPath(urls[i]);
+            this.videoElem.appendChild(source);
+        }
+
+        var videoTexture = game.PIXI.VideoTexture.textureFromVideo(this.videoElem);
+        videoTexture.baseTexture.addEventListener('loaded', this._loaded.bind(this));
+        
+        this.sprite = new game.Sprite(videoTexture);
+    },
+
+    _loaded: function() {
+        if (typeof this._loadCallback === 'function') this._loadCallback();
+    },
+
+    _complete: function() {
+        if (typeof this._completeCallback === 'function') this._completeCallback();
+    },
+
+    /**
+        @method onLoaded
+        @param {Function} callback
+    **/
+    onLoaded: function(callback) {
+        this._loadCallback = callback;
+    },
+
+    /**
+        @method onComplete
+        @param {Function} callback
+    **/
+    onComplete: function(callback) {
+        this._completeCallback = callback;
+    },
+
+    /**
+        @method play
+    **/
+    play: function() {
+        this.videoElem.loop = !!this.loop;
+        this.videoElem.play();
+    },
+
+    /**
+        @method stop
+        @param {Boolean} remove
+    **/
+    stop: function(remove) {
+        this.videoElem.pause();
+        if (remove) this.sprite.remove();
+    }
+});
 
 });

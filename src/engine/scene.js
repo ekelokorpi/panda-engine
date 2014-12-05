@@ -53,6 +53,13 @@ game.Scene = game.Class.extend({
     swipeTime: 500,
     
     staticInit: function() {
+        if (game.audio && game.Audio.stopOnSceneChange && game.scene) {
+            game.audio.stopMusic();
+            game.audio.stopSound(false, true);
+            game.audio.pausedSounds.length = 0;
+            game.audio.playingSounds.length = 0;
+        }
+        
         game.scene = this;
         
         for (var i = game.system.stage.children.length - 1; i >= 0; i--) {
@@ -69,13 +76,6 @@ game.Scene = game.Class.extend({
 
         this.stage = new game.Container();
         game.system.stage.addChild(this.stage);
-
-        if (game.audio && game.System.stopAudioOnSceneChange) {
-            game.audio.stopMusic();
-            game.audio.stopSound();
-            game.audio.pausedSounds.length = 0;
-            game.audio.playingSounds.length = 0;
-        }
 
         if (game.debugDraw) game.debugDraw.reset();
     },
@@ -145,7 +145,7 @@ game.Scene = game.Class.extend({
     /**
         Add timer to game scene.
         @method addTimer
-        @param {Number} time Time in seconds
+        @param {Number} time Time in milliseconds
         @param {Function} callback Callback function to run, when timer ends.
         @param {Boolean} repeat
         @return {game.Timer}
@@ -255,7 +255,7 @@ game.Scene = game.Class.extend({
     _swipe: function(event, dir) {
         var time = Date.now() - event.startTime;
         event.startTime = null;
-        if (time <= this.swipeTime) this.swipe(dir);
+        if (time <= this.swipeTime || this.swipeTime === 0) this.swipe(dir);
     },
 
     /**
@@ -282,6 +282,13 @@ game.Scene = game.Class.extend({
 
     resume: function() {
         if (game.audio) game.audio.systemResume();
+    },
+
+    /**
+        Called, when scene is changed.
+        @method exit
+    **/
+    exit: function() {
     }
 });
 

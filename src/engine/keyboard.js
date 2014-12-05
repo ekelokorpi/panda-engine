@@ -13,99 +13,9 @@ game.module(
     @extends game.Class
 **/
 game.Keyboard = game.Class.extend({
-    /**
-        List of available keys.
-        @property {Array} keys
-    **/
-    keys: [],
     keysDown: [],
 
     init: function() {
-        this.keys[8] = 'BACKSPACE';
-        this.keys[9] = 'TAB';
-        this.keys[13] = 'ENTER';
-        this.keys[16] = 'SHIFT';
-        this.keys[17] = 'CTRL';
-        this.keys[18] = 'ALT';
-        this.keys[19] = 'PAUSE';
-        this.keys[20] = 'CAPS_LOCK';
-        this.keys[27] = 'ESC';
-        this.keys[32] = 'SPACE';
-        this.keys[33] = 'PAGE_UP';
-        this.keys[34] = 'PAGE_DOWN';
-        this.keys[35] = 'END';
-        this.keys[36] = 'HOME';
-        this.keys[37] = 'LEFT';
-        this.keys[38] = 'UP';
-        this.keys[39] = 'RIGHT';
-        this.keys[40] = 'DOWN';
-        this.keys[44] = 'PRINT_SCREEN';
-        this.keys[45] = 'INSERT';
-        this.keys[46] = 'DELETE';
-        this.keys[48] = '0';
-        this.keys[49] = '1';
-        this.keys[50] = '2';
-        this.keys[51] = '3';
-        this.keys[52] = '4';
-        this.keys[53] = '5';
-        this.keys[54] = '6';
-        this.keys[55] = '7';
-        this.keys[56] = '8';
-        this.keys[57] = '9';
-        this.keys[65] = 'A';
-        this.keys[66] = 'B';
-        this.keys[67] = 'C';
-        this.keys[68] = 'D';
-        this.keys[69] = 'E';
-        this.keys[70] = 'F';
-        this.keys[71] = 'G';
-        this.keys[72] = 'H';
-        this.keys[73] = 'I';
-        this.keys[74] = 'J';
-        this.keys[75] = 'K';
-        this.keys[76] = 'L';
-        this.keys[77] = 'M';
-        this.keys[78] = 'N';
-        this.keys[79] = 'O';
-        this.keys[80] = 'P';
-        this.keys[81] = 'Q';
-        this.keys[82] = 'R';
-        this.keys[83] = 'S';
-        this.keys[84] = 'T';
-        this.keys[85] = 'U';
-        this.keys[86] = 'V';
-        this.keys[87] = 'W';
-        this.keys[88] = 'X';
-        this.keys[89] = 'Y';
-        this.keys[90] = 'Z';
-        this.keys[96] = 'NUM_ZERO';
-        this.keys[97] = 'NUM_ONE';
-        this.keys[98] = 'NUM_TWO';
-        this.keys[99] = 'NUM_THREE';
-        this.keys[100] = 'NUM_FOUR';
-        this.keys[101] = 'NUM_FIVE';
-        this.keys[102] = 'NUM_SIX';
-        this.keys[103] = 'NUM_SEVEN';
-        this.keys[104] = 'NUM_EIGHT';
-        this.keys[105] = 'NUM_NINE';
-        this.keys[106] = 'NUM_MULTIPLY';
-        this.keys[107] = 'NUM_PLUS';
-        this.keys[109] = 'NUM_MINUS';
-        this.keys[110] = 'NUM_PERIOD';
-        this.keys[111] = 'NUM_DIVISION';
-        this.keys[112] = 'F1';
-        this.keys[113] = 'F2';
-        this.keys[114] = 'F3';
-        this.keys[115] = 'F4';
-        this.keys[116] = 'F5';
-        this.keys[117] = 'F6';
-        this.keys[118] = 'F7';
-        this.keys[119] = 'F8';
-        this.keys[120] = 'F9';
-        this.keys[121] = 'F10';
-        this.keys[122] = 'F11';
-        this.keys[123] = 'F12';
-
         window.addEventListener('keydown', this.keydown.bind(this));
         window.addEventListener('keyup', this.keyup.bind(this));
         window.addEventListener('blur', this.resetKeys.bind(this));
@@ -119,18 +29,21 @@ game.Keyboard = game.Class.extend({
 
     keydown: function(event) {
         if (!game.scene) return;
-        if (!this.keys[event.keyCode]) return; // unkown key
-        if (this.keysDown[this.keys[event.keyCode]]) return; // key already down
+        if (!game.Keyboard.keys[event.keyCode]) {
+            // Unknown key
+            game.Keyboard.keys[event.keyCode] = event.keyCode;
+        }
+        if (this.keysDown[game.Keyboard.keys[event.keyCode]]) return; // Key already down
 
-        this.keysDown[this.keys[event.keyCode]] = true;
-        var prevent = game.scene.keydown(this.keys[event.keyCode], this.down('SHIFT'), this.down('CTRL'), this.down('ALT'));
+        this.keysDown[game.Keyboard.keys[event.keyCode]] = true;
+        var prevent = game.scene.keydown(game.Keyboard.keys[event.keyCode], this.down('SHIFT'), this.down('CTRL'), this.down('ALT'));
         if (prevent) event.preventDefault();
     },
 
     keyup: function(event) {
         if (!game.scene) return;
-        this.keysDown[this.keys[event.keyCode]] = false;
-        game.scene.keyup(this.keys[event.keyCode]);
+        this.keysDown[game.Keyboard.keys[event.keyCode]] = false;
+        game.scene.keyup(game.Keyboard.keys[event.keyCode]);
     },
 
     /**
@@ -142,6 +55,98 @@ game.Keyboard = game.Class.extend({
         return !!this.keysDown[key];
     }
 });
+
+/**
+    List of available keys.
+    @attribute {Array} keys
+**/
+game.Keyboard.keys = [];
+game.Keyboard.keys[8] = 'BACKSPACE';
+game.Keyboard.keys[9] = 'TAB';
+game.Keyboard.keys[13] = 'ENTER';
+game.Keyboard.keys[16] = 'SHIFT';
+game.Keyboard.keys[17] = 'CTRL';
+game.Keyboard.keys[18] = 'ALT';
+game.Keyboard.keys[19] = 'PAUSE';
+game.Keyboard.keys[20] = 'CAPS_LOCK';
+game.Keyboard.keys[27] = 'ESC';
+game.Keyboard.keys[32] = 'SPACE';
+game.Keyboard.keys[33] = 'PAGE_UP';
+game.Keyboard.keys[34] = 'PAGE_DOWN';
+game.Keyboard.keys[35] = 'END';
+game.Keyboard.keys[36] = 'HOME';
+game.Keyboard.keys[37] = 'LEFT';
+game.Keyboard.keys[38] = 'UP';
+game.Keyboard.keys[39] = 'RIGHT';
+game.Keyboard.keys[40] = 'DOWN';
+game.Keyboard.keys[44] = 'PRINT_SCREEN';
+game.Keyboard.keys[45] = 'INSERT';
+game.Keyboard.keys[46] = 'DELETE';
+game.Keyboard.keys[48] = '0';
+game.Keyboard.keys[49] = '1';
+game.Keyboard.keys[50] = '2';
+game.Keyboard.keys[51] = '3';
+game.Keyboard.keys[52] = '4';
+game.Keyboard.keys[53] = '5';
+game.Keyboard.keys[54] = '6';
+game.Keyboard.keys[55] = '7';
+game.Keyboard.keys[56] = '8';
+game.Keyboard.keys[57] = '9';
+game.Keyboard.keys[65] = 'A';
+game.Keyboard.keys[66] = 'B';
+game.Keyboard.keys[67] = 'C';
+game.Keyboard.keys[68] = 'D';
+game.Keyboard.keys[69] = 'E';
+game.Keyboard.keys[70] = 'F';
+game.Keyboard.keys[71] = 'G';
+game.Keyboard.keys[72] = 'H';
+game.Keyboard.keys[73] = 'I';
+game.Keyboard.keys[74] = 'J';
+game.Keyboard.keys[75] = 'K';
+game.Keyboard.keys[76] = 'L';
+game.Keyboard.keys[77] = 'M';
+game.Keyboard.keys[78] = 'N';
+game.Keyboard.keys[79] = 'O';
+game.Keyboard.keys[80] = 'P';
+game.Keyboard.keys[81] = 'Q';
+game.Keyboard.keys[82] = 'R';
+game.Keyboard.keys[83] = 'S';
+game.Keyboard.keys[84] = 'T';
+game.Keyboard.keys[85] = 'U';
+game.Keyboard.keys[86] = 'V';
+game.Keyboard.keys[87] = 'W';
+game.Keyboard.keys[88] = 'X';
+game.Keyboard.keys[89] = 'Y';
+game.Keyboard.keys[90] = 'Z';
+game.Keyboard.keys[96] = 'NUM_ZERO';
+game.Keyboard.keys[97] = 'NUM_ONE';
+game.Keyboard.keys[98] = 'NUM_TWO';
+game.Keyboard.keys[99] = 'NUM_THREE';
+game.Keyboard.keys[100] = 'NUM_FOUR';
+game.Keyboard.keys[101] = 'NUM_FIVE';
+game.Keyboard.keys[102] = 'NUM_SIX';
+game.Keyboard.keys[103] = 'NUM_SEVEN';
+game.Keyboard.keys[104] = 'NUM_EIGHT';
+game.Keyboard.keys[105] = 'NUM_NINE';
+game.Keyboard.keys[106] = 'NUM_MULTIPLY';
+game.Keyboard.keys[107] = 'NUM_PLUS';
+game.Keyboard.keys[109] = 'NUM_MINUS';
+game.Keyboard.keys[110] = 'NUM_PERIOD';
+game.Keyboard.keys[111] = 'NUM_DIVISION';
+game.Keyboard.keys[112] = 'F1';
+game.Keyboard.keys[113] = 'F2';
+game.Keyboard.keys[114] = 'F3';
+game.Keyboard.keys[115] = 'F4';
+game.Keyboard.keys[116] = 'F5';
+game.Keyboard.keys[117] = 'F6';
+game.Keyboard.keys[118] = 'F7';
+game.Keyboard.keys[119] = 'F8';
+game.Keyboard.keys[120] = 'F9';
+game.Keyboard.keys[121] = 'F10';
+game.Keyboard.keys[122] = 'F11';
+game.Keyboard.keys[123] = 'F12';
+game.Keyboard.keys[187] = 'PLUS';
+game.Keyboard.keys[189] = 'MINUS';
 
 game.keyboard = new game.Keyboard();
 
