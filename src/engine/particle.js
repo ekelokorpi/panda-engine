@@ -443,7 +443,7 @@ game.Emitter = game.Class.extend({
         this.durationTimer += game.system.delta * 1000;
         if (this.duration > 0) {
             this.active = this.durationTimer < this.duration;
-            if (!this.active && typeof this.callback === 'function') {
+            if (!this.active && this.particles.length === 0 && typeof this.callback === 'function') {
                 this.callback();
                 this.callback = null;
             }
