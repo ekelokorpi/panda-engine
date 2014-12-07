@@ -46,7 +46,9 @@ game.Debug = game.Class.extend({
 
         if (game.Timer.last >= this.last + game.Debug.frequency) {
             var fps = (Math.round((this.frames * 1000) / (game.Timer.last - this.last)));
-            this.debugDiv.innerHTML = 'FPS: ' + fps + ' OBJECTS: ' + this.objects;
+            var text = 'FPS: ' + fps + ' OBJECTS: ' + this.objects;
+            if (game.tweenEngine) text += ' TWEENS: ' + game.tweenEngine.tweens.length;
+            this.debugDiv.innerHTML = text;
             this.last = game.Timer.last;
             this.frames = 0;
         }
