@@ -241,9 +241,7 @@ game.Audio = game.Class.extend({
         }
         // HTML5 Audio
         else {
-            // Is this fixed on CocoonJS ?
-            if (navigator.isCocoonJS) audio.volume = 0;
-            else audio.pause();
+            audio.pause();
             audio.playing = false;
         }
 
