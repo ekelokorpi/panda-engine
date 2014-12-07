@@ -159,7 +159,7 @@ var game = {
         return to;
     },
 
-    ksort: function(obj) {
+    ksort: function(obj, compare) {
         if (!obj || typeof obj !== 'object') return false;
 
         var keys = [], result = {}, i;
@@ -167,7 +167,7 @@ var game = {
             keys.push(i);
         }
         
-        keys.sort();
+        keys.sort(compare);
         for (i = 0; i < keys.length; i++) {
             result[keys[i]] = obj[keys[i]];
         }
