@@ -184,7 +184,7 @@ game.Loader = game.Class.extend({
     **/
     loadAudio: function() {
         for (var i = this.audioQueue.length - 1; i >= 0; i--) {
-            game.audio.load(this.audioQueue[i], this.progress.bind(this), this.error.bind(this, this.audioQueue[i]));
+            game.audio._load(this.audioQueue[i], this.progress.bind(this), this.error.bind(this, this.audioQueue[i]));
         }
     },
 
