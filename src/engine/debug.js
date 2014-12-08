@@ -264,4 +264,15 @@ game.DebugDraw.bodyAlpha = 0.3;
 **/
 game.DebugDraw.enabled = document.location.href.match(/\?debugdraw/) ? true : false;
 
+game.onStart = function() {
+    if (game.Debug && game.Debug.enabled) {
+        console.log('Panda.js ' + game.version);
+        console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
+        console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer ' + this.system.width + 'x' + this.system.height);
+        if (this.Audio && this.Audio.enabled) console.log((this.audio.context ? 'Web Audio' : 'HTML5 Audio') + ' engine');
+        else console.log('Audio disabled');
+        if (this.config.version) console.log((this.config.name ? this.config.name : 'Game') + ' ' + this.config.version);
+    }
+};
+
 });

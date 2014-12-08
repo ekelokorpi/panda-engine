@@ -350,16 +350,6 @@ var game = {
         this.system = new this.System(width, height);
 
         if (this.Audio) this.audio = new this.Audio();
-
-        if (game.Debug && game.Debug.enabled) {
-            console.log('Panda.js ' + game.version);
-            console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
-            console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer ' + this.system.width + 'x' + this.system.height);
-            if (this.Audio && this.Audio.enabled) console.log((this.audio.context ? 'Web Audio' : 'HTML5 Audio') + ' engine');
-            else console.log('Audio disabled');
-            if (this.config.version) console.log((this.config.name ? this.config.name : 'Game') + ' ' + this.config.version);
-        }
-
         if (this.Pool) this.pool = new this.Pool();
         if (this.DebugDraw && this.DebugDraw.enabled) this.debugDraw = new this.DebugDraw();
         if (this.Storage && this.Storage.id) this.storage = new this.Storage(this.Storage.id);
@@ -373,6 +363,11 @@ var game = {
 
         this.loader = new (this.Loader)(scene);
         if (!this.system.rotateScreenVisible) this.loader.start();
+
+        this.onStart();
+    },
+
+    onStart: function() {
     },
 
     loadScript: function(name, requiredFrom) {
