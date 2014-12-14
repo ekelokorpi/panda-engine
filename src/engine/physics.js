@@ -454,6 +454,14 @@ game.Body = game.Class.extend({
     },
 
     /**
+        Remove body from it's world.
+        @method remove
+    **/
+    remove: function() {
+        if (this.world) this.world.removeBody(this);
+    },
+
+    /**
         @method update
     **/
     update: function() {
