@@ -353,16 +353,16 @@ var game = {
         if (this.loadFinished) this.loadModules();
     },
 
-    start: function(scene, width, height) {
+    start: function() {
         if (this.moduleQueue.length > 0) return;
 
-        this.system = new this.System(width, height);
+        this.system = new this.System();
 
         if (this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.DebugDraw && this.DebugDraw.enabled) this.debugDraw = new this.DebugDraw();
-        if (this.Storage && this.Storage.id) this.storage = new this.Storage(this.Storage.id);
-        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics(this.Analytics.id);
+        if (this.Storage && this.Storage.id) this.storage = new this.Storage();
+        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
         if (this.TweenEngine) this.tweenEngine = new this.TweenEngine();
 
         // Load plugins
@@ -370,7 +370,7 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this.loader = new (this.Loader)(scene);
+        this.loader = new this.Loader();
         if (!this.system.rotateScreenVisible) this.loader.start();
 
         this.onStart();
