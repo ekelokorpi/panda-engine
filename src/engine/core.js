@@ -94,6 +94,7 @@ var game = {
     moduleQueue: [],
     assetQueue: [],
     audioQueue: [],
+    gameMainModule: 'game.main',
 
     /**
         Get JSON data.
@@ -162,6 +163,12 @@ var game = {
         return to;
     },
 
+    /**
+        Sort object by key names.
+        @method ksort
+        @param {Object} obj
+        @param {Function} [compare]
+    **/
     ksort: function(obj, compare) {
         if (!obj || typeof obj !== 'object') return false;
 
@@ -189,8 +196,8 @@ var game = {
     },
 
     normalizeVendorAttribute: function(el, attr) {
-        var prefixedVal = this.getVendorAttribute(el, attr);
         if (el[attr]) return;
+        var prefixedVal = this.getVendorAttribute(el, attr);
         el[attr] = el[attr] || prefixedVal;
     },
 
@@ -200,7 +207,7 @@ var game = {
     **/
     fullscreen: function() {
         if (this.system.canvas.requestFullscreen) this.system.canvas.requestFullscreen();
-        if (this.system.canvas.requestFullScreen) this.system.canvas.requestFullScreen();
+        else if (this.system.canvas.requestFullScreen) this.system.canvas.requestFullScreen();
     },
 
     /**
@@ -303,11 +310,14 @@ var game = {
         if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
 
         this.current = { name: name, requires: [], loaded: false, body: null };
-        if (name === 'game.main') this.current.requires.push('engine.core');
+        if (name === this.gameMainModule) {
+            this.current.requires.push('engine.core');
+            if (this.DOMLoaded) this.loadModules();
+        }
         this.modules[name] = this.current;
         this.moduleQueue.push(this.current);
 
-        if (this.current.name === 'engine.core') {
+        if (name === 'engine.core') {
             if (this.config.ignoreModules) {
                 for (var i = this.coreModules.length - 1; i >= 0; i--) {
                     if (this.config.ignoreModules.indexOf(this.coreModules[i]) !== -1) this.coreModules.splice(i, 1);
@@ -410,22 +420,11 @@ var game = {
 
             if (dependenciesLoaded && module.body) {
                 this.moduleQueue.splice(i, 1);
-                if (this.moduleQueue.length === 0) {
-                    // Last module loaded, parse config
-                    for (var c in this.config) {
-                        var m = c.ucfirst();
-                        if (this[m]) {
-                            for (var o in this.config[c]) {
-                                this[m][o] = this.config[c][o];
-                            }
-                        }
-                    }
-                }
                 module.loaded = true;
-                module.body(this);
+                module.body();
                 moduleLoaded = true;
                 i--;
-                if (this.moduleQueue.length === 0) this.ready();
+                if (this.moduleQueue.length === 0) this.modulesLoaded();
             }
         }
 
@@ -452,8 +451,22 @@ var game = {
         }
     },
 
-    ready: function() {
+    modulesLoaded: function() {
+        // Parse config
+        for (var c in this.config) {
+            var m = c.ucfirst();
+            if (this[m]) {
+                for (var o in this.config[c]) {
+                    this[m][o] = this.config[c][o];
+                }
+            }
+        }
+
         if (this.config.autoStart !== false && !this.system) this.start();
+        else this.ready();
+    },
+
+    ready: function() {
     },
 
     setGameLoop: function(callback, element) {
@@ -480,10 +493,10 @@ var game = {
     },
 
     boot: function() {
-        if (game.config.noCanvasURL) {
+        if (this.config.noCanvasURL) {
             var canvas = document.createElement('canvas');
             var canvasSupported = !!(canvas.getContext && canvas.getContext('2d'));
-            if (!canvasSupported) window.location = game.config.noCanvasURL;
+            if (!canvasSupported) window.location = this.config.noCanvasURL;
         }
 
         Math.distance = function(x, y, x2, y2) {
@@ -558,7 +571,7 @@ var game = {
 
         this.module('engine.core');
 
-        game.normalizeVendorAttribute(window, 'requestAnimationFrame');
+        this.normalizeVendorAttribute(window, 'requestAnimationFrame');
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
@@ -676,7 +689,7 @@ var game = {
         if (!this.DOMLoaded) {
             if (!document.body) return setTimeout(this.DOMReady.bind(this), 13);
             this.DOMLoaded = true;
-            this.loadModules();
+            if (this.modules[this.gameMainModule]) this.loadModules();
         }
     },
 
