@@ -16,7 +16,7 @@ game.module(
     @param {Number} x Gravity x
     @param {Number} y Gravity y
 **/
-game.World = game.Class.extend({
+game.createClass('World', {
     /**
         Gravity of physics world.
         @property {game.Vector} gravity
@@ -151,7 +151,7 @@ game.World = game.Class.extend({
     @class CollisionSolver
     @extends game.Class
 **/
-game.CollisionSolver = game.Class.extend({
+game.createClass('CollisionSolver', {
     /**
         Solve collision a versus b.
         @method solve
@@ -349,7 +349,7 @@ game.CollisionSolver = game.Class.extend({
     @constructor
     @param {Object} [settings]
 **/
-game.Body = game.Class.extend({
+game.createClass('Body', {
     /**
         Body's physic world.
         @property {game.World} world
@@ -462,6 +462,14 @@ game.Body = game.Class.extend({
     },
 
     /**
+        Remove collision from body.
+        @method removeCollision
+    **/
+    removeCollision: function() {
+        if (this.world) this.world.removeBodyCollision(this);
+    },
+
+    /**
         @method update
     **/
     update: function() {
@@ -485,7 +493,7 @@ game.Body = game.Class.extend({
     @param {Number} width
     @param {Number} height
 **/
-game.Rectangle = game.Class.extend({
+game.createClass('Rectangle', {
     /**
         Width of rectangle.
         @property {Number} width
@@ -512,7 +520,7 @@ game.Rectangle = game.Class.extend({
     @constructor
     @param {Number} radius
 **/
-game.Circle = game.Class.extend({
+game.createClass('Circle', {
     /**
         Radius of circle.
         @property {Number} radius
@@ -533,7 +541,7 @@ game.Circle = game.Class.extend({
     @param {Number} length
     @param {Number} rotation
 **/
-game.Line = game.Class.extend({
+game.createClass('Line', {
     /**
         Length of line.
         @property {Number} length
@@ -561,7 +569,7 @@ game.Line = game.Class.extend({
     @param {Number} [x]
     @param {Number} [y]
 **/
-game.Vector = game.Class.extend({
+game.createClass('Vector', {
     x: 0,
     y: 0,
 

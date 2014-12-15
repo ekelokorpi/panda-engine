@@ -12,7 +12,7 @@ game.module(
     @class Audio
     @extends game.Class
 **/
-game.Audio = game.Class.extend({
+game.createClass('Audio', {
     audioId: 1,
     audioObjects: {},
     systemPaused: [],
@@ -676,44 +676,46 @@ game.Audio = game.Class.extend({
     }
 });
 
-/**
-    Enable audio.
-    @attribute {Boolean} enabled
-    @default true
-**/
-game.Audio.enabled = true;
-/**
-    Enable Web Audio.
-    @attribute {Boolean} webAudio
-    @default true
-**/
-game.Audio.webAudio = true;
-/**
-    List of available audio formats.
-    @attribute {Array} formats
-**/
-game.Audio.formats = [
-    { ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"' },
-    { ext: 'ogg', type: 'audio/ogg; codecs="vorbis"' },
-    { ext: 'wav', type: 'audio/wav' }
-];
-/**
-    Stop audio, when changing scene.
-    @attribute {Boolean} stopOnSceneChange
-    @default true
-**/
-game.Audio.stopOnSceneChange = true;
-/**
-    Sound volume.
-    @attribute {Number} soundVolume
-    @default 1
-**/
-game.Audio.soundVolume = 1;
-/**
-    Music volume.
-    @attribute {Number} musicVolume
-    @default 1
-**/
-game.Audio.musicVolume = 1;
+game.addAttributes('Audio', {
+    /**
+        Enable audio.
+        @attribute {Boolean} enabled
+        @default true
+    **/
+    enabled: true,
+    /**
+        Enable Web Audio.
+        @attribute {Boolean} webAudio
+        @default true
+    **/
+    webAudio: true,
+    /**
+        List of available audio formats.
+        @attribute {Array} formats
+    **/
+    formats: [
+        { ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"' },
+        { ext: 'ogg', type: 'audio/ogg; codecs="vorbis"' },
+        { ext: 'wav', type: 'audio/wav' }
+    ],
+    /**
+        Stop audio, when changing scene.
+        @attribute {Boolean} stopOnSceneChange
+        @default true
+    **/
+    stopOnSceneChange: true,
+    /**
+        Sound volume.
+        @attribute {Number} soundVolume
+        @default 1
+    **/
+    soundVolume: 1,
+    /**
+        Music volume.
+        @attribute {Number} musicVolume
+        @default 1
+    **/
+    musicVolume: 1
+});
 
 });

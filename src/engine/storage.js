@@ -13,7 +13,7 @@ game.module(
     @class Storage
     @extends game.Class
 **/
-game.Storage = game.Class.extend({
+game.createClass('Storage', {
     id: null,
 
     init: function(id) {
@@ -87,9 +87,11 @@ game.Storage = game.Class.extend({
     }
 });
 
-/**
-    @attribute {String} id
-**/
-game.Storage.id = '';
+game.addAttributes('Storage', {
+    /**
+        @attribute {String} id
+    **/
+    id: ''
+});
 
 });

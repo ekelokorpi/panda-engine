@@ -12,10 +12,8 @@ game.module(
     Google Analytics tracking.
     @class Analytics
     @extends game.Class
-    @constructor
-    @param {String} id
 **/
-game.Analytics = game.Class.extend({
+game.createClass('Analytics', {
     /**
         Is analytics enabled.
         @property {Boolean} enabled
@@ -87,17 +85,18 @@ game.Analytics = game.Class.extend({
     }
 });
 
-/**
-    Tracking id for analytics.
-    @attribute {String} id
-**/
-game.Analytics.id = '';
-
-/**
-    Enable analytics on CocoonJS.
-    @attribute {Boolean} cocoonJS
-    @default false
-**/
-game.Analytics.cocoonJS = false;
+game.addAttributes('Analytics', {
+    /**
+        Tracking id for analytics.
+        @attribute {String} id
+    **/
+    id: '',
+    /**
+        Enable analytics on CocoonJS.
+        @attribute {Boolean} cocoonJS
+        @default false
+    **/
+    cocoonJS: false
+});
 
 });

@@ -12,7 +12,7 @@ game.module(
     @class Particle
     @extends game.Class
 **/
-game.Particle = game.Class.extend({
+game.createClass('Particle', {
     /**
         @property {game.Point} position
     **/
@@ -64,7 +64,7 @@ game.Particle = game.Class.extend({
     @constructor
     @param {Object} [settings]
 **/
-game.Emitter = game.Class.extend({
+game.createClass('Emitter', {
     /**
         Pool name for particles.
         @property {String} poolName

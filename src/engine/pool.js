@@ -13,7 +13,7 @@ game.module(
     @class Pool
     @extends game.Class
 **/
-game.Pool = game.Class.extend({
+game.createClass('Pool', {
     /**
         Create new pool.
         @method create

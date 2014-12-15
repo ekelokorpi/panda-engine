@@ -15,7 +15,7 @@ game.module(
     @constructor
     @param {Function|String} callback
 **/
-game.Loader = game.Class.extend({
+game.createClass('Loader', {
     /**
         Number of files loaded.
         @property {Number} loaded
@@ -257,59 +257,61 @@ game.Loader = game.Class.extend({
     }
 });
 
-/**
-    Loader background color.
-    @attribute {Number} bgColor
-    @default 0x000000
-**/
-game.Loader.bgColor = 0x000000;
-/**
-    Minimum time to show loader, in milliseconds.
-    @attribute {Number} time
-    @default 200
-**/
-game.Loader.time = 200;
-/**
-    Loading bar background color.
-    @attribute {Number} barBg
-    @default 0x231f20
-**/
-game.Loader.barBgColor = 0x515e73;
-/**
-    Loading bar color.
-    @attribute {Number} barColor
-    @default 0xe6e7e8
-**/
-game.Loader.barColor = 0xb9bec7;
-/**
-    Width of the loading bar.
-    @attribute {Number} barWidth
-    @default 200
-**/
-game.Loader.barWidth = 200;
-/**
-    Height of the loading bar.
-    @attribute {Number} barHeight
-    @default 20
-**/
-game.Loader.barHeight = 20;
-/**
-    Loading bar margin from logo.
-    @attribute {Number} barMargin
-    @default 10
-**/
-game.Loader.barMargin = 10;
-/**
-    Loader logo url.
-    @attribute {String} logo
-    @default null
-**/
-game.Loader.logo = null;
-/**
-    Threat requests as crossorigin.
-    @attribute {Boolean} crossorigin
-    @default true
-**/
-game.Loader.crossorigin = true;
+game.addAttributes('Loader', {
+    /**
+        Loader background color.
+        @attribute {Number} bgColor
+        @default 0x000000
+    **/
+    bgColor: 0x000000,
+    /**
+        Minimum time to show loader, in milliseconds.
+        @attribute {Number} time
+        @default 200
+    **/
+    time: 200,
+    /**
+        Loading bar background color.
+        @attribute {Number} barBg
+        @default 0x231f20
+    **/
+    barBgColor: 0x515e73,
+    /**
+        Loading bar color.
+        @attribute {Number} barColor
+        @default 0xe6e7e8
+    **/
+    barColor: 0xb9bec7,
+    /**
+        Width of the loading bar.
+        @attribute {Number} barWidth
+        @default 200
+    **/
+    barWidth: 200,
+    /**
+        Height of the loading bar.
+        @attribute {Number} barHeight
+        @default 20
+    **/
+    barHeight: 20,
+    /**
+        Loading bar margin from logo.
+        @attribute {Number} barMargin
+        @default 10
+    **/
+    barMargin: 10,
+    /**
+        Loader logo url.
+        @attribute {String} logo
+        @default null
+    **/
+    logo: null,
+    /**
+        Threat requests as crossorigin.
+        @attribute {Boolean} crossorigin
+        @default true
+    **/
+    crossorigin: true
+});
 
 });

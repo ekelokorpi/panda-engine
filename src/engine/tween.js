@@ -14,7 +14,7 @@ game.module(
     @class TweenEngine
     @extends game.Class
 **/
-game.TweenEngine = game.Class.extend({
+game.createClass('TweenEngine', {
     /**
         List of tweens.
         @property {Array} tweens
@@ -78,7 +78,7 @@ game.TweenEngine = game.Class.extend({
     @constructor
     @param {Object} object
 **/
-game.Tween = game.Class.extend({
+game.createClass('Tween', {
     /**
         Is tween playing.
         @property {Boolean} playing
@@ -661,7 +661,7 @@ game.Tween.Interpolation = {
     @constructor
     @param {Function} [onComplete]
 **/
-game.TweenGroup = game.Class.extend({
+game.createClass('TweenGroup', {
     tweens: [],
     onComplete: null,
     complete: false,

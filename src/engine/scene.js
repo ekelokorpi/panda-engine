@@ -13,7 +13,7 @@ game.module(
     @class Scene
     @extends game.Class
 **/
-game.Scene = game.Class.extend({
+game.createClass('Scene', {
     /**
         Background color of scene.
         @property {Number} backgroundColor

@@ -15,7 +15,7 @@ game.module(
     @constructor
     @param {Number} [ms]
 **/
-game.Timer = game.Class.extend({
+game.createClass('Timer', {
     target: 0,
     base: 0,
     last: 0,
@@ -85,16 +85,18 @@ game.Timer = game.Class.extend({
     }
 });
 
-game.Timer.last = 0;
-game.Timer.time = Number.MIN_VALUE;
-game.Timer.speedFactor = 1;
-game.Timer.maxStep = 50;
+game.addAttributes('Timer', {
+    last: 0,
+    time: Number.MIN_VALUE,
+    speedFactor: 1,
+    maxStep: 50, // 20 FPS
 
-game.Timer.update = function() {
-    var now = Date.now();
-    if (!game.Timer.last) game.Timer.last = now;
-    game.Timer.time += Math.min((now - game.Timer.last), game.Timer.maxStep) * game.Timer.speedFactor;
-    game.Timer.last = now;
-};
+    update: function() {
+        var now = Date.now();
+        if (!game.Timer.last) game.Timer.last = now;
+        game.Timer.time += Math.min((now - game.Timer.last), game.Timer.maxStep) * game.Timer.speedFactor;
+        game.Timer.last = now;
+    }
+});
 
 });

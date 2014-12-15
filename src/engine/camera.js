@@ -12,7 +12,7 @@ game.module(
     @class Camera
     @extends game.Class
 **/
-game.Camera = game.Class.extend({
+game.createClass('Camera', {
     /**
         Camera maximum move speed.
         @property {Number} maxSpeed
@@ -187,8 +187,10 @@ game.Camera = game.Class.extend({
     }
 });
 
-game.Camera.debug = false;
-game.Camera.debugColor = 0xff00ff;
-game.Camera.debugAlpha = 0.2;
+game.addAttributes('Camera', {
+    debug: false,
+    debugColor: 0xff00ff,
+    debugAlpha: 0.2
+});
 
 });

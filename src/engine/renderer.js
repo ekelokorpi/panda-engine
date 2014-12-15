@@ -200,7 +200,7 @@ game.Sprite.fromImage = game.PIXI.Sprite.fromImage;
     @param {Number} width
     @param {Number} height
 **/
-game.SpriteSheet = game.Class.extend({
+game.createClass('SpriteSheet', {
     textures: [],
 
     init: function(id, width, height) {
@@ -467,7 +467,7 @@ game.Animation.fromFrames = function(name, reverse) {
     @constructor
     @param {String} source
 **/
-game.Video = game.Class.extend({
+game.createClass('Video', {
     /**
         @property {Boolean} loop
         @default false
