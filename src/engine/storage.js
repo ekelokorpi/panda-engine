@@ -17,7 +17,7 @@ game.createClass('Storage', {
     id: null,
 
     init: function(id) {
-        this.id = id;
+        this.id = id || game.Storage.id;
     },
 
     /**
