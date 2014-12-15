@@ -92,9 +92,9 @@ game.createClass('System', {
     newSceneClass: null,
     running: false,
 
-    init: function(width, height) {
-        width = width || game.System.width;
-        height = height || game.System.height;
+    init: function() {
+        var width = game.System.width;
+        var height = game.System.height;
         if (width === 'window') width = window.innerWidth;
         if (height === 'window') height = window.innerHeight;
         this.originalWidth = width;
