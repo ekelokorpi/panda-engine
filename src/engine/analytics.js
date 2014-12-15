@@ -15,29 +15,21 @@ game.module(
 **/
 game.createClass('Analytics', {
     /**
-        Is analytics enabled.
-        @property {Boolean} enabled
-    **/
-    enabled: true,
-    /**
         Current tracking id.
         @property {String} trackId
     **/
     trackId: null,
-    userId: null,
+    clientId: null,
 
     init: function(id) {
-        if (!navigator.onLine || game.device.cocoonJS && !game.Analytics.cocoonJS) {
-            this.enabled = false;
-            return;
-        }
+        this.trackId = id || game.Analytics.id;
 
-        this.trackId = id;
+        if (!navigator.onLine) return;
 
-        if (game.device.cocoonJS && game.Analytics.cocoonJS) {
-            this.userId = Date.now();
+        if (game.device.cocoonJS) {
+            this.clientId = Date.now();
             var request = new XMLHttpRequest();
-            var params = 'v=1&tid=' + this.trackId + '&cid=' + this.userId + '&t=pageview&dp=%2F';
+            var params = 'v=1&tid=' + this.trackId + '&cid=' + this.clientId + '&t=pageview&dp=%2F';
             request.open('POST', 'http://www.google-analytics.com/collect', true);
             request.send(params);
         }
@@ -69,11 +61,11 @@ game.createClass('Analytics', {
         @param {String} [value]
     **/
     send: function(category, action, label, value) {
-        if (!this.enabled) return;
+        if (!navigator.onLine) return;
 
-        if (game.device.cocoonJS && game.Analytics.cocoonJS) {
+        if (game.device.cocoonJS) {
             var request = new XMLHttpRequest();
-            var params = 'v=1&tid=' + this.trackId + '&cid=' + this.userId + '&t=event&ec=' + category + '&ea=' + action;
+            var params = 'v=1&tid=' + this.trackId + '&cid=' + this.clientId + '&t=event&ec=' + category + '&ea=' + action;
             if (typeof label !== 'undefined') params += '&el=' + label;
             if (typeof value !== 'undefined') params += '&ev=' + value;
             request.open('POST', 'http://www.google-analytics.com/collect', true);
@@ -90,13 +82,7 @@ game.addAttributes('Analytics', {
         Tracking id for analytics.
         @attribute {String} id
     **/
-    id: '',
-    /**
-        Enable analytics on CocoonJS.
-        @attribute {Boolean} cocoonJS
-        @default false
-    **/
-    cocoonJS: false
+    id: ''
 });
 
 });
