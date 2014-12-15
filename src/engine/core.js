@@ -1,5 +1,4 @@
 // Panda.js HTML5 game engine
-
 // created by Eemeli Kelokorpi
 
 'use strict';
@@ -79,7 +78,7 @@ var game = {
     **/
     keyboard: null,
     /**
-        Device / browser detection.
+        Device / browser information.
         @property {Object} device
     **/
     device: {},
@@ -87,13 +86,11 @@ var game = {
     plugins: {},
     json: {},
     modules: {},
-    renderer: null,
     nocache: '',
-    current: null,
     waitForLoad: 0,
     DOMLoaded: false,
-    next: 1,
-    anims: {},
+    gameLoopId: 1,
+    gameLoops: {},
     moduleQueue: [],
     assetQueue: [],
     audioQueue: [],
@@ -138,6 +135,12 @@ var game = {
         }
     },
 
+    /**
+        Merge objects.
+        @method merge
+        @param {Object} to
+        @param {Object} from
+    **/
     merge: function(to, from) {
         for (var key in from) {
             var ext = from[key];
@@ -340,10 +343,6 @@ var game = {
         if (this.loadFinished) this.loadModules();
     },
 
-    /**
-        Start the game engine.
-        @method start
-    **/
     start: function(scene, width, height) {
         if (this.moduleQueue.length > 0) return;
 
@@ -380,15 +379,16 @@ var game = {
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
-        var me = this;
-        script.onload = function() {
-            me.waitForLoad--;
-            me.loadModules();
-        };
+        script.onload = this.scriptLoaded.bind(this);
         script.onerror = function() {
             throw 'to load module ' + name + ' at ' + path + ' required from ' + requiredFrom;
         };
         document.getElementsByTagName('head')[0].appendChild(script);
+    },
+
+    scriptLoaded: function() {
+        this.waitForLoad--;
+        this.loadModules();
     },
 
     loadModules: function() {
@@ -425,7 +425,7 @@ var game = {
                 module.body(this);
                 moduleLoaded = true;
                 i--;
-                if (this.moduleQueue.length === 0 && this.config.autoStart !== false && !this.system) this.start();
+                if (this.moduleQueue.length === 0) this.ready();
             }
         }
 
@@ -452,19 +452,22 @@ var game = {
         }
     },
 
+    ready: function() {
+        if (this.config.autoStart !== false && !this.system) this.start();
+    },
+
     setGameLoop: function(callback, element) {
         if (window.requestAnimationFrame) {
-            var current = this.next++;
-            this.anims[current] = true;
+            var id = this.gameLoopId++;
+            this.gameLoops[id] = true;
 
-            var me = this;
             var animate = function() {
-                if (!me.anims[current]) return;
+                if (!game.gameLoops[id]) return;
                 window.requestAnimationFrame(animate, element);
                 callback();
             };
             window.requestAnimationFrame(animate, element);
-            return current;
+            return id;
         }
         else {
             return window.setInterval(callback, 1000 / 60);
@@ -472,12 +475,8 @@ var game = {
     },
 
     clearGameLoop: function(id) {
-        if (window.requestAnimationFrame) {
-            delete this.anims[id];
-        }
-        else {
-            window.clearInterval(id);
-        }
+        if (window.requestAnimationFrame) delete this.gameLoops[id];
+        else window.clearInterval(id);
     },
 
     boot: function() {
@@ -503,7 +502,7 @@ var game = {
             var i = this;
             if (i < min) i = min;
             if (i > max) i = max;
-            return parseFloat(i);
+            return i;
         };
 
         Number.prototype.round = function(precision) {
@@ -514,7 +513,10 @@ var game = {
 
         Array.prototype.erase = function(item) {
             for (var i = this.length; i >= 0; i--) {
-                if (this[i] === item) this.splice(i, 1);
+                if (this[i] === item) {
+                    this.splice(i, 1);
+                    return this;
+                }
             }
             return this;
         };
@@ -533,7 +535,6 @@ var game = {
                 this[i] = this[p];
                 this[p] = t;
             }
-
             return this;
         };
 
@@ -679,6 +680,13 @@ var game = {
         }
     },
 
+    /**
+        Create new class.
+        @method createClass
+        @param {String} name
+        @param {String} [extend]
+        @param {Object} content
+    **/
     createClass: function(name, extend, content) {
         if (game[name]) throw 'class ' + name + ' already created';
 
@@ -690,10 +698,22 @@ var game = {
         return game[name] = game[extend].extend(content);
     },
 
+    /**
+        Create new scene.
+        @method createScene
+        @param {String} name
+        @param {Object} content
+    **/
     createScene: function(name, content) {
         return this.createClass('Scene' + name, 'Scene', content);
     },
 
+    /**
+        Add attributes to class.
+        @method addAttributes
+        @param {String} className
+        @param {Object} attributes
+    **/
     addAttributes: function(className, attributes) {
         if (!this[className]) throw 'class ' + className + ' not found';
 
