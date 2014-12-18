@@ -89,12 +89,12 @@ game.addAttributes('Timer', {
     last: 0,
     time: Number.MIN_VALUE,
     speedFactor: 1,
-    maxStep: 50, // 20 FPS
+    minFPS: 20,
 
     update: function() {
         var now = Date.now();
         if (!game.Timer.last) game.Timer.last = now;
-        game.Timer.time += Math.min((now - game.Timer.last), game.Timer.maxStep) * game.Timer.speedFactor;
+        game.Timer.time += Math.min((now - game.Timer.last), 1000 / game.Timer.minFPS) * game.Timer.speedFactor;
         game.Timer.last = now;
     }
 });
