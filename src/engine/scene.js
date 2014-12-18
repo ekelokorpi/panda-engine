@@ -79,6 +79,16 @@ game.createClass('Scene', {
 
         if (game.debugDraw) game.debugDraw.reset();
     },
+
+    /**
+        Clear stage.
+        @method clear
+    **/
+    clear: function() {
+        for (var i = this.stage.children.length - 1; i >= 0; i--) {
+            this.stage.removeChild(this.stage.children[i]);
+        }
+    },
     
     /**
         This is called every frame.
