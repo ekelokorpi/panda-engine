@@ -493,6 +493,8 @@ var game = {
     },
 
     boot: function() {
+        delete window.pandaConfig;
+
         if (this.config.noCanvasURL) {
             var canvas = document.createElement('canvas');
             var canvasSupported = !!(canvas.getContext && canvas.getContext('2d'));
