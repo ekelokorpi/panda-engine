@@ -93,6 +93,17 @@ game.autoDetectRenderer = game.PIXI.autoDetectRenderer;
 game.Stage = game.PIXI.Stage;
 game.blendModes = game.PIXI.blendModes;
 game.BaseTexture = game.PIXI.BaseTexture;
+game.Graphics = game.PIXI.Graphics;
+game.BitmapText = game.PIXI.BitmapText;
+
+game.PIXI.DisplayObject.prototype.remove = function() {
+    if (this.parent) this.parent.removeChild(this);
+};
+
+game.PIXI.DisplayObject.prototype.addTo = function(container) {
+    container.addChild(this);
+    return this;
+};
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
@@ -115,8 +126,7 @@ game.Sprite = game.PIXI.Sprite.extend({
 
         game.merge(this, settings);
 
-        if (typeof x === 'number') this.position.x = x * game.scale;
-        if (typeof y === 'number') this.position.y = y * game.scale;
+        this.position.set(x * game.scale, y * game.scale);
 
         // Auto bind touch events for mobile
         if (game.device.mobile && !this.tap && this.click) this.tap = this.click;
@@ -167,115 +177,13 @@ game.Sprite = game.PIXI.Sprite.extend({
         return this;
     },
 
-    /**
-        Remove sprite from it's parent.
-        @method remove
-    **/
-    remove: function() {
-        if (this.parent) this.parent.removeChild(this);
-    },
-
     addChild: function(obj) {
         this._super(obj);
         if (game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
-    },
-
-    /**
-        Add to container.
-        @method addTo
-        @param {game.Container} container
-    **/
-    addTo: function(container) {
-        container.addChild(this);
-        return this;
     }
 });
 
 game.Sprite.fromImage = game.PIXI.Sprite.fromImage;
-
-/**
-    @class SpriteSheet
-    @constructor
-    @param {String} id
-    @param {Number} width
-    @param {Number} height
-**/
-game.createClass('SpriteSheet', {
-    textures: [],
-
-    init: function(id, width, height) {
-        this.width = width;
-        this.height = height;
-        var baseTexture = game.TextureCache[game.paths[id]];
-        this.sx = Math.floor(baseTexture.width / this.width);
-        this.sy = Math.floor(baseTexture.height / this.height);
-        this.frames = this.sx * this.sy;
-
-        for (var i = 0; i < this.frames; i++) {
-            var x = (i % this.sx) * this.width;
-            var y = Math.floor(i / this.sx) * this.height;
-            var texture = new game.Texture(baseTexture, new game.HitRectangle(x, y, this.width, this.height));
-            this.textures.push(texture);
-        }
-    },
-
-    /**
-        Create sprite from specific frame.
-        @method frame
-        @param {Number} index Frame index
-        @return {game.Sprite}
-    **/
-    frame: function(index) {
-        index = index.limit(0, this.frames - 1);
-        return new game.Sprite(this.textures[index]);
-    },
-
-    /**
-        Create animation from spritesheet.
-        @method anim
-        @param {Number|Array} frames List or number of frames
-        @param {Number} startIndex
-        @return {game.Animation}
-    **/
-    anim: function(frames, startIndex) {
-        startIndex = startIndex || 0;
-        frames = frames || this.frames;
-        var textures = [];
-        if (frames.length > 0) {
-            for (var i = 0; i < frames.length; i++) {
-                textures.push(this.textures[startIndex + frames[i]]);
-            }
-        }
-        else {
-            for (var i = 0; i < frames; i++) {
-                textures.push(this.textures[startIndex + i]);
-            }
-        }
-        return new game.Animation(textures);
-    }
-});
-
-game.Graphics = game.PIXI.Graphics.extend({
-    addTo: function(container) {
-        container.addChild(this);
-        return this;
-    },
-
-    remove: function() {
-        if (this.parent) this.parent.removeChild(this);
-    }
-});
-
-game.BitmapText = game.PIXI.BitmapText.extend({
-    addTo: function(container) {
-        container.addChild(this);
-        return this;
-    },
-
-    remove: function() {
-        if (this.parent) this.parent.removeChild(this);
-    }
-});
 
 /**
     Spine animation.
@@ -319,16 +227,6 @@ game.Spine = game.PIXI.Spine.extend({
     @class Container
 **/
 game.Container = game.PIXI.DisplayObjectContainer.extend({
-    debugDraw: true,
-    
-    /**
-        Remove container from it's parent.
-        @method remove
-    **/
-    remove: function() {
-        if (this.parent) this.parent.removeChild(this);
-    },
-
     /**
         Add object to container.
         @method addChild
@@ -336,16 +234,6 @@ game.Container = game.PIXI.DisplayObjectContainer.extend({
     addChild: function(obj) {
         this._super(obj);
         if (game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
-    },
-
-    /**
-        Add to container.
-        @method addTo
-        @param {game.Container} container
-    **/
-    addTo: function(container) {
-        container.addChild(this);
-        return this;
     }
 });
 
@@ -388,16 +276,6 @@ game.TilingSprite = game.PIXI.TilingSprite.extend({
     update: function() {
         this.tilePosition.x += this.speed.x * game.system.delta;
         this.tilePosition.y += this.speed.y * game.system.delta;
-    },
-
-    /**
-        Add to container.
-        @method addTo
-        @param {game.Container} container
-    **/
-    addTo: function(container) {
-        container.addChild(this);
-        return this;
     }
 });
 
@@ -461,6 +339,68 @@ game.Animation.fromFrames = function(name, reverse) {
 
     return new game.Animation(textures);
 };
+
+/**
+    @class SpriteSheet
+    @constructor
+    @param {String} id
+    @param {Number} width
+    @param {Number} height
+**/
+game.createClass('SpriteSheet', {
+    textures: [],
+
+    init: function(id, width, height) {
+        this.width = width;
+        this.height = height;
+        var baseTexture = game.TextureCache[game.paths[id]];
+        this.sx = Math.floor(baseTexture.width / this.width);
+        this.sy = Math.floor(baseTexture.height / this.height);
+        this.frames = this.sx * this.sy;
+
+        for (var i = 0; i < this.frames; i++) {
+            var x = (i % this.sx) * this.width;
+            var y = Math.floor(i / this.sx) * this.height;
+            var texture = new game.Texture(baseTexture, new game.HitRectangle(x, y, this.width, this.height));
+            this.textures.push(texture);
+        }
+    },
+
+    /**
+        Create sprite from specific frame.
+        @method frame
+        @param {Number} index Frame index
+        @return {game.Sprite}
+    **/
+    frame: function(index) {
+        index = index.limit(0, this.frames - 1);
+        return new game.Sprite(this.textures[index]);
+    },
+
+    /**
+        Create animation from spritesheet.
+        @method anim
+        @param {Number|Array} frames List or number of frames
+        @param {Number} startIndex
+        @return {game.Animation}
+    **/
+    anim: function(frames, startIndex) {
+        startIndex = startIndex || 0;
+        frames = frames || this.frames;
+        var textures = [];
+        if (frames.length > 0) {
+            for (var i = 0; i < frames.length; i++) {
+                textures.push(this.textures[startIndex + frames[i]]);
+            }
+        }
+        else {
+            for (var i = 0; i < frames; i++) {
+                textures.push(this.textures[startIndex + i]);
+            }
+        }
+        return new game.Animation(textures);
+    }
+});
 
 /**
     @class Video
