@@ -52,6 +52,7 @@ game.createClass('World', {
     **/
     addBody: function(body) {
         body.world = this;
+        body._remove = false;
         this.bodies.push(body);
         if (typeof body.collisionGroup === 'number') this.addBodyCollision(body, body.collisionGroup);
         if (game.debugDraw && body.shape) game.debugDraw.addBody(body);
@@ -108,7 +109,7 @@ game.createClass('World', {
 
         for (g = 0; g < body.collideAgainst.length; g++) {
             group = this.collisionGroups[body.collideAgainst[g]];
-            
+
             if (!group) continue;
 
             for (i = group.length - 1; i >= 0; i--) {
