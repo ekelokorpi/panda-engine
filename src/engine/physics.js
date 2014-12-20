@@ -34,14 +34,12 @@ game.createClass('World', {
     bodies: [],
     /**
         List of collision groups.
-        @property {Array} collisionGroups
+        @property {Object} collisionGroups
     **/
-    collisionGroups: [],
+    collisionGroups: {},
 
     init: function(x, y) {
-        this.gravity = new game.Vector();
-        this.gravity.x = typeof x === 'number' ? x : 0;
-        this.gravity.y = typeof y === 'number' ? y : 980;
+        this.gravity = new game.Vector(x || 0, y || 980);
         this.solver = new game.CollisionSolver();
     },
 
@@ -54,7 +52,7 @@ game.createClass('World', {
         body.world = this;
         body._remove = false;
         this.bodies.push(body);
-        if (typeof body.collisionGroup === 'number') this.addBodyCollision(body, body.collisionGroup);
+        this.addBodyCollision(body, body.collisionGroup);
         if (game.debugDraw && body.shape) game.debugDraw.addBody(body);
     },
 
@@ -75,7 +73,9 @@ game.createClass('World', {
         @param {game.Body} body
     **/
     removeBodyCollision: function(body) {
+        if (typeof body.collisionGroup !== 'number') return;
         this.collisionGroups[body.collisionGroup].erase(body);
+        body.collisionGroup = null;
     },
 
     /**
@@ -85,18 +85,10 @@ game.createClass('World', {
         @param {Number} group
     **/
     addBodyCollision: function(body, group) {
+        if (typeof group !== 'number') return;
         body.collisionGroup = group;
         this.collisionGroups[body.collisionGroup] = this.collisionGroups[body.collisionGroup] || [];
         this.collisionGroups[body.collisionGroup].push(body);
-    },
-
-    /**
-        Remove collision group from world.
-        @method removeCollisionGroup
-        @param {Number} i
-    **/
-    removeCollisionGroup: function(i) {
-        this.collisionGroups.erase(this.collisionGroups[i]);
     },
 
     /**
@@ -109,7 +101,7 @@ game.createClass('World', {
 
         for (g = 0; g < body.collideAgainst.length; g++) {
             group = this.collisionGroups[body.collideAgainst[g]];
-
+            
             if (!group) continue;
 
             for (i = group.length - 1; i >= 0; i--) {
@@ -121,26 +113,28 @@ game.createClass('World', {
     },
 
     /**
-        Update bodies.
+        Update physics world.
         @method update
     **/
     update: function() {
         var i, j;
         for (i = this.bodies.length - 1; i >= 0; i--) {
             if (this.bodies[i]._remove) {
-                if (typeof this.bodies[i].collisionGroup === 'number') this.removeBodyCollision(this.bodies[i]);
+                this.removeBodyCollision(this.bodies[i]);
                 this.bodies.splice(i, 1);
             }
             else {
                 this.bodies[i].update();
             }
         }
-        for (i = this.collisionGroups.length - 1; i >= 0; i--) {
-            if (this.collisionGroups[i]) {
-                for (j = this.collisionGroups[i].length - 1; j >= 0; j--) {
-                    if (this.collisionGroups[i][j] && this.collisionGroups[i][j].collideAgainst.length > 0) {
-                        this.collide(this.collisionGroups[i][j]);
-                    }
+        for (i in this.collisionGroups) {
+            if (this.collisionGroups[i].length === 0) {
+                delete this.collisionGroups[i];
+                continue;
+            }
+            for (j = this.collisionGroups[i].length - 1; j >= 0; j--) {
+                if (this.collisionGroups[i][j] && this.collisionGroups[i][j].collideAgainst.length > 0) {
+                    this.collide(this.collisionGroups[i][j]);
                 }
             }
         }
