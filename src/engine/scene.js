@@ -75,6 +75,11 @@ game.createClass('Scene', {
         game.system.stage.mouseout = this.mouseout.bind(this);
 
         this.stage = new game.Container();
+        if (game.system.webGL && game.device.cocoonJS) {
+            var scale = game.renderer.height / game.system.height;
+            this.stage.scale.set(scale, scale);
+            this.stage.position.x = game.renderer.width / 2 - game.system.width * scale / 2;
+        }
         game.system.stage.addChild(this.stage);
 
         if (game.debugDraw) game.debugDraw.reset();

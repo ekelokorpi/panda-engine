@@ -201,6 +201,11 @@ game.createClass('System', {
     initRenderer: function(width, height) {
         game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
 
+        if (game.System.webGL && game.device.cocoonJS) {
+            width = game.device.screen.width;
+            height = game.device.screen.height;
+        }
+
         if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, {
             view: document.getElementById(this.canvasId),
             transparent: game.System.transparent,
