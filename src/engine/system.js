@@ -154,7 +154,7 @@ game.createClass('System', {
 
         game.renderer = this.renderer;
 
-        if (!navigator.isCocoonJS) {
+        if (!game.device.cocoonJS) {
             var visibilityChange;
             if (typeof document.hidden !== 'undefined') {
                 visibilityChange = 'visibilitychange';
@@ -299,7 +299,7 @@ game.createClass('System', {
         if (game.tweenEngine) game.tweenEngine.tweens.length = 0;
         if (removeAssets) game.removeAssets();
         game.scene = new (sceneClass)();
-        if (game.Debug && game.Debug.enabled && !navigator.isCocoonJS && !this.debug) this.debug = new game.Debug();
+        if (game.Debug && game.Debug.enabled && !game.device.cocoonJS && !this.debug) this.debug = new game.Debug();
         this.newSceneClass = null;
         this.startRunLoop();
     },
