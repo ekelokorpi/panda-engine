@@ -126,7 +126,8 @@ game.createClass('System', {
         this.timer = new game.Timer();
 
         if (!document.getElementById(this.canvasId)) {
-            var canvas = document.createElement((navigator.isCocoonJS && game.System.screenCanvas) ? 'screencanvas' : 'canvas');
+            var canvas = document.createElement('canvas');
+            if (game.device.cocoonJS) canvas.screencanvas = !!game.System.screenCanvas;
             canvas.id = this.canvasId;
             document.body.appendChild(canvas);
         }
