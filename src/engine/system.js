@@ -202,8 +202,8 @@ game.createClass('System', {
         game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
 
         if (game.System.webGL && game.device.cocoonJS) {
-            width = game.device.screen.width;
-            height = game.device.screen.height;
+            width = window.innerWidth * game.device.pixelRatio;
+            height = window.innerHeight * game.device.pixelRatio;
         }
 
         if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, {

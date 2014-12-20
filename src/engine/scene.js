@@ -76,9 +76,18 @@ game.createClass('Scene', {
 
         this.stage = new game.Container();
         if (game.system.webGL && game.device.cocoonJS) {
-            var scale = game.renderer.height / game.system.height;
-            this.stage.scale.set(scale, scale);
-            this.stage.position.x = game.renderer.width / 2 - game.system.width * scale / 2;
+            var rendererRatio = game.renderer.width / game.renderer.height;
+            var systemRatio = game.system.width / game.system.height;
+            if (rendererRatio < systemRatio) {
+                var scale = game.renderer.width / game.system.width;
+                this.stage.scale.set(scale, scale);
+                this.stage.position.y = game.renderer.height / 2 - game.system.height * scale / 2;
+            }
+            else {
+                var scale = game.renderer.height / game.system.height;
+                this.stage.scale.set(scale, scale);
+                this.stage.position.x = game.renderer.width / 2 - game.system.width * scale / 2;
+            }
         }
         game.system.stage.addChild(this.stage);
 
