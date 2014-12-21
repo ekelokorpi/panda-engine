@@ -125,13 +125,6 @@ game.createClass('System', {
         this.canvasId = game.System.canvasId || this.canvasId;
         this.timer = new game.Timer();
 
-        if (!document.getElementById(this.canvasId)) {
-            var canvas = document.createElement('canvas');
-            if (game.device.cocoonJS) canvas.screencanvas = !!game.System.screenCanvas;
-            canvas.id = this.canvasId;
-            document.body.appendChild(canvas);
-        }
-
         this.initRenderer(width, height);
 
         game.normalizeVendorAttribute(this.canvas, 'requestFullscreen');
@@ -199,6 +192,13 @@ game.createClass('System', {
     },
 
     initRenderer: function(width, height) {
+        if (!document.getElementById(this.canvasId)) {
+            var canvas = document.createElement('canvas');
+            if (game.device.cocoonJS) canvas.screencanvas = !!game.System.screenCanvas;
+            canvas.id = this.canvasId;
+            document.body.appendChild(canvas);
+        }
+        
         game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
 
         if (game.System.webGL && game.device.cocoonJS) {
