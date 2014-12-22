@@ -14,7 +14,7 @@ var game = {
     /**
         @property {String} version
     **/
-    version: '1.11.0-dev',
+    version: '1.12.0-dev',
     /**
         @property {Object} config
     **/
