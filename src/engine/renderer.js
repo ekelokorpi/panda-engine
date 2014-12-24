@@ -67,7 +67,7 @@ game.PIXI.extend = function(prop) {
 
     Class.prototype.constructor = Class;
     Class.prototype.base = base;
-    
+
     Class.extend = game.PIXI.extend;
 
     return Class;
@@ -109,10 +109,10 @@ game.PIXI.DisplayObject.prototype.addTo = function(container) {
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
     @class Sprite
     @constructor
-    @param {String} id
-    @param {Number} [x]
-    @param {Number} [y]
-    @param {Object} [settings]
+    @param {String} id Asset ID
+    @param {Number} [x] The x coordinate to position at
+    @param {Number} [y] The y coordinate to position at
+    @param {Object} [settings] Other settings to merge into this Sprite
 **/
 game.Sprite = game.PIXI.Sprite.extend({
     debugDraw: true,
@@ -257,7 +257,7 @@ game.Texture.fromFrame = game.PIXI.Texture.fromFrame;
 **/
 game.TilingSprite = game.PIXI.TilingSprite.extend({
     /**
-        @property {game.Point} speed
+        @property {game.Point} speed Texture scroll speed
     **/
     speed: null,
 
@@ -280,9 +280,9 @@ game.TilingSprite = game.PIXI.TilingSprite.extend({
 });
 
 /**
-    Frame by frame animation.
+    Frame by frame animation. This can also be generated from a SpriteSheet
+    http://www.goodboydigital.com/pixijs/docs/classes/MovieClip.html
     @class Animation
-    @extends game.Container
     @constructor
     @param {Array} textures
 **/
@@ -343,9 +343,9 @@ game.Animation.fromFrames = function(name, reverse) {
 /**
     @class SpriteSheet
     @constructor
-    @param {String} id
-    @param {Number} width
-    @param {Number} height
+    @param {String} id Asset id
+    @param {Number} width Sprite frame width
+    @param {Number} height Sprite frame height
 **/
 game.createClass('SpriteSheet', {
     textures: [],
@@ -438,7 +438,7 @@ game.createClass('Video', {
 
         var videoTexture = game.PIXI.VideoTexture.textureFromVideo(this.videoElem);
         videoTexture.baseTexture.addEventListener('loaded', this._loaded.bind(this));
-        
+
         this.sprite = new game.Sprite(videoTexture);
     },
 
