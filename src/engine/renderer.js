@@ -67,7 +67,7 @@ game.PIXI.extend = function(prop) {
 
     Class.prototype.constructor = Class;
     Class.prototype.base = base;
-    
+
     Class.extend = game.PIXI.extend;
 
     return Class;
@@ -109,10 +109,10 @@ game.PIXI.DisplayObject.prototype.addTo = function(container) {
     http://www.goodboydigital.com/pixijs/docs/classes/Sprite.html
     @class Sprite
     @constructor
-    @param {String} id
-    @param {Number} [x]
-    @param {Number} [y]
-    @param {Object} [settings]
+    @param {String} id Asset ID
+    @param {Number} [x] The x coordinate to position at
+    @param {Number} [y] The y coordinate to position at
+    @param {Object} [settings] Other settings to merge into this Sprite
 **/
 game.Sprite = game.PIXI.Sprite.extend({
     debugDraw: true,
@@ -139,7 +139,7 @@ game.Sprite = game.PIXI.Sprite.extend({
     /**
         Change sprite texture.
         @method setTexture
-        @param {String} id
+        @param {String} id Asset ID
     **/
     setTexture: function(id) {
         if (typeof id === 'string') {
@@ -152,10 +152,10 @@ game.Sprite = game.PIXI.Sprite.extend({
     /**
         Crop sprite.
         @method crop
-        @param {Number} x
-        @param {Number} y
-        @param {Number} width
-        @param {Number} height
+        @param {Number} x The x coordinate of left-top point to crop
+        @param {Number} y The y coordinate of left-top point to crop
+        @param {Number} width The width of sprite to crop to
+        @param {Number} height The height of sprite to crop to
     **/
     crop: function(x, y, width, height) {
         var texture = new game.PIXI.Texture(this.texture, new game.HitRectangle(x, y, width, height));
@@ -166,8 +166,8 @@ game.Sprite = game.PIXI.Sprite.extend({
     /**
         Position sprite to system center.
         @method center
-        @param {Number} offsetX
-        @param {Number} offsetY
+        @param {Number} offsetX Offset x coordinate to system center
+        @param {Number} offsetY Offset y coordinate to system center
     **/
     center: function(offsetX, offsetY) {
         this.position.x = game.system.width / 2 - this.width / 2 + this.width * this.anchor.x;
@@ -189,8 +189,8 @@ game.Sprite.fromImage = game.PIXI.Sprite.fromImage;
     Spine animation.
     @class Spine
     @constructor
-    @param {String} id
-    @param {Object} [settings]
+    @param {String} id Asset ID
+    @param {Object} [settings] Settings to merge to this animation
 **/
 game.Spine = game.PIXI.Spine.extend({
     init: function(id, settings) {
@@ -250,14 +250,14 @@ game.Texture.fromFrame = game.PIXI.Texture.fromFrame;
     http://www.goodboydigital.com/pixijs/docs/classes/TilingSprite.html
     @class TilingSprite
     @constructor
-    @param {String|game.Texture} texture
-    @param {Number} width
-    @param {Number} height
-    @param {Object} [settings]
+    @param {String|game.Texture} texture Texture to be repeated
+    @param {Number} width Sprite width
+    @param {Number} height Sprite height
+    @param {Object} [settings] Settings to be merged into this sprite
 **/
 game.TilingSprite = game.PIXI.TilingSprite.extend({
     /**
-        @property {game.Point} speed
+        @property {game.Point} speed Texture scroll speed
     **/
     speed: null,
 
@@ -280,11 +280,11 @@ game.TilingSprite = game.PIXI.TilingSprite.extend({
 });
 
 /**
-    Frame by frame animation.
+    Frame by frame animation. This can also be generated from a SpriteSheet
+    http://www.goodboydigital.com/pixijs/docs/classes/MovieClip.html
     @class Animation
-    @extends game.Container
     @constructor
-    @param {Array} textures
+    @param {Array} textures Textures this animation made up of
 **/
 game.Animation = game.PIXI.MovieClip.extend({
     init: function(textures) {
@@ -343,9 +343,9 @@ game.Animation.fromFrames = function(name, reverse) {
 /**
     @class SpriteSheet
     @constructor
-    @param {String} id
-    @param {Number} width
-    @param {Number} height
+    @param {String} id Asset ID
+    @param {Number} width Sprite frame width
+    @param {Number} height Sprite frame height
 **/
 game.createClass('SpriteSheet', {
     textures: [],
@@ -381,7 +381,7 @@ game.createClass('SpriteSheet', {
         Create animation from spritesheet.
         @method anim
         @param {Number|Array} frames List or number of frames
-        @param {Number} startIndex
+        @param {Number} [startIndex] The index to begin with, default to 0
         @return {game.Animation}
     **/
     anim: function(frames, startIndex) {
@@ -438,7 +438,7 @@ game.createClass('Video', {
 
         var videoTexture = game.PIXI.VideoTexture.textureFromVideo(this.videoElem);
         videoTexture.baseTexture.addEventListener('loaded', this._loaded.bind(this));
-        
+
         this.sprite = new game.Sprite(videoTexture);
     },
 
