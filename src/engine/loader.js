@@ -9,7 +9,7 @@ game.module(
 'use strict';
 
 /**
-    Dynamic loader for assets and audio.
+    Dynamic loader for assets and audio files.
     @class Loader
     @extends game.Class
     @constructor
@@ -42,16 +42,7 @@ game.createClass('Loader', {
         @default false
     **/
     started: false,
-    /**
-        Enable dynamic mode.
-        @property {Boolean} dynamic
-        @default true
-    **/
     dynamic: true,
-    /**
-        Callback function or scene name for loader.
-        @property {Function|String} callback
-    **/
     callback: null,
     
     init: function(callback) {
@@ -88,16 +79,6 @@ game.createClass('Loader', {
     initStage: function() {
         var barWidth = game.Loader.barWidth * game.scale;
         var barHeight = game.Loader.barHeight * game.scale;
-        var barMargin = game.Loader.barMargin * game.scale;
-
-        if (game.Loader.logo) {
-            this.logo = new game.Sprite(game.Texture.fromImage(game.Loader.logo));
-            this.logo.anchor.set(0.5, 1.0);
-            this.logo.position.x = game.system.width / 2;
-            this.logo.position.y = game.system.height / 2;
-            this.logo.position.y -= barHeight / 2 + barMargin;
-            this.stage.addChild(this.logo);
-        }
 
         this.barBg = new game.Graphics();
         this.barBg.beginFill(game.Loader.barBgColor);
@@ -157,10 +138,6 @@ game.createClass('Loader', {
         throw 'loading file ' + path;
     },
 
-    /**
-        File loaded.
-        @method progress
-    **/
     progress: function(loader) {
         if (loader && loader.json) game.json[loader.url] = loader.json;
         this.loaded++;
@@ -178,20 +155,12 @@ game.createClass('Loader', {
         if (this.barFg) this.barFg.scale.x = this.percent / 100;
     },
 
-    /**
-        Start loading audio.
-        @method loadAudio
-    **/
     loadAudio: function() {
         for (var i = this.audioQueue.length - 1; i >= 0; i--) {
             game.audio._load(this.audioQueue[i], this.progress.bind(this), this.error.bind(this, this.audioQueue[i]));
         }
     },
 
-    /**
-        All files loaded.
-        @method ready
-    **/
     ready: function() {
         if (game.system.hires || game.system.retina) {
             for (var i in game.TextureCache) {
@@ -265,7 +234,7 @@ game.addAttributes('Loader', {
     **/
     bgColor: 0x000000,
     /**
-        Minimum time to show loader, in milliseconds.
+        Minimum time to show loader (ms).
         @attribute {Number} time
         @default 200
     **/
@@ -294,18 +263,6 @@ game.addAttributes('Loader', {
         @default 20
     **/
     barHeight: 20,
-    /**
-        Loading bar margin from logo.
-        @attribute {Number} barMargin
-        @default 10
-    **/
-    barMargin: 10,
-    /**
-        Loader logo url.
-        @attribute {String} logo
-        @default null
-    **/
-    logo: null,
     /**
         Threat requests as crossorigin.
         @attribute {Boolean} crossorigin
