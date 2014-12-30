@@ -324,6 +324,7 @@ game.createClass('Body', {
     **/
     addShape: function(shape) {
         this.shape = shape;
+        return this;
     },
 
     /**
