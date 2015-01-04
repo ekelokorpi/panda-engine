@@ -470,6 +470,7 @@ var game = {
     },
 
     setGameLoop: function(callback, element) {
+        if (game.System.frameRate) return window.setInterval(callback, 1000 / game.System.frameRate);
         if (window.requestAnimationFrame) {
             var id = this.gameLoopId++;
             this.gameLoops[id] = true;
@@ -488,7 +489,7 @@ var game = {
     },
 
     clearGameLoop: function(id) {
-        if (window.requestAnimationFrame) delete this.gameLoops[id];
+        if (this.gameLoops[id]) delete this.gameLoops[id];
         else window.clearInterval(id);
     },
 
