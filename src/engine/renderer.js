@@ -382,9 +382,10 @@ game.createClass('SpriteSheet', {
         @method anim
         @param {Number|Array} frames List or number of frames
         @param {Number} [startIndex] The index to begin with, default to 0
+        @param {Boolean} [onlyTextures] Return only textures
         @return {game.Animation}
     **/
-    anim: function(frames, startIndex) {
+    anim: function(frames, startIndex, onlyTextures) {
         startIndex = startIndex || 0;
         frames = frames || this.frames;
         var textures = [];
@@ -398,6 +399,7 @@ game.createClass('SpriteSheet', {
                 textures.push(this.textures[startIndex + i]);
             }
         }
+        if (onlyTextures) return textures;
         return new game.Animation(textures);
     }
 });
