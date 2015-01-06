@@ -45,15 +45,19 @@ game.createClass('Debug', {
         this.frames++;
 
         if (game.Timer.last >= this.last + game.Debug.frequency) {
-            var fps = (Math.round((this.frames * 1000) / (game.Timer.last - this.last)));
-            var text = 'FPS: ' + fps + ' OBJECTS: ' + this.objects;
-            if (game.tweenEngine) text += ' TWEENS: ' + game.tweenEngine.tweens.length;
-            text += ' TIMERS: ' + game.scene.timers.length;
-            text += ' EMITTERS: ' + game.scene.emitters.length;
-            this.debugDiv.innerHTML = text;
+            this.fps = (Math.round((this.frames * 1000) / (game.Timer.last - this.last)));
             this.last = game.Timer.last;
             this.frames = 0;
         }
+
+        var text = 'FPS: ' + this.fps + ' OBJECTS: ' + this.objects;
+        if (game.tweenEngine) text += ' TWEENS: ' + game.tweenEngine.tweens.length;
+        text += ' TIMERS: ' + game.scene.timers.length;
+        text += ' EMITTERS: ' + game.scene.emitters.length;
+        if (game.scene.world) {
+            text += ' BODIES:' + game.scene.world.bodies.length;
+        }
+        this.debugDiv.innerHTML = text;
     }
 });
 
@@ -64,7 +68,7 @@ game.addAttributes('Debug', {
     **/
     enabled: !!document.location.href.toLowerCase().match(/\?debug/),
     /**
-        How often to update debug box (ms).
+        How fast to update fps (ms).
         @attribute {Number} frequency
         @default 500
     **/
@@ -224,7 +228,7 @@ game.createClass('DebugDraw', {
             }
             body.position.x = body.target.position.x;
             body.position.y = body.target.position.y;
-            if (!body.target.world) this.bodyContainer.removeChild(body);
+            if (!body.target.world) body.remove();
         }
     },
 
