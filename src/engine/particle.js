@@ -102,9 +102,9 @@ game.createClass('Emitter', {
     /**
         Variance of emit angle in radians.
         @property {Number} angleVar
-        @default Math.PI
+        @default 0
     **/
-    angleVar: Math.PI,
+    angleVar: 0,
     /**
         Particle's initial speed.
         @property {Number} speed
@@ -190,7 +190,7 @@ game.createClass('Emitter', {
         @property {Number} endAlpha
         @default 0
     **/
-    endAlpha: 0,
+    endAlpha: 1,
     /**
         Starting scale for particle.
         @property {Number} startScale
