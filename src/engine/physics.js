@@ -100,6 +100,7 @@ game.createClass('World', {
         var g, i, b, group;
 
         for (g = 0; g < body.collideAgainst.length; g++) {
+            body._collides.length = 0;
             group = this.collisionGroups[body.collideAgainst[g]];
             
             if (!group) continue;
@@ -107,7 +108,16 @@ game.createClass('World', {
             for (i = group.length - 1; i >= 0; i--) {
                 if (!group) break;
                 b = group[i];
-                if (body !== b) this.solver.solve(body, b);
+                if (body !== b) {
+                    if (this.solver.hitTest(body, b)) {
+                        body._collides.push(b);
+                    }
+                }
+            }
+            for (i = body._collides.length - 1; i >= 0; i--) {
+                if (this.solver.hitResponse(body, body._collides[i])) {
+                    body.afterCollide(body._collides[i]);
+                }
             }
         }
     },
@@ -147,20 +157,6 @@ game.createClass('World', {
     @extends game.Class
 **/
 game.createClass('CollisionSolver', {
-    /**
-        Solve collision a versus b.
-        @method solve
-        @param {game.Body} a
-        @param {game.Body} b
-    **/
-    solve: function(a, b) {
-        if (this.hitTest(a, b)) {
-            if (this.hitResponse(a, b)) {
-                a.afterCollide(b);
-            }
-        }
-    },
-
     /**
         Hit test a versus b.
         @method hitTest
@@ -228,7 +224,7 @@ game.createClass('CollisionSolver', {
             }
             else {
                 // Inside
-                return a.collide(b);
+                if (a.collide(b)) return true;
             }
         }
         else if (a.shape.radius && b.shape.radius) {
@@ -286,7 +282,7 @@ game.createClass('Body', {
     /**
         Body's maximum velocity.
         @property {game.Vector} velocityLimit
-        @default 500,500
+        @default 0,0
     **/
     velocityLimit: null,
     /**
@@ -307,11 +303,12 @@ game.createClass('Body', {
         @default null
     **/
     collideAgainst: [],
+    _collides: [],
 
     init: function(settings) {
         this.position = new game.Vector();
         this.velocity = new game.Vector();
-        this.velocityLimit = new game.Vector(500, 500);
+        this.velocityLimit = new game.Vector();
         this.last = new game.Vector();
 
         game.merge(this, settings);
@@ -357,6 +354,15 @@ game.createClass('Body', {
     },
 
     /**
+        Add body to world.
+        @method addTo
+        @param {game.World} world
+    **/
+    addTo: function(world) {
+        world.addBody(this);
+    },
+
+    /**
         Remove body from it's world.
         @method remove
     **/
@@ -381,7 +387,8 @@ game.createClass('Body', {
         if (this.mass > 0) {
             this.velocity.x += this.world.gravity.x * this.mass * game.system.delta;
             this.velocity.y += this.world.gravity.y * this.mass * game.system.delta;
-            this.velocity.limit(this.velocityLimit);
+            if (this.velocityLimit.x > 0) this.velocity.x = this.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
+            if (this.velocityLimit.y > 0) this.velocity.y = this.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
         }
 
         this.position.multiplyAdd(this.velocity, game.scale * game.system.delta);
