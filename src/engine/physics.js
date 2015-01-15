@@ -75,7 +75,6 @@ game.createClass('World', {
     removeBodyCollision: function(body) {
         if (typeof body.collisionGroup !== 'number') return;
         this.collisionGroups[body.collisionGroup].erase(body);
-        body.collisionGroup = null;
     },
 
     /**
@@ -236,13 +235,7 @@ game.createClass('CollisionSolver', {
                 return true;
             }
         }
-        else if (a.shape.width && b.shape.radius) {
-            return a.collide(b);
-        }
-        else if (a.shape.radius && b.shape.width) {
-            return a.collide(b);
-        }
-        return false;
+        return a.collide(b);
     }
 });
 
@@ -303,6 +296,18 @@ game.createClass('Body', {
         @default null
     **/
     collideAgainst: [],
+    /**
+        Body's force.
+        @property {game.Vector} force
+        @default 0,0
+    **/
+    force: null,
+    /**
+        Body's damping. Should be number between 0 and 1.
+        @property {Number} damping
+        @default 0
+    **/
+    damping: 0,
     _collides: [],
 
     init: function(settings) {
@@ -310,6 +315,7 @@ game.createClass('Body', {
         this.velocity = new game.Vector();
         this.velocityLimit = new game.Vector();
         this.last = new game.Vector();
+        this.force = new game.Vector();
 
         game.merge(this, settings);
     },
@@ -384,12 +390,12 @@ game.createClass('Body', {
     update: function() {
         this.last.copy(this.position);
 
-        if (this.mass > 0) {
-            this.velocity.x += this.world.gravity.x * this.mass * game.system.delta;
-            this.velocity.y += this.world.gravity.y * this.mass * game.system.delta;
-            if (this.velocityLimit.x > 0) this.velocity.x = this.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
-            if (this.velocityLimit.y > 0) this.velocity.y = this.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
-        }
+        this.velocity.multiplyAdd(this.world.gravity, this.mass * game.system.delta);
+        this.velocity.multiplyAdd(this.force, game.system.delta);
+        this.velocity.multiply(Math.pow(1 - this.damping, game.system.delta));
+
+        if (this.velocityLimit.x > 0) this.velocity.x = this.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
+        if (this.velocityLimit.y > 0) this.velocity.y = this.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
 
         this.position.multiplyAdd(this.velocity, game.scale * game.system.delta);
     }
