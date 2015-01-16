@@ -14,7 +14,7 @@ var game = {
     /**
         @property {String} version
     **/
-    version: '1.12.0',
+    version: '1.12.0-dev',
     /**
         @property {Object} config
     **/
@@ -94,7 +94,6 @@ var game = {
     moduleQueue: [],
     assetQueue: [],
     audioQueue: [],
-    gameMainModule: 'game.main',
 
     /**
         Get JSON data.
@@ -310,7 +309,7 @@ var game = {
         if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
 
         this.current = { name: name, requires: [], loaded: false, body: null };
-        if (name === this.gameMainModule) {
+        if (this.moduleQueue.length === 1) {
             this.current.requires.push('engine.core');
             if (this.DOMLoaded) this.loadModules();
         }
@@ -692,7 +691,7 @@ var game = {
         if (!this.DOMLoaded) {
             if (!document.body) return setTimeout(this.DOMReady.bind(this), 13);
             this.DOMLoaded = true;
-            if (this.modules[this.gameMainModule]) this.loadModules();
+            if (this.moduleQueue.length > 1) this.loadModules();
         }
     },
 
