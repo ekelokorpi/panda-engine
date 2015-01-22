@@ -44,12 +44,6 @@ game.createClass('System', {
     **/
     canvas: null,
     /**
-        Id of canvas element.
-        @property {String} canvasId
-        @default canvas
-    **/
-    canvasId: 'canvas',
-    /**
         Is engine paused.
         @property {Boolean} paused
     **/
@@ -122,7 +116,7 @@ game.createClass('System', {
 
         this.width = width;
         this.height = height;
-        this.canvasId = game.System.canvasId || this.canvasId;
+        this.canvasId = game.System.canvasId;
         this.timer = new game.Timer();
 
         this.initRenderer(width, height);
@@ -730,11 +724,11 @@ game.addAttributes('System', {
     **/
     scaleToFit: false,
     /**
-        Canvas id for game.
+        Id for canvas element.
         @attribute {String} canvasId
-        @default null
+        @default canvas
     **/
-    canvasId: null,
+    canvasId: 'canvas',
     /**
         Canvas scale mode.
         @attribute {String} scaleMode
