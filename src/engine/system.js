@@ -114,6 +114,8 @@ game.createClass('System', {
             }
         }
 
+        this.initialWidth = width;
+        this.initialHeight = height;
         this.width = width;
         this.height = height;
         this.canvasId = game.System.canvasId;
@@ -219,24 +221,23 @@ game.createClass('System', {
         if (!game.System.resizeToFill || !game.device.mobile) return;
         if (this.rotateScreenVisible) return;
 
-        if (this._resizeToFill) return;
-        this._resizeToFill = true;
-
         var gameOrientation = this.width > this.height ? 'landscape' : 'portrait';
         var gameRatio = this.width / this.height;
         var screenOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
         var screenRatio = window.innerWidth / window.innerHeight;
 
         if (screenRatio !== gameRatio && gameOrientation === screenOrientation) {
-            if (gameRatio < screenRatio) {
-                // Letterbox left/right
-                this.width = Math.round(this.height * (window.innerWidth / window.innerHeight));
+
+            var initialRatio = this.initialWidth / this.initialHeight;
+            var width, height;
+            if(screenRatio > initialRatio) {
+                height = this.initialHeight;
+                width = Math.round(height * screenRatio);
+            } else {
+                width = this.initialWidth;
+                height = Math.round(width / screenRatio);
             }
-            else {
-                // Letterbox top/bottom
-                this.height = Math.round(this.width * (window.innerHeight / window.innerWidth));
-            }
-            this.resize(this.width, this.height);
+            this.resize(width, height);
         }
     },
 
