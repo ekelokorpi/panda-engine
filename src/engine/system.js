@@ -586,7 +586,7 @@ game.addAttributes('System', {
     maxHeight: 'auto',
     /**
         Scaling method for CocoonJS.
-        @attribute {ScaleToFill|ScaleAspectFit|ScaleAspectFill} idtkScale
+        @attribute {ScaleToFill|ScaleAspectFit|ScaleAspectFill} idtkScale
         @default ScaleAspectFit
     **/
     idtkScale: 'ScaleAspectFit',

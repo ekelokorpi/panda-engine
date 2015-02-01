@@ -193,7 +193,7 @@ game.Sprite.fromImage = game.PIXI.Sprite.fromImage;
     @param {Object} [settings] Settings to merge to this animation
 **/
 game.Spine = game.PIXI.Spine.extend({
-    init: function(id, settings) {
+    init: function(id, settings) {
         this._super(game.paths[id] || id);
         game.merge(this, settings);
     },
@@ -386,8 +386,8 @@ game.createClass('SpriteSheet', {
         @return {game.Animation}
     **/
     anim: function(frames, startIndex, onlyTextures) {
-        startIndex = startIndex || 0;
-        frames = frames || this.frames;
+        startIndex = startIndex || 0;
+        frames = frames || this.frames;
         var textures = [];
         if (frames.length > 0) {
             for (var i = 0; i < frames.length; i++) {

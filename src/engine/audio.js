@@ -201,7 +201,7 @@ game.createClass('Audio', {
             audio.onended = this._onended.bind(this, audioId);
 
             var gainNode = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
-            gainNode.gain.value = typeof volume === 'number' ? volume : 1;
+            gainNode.gain.value = typeof volume === 'number' ? volume : 1;
             gainNode.connect(this.gainNode);
             audio.connect(gainNode);
             audio.gainNode = gainNode;
@@ -213,7 +213,7 @@ game.createClass('Audio', {
         }
         // HTML5 Audio
         else {
-            this.sources[name].audio.volume = typeof volume === 'number' ? volume : 1;
+            this.sources[name].audio.volume = typeof volume === 'number' ? volume : 1;
             this.sources[name].audio.loop = loop;
             this.sources[name].audio.playing = true;
             this.sources[name].audio.callback = callback;
@@ -311,7 +311,7 @@ game.createClass('Audio', {
 
         // Web Audio
         if (this.context) {
-            audio.gainNode.gain.value = volume || 1;
+            audio.gainNode.gain.value = volume || 1;
         }
         // HTML5 Audio
         else {
@@ -607,7 +607,7 @@ game.createClass('Audio', {
     setPlaybackRate: function(id, rate) {
         if (this.context) {
             var audio = this.audioObjects[id];
-            if (audio) audio.playbackRate.value = rate || 1;
+            if (audio) audio.playbackRate.value = rate || 1;
         }
     },
 

@@ -622,7 +622,7 @@ var game = {
         this.device.wt = (this.device.ie && /Tablet/i.test(navigator.userAgent));
 
         // Others
-        this.device.opera = /Opera/i.test(navigator.userAgent) || /OPR/i.test(navigator.userAgent);
+        this.device.opera = /Opera/i.test(navigator.userAgent) || /OPR/i.test(navigator.userAgent);
         this.device.crosswalk = /Crosswalk/i.test(navigator.userAgent);
         this.device.cocoonJS = !!navigator.isCocoonJS;
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
@@ -630,7 +630,7 @@ var game = {
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
 
-        if (typeof navigator.plugins === 'undefined' || navigator.plugins.length === 0) {
+        if (typeof navigator.plugins === 'undefined' || navigator.plugins.length === 0) {
             try {
                 new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
                 this.device.flash = true;

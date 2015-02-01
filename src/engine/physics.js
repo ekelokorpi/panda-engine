@@ -39,7 +39,7 @@ game.createClass('World', {
     collisionGroups: {},
 
     init: function(x, y) {
-        this.gravity = new game.Vector(x || 0, y || 980);
+        this.gravity = new game.Vector(x || 0, y || 980);
         this.solver = new game.CollisionSolver();
     },
 
