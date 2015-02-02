@@ -235,7 +235,6 @@ game.createClass('CollisionSolver', {
                 return true;
             }
         }
-        return a.collide(b);
     }
 });
 
