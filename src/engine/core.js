@@ -308,11 +308,11 @@ var game = {
         if (this.current) throw 'module ' + this.current.name + ' has no body';
         if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
 
-        this.current = { name: name, requires: [], loaded: false, body: null };
-        if (this.moduleQueue.length === 1) {
-            this.current.requires.push('engine.core');
-            if (this.DOMLoaded) this.loadModules();
-        }
+        this.current = { name: name, requires: [], loaded: false };
+        
+        if (name.indexOf('game.') === 0) this.current.requires.push('engine.core');
+        if (this.moduleQueue.length === 1 && this.DOMLoaded) this.loadModules();
+
         this.modules[name] = this.current;
         this.moduleQueue.push(this.current);
 
@@ -571,8 +571,6 @@ var game = {
             return this.charAt(0).toUpperCase() + this.slice(1);
         };
 
-        this.module('engine.core');
-
         this.normalizeVendorAttribute(window, 'requestAnimationFrame');
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
@@ -644,6 +642,7 @@ var game = {
             this.device.flash = !!navigator.plugins['Shockwave Flash'];
         }
     
+        // Load device specific config
         for (var i in this.device) {
             if (this.device[i] && this.config[i]) {
                 for (var o in this.config[i]) {
@@ -659,25 +658,32 @@ var game = {
 
         if (document.location.href.match(/\?nocache/) || this.config.disableCache) this.nocache = '?' + Date.now();
 
+        // Default config
         if (typeof this.config.sourceFolder === 'undefined') this.config.sourceFolder = 'src';
         if (typeof this.config.mediaFolder === 'undefined') this.config.mediaFolder = 'media';
 
-        var metaTags = document.getElementsByTagName('meta');
-        var viewportFound = false;
+        if (this.device.mobile) {
+            // Search for viewport meta
+            var metaTags = document.getElementsByTagName('meta');
+            for (i = 0; i < metaTags.length; i++) {
+                if (metaTags[i].name === 'viewport') {
+                    var viewportFound = true;
+                    break;
+                }
+            }
 
-        for (i = 0; i < metaTags.length; i++) {
-            if (metaTags[i].name === 'viewport') viewportFound = true;
+            // Add viewport meta, if none found
+            if (!viewportFound) {
+                var viewport = document.createElement('meta');
+                viewport.name = 'viewport';
+                var content = 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no';
+                if (this.device.iOS71) content += ',minimal-ui';
+                viewport.content = content;
+                document.getElementsByTagName('head')[0].appendChild(viewport);
+            }
         }
 
-        // Add viewport meta, if none found
-        if (!viewportFound) {
-            var viewport = document.createElement('meta');
-            viewport.name = 'viewport';
-            var content = 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no';
-            if (this.device.iOS71) content += ',minimal-ui';
-            viewport.content = content;
-            document.getElementsByTagName('head')[0].appendChild(viewport);
-        }
+        this.module('engine.core');
 
         if (document.readyState === 'complete') {
             this.DOMReady();
