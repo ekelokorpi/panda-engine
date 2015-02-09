@@ -318,6 +318,15 @@ game.Animation = game.PIXI.MovieClip.extend({
         if (this.parent) this.parent.removeChild(this);
     },
 
+    /**
+        Play animation.
+        @param {Boolean} loop
+    **/
+    play: function(loop) {
+        if (typeof loop === 'boolean') this.loop = loop;
+        this.playing = true;
+    },
+
     updateTransform: function() {
         if (this.playing) {
             this.currentFrame -= this.animationSpeed;
