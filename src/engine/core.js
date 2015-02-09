@@ -12,12 +12,10 @@
 **/
 var game = {
     /**
+        Current engine version.
         @property {String} version
     **/
     version: '1.12.0-dev',
-    /**
-        @property {Object} config
-    **/
     config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
     coreModules: [
         'engine.analytics',
@@ -227,17 +225,6 @@ var game = {
     **/
     addAsset: function(path, id) {
         return this.addFileToQueue(path, id, 'assetQueue');
-    },
-
-    /**
-        Add multiple assets to loader.
-        @method addAssets
-        @param {Array} assets
-    **/
-    addAssets: function(assets) {
-        for (var i = 0; i < assets.length; i++) {
-            this.addAsset(assets[i]);
-        }
     },
 
     /**
@@ -742,6 +729,15 @@ var game = {
         for (var name in attributes) {
             this[className][name] = attributes[name];
         }
+    },
+
+    /**
+        Get texture from texture cache.
+        @method getTexture
+        @param {String} id
+    **/
+    getTexture: function(id) {
+        return this.TextureCache[this.paths[id]];
     }
 };
 
@@ -752,7 +748,6 @@ game.fnTest = /xyz/.test(function() {
 }) ? /\b_super\b/ : /[\D|\d]*/;
 
 /**
-    Base class.
     @class Class
 **/
 game.Class = function() {};
@@ -761,7 +756,7 @@ game.Class = function() {};
     Extend class.
     @method extend
     @param {Object} prop
-    @return {game.Class} Returns extended class
+    @return {game.Class}
 **/
 game.Class.extend = function(prop) {
     var parent = this.prototype;
@@ -771,11 +766,6 @@ game.Class.extend = function(prop) {
 
     var makeFn = function(name, fn) {
         return function() {
-            /**
-                Call functions parent function.
-                @method _super
-                @param {Array} arguments
-            **/
             var tmp = this._super;
             this._super = parent[name];
             var ret = fn.apply(this, arguments);
