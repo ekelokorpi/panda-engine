@@ -189,6 +189,7 @@ game.createClass('Scene', {
         @param {Boolean} doCallback
     **/
     removeTimer: function(timer, doCallback) {
+        if (!timer) return;
         if (!doCallback) timer.callback = null;
         timer.repeat = false;
         timer.set(0);
