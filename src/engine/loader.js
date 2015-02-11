@@ -223,7 +223,10 @@ game.createClass('Loader', {
 
     getPath: function(path) {
         return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
-    }
+    },
+
+    keydown: function() {},
+    keyup: function() {}
 });
 
 game.addAttributes('Loader', {
