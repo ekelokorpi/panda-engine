@@ -52,8 +52,8 @@ game.createClass('Debug', {
 
         var text = 'FPS: ' + this.fps + ' SPRITES: ' + (this.objects - 1);
         if (game.tweenEngine) text += ' TWEENS: ' + game.tweenEngine.tweens.length;
-        text += ' TIMERS: ' + game.scene.timers.length;
-        text += ' EMITTERS: ' + game.scene.emitters.length;
+        if (game.scene.timers) text += ' TIMERS: ' + game.scene.timers.length;
+        if (game.scene.emitters) text += ' EMITTERS: ' + game.scene.emitters.length;
         if (game.scene.world) {
             text += ' BODIES:' + game.scene.world.bodies.length;
         }
