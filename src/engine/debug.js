@@ -50,7 +50,7 @@ game.createClass('Debug', {
             this.frames = 0;
         }
 
-        var text = 'FPS: ' + this.fps + ' OBJECTS: ' + this.objects;
+        var text = 'FPS: ' + this.fps + ' SPRITES: ' + (this.objects - 1);
         if (game.tweenEngine) text += ' TWEENS: ' + game.tweenEngine.tweens.length;
         text += ' TIMERS: ' + game.scene.timers.length;
         text += ' EMITTERS: ' + game.scene.emitters.length;
@@ -190,6 +190,7 @@ game.createClass('DebugDraw', {
     drawBodySprite: function(sprite, body) {
         sprite.clear();
         sprite.beginFill(game.DebugDraw.bodyColor);
+        sprite.lineStyle(1, 0xff0000);
 
         if (body.shape instanceof game.Rectangle) {
             sprite.drawRect(-body.shape.width / 2, -body.shape.height / 2, body.shape.width, body.shape.height);
@@ -257,9 +258,9 @@ game.addAttributes('DebugDraw', {
     /**
         Alpha of DebugDraw sprites.
         @attribute {Number} spriteAlpha
-        @default 0.3
+        @default 0.5
     **/
-    spriteAlpha: 0.3,
+    spriteAlpha: 0.5,
     /**
         Color of DebugDraw bodies.
         @attribute {Number} bodyColor
@@ -269,9 +270,9 @@ game.addAttributes('DebugDraw', {
     /**
         Alpha of DebugDraw bodies.
         @attribute {Number} bodyAlpha
-        @default 0.3
+        @default 0.5
     **/
-    bodyAlpha: 0.3
+    bodyAlpha: 0.5
 });
 
 game.onStart = function() {
