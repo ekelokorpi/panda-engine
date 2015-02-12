@@ -287,6 +287,13 @@ game.TilingSprite = game.PIXI.TilingSprite.extend({
     @param {Array} textures Textures this animation made up of
 **/
 game.Animation = game.PIXI.MovieClip.extend({
+    /**
+        Play animation in reverse.
+        @property {Boolean} reverse
+        @default false
+    **/
+    reverse: false,
+
     init: function(textures) {
         if (typeof textures === 'string') {
             var frames = Array.prototype.slice.call(arguments);
@@ -330,7 +337,12 @@ game.Animation = game.PIXI.MovieClip.extend({
     updateTransform: function() {
         if (this.playing) {
             this.currentFrame -= this.animationSpeed;
-            this.currentFrame += this.animationSpeed * 60 * game.system.delta;
+            this.currentFrame += this.animationSpeed * (this.reverse ? -1 : 1) * 60 * game.system.delta;
+            
+            if (this.currentFrame < 0 && this.reverse) {
+                if (!this.loop) this.currentFrame = 0;
+                else this.currentFrame = this.totalFrames - 1 + this.currentFrame;
+            }
         }
         this._super();
     }
