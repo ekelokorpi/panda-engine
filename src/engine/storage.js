@@ -14,10 +14,21 @@ game.module(
     @extends game.Class
 **/
 game.createClass('Storage', {
-    id: null,
-
     init: function(id) {
         this.id = id || game.Storage.id;
+        this.supported = this.isSupported();
+    },
+
+    isSupported: function() {
+        if (typeof localStorage !== 'object') return false;
+        try {
+            localStorage.setItem('localStorage', 1);
+            localStorage.removeItem('localStorage');
+        }
+        catch (e) {
+            return false;
+        }
+        return true;
     },
 
     /**
@@ -27,6 +38,7 @@ game.createClass('Storage', {
         @param {*} value
     **/
     set: function(key, value) {
+        if (!this.supported) return false;
         localStorage.setItem(this.id + '.' + key, this.encode(value));
     },
 
@@ -43,7 +55,7 @@ game.createClass('Storage', {
         try {
             return this.decode(raw);
         }
-        catch (err) {
+        catch (e) {
             return raw;
         }
     },
