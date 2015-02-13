@@ -200,7 +200,7 @@ game.createClass('System', {
             height = window.innerHeight * game.device.pixelRatio;
         }
 
-        if (game.System.webGL) this.renderer = new game.autoDetectRenderer(width, height, {
+        if (game.System.webGL) this.renderer = game.autoDetectRenderer(width, height, {
             view: document.getElementById(this.canvasId),
             transparent: game.System.transparent,
             antialias: game.System.antialias
