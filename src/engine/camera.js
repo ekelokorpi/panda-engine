@@ -48,6 +48,12 @@ game.createClass('Camera', {
         @property {game.Point} speed
     **/
     speed: null,
+    /**
+        Use delta-time if necessary, defaults to true (time-based). Set to false to use frame-based.
+        @property {Boolean} useDeltaTime
+        @default true
+    **/
+    useDeltaTime: true,
 
     sensorPosition: null,
     sensorWidth: 0,
@@ -57,7 +63,7 @@ game.createClass('Camera', {
     maxX: null,
     minY: null,
     maxY: null,
-    
+
     init: function(x, y) {
         this.position = new game.Point();
         this.speed = new game.Point();
@@ -165,9 +171,13 @@ game.createClass('Camera', {
             this.speed.y > this.threshold ||
             this.speed.y < -this.threshold
         ) {
+
+            var time = 0.01;
+            if (this.useDeltaTime) time = game.system.delta;
+
             this.setPosition(
-                this.position.x + this.offset.x - this.speed.x * this.acceleration * game.system.delta,
-                this.position.y + this.offset.y - this.speed.y * this.acceleration * game.system.delta
+                this.position.x + this.offset.x - this.speed.x * this.acceleration * time,
+                this.position.y + this.offset.y - this.speed.y * this.acceleration * time
             );
             if (this.debugBox) this.debugBox.alpha = game.Camera.debugAlpha * 2;
         }
