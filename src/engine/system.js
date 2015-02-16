@@ -259,7 +259,6 @@ game.createClass('System', {
         if (onHide) this.pausedOnHide = true;
         else this.paused = true;
 
-        this.running = false;
         if (game.scene) game.scene.pause();
     },
 
@@ -273,7 +272,6 @@ game.createClass('System', {
         if (onHide) this.pausedOnHide = false;
         else this.paused = false;
 
-        this.running = true;
         game.Timer.last = Date.now();
         if (game.scene) game.scene.resume();
     },
@@ -287,7 +285,7 @@ game.createClass('System', {
     setScene: function(sceneClass, removeAssets) {
         this.currentSceneName = sceneClass;
         sceneClass = game['Scene' + sceneClass];
-        if (this.running) {
+        if (this.running && !this.paused) {
             this.newSceneClass = sceneClass;
             this.removeAssets = removeAssets;
         }

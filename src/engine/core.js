@@ -15,7 +15,7 @@ var game = {
         Current engine version.
         @property {String} version
     **/
-    version: '1.13.0',
+    version: '1.13.1',
     config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
     coreModules: [
         'engine.analytics',
