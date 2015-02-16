@@ -340,7 +340,11 @@ game.Animation = game.PIXI.MovieClip.extend({
             this.currentFrame += this.animationSpeed * (this.reverse ? -1 : 1) * 60 * game.system.delta;
             
             if (this.currentFrame < 0 && this.reverse) {
-                if (!this.loop) this.currentFrame = 0;
+                if (!this.loop) {
+                    if (this.onComplete) this.onComplete();
+                    this.currentFrame = 0;
+                    this.playing = false;
+                }
                 else this.currentFrame = this.totalFrames - 1 + this.currentFrame;
             }
         }
