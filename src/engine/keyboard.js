@@ -150,7 +150,7 @@ game.addAttributes('Keyboard', {
         187: 'PLUS',
         189: 'MINUS',
         192: 'GRAVE_ACCENT',
-        222: 'SINGLE_QOUTE'
+        222: 'SINGLE_QUOTE'
     }
 });
 
