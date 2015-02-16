@@ -327,6 +327,7 @@ game.Animation = game.PIXI.MovieClip.extend({
 
     /**
         Play animation.
+        @method play
         @param {Boolean} loop
     **/
     play: function(loop) {
