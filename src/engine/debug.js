@@ -7,7 +7,8 @@ game.module(
 )
 .require(
     'engine.pixi',
-    'engine.physics'
+    'engine.physics',
+    'engine.camera'
 )
 .body(function() {
 'use strict';
@@ -298,6 +299,46 @@ game.World.inject({
         this._super(body);
         if (game.debugDraw && body.shape) game.debugDraw.addBody(body);
     }
+});
+
+game.Camera.inject({
+    init: function(x, y) {
+        this._super(x, y);
+
+        if (game.debugDraw && game.Camera.debug) {
+            this.debugBox = new game.Graphics();
+            this.debugBox.beginFill(game.Camera.debugColor);
+            this.debugBox.alpha = game.Camera.debugAlpha;
+            this.debugBox.drawRect(-this.sensorWidth / 2, -this.sensorHeight / 2, this.sensorWidth, this.sensorHeight);
+            game.system.stage.addChild(this.debugBox);
+        }
+    },
+
+    setSensor: function(width, height) {
+        this._super(width, height);
+
+        if (this.debugBox) {
+            this.debugBox.clear();
+            this.debugBox.beginFill(game.Camera.debugColor);
+            this.debugBox.drawRect(-this.sensorWidth / 2, -this.sensorHeight / 2, this.sensorWidth, this.sensorHeight);
+        }
+    },
+
+    moveCamera: function() {
+        this._super();
+        if (this.debugBox) this.debugBox.alpha = game.Camera.debugAlpha * ((this.speed.x === 0 && this.speed.y === 0) ? 1 : 2);
+    },
+
+    update: function() {
+        this._super();
+        if (this.debugBox) this.debugBox.position.set(this.sensorPosition.x - this.position.x, this.sensorPosition.y - this.position.y);
+    }
+});
+
+game.addAttributes('Camera', {
+    debug: false,
+    debugColor: 0xff00ff,
+    debugAlpha: 0.2
 });
 
 game.onStart = function() {

@@ -34,13 +34,11 @@ game.createClass('Camera', {
     /**
         Sprite, that camera follows.
         @property {game.Sprite} target
-        @default null
     **/
     target: null,
     /**
         Container, that the camera is moving.
         @property {game.Container} container
-        @default null
     **/
     container: null,
     /**
@@ -48,6 +46,12 @@ game.createClass('Camera', {
         @property {game.Point} speed
     **/
     speed: null,
+    /**
+        Scale value of camera.
+        @property {Number} scale
+        @default 1
+    **/
+    scale: 1,
 
     sensorPosition: null,
     sensorWidth: 0,
@@ -65,27 +69,9 @@ game.createClass('Camera', {
         this.sensorPosition = new game.Point(this.offset.x, this.offset.y);
         this.sensorWidth = 200 * game.scale;
         this.sensorHeight = 200 * game.scale;
-        if (x && y) this.setPosition(x, y);
+        if (typeof x === 'number' && typeof y === 'number') this.setPosition(x, y);
 
         game.scene.addObject(this);
-
-        if (game.debugDraw && game.Camera.debug) {
-            this.debugBox = new game.Graphics();
-            this.debugBox.beginFill(game.Camera.debugColor);
-            this.debugBox.alpha = game.Camera.debugAlpha;
-            this.debugBox.drawRect(-this.sensorWidth / 2, -this.sensorHeight / 2, this.sensorWidth, this.sensorHeight);
-            game.system.stage.addChild(this.debugBox);
-        }
-    },
-
-    /**
-        Set target for camera.
-        @method target
-        @param {game.Sprite} target
-    **/
-    follow: function(target) {
-        this.target = target;
-        this.sensorPosition.set(this.target.position.x, this.target.position.y);
     },
 
     /**
@@ -97,6 +83,16 @@ game.createClass('Camera', {
         this.container = container;
         this.container.position.set(-this.position.x, -this.position.y);
         return this;
+    },
+
+    /**
+        Set target for camera.
+        @method setTarget
+        @param {game.Sprite} target
+    **/
+    setTarget: function(target) {
+        this.target = target;
+        this.sensorPosition.set(this.target.position.x * this.scale, this.target.position.y * this.scale);
     },
 
     setPosition: function(x, y) {
@@ -125,34 +121,33 @@ game.createClass('Camera', {
         }
     },
 
-    moveSensor: function() {
-        var targetWidth = Math.abs(this.target.width);
-        var targetHeight = Math.abs(this.target.height);
-        if (this.sensorWidth < targetWidth || this.sensorHeight < targetHeight) this.setSensor(targetWidth, targetHeight);
-
-        if (this.target.position.x < this.sensorPosition.x - this.sensorWidth / 2 + targetWidth / 2) {
-            this.sensorPosition.x = this.target.position.x + this.sensorWidth / 2 - targetWidth / 2;
-        }
-        else if (this.target.position.x + (this.sensorWidth / 2 + targetWidth / 2) > this.sensorPosition.x + this.sensorWidth) {
-            this.sensorPosition.x = this.target.position.x + (this.sensorWidth / 2 + targetWidth / 2) - this.sensorWidth;
-        }
-
-        if (this.target.position.y < this.sensorPosition.y - this.sensorHeight / 2 + targetHeight / 2) {
-            this.sensorPosition.y = this.target.position.y + this.sensorHeight / 2 - targetHeight / 2;
-        }
-        else if (this.target.position.y + (this.sensorHeight / 2 + targetHeight / 2) > this.sensorPosition.y + this.sensorHeight) {
-            this.sensorPosition.y = this.target.position.y + (this.sensorHeight / 2 + targetHeight / 2) - this.sensorHeight;
-        }
-    },
-
     setSensor: function(width, height) {
         this.sensorWidth = width;
         this.sensorHeight = height;
+    },
 
-        if (this.debugBox) {
-            this.debugBox.clear();
-            this.debugBox.beginFill(game.Camera.debugColor);
-            this.debugBox.drawRect(-this.sensorWidth / 2, -this.sensorHeight / 2, this.sensorWidth, this.sensorHeight);
+    moveSensor: function() {
+        if (!this.target) return;
+
+        var targetWidth = Math.abs(this.target.width) * this.scale;
+        var targetHeight = Math.abs(this.target.height) * this.scale;
+        var targetPosX = (this.target.position.x + this.target.width / 2) * this.scale;
+        var targetPosY = (this.target.position.y + this.target.height / 2) * this.scale;
+        
+        if (this.sensorWidth < targetWidth || this.sensorHeight < targetHeight) this.setSensor(targetWidth, targetHeight);
+
+        if (targetPosX < this.sensorPosition.x - this.sensorWidth / 2 + targetWidth / 2) {
+            this.sensorPosition.x = targetPosX + this.sensorWidth / 2 - targetWidth / 2;
+        }
+        else if (targetPosX + (this.sensorWidth / 2 + targetWidth / 2) > this.sensorPosition.x + this.sensorWidth) {
+            this.sensorPosition.x = targetPosX + (this.sensorWidth / 2 + targetWidth / 2) - this.sensorWidth;
+        }
+
+        if (targetPosY < this.sensorPosition.y - this.sensorHeight / 2 + targetHeight / 2) {
+            this.sensorPosition.y = targetPosY + this.sensorHeight / 2 - targetHeight / 2;
+        }
+        else if (targetPosY + (this.sensorHeight / 2 + targetHeight / 2) > this.sensorPosition.y + this.sensorHeight) {
+            this.sensorPosition.y = targetPosY + (this.sensorHeight / 2 + targetHeight / 2) - this.sensorHeight;
         }
     },
 
@@ -169,28 +164,16 @@ game.createClass('Camera', {
                 this.position.x + this.offset.x - this.speed.x * this.acceleration * game.system.delta,
                 this.position.y + this.offset.y - this.speed.y * this.acceleration * game.system.delta
             );
-            if (this.debugBox) this.debugBox.alpha = game.Camera.debugAlpha * 2;
         }
         else {
-            this.speed.x = 0;
-            this.speed.y = 0;
-            if (this.debugBox) this.debugBox.alpha = game.Camera.debugAlpha;
+            this.speed.set(0, 0);
         }
     },
 
     update: function() {
-        if (this.target) this.moveSensor();
-
+        this.moveSensor();
         this.moveCamera();
-
-        if (this.debugBox) this.debugBox.position.set(this.sensorPosition.x - this.position.x, this.sensorPosition.y - this.position.y);
     }
-});
-
-game.addAttributes('Camera', {
-    debug: false,
-    debugColor: 0xff00ff,
-    debugAlpha: 0.2
 });
 
 });
