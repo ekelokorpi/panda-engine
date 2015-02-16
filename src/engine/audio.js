@@ -695,8 +695,8 @@ game.addAttributes('Audio', {
         @attribute {Array} formats
     **/
     formats: [
-        { ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"' },
         { ext: 'ogg', type: 'audio/ogg; codecs="vorbis"' },
+        { ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"' },
         { ext: 'wav', type: 'audio/wav' }
     ],
     /**
