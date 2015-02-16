@@ -39,7 +39,9 @@ game.createClass('World', {
     collisionGroups: {},
 
     init: function(x, y) {
-        this.gravity = new game.Vector(x || 0, y || 980);
+        x = typeof x === 'number' ? x : 0;
+        y = typeof y === 'number' ? y : 980;
+        this.gravity = new game.Vector(x, y);
         this.solver = new game.CollisionSolver();
     },
 
@@ -67,26 +69,27 @@ game.createClass('World', {
     },
 
     /**
-        Remove body from it's collision group.
+        Add body to collision group.
+        @method addBodyCollision
+        @param {game.Body} body
+    **/
+    addBodyCollision: function(body) {
+        if (typeof body.collisionGroup !== 'number') return;
+        this.collisionGroups[body.collisionGroup] = this.collisionGroups[body.collisionGroup] || [];
+        if (this.collisionGroups[body.collisionGroup].indexOf(body) !== -1) return;
+        this.collisionGroups[body.collisionGroup].push(body);
+    },
+
+    /**
+        Remove body from collision group.
         @method removeBodyCollision
         @param {game.Body} body
     **/
     removeBodyCollision: function(body) {
         if (typeof body.collisionGroup !== 'number') return;
+        if (!this.collisionGroups[body.collisionGroup]) return;
+        if (this.collisionGroups[body.collisionGroup].indexOf(body) === -1) return;
         this.collisionGroups[body.collisionGroup].erase(body);
-    },
-
-    /**
-        Add body to collision group.
-        @method addBodyCollision
-        @param {game.Body} body
-        @param {Number} group
-    **/
-    addBodyCollision: function(body, group) {
-        if (typeof group !== 'number') return;
-        body.collisionGroup = group;
-        this.collisionGroups[body.collisionGroup] = this.collisionGroups[body.collisionGroup] || [];
-        this.collisionGroups[body.collisionGroup].push(body);
     },
 
     /**
@@ -136,6 +139,7 @@ game.createClass('World', {
             }
         }
         for (i in this.collisionGroups) {
+            // Remove empty collision group
             if (this.collisionGroups[i].length === 0) {
                 delete this.collisionGroups[i];
                 continue;
@@ -242,7 +246,7 @@ game.createClass('CollisionSolver', {
     @class Body
     @extends game.Class
     @constructor
-    @param {Object} [settings]
+    @param {Object} [properties]
 **/
 game.createClass('Body', {
     /**
@@ -291,7 +295,7 @@ game.createClass('Body', {
     /**
         Group numbers that body collides against.
         @property {Array} collideAgainst
-        @default null
+        @default []
     **/
     collideAgainst: [],
     /**
@@ -308,14 +312,14 @@ game.createClass('Body', {
     damping: 0,
     _collides: [],
 
-    init: function(settings) {
+    init: function(properties) {
         this.position = new game.Vector();
         this.velocity = new game.Vector();
         this.velocityLimit = new game.Vector();
         this.last = new game.Vector();
         this.force = new game.Vector();
 
-        game.merge(this, settings);
+        game.merge(this, properties);
     },
 
     /**
@@ -352,9 +356,21 @@ game.createClass('Body', {
         @param {Number} group
     **/
     setCollisionGroup: function(group) {
-        if (!this.world) return;
-        if (typeof this.collisionGroup === 'number') this.world.removeBodyCollision(this, this.collisionGroup);
-        this.world.addBodyCollision(this, group);
+        if (this.world && typeof this.collisionGroup === 'number') this.world.removeBodyCollision(this);
+        this.collisionGroup = group;        
+        if (this.world) this.world.addBodyCollision(this);
+    },
+
+    /**
+        Set body's collideAgainst groups.
+        @method setCollideAgainst
+        @param {Number} groups
+    **/
+    setCollideAgainst: function() {
+        this.collideAgainst.length = 0;
+        for (var i = 0; i < arguments.length; i++) {
+            this.collideAgainst.push(arguments[i]);
+        }
     },
 
     /**
@@ -363,7 +379,9 @@ game.createClass('Body', {
         @param {game.World} world
     **/
     addTo: function(world) {
+        if (this.world) return;
         world.addBody(this);
+        return this;
     },
 
     /**
@@ -388,9 +406,9 @@ game.createClass('Body', {
     update: function() {
         this.last.copy(this.position);
 
-        this.velocity.multiplyAdd(this.world.gravity, this.mass * game.system.delta);
+        if (this.mass !== 0) this.velocity.multiplyAdd(this.world.gravity, this.mass * game.system.delta);
         this.velocity.multiplyAdd(this.force, game.system.delta);
-        this.velocity.multiply(Math.pow(1 - this.damping, game.system.delta));
+        if (this.damping > 0 && this.damping < 1) this.velocity.multiply(Math.pow(1 - this.damping, game.system.delta));
 
         if (this.velocityLimit.x > 0) this.velocity.x = this.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
         if (this.velocityLimit.y > 0) this.velocity.y = this.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
