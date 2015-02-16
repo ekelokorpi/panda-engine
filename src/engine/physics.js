@@ -51,11 +51,8 @@ game.createClass('World', {
     addBody: function(body) {
         body.world = this;
         body._remove = false;
-        // Convert number into array
-        if (typeof body.collideAgainst === 'number') body.collideAgainst = [body.collideAgainst];
         this.bodies.push(body);
-        this.addBodyCollision(body, body.collisionGroup);
-        if (game.debugDraw && body.shape) game.debugDraw.addBody(body);
+        this.addBodyCollision(body);
     },
 
     /**

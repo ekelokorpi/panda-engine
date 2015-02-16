@@ -6,7 +6,8 @@ game.module(
     'engine.debug'
 )
 .require(
-    'engine.pixi'
+    'engine.pixi',
+    'engine.physics'
 )
 .body(function() {
 'use strict';
@@ -273,6 +274,13 @@ game.addAttributes('DebugDraw', {
         @default 0.5
     **/
     bodyAlpha: 0.5
+});
+
+game.World.inject({
+    addBody: function(body) {
+        this._super(body);
+        if (game.debugDraw && body.shape) game.debugDraw.addBody(body);
+    }
 });
 
 game.onStart = function() {
