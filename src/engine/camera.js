@@ -52,6 +52,12 @@ game.createClass('Camera', {
         @default 1
     **/
     scale: 1,
+    /**
+        Use rounding on container position.
+        @property {Boolean} rounding
+        @default false
+    **/
+    rounding: false,
 
     sensorPosition: null,
     sensorWidth: 0,
@@ -116,8 +122,8 @@ game.createClass('Camera', {
         }
 
         if (this.container) {
-            this.container.position.x = -this.position.x;
-            this.container.position.y = -this.position.y;
+            this.container.position.x = -(this.rounding ? (this.position.x + 0.5) | 0 : this.position.x);
+            this.container.position.y = -(this.rounding ? (this.position.y + 0.5) | 0 : this.position.y);
         }
     },
 
