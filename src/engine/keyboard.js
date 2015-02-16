@@ -146,8 +146,11 @@ game.addAttributes('Keyboard', {
         121: 'F10',
         122: 'F11',
         123: 'F12',
+        186: 'SEMICOLON',
         187: 'PLUS',
-        189: 'MINUS'
+        189: 'MINUS',
+        192: 'GRAVE_ACCENT',
+        222: 'SINGLE_QUOTE'
     }
 });
 
