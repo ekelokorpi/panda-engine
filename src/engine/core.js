@@ -480,13 +480,13 @@ var game = {
     },
 
     boot: function() {
-        delete window.pandaConfig;
-
         if (this.config.noCanvasURL) {
             var canvas = document.createElement('canvas');
             var canvasSupported = !!(canvas.getContext && canvas.getContext('2d'));
             if (!canvasSupported) window.location = this.config.noCanvasURL;
         }
+
+        delete window.pandaConfig;
 
         Math.distance = function(x, y, x2, y2) {
             x = x2 - x;
