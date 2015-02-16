@@ -105,31 +105,6 @@ game.createClass('Scene', {
     },
     
     /**
-        This is called every frame.
-        @method update
-    **/
-    update: function() {
-        var i;
-        if (this.world) this.world.update();
-        for (i = this.timers.length - 1; i >= 0; i--) {
-            if (this.timers[i].time() >= 0) {
-                if (typeof this.timers[i].callback === 'function') this.timers[i].callback();
-                if (this.timers[i].repeat) this.timers[i].reset();
-                else this.timers.splice(i, 1);
-            }
-        }
-        for (i = this.emitters.length - 1; i >= 0; i--) {
-            this.emitters[i].update();
-            if (this.emitters[i]._remove) this.emitters.splice(i, 1);
-        }
-        if (game.tweenEngine) game.tweenEngine.update();
-        for (i = this.objects.length - 1; i >= 0; i--) {
-            if (typeof this.objects[i].update === 'function') this.objects[i].update();
-            if (this.objects[i]._remove) this.objects.splice(i, 1);
-        }
-    },
-
-    /**
         Add object to scene, so it's `update()` function get's called every frame.
         @method addObject
         @param {Object} object
@@ -314,6 +289,31 @@ game.createClass('Scene', {
         @method exit
     **/
     exit: function() {
+    },
+
+    /**
+        This is called every frame.
+        @method update
+    **/
+    update: function() {
+        var i;
+        if (game.tweenEngine) game.tweenEngine.update();
+        if (this.world) this.world.update();
+        for (i = this.timers.length - 1; i >= 0; i--) {
+            if (this.timers[i].time() >= 0) {
+                if (typeof this.timers[i].callback === 'function') this.timers[i].callback();
+                if (this.timers[i].repeat) this.timers[i].reset();
+                else this.timers.splice(i, 1);
+            }
+        }
+        for (i = this.emitters.length - 1; i >= 0; i--) {
+            this.emitters[i].update();
+            if (this.emitters[i]._remove) this.emitters.splice(i, 1);
+        }
+        for (i = this.objects.length - 1; i >= 0; i--) {
+            if (typeof this.objects[i].update === 'function') this.objects[i].update();
+            if (this.objects[i]._remove) this.objects.splice(i, 1);
+        }
     }
 });
 
