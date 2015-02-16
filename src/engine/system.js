@@ -521,11 +521,11 @@ game.createClass('System', {
             if (window.innerWidth < this.width || window.innerHeight < this.height || game.System.scaleToFit) {
                 if (window.innerWidth / this.width < window.innerHeight / this.height) {
                     this.canvas.style.width = window.innerWidth + 'px';
-                    this.canvas.style.height = window.innerWidth * (this.height / this.width) + 'px';
+                    this.canvas.style.height = Math.floor(window.innerWidth * (this.height / this.width)) + 'px';
                 }
                 else {
                     this.canvas.style.height = window.innerHeight + 'px';
-                    this.canvas.style.width = window.innerHeight * (this.width / this.height) + 'px';
+                    this.canvas.style.width = Math.floor(window.innerHeight * (this.width / this.height)) + 'px';
                 }
             }
             else {
