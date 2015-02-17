@@ -757,6 +757,7 @@ game.Class = function() {};
 /**
     Extend class.
     @method extend
+    @static
     @param {Object} prop
     @return {game.Class}
 **/
@@ -793,8 +794,9 @@ game.Class.extend = function(prop) {
         if (!game.initializing) {
             if (this.staticInit) {
                 /**
-                    This method is called before init.
+                    This method is called before constructor.
                     @method staticInit
+                    @static
                     @param {Array} arguments
                 **/
                 var obj = this.staticInit.apply(this, arguments);
@@ -808,11 +810,6 @@ game.Class.extend = function(prop) {
                 }
             }
             if (this.init) {
-                /**
-                    This method is called, when you create new instance of the class.
-                    @method init
-                    @param {Array} arguments
-                **/
                 this.init.apply(this, arguments);
             }
         }
@@ -825,6 +822,7 @@ game.Class.extend = function(prop) {
     /**
         Inject class.
         @method inject
+        @static
         @param {Object} prop
     **/
     Class.inject = function(prop) {
