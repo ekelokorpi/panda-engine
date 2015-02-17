@@ -108,6 +108,10 @@ game.HitEllipse = game.PIXI.Ellipse;
 game.HitPolygon = game.PIXI.Polygon;
 game.HitRectangle = game.PIXI.Rectangle;
 game.Point = game.PIXI.Point;
+/**
+    http://www.goodboydigital.com/pixijs/docs/classes/RenderTexture.html
+    @class RenderTexture
+**/
 game.RenderTexture = game.PIXI.RenderTexture;
 game.Stage = game.PIXI.Stage;
 /**
