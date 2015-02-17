@@ -8,7 +8,7 @@ http://www.pandajs.net
 
 ### Install
 
-    $ npm install -g pandatool
+    $ sudo npm install -g pandatool
     $ mkdir MyPandaGame
     $ cd MyPandaGame
     $ panda install
