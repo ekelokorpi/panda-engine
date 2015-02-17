@@ -12,6 +12,8 @@ game.module(
     Google Analytics tracking.
     @class Analytics
     @extends game.Class
+    @constructor
+    @param {String} id
 **/
 game.createClass('Analytics', {
     /**

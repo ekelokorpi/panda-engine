@@ -741,6 +741,8 @@ var game = {
     }
 };
 
+game.Core = game;
+
 // http://ejohn.org/blog/simple-javascript-inheritance/
 game.initializing = false;
 game.fnTest = /xyz/.test(function() {
