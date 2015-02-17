@@ -8,7 +8,8 @@ game.module(
 .require(
     'engine.pixi',
     'engine.physics',
-    'engine.camera'
+    'engine.camera',
+    'engine.renderer'
 )
 .body(function() {
 'use strict';
@@ -339,6 +340,20 @@ game.addAttributes('Camera', {
     debug: false,
     debugColor: 0xff00ff,
     debugAlpha: 0.2
+});
+
+game.Sprite.inject({
+    addChild: function(obj) {
+        this._super(obj);
+        if (game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
+    }
+});
+
+game.Container.inject({
+    addChild: function(obj) {
+        this._super(obj);
+        if (game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
+    }
 });
 
 game.onStart = function() {

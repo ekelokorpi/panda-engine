@@ -79,22 +79,48 @@ for (var i in game.PIXI) {
     }
 }
 
+game.autoDetectRenderer = game.PIXI.autoDetectRenderer;
 game.AssetLoader = game.PIXI.AssetLoader;
-game.Text = game.PIXI.Text;
-game.HitRectangle = game.PIXI.Rectangle;
+game.blendModes = game.PIXI.blendModes;
+/**
+    http://www.goodboydigital.com/pixijs/docs/classes/BaseTexture.html
+    @class BaseTexture
+**/
+game.BaseTexture = game.PIXI.BaseTexture;
+/**
+    http://www.goodboydigital.com/pixijs/docs/classes/BitmapText.html
+    @class BitmapText
+**/
+game.BitmapText = game.PIXI.BitmapText;
+game.CanvasRenderer = game.PIXI.CanvasRenderer;
+/**
+    http://www.goodboydigital.com/pixijs/docs/classes/DisplayObjectContainer.html
+    @class Container
+**/
+game.Container = game.PIXI.DisplayObjectContainer;
+/**
+    http://www.goodboydigital.com/pixijs/docs/classes/Graphics.html
+    @class Graphics
+**/
+game.Graphics = game.PIXI.Graphics;
 game.HitCircle = game.PIXI.Circle;
 game.HitEllipse = game.PIXI.Ellipse;
 game.HitPolygon = game.PIXI.Polygon;
-game.TextureCache = game.PIXI.TextureCache;
-game.RenderTexture = game.PIXI.RenderTexture;
+game.HitRectangle = game.PIXI.Rectangle;
 game.Point = game.PIXI.Point;
-game.CanvasRenderer = game.PIXI.CanvasRenderer;
-game.autoDetectRenderer = game.PIXI.autoDetectRenderer;
+game.RenderTexture = game.PIXI.RenderTexture;
 game.Stage = game.PIXI.Stage;
-game.blendModes = game.PIXI.blendModes;
-game.BaseTexture = game.PIXI.BaseTexture;
-game.Graphics = game.PIXI.Graphics;
-game.BitmapText = game.PIXI.BitmapText;
+/**
+    http://www.goodboydigital.com/pixijs/docs/classes/Text.html
+    @class Text
+**/
+game.Text = game.PIXI.Text;
+/**
+    Texture cache.
+    @class TextureCache
+    @static
+**/
+game.TextureCache = game.PIXI.TextureCache;
 
 game.PIXI.DisplayObject.prototype.remove = function() {
     if (this.parent) this.parent.removeChild(this);
@@ -115,8 +141,6 @@ game.PIXI.DisplayObject.prototype.addTo = function(container) {
     @param {Object} [settings] Other settings to merge into this Sprite
 **/
 game.Sprite = game.PIXI.Sprite.extend({
-    debugDraw: true,
-
     init: function(id, x, y, settings) {
         if (typeof id === 'string') {
             id = game.paths[id] || id;
@@ -175,11 +199,6 @@ game.Sprite = game.PIXI.Sprite.extend({
         this.position.x += offsetX || 0;
         this.position.y += offsetY || 0;
         return this;
-    },
-
-    addChild: function(obj) {
-        this._super(obj);
-        if (game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
     }
 });
 
@@ -219,21 +238,6 @@ game.Spine = game.PIXI.Spine.extend({
     **/
     mix: function(from, to, value) {
         this.stateData.setMixByName(from, to, value / 100);
-    }
-});
-
-/**
-    http://www.goodboydigital.com/pixijs/docs/classes/DisplayObjectContainer.html
-    @class Container
-**/
-game.Container = game.PIXI.DisplayObjectContainer.extend({
-    /**
-        Add object to container.
-        @method addChild
-    **/
-    addChild: function(obj) {
-        this._super(obj);
-        if (game.debugDraw && obj.interactive && obj.debugDraw) game.debugDraw.addSprite(obj);
     }
 });
 
@@ -305,24 +309,6 @@ game.Animation = game.PIXI.MovieClip.extend({
         }
 
         this._super(textures);
-    },
-
-    /**
-        Add to container.
-        @method addTo
-        @param {game.Container} container
-    **/
-    addTo: function(container) {
-        container.addChild(this);
-        return this;
-    },
-
-    /**
-        Remove from it's container.
-        @method remove
-    **/
-    remove: function() {
-        if (this.parent) this.parent.removeChild(this);
     },
 
     /**
