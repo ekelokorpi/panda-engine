@@ -342,19 +342,11 @@ game.addAttributes('Camera', {
     debugAlpha: 0.2
 });
 
-game.Sprite.inject({
-    addChild: function(obj) {
-        this._super(obj);
-        if (game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
-    }
-});
-
-game.Container.inject({
-    addChild: function(obj) {
-        this._super(obj);
-        if (game.debugDraw && obj.interactive) game.debugDraw.addSprite(obj);
-    }
-});
+game.PIXI.DisplayObjectContainer.prototype._addChild = game.PIXI.DisplayObjectContainer.prototype.addChild;
+game.PIXI.DisplayObjectContainer.prototype.addChild = function(child) {
+    if (game.debugDraw && child.interactive) game.debugDraw.addSprite(child);
+    this._addChild(child);
+};
 
 game.onStart = function() {
     if (game.Debug && game.Debug.enabled) {
