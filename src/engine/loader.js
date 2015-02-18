@@ -13,7 +13,7 @@ game.module(
     @class Loader
     @extends game.Class
     @constructor
-    @param {Function|String} callback
+    @param {Function|String} callback Callback function or scene name
 **/
 game.createClass('Loader', {
     /**
@@ -83,13 +83,13 @@ game.createClass('Loader', {
         this.barBg = new game.Graphics();
         this.barBg.beginFill(game.Loader.barBgColor);
         this.barBg.drawRect(0, 0, barWidth, barHeight);
-        this.barBg.position.set(Math.round(game.renderer.width / 2 - (barWidth / 2)), Math.round(game.renderer.height / 2 - (barHeight / 2)));
+        this.barBg.position.set(Math.round(game.system.width / 2 - (barWidth / 2)), Math.round(game.system.height / 2 - (barHeight / 2)));
         this.stage.addChild(this.barBg);
 
         this.barFg = new game.Graphics();
         this.barFg.beginFill(game.Loader.barColor);
         this.barFg.drawRect(0, 0, barWidth, barHeight);
-        this.barFg.position.set(Math.round(game.renderer.width / 2 - (barWidth / 2)), Math.round(game.renderer.height / 2 - (barHeight / 2)));
+        this.barFg.position.set(Math.round(game.system.width / 2 - (barWidth / 2)), Math.round(game.system.height / 2 - (barHeight / 2)));
         this.barFg.scale.x = this.percent / 100;
         this.stage.addChild(this.barFg);
     },
@@ -100,7 +100,7 @@ game.createClass('Loader', {
         @param {Function|String} callback
     **/
     onComplete: function(callback) {
-        if (typeof callback === 'string' || game.System.startScene) this.dynamic = false;
+        if (typeof callback === 'string') this.dynamic = false;
         this.callback = callback;
         return this;
     },
@@ -123,7 +123,7 @@ game.createClass('Loader', {
 
             this.initStage();
 
-            if (!game.scene) this.loopId = game.setGameLoop(this.run.bind(this), game.system.canvas);
+            if (!game.scene) this.loopId = game._setGameLoop(this.run.bind(this), game.system.canvas);
             else game.scene = this;
         }
 
@@ -178,13 +178,8 @@ game.createClass('Loader', {
     setScene: function() {
         game.system.timer.last = 0;
         game.Timer.time = Number.MIN_VALUE;
-        if (this.loopId) game.clearGameLoop(this.loopId);
-        if (game.System.startScene) {
-            var startScene = game.System.startScene;
-            game.System.startScene = null;
-            game.system.setScene(startScene);
-        }
-        else game.system.setScene(this.callback);
+        if (this.loopId) game._clearGameLoop(this.loopId);
+        game.system.setScene(this.callback);
     },
 
     exit: function() {},

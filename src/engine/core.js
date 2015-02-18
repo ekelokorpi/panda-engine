@@ -1,23 +1,128 @@
-// Panda.js HTML5 game engine
-// created by Eemeli Kelokorpi
-
-'use strict';
-
 /**
+    Panda.js HTML5 game engine
     @module game
     @namespace game
+    @author Eemeli Kelokorpi <eemeli.kelokorpi@gmail.com>
 **/
+'use strict';
+
 /**
     @class Core
 **/
 var game = {
     /**
-        Current engine version.
+        Engine version.
         @property {String} version
     **/
-    version: '1.13.1',
+    version: '1.14.0',
+    /**
+        Engine config.
+        @property {Object} config
+    **/
     config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
-    coreModules: [
+    /**
+        Scale factor for Retina and HiRes mode.
+        @property {Number} scale
+    **/
+    scale: 1,
+    /**
+        @property {game.Scene} scene
+    **/
+    scene: null,
+    /**
+        @property {game.Debug} debug
+    **/
+    debug: null,
+    /**
+        @property {game.System} system
+    **/
+    system: null,
+    /**
+        @property {game.Audio} sound
+    **/
+    audio: null,
+    /**
+        @property {game.Pool} pool
+    **/
+    pool: null,
+    /**
+        @property {game.Storage} storage
+    **/
+    storage: null,
+    /**
+        @property {game.Keyboard} keyboard
+    **/
+    keyboard: null,
+    /**
+        Device / browser information.
+        @property {Object} device
+    **/
+    device: {},
+    /**
+        Module load queue.
+        @property {Array} moduleQueue
+    **/
+    moduleQueue: [],
+    /**
+        Asset load queue.
+        @property {Array} assetQueue
+    **/
+    assetQueue: [],
+    /**
+        Audio load queue.
+        @property {Array} audioQueue
+    **/
+    audioQueue: [],
+    /**
+        List of asset paths.
+        @property {Object} paths
+    **/
+    paths: {},
+    /**
+        List of plugins.
+        @property {Object} plugins
+    **/
+    plugins: {},
+    /**
+        List of JSON files.
+        @property {Object} json
+    **/
+    json: {},
+    /**
+        List of modules.
+        @property {Object} modules
+    **/
+    modules: {},
+    /**
+        @property {String} _nocache
+        @private
+    **/
+    _nocache: '',
+    /**
+        @property {Number} _waitForLoad
+        @private
+    **/
+    _waitForLoad: 0,
+    /**
+        @property {Boolean} _DOMLoaded
+        @private
+    **/
+    _DOMLoaded: false,
+    /**
+        @property {Number} _gameLoopId
+        @private
+    **/
+    _gameLoopId: 1,
+    /**
+        @property {Object} _gameLoops
+        @private
+    **/
+    _gameLoops: {},
+    /**
+        @property {Array} _coreModules
+        @private
+    **/
+    _coreModules: [
         'engine.analytics',
         'engine.audio',
         'engine.camera',
@@ -36,358 +141,90 @@ var game = {
         'engine.tween'
     ],
     /**
-        Scale factor for Retina and HiRes mode.
-        @property {Number} scale
+        @method _setVendorAttribute
+        @private
     **/
-    scale: 1,
-    /**
-        Instance of current {{#crossLink "game.Scene"}}{{/crossLink}}.
-        @property {game.Scene} scene
-    **/
-    scene: null,
-    /**
-        Instance of {{#crossLink "game.Debug"}}{{/crossLink}}.
-        @property {game.Debug} debug
-    **/
-    debug: null,
-    /**
-        Instance of {{#crossLink "game.System"}}{{/crossLink}}.
-        @property {game.System} system
-    **/
-    system: null,
-    /**
-        Instance of {{#crossLink "game.Audio"}}{{/crossLink}}.
-        @property {game.Audio} sound
-    **/
-    audio: null,
-    /**
-        Instance of {{#crossLink "game.Pool"}}{{/crossLink}}.
-        @property {game.Pool} pool
-    **/
-    pool: null,
-    /**
-        Instance of {{#crossLink "game.Storage"}}{{/crossLink}}.
-        @property {game.Storage} storage
-    **/
-    storage: null,
-    /**
-        Instance of {{#crossLink "game.Keyboard"}}{{/crossLink}}.
-        @property {game.Keyboard} keyboard
-    **/
-    keyboard: null,
-    /**
-        Device / browser information.
-        @property {Object} device
-    **/
-    device: {},
-    paths: {},
-    plugins: {},
-    json: {},
-    modules: {},
-    nocache: '',
-    waitForLoad: 0,
-    DOMLoaded: false,
-    gameLoopId: 1,
-    gameLoops: {},
-    moduleQueue: [],
-    assetQueue: [],
-    audioQueue: [],
-
-    /**
-        Get JSON data.
-        @method getJSON
-        @param {String} id
-    **/
-    getJSON: function(id) {
-        return this.json[this.paths[id]];
-    },
-
-    /**
-        Copy object.
-        @method copy
-        @param {Object} object
-    **/
-    copy: function(object) {
-        var l, c, i;
-        if (
-            !object || typeof object !== 'object' ||
-            object instanceof HTMLElement ||
-            object instanceof this.Class ||
-            (this.Container && object instanceof this.Container)
-        ) {
-            return object;
-        }
-        else if (object instanceof Array) {
-            c = [];
-            for (i = 0, l = object.length; i < l; i++) {
-                c[i] = this.copy(object[i]);
-            }
-            return c;
-        }
-        else {
-            c = {};
-            for (i in object) {
-                c[i] = this.copy(object[i]);
-            }
-            return c;
-        }
-    },
-
-    /**
-        Merge objects.
-        @method merge
-        @param {Object} to
-        @param {Object} from
-    **/
-    merge: function(to, from) {
-        for (var key in from) {
-            var ext = from[key];
-            if (
-                typeof ext !== 'object' ||
-                ext instanceof HTMLElement ||
-                ext instanceof this.Class ||
-                ext instanceof this.Container
-            ) {
-                to[key] = ext;
-            }
-            else {
-                if (!to[key] || typeof to[key] !== 'object') {
-                    to[key] = (ext instanceof Array) ? [] : {};
-                }
-                this.merge(to[key], ext);
-            }
-        }
-        return to;
-    },
-
-    /**
-        Sort object by key names.
-        @method ksort
-        @param {Object} obj
-        @param {Function} [compare]
-    **/
-    ksort: function(obj, compare) {
-        if (!obj || typeof obj !== 'object') return false;
-
-        var keys = [], result = {}, i;
-        for (i in obj) {
-            keys.push(i);
-        }
-        
-        keys.sort(compare);
-        for (i = 0; i < keys.length; i++) {
-            result[keys[i]] = obj[keys[i]];
-        }
-
-        return result;
-    },
-
-    setVendorAttribute: function(el, attr, val) {
+    _setVendorAttribute: function(el, attr, val) {
         var uc = attr.ucfirst();
         el[attr] = el['ms' + uc] = el['moz' + uc] = el['webkit' + uc] = el['o' + uc] = val;
     },
 
-    getVendorAttribute: function(el, attr) {
+    /**
+        @method _getVendorAttribute
+        @private
+    **/
+    _getVendorAttribute: function(el, attr) {
         var uc = attr.ucfirst();
         return el[attr] || el['ms' + uc] || el['moz' + uc] || el['webkit' + uc] || el['o' + uc];
     },
 
-    normalizeVendorAttribute: function(el, attr) {
+    /**
+        @method _normalizeVendorAttribute
+        @private
+    **/
+    _normalizeVendorAttribute: function(el, attr) {
         if (el[attr]) return;
-        var prefixedVal = this.getVendorAttribute(el, attr);
+        var prefixedVal = this._getVendorAttribute(el, attr);
         el[attr] = el[attr] || prefixedVal;
     },
 
     /**
-        Request fullscreen mode.
-        @method fullscreen
+        @method _addFileToQueue
+        @private
     **/
-    fullscreen: function() {
-        if (this.system.canvas.requestFullscreen) this.system.canvas.requestFullscreen();
-        else if (this.system.canvas.requestFullScreen) this.system.canvas.requestFullScreen();
-    },
-
-    /**
-        Test fullscreen support.
-        @method fullscreenSupport
-        @return {Boolean} Return true, if browser supports fullscreen mode.
-    **/
-    fullscreenSupport: function() {
-        return !!(this.system.canvas.requestFullscreen || this.system.canvas.requestFullScreen);
-    },
-
-    /**
-        Add asset to loader.
-        @method addAsset
-        @param {String} path
-        @param {String} [id]
-        @return {String} id
-    **/
-    addAsset: function(path, id) {
-        return this.addFileToQueue(path, id, 'assetQueue');
-    },
-
-    /**
-        Add audio to loader.
-        @method addAudio
-        @param {String} path
-        @param {String} [id]
-        @return {String} id
-    **/
-    addAudio: function(path, id) {
-        return this.addFileToQueue(path, id, 'audioQueue');
-    },
-
-    addFileToQueue: function(path, id, queue) {
+    _addFileToQueue: function(path, id, queue) {
         id = id || path;
-        path = this.getMediaPath(path) + this.nocache;
+        path = this._getFilePath(path) + this._nocache;
         if (this.paths[id]) return id;
         this.paths[id] = path;
         if (this[queue].indexOf(path) === -1) this[queue].push(path);
         return id;
     },
 
-    getMediaPath: function(file) {
+    /**
+        @method _getFilePath
+        @private
+    **/
+    _getFilePath: function(file) {
         if (this.config.mediaFolder) file = this.config.mediaFolder + '/' + file;
         return file;
     },
 
     /**
-        Remove asset from memory.
-        @method removeAsset
-        @param {String} id
+        @method _loadScript
+        @private
     **/
-    removeAsset: function(id) {
-        var path = this.paths[id];
-        if (this.json[path] && this.json[path].frames) {
-            // Sprite sheet
-            for (var key in this.json[path].frames) {
-                this.TextureCache[key].destroy(true);
-                delete this.TextureCache[key];
-            }
-        }
-        else if (this.TextureCache[path]) {
-            // Sprite
-            this.TextureCache[path].destroy(true);
-            delete this.TextureCache[path];
-        }
-        delete this.paths[id];
-    },
-
-    /**
-        Remove all assets from memory.
-        @method removeAssets
-    **/
-    removeAssets: function() {
-        for (var key in this.TextureCache) {
-            this.TextureCache[key].destroy(true);
-            delete this.TextureCache[key];
-        }
-        this.paths = {};
-    },
-
-    /**
-        Define new module.
-        @method module
-        @param {String} name
-    **/
-    module: function(name) {
-        if (this.current) throw 'module ' + this.current.name + ' has no body';
-        if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
-
-        this.current = { name: name, requires: [], loaded: false };
-        
-        if (name.indexOf('game.') === 0) this.current.requires.push('engine.core');
-        if (this.moduleQueue.length === 1 && this.DOMLoaded) this.loadModules();
-
-        this.modules[name] = this.current;
-        this.moduleQueue.push(this.current);
-
-        if (name === 'engine.core') {
-            if (this.config.ignoreModules) {
-                for (var i = this.coreModules.length - 1; i >= 0; i--) {
-                    if (this.config.ignoreModules.indexOf(this.coreModules[i]) !== -1) this.coreModules.splice(i, 1);
-                }
-            }
-            this.current.requires = this.coreModules;
-            this.body(function() {});
-        }
-        return this;
-    },
-
-    /**
-        Require module.
-        @method require
-        @param {Array} modules
-    **/
-    require: function(modules) {
-        var i, modules = Array.prototype.slice.call(arguments);
-        for (i = 0; i < modules.length; i++) {
-            if (modules[i] && this.current.requires.indexOf(modules[i]) === -1) this.current.requires.push(modules[i]);
-        }
-        return this;
-    },
-
-    /**
-        Define body for module.
-        @method body
-        @param {Function} body
-    **/
-    body: function(body) {
-        this.current.body = body;
-        this.current = null;
-        if (this.loadFinished) this.loadModules();
-    },
-
-    start: function() {
-        if (this.moduleQueue.length > 0) return;
-
-        this.system = new this.System();
-
-        if (this.Audio) this.audio = new this.Audio();
-        if (this.Pool) this.pool = new this.Pool();
-        if (this.DebugDraw && this.DebugDraw.enabled && this.Debug.enabled) this.debugDraw = new this.DebugDraw();
-        if (this.Storage && this.Storage.id) this.storage = new this.Storage();
-        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
-        if (this.TweenEngine) this.tweenEngine = new this.TweenEngine();
-
-        // Load plugins
-        for (var name in this.plugins) {
-            this.plugins[name] = new (this.plugins[name])();
-        }
-
-        this.loader = new this.Loader();
-        if (!this.system.rotateScreenVisible) this.loader.start();
-
-        this.onStart();
-    },
-
-    onStart: function() {
-    },
-
-    loadScript: function(name, requiredFrom) {
+    _loadScript: function(name, requiredFrom) {
         this.modules[name] = true;
-        this.waitForLoad++;
+        this._waitForLoad++;
 
-        var path = name.replace(/\./g, '/') + '.js' + this.nocache;
+        var path = name.replace(/\./g, '/') + '.js' + this._nocache;
         if (this.config.sourceFolder) path = this.config.sourceFolder + '/' + path;
 
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
-        script.onload = this.scriptLoaded.bind(this);
+        script.onload = this._scriptLoaded.bind(this);
         script.onerror = function() {
             throw 'to load module ' + name + ' at ' + path + ' required from ' + requiredFrom;
         };
         document.getElementsByTagName('head')[0].appendChild(script);
     },
 
-    scriptLoaded: function() {
-        this.waitForLoad--;
-        this.loadModules();
+    /**
+        @method _scriptLoaded
+        @private
+    **/
+    _scriptLoaded: function() {
+        this._waitForLoad--;
+        this._loadModules();
     },
 
-    loadModules: function() {
+    /**
+        @method _loadModules
+        @private
+    **/
+    _loadModules: function() {
         var moduleLoaded, i, j, module, name, dependenciesLoaded;
         for (i = 0; i < this.moduleQueue.length; i++) {
             module = this.moduleQueue[i];
@@ -397,7 +234,7 @@ var game = {
                 name = module.requires[j];
                 if (!this.modules[name]) {
                     dependenciesLoaded = false;
-                    this.loadScript(name, module.name);
+                    this._loadScript(name, module.name);
                 }
                 else if (!this.modules[name].loaded) {
                     dependenciesLoaded = false;
@@ -410,14 +247,14 @@ var game = {
                 module.body();
                 moduleLoaded = true;
                 i--;
-                if (this.moduleQueue.length === 0) this.modulesLoaded();
+                if (this.moduleQueue.length === 0) this._modulesLoaded();
             }
         }
 
         if (moduleLoaded && this.moduleQueue.length > 0) {
-            this.loadModules();
+            this._loadModules();
         }
-        else if (this.waitForLoad === 0 && this.moduleQueue.length !== 0) {
+        else if (this._waitForLoad === 0 && this.moduleQueue.length !== 0) {
             var unresolved = [];
             for (i = 0; i < this.moduleQueue.length; i++) {
                 var unloaded = [];
@@ -437,7 +274,11 @@ var game = {
         }
     },
 
-    modulesLoaded: function() {
+    /**
+        @method _modulesLoaded
+        @private
+    **/
+    _modulesLoaded: function() {
         // Parse config
         for (var c in this.config) {
             var m = c.ucfirst();
@@ -452,17 +293,18 @@ var game = {
         else this.ready();
     },
 
-    ready: function() {
-    },
-
-    setGameLoop: function(callback, element) {
+    /**
+        @method _setGameLoop
+        @private
+    **/
+    _setGameLoop: function(callback, element) {
         if (game.System.frameRate) return window.setInterval(callback, 1000 / game.System.frameRate);
         if (window.requestAnimationFrame) {
-            var id = this.gameLoopId++;
-            this.gameLoops[id] = true;
+            var id = this._gameLoopId++;
+            this._gameLoops[id] = true;
 
             var animate = function() {
-                if (!game.gameLoops[id]) return;
+                if (!game._gameLoops[id]) return;
                 window.requestAnimationFrame(animate, element);
                 callback();
             };
@@ -474,12 +316,20 @@ var game = {
         }
     },
 
-    clearGameLoop: function(id) {
-        if (this.gameLoops[id]) delete this.gameLoops[id];
+    /**
+        @method _clearGameLoop
+        @private
+    **/
+    _clearGameLoop: function(id) {
+        if (this._gameLoops[id]) delete this._gameLoops[id];
         else window.clearInterval(id);
     },
 
-    boot: function() {
+    /**
+        @method _boot
+        @private
+    **/
+    _boot: function() {
         if (this.config.noCanvasURL) {
             var canvas = document.createElement('canvas');
             var canvasSupported = !!(canvas.getContext && canvas.getContext('2d'));
@@ -558,7 +408,8 @@ var game = {
             return this.charAt(0).toUpperCase() + this.slice(1);
         };
 
-        this.normalizeVendorAttribute(window, 'requestAnimationFrame');
+        this._normalizeVendorAttribute(window, 'requestAnimationFrame');
+        this._normalizeVendorAttribute(navigator, 'vibrate');
 
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
@@ -643,7 +494,7 @@ var game = {
             }
         }
 
-        if (document.location.href.match(/\?nocache/) || this.config.disableCache) this.nocache = '?' + Date.now();
+        if (document.location.href.match(/\?nocache/) || this.config.disableCache) this._nocache = '?' + Date.now();
 
         // Default config
         if (typeof this.config.sourceFolder === 'undefined') this.config.sourceFolder = 'src';
@@ -673,21 +524,151 @@ var game = {
         this.module('engine.core');
 
         if (document.readyState === 'complete') {
-            this.DOMReady();
+            this._DOMReady();
         }
         else {
-            document.addEventListener('DOMContentLoaded', this.DOMReady.bind(this), false);
-            window.addEventListener('load', this.DOMReady.bind(this), false);
+            document.addEventListener('DOMContentLoaded', this._DOMReady.bind(this), false);
+            window.addEventListener('load', this._DOMReady.bind(this), false);
         }
     },
 
-    DOMReady: function() {
-        if (!this.DOMLoaded) {
-            if (!document.body) return setTimeout(this.DOMReady.bind(this), 13);
-            this.DOMLoaded = true;
-            if (this.moduleQueue.length > 1) this.loadModules();
+    /**
+        @method _DOMReady
+        @private
+    **/
+    _DOMReady: function() {
+        if (!this._DOMLoaded) {
+            if (!document.body) return setTimeout(this._DOMReady.bind(this), 13);
+            this._DOMLoaded = true;
+            if (this.moduleQueue.length > 1) this._loadModules();
         }
     },
+
+    /**
+        Remove asset from memory.
+        @method removeAsset
+        @param {String} id
+    **/
+    removeAsset: function(id) {
+        var path = this.paths[id];
+        if (this.json[path] && this.json[path].frames) {
+            // Sprite sheet
+            for (var key in this.json[path].frames) {
+                this.TextureCache[key].destroy(true);
+                delete this.TextureCache[key];
+            }
+        }
+        else if (this.TextureCache[path]) {
+            // Sprite
+            this.TextureCache[path].destroy(true);
+            delete this.TextureCache[path];
+        }
+        delete this.paths[id];
+    },
+
+    /**
+        Remove all assets from memory.
+        @method removeAssets
+    **/
+    removeAssets: function() {
+        for (var key in this.TextureCache) {
+            this.TextureCache[key].destroy(true);
+            delete this.TextureCache[key];
+        }
+        this.paths = {};
+    },
+
+    /**
+        Define new module.
+        @method module
+        @param {String} name
+    **/
+    module: function(name) {
+        if (this.current) throw 'module ' + this.current.name + ' has no body';
+        if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
+
+        this.current = { name: name, requires: [], loaded: false };
+        
+        if (name.indexOf('game.') === 0) this.current.requires.push('engine.core');
+        if (this.moduleQueue.length === 1 && this._DOMLoaded) this._loadModules();
+
+        this.modules[name] = this.current;
+        this.moduleQueue.push(this.current);
+
+        if (name === 'engine.core') {
+            if (this.config.ignoreModules) {
+                for (var i = this._coreModules.length - 1; i >= 0; i--) {
+                    if (this.config.ignoreModules.indexOf(this._coreModules[i]) !== -1) this._coreModules.splice(i, 1);
+                }
+            }
+            this.current.requires = this._coreModules;
+            this.body(function() {});
+        }
+        return this;
+    },
+
+    /**
+        Require module.
+        @method require
+        @param {Array} modules
+    **/
+    require: function(modules) {
+        var i, modules = Array.prototype.slice.call(arguments);
+        for (i = 0; i < modules.length; i++) {
+            if (modules[i] && this.current.requires.indexOf(modules[i]) === -1) this.current.requires.push(modules[i]);
+        }
+        return this;
+    },
+
+    /**
+        Define body for module.
+        @method body
+        @param {Function} body
+    **/
+    body: function(body) {
+        this.current.body = body;
+        this.current = null;
+        if (this.loadFinished) this._loadModules();
+    },
+
+    /**
+        Start engine.
+        @method start
+    **/
+    start: function() {
+        if (this.moduleQueue.length > 0) return;
+
+        this.system = new this.System();
+
+        if (this.Audio) this.audio = new this.Audio();
+        if (this.Pool) this.pool = new this.Pool();
+        if (this.DebugDraw && this.DebugDraw.enabled && this.Debug.enabled) this.debugDraw = new this.DebugDraw();
+        if (this.Storage && this.Storage.id) this.storage = new this.Storage();
+        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
+        if (this.TweenEngine) this.tweenEngine = new this.TweenEngine();
+
+        // Load plugins
+        for (var name in this.plugins) {
+            this.plugins[name] = new (this.plugins[name])();
+        }
+
+        this.loader = new this.Loader(this.System.startScene);
+        if (!this.system.rotateScreenVisible) this.loader.start();
+
+        this.onStart();
+    },
+
+    /**
+        Called, when engine is started.
+        @method onStart
+    **/
+    onStart: function() {},
+
+    /**
+        Called, when core is ready, and autoStart not enabled.
+        @method ready
+    **/
+    ready: function() {},
 
     /**
         Create new class.
@@ -738,6 +719,145 @@ var game = {
     **/
     getTexture: function(id) {
         return this.TextureCache[this.paths[id]];
+    },
+
+    /**
+        Vibrate device.
+        @method vibrate
+        @param {Number} [time] Time to vibrate (ms).
+    **/
+    vibrate: function(time) {
+        if (navigator.vibrate) navigator.vibrate(time || 500);
+    },
+
+    /**
+        Request fullscreen mode.
+        @method fullscreen
+    **/
+    fullscreen: function() {
+        if (this.system.canvas.requestFullscreen) this.system.canvas.requestFullscreen();
+        else if (this.system.canvas.requestFullScreen) this.system.canvas.requestFullScreen();
+    },
+
+    /**
+        Test fullscreen support.
+        @method fullscreenSupport
+        @return {Boolean} Return true, if browser supports fullscreen mode.
+    **/
+    fullscreenSupport: function() {
+        return !!(this.system.canvas.requestFullscreen || this.system.canvas.requestFullScreen);
+    },
+
+    /**
+        Add asset to loader.
+        @method addAsset
+        @param {String} path
+        @param {String} [id]
+        @return {String} id
+    **/
+    addAsset: function(path, id) {
+        return this._addFileToQueue(path, id, 'assetQueue');
+    },
+
+    /**
+        Add audio to loader.
+        @method addAudio
+        @param {String} path
+        @param {String} [id]
+        @return {String} id
+    **/
+    addAudio: function(path, id) {
+        return this._addFileToQueue(path, id, 'audioQueue');
+    },
+
+    /**
+        Get JSON data.
+        @method getJSON
+        @param {String} id
+        @return {Object}
+    **/
+    getJSON: function(id) {
+        return this.json[this.paths[id]];
+    },
+
+    /**
+        Copy object.
+        @method copy
+        @param {Object} object
+    **/
+    copy: function(object) {
+        var l, c, i;
+        if (
+            !object || typeof object !== 'object' ||
+            object instanceof HTMLElement ||
+            object instanceof this.Class ||
+            (this.Container && object instanceof this.Container)
+        ) {
+            return object;
+        }
+        else if (object instanceof Array) {
+            c = [];
+            for (i = 0, l = object.length; i < l; i++) {
+                c[i] = this.copy(object[i]);
+            }
+            return c;
+        }
+        else {
+            c = {};
+            for (i in object) {
+                c[i] = this.copy(object[i]);
+            }
+            return c;
+        }
+    },
+
+    /**
+        Merge objects.
+        @method merge
+        @param {Object} to
+        @param {Object} from
+    **/
+    merge: function(to, from) {
+        for (var key in from) {
+            var ext = from[key];
+            if (
+                typeof ext !== 'object' ||
+                ext instanceof HTMLElement ||
+                ext instanceof this.Class ||
+                ext instanceof this.Container
+            ) {
+                to[key] = ext;
+            }
+            else {
+                if (!to[key] || typeof to[key] !== 'object') {
+                    to[key] = (ext instanceof Array) ? [] : {};
+                }
+                this.merge(to[key], ext);
+            }
+        }
+        return to;
+    },
+    
+    /**
+        Sort object by key names.
+        @method ksort
+        @param {Object} obj
+        @param {Function} [compare]
+    **/
+    ksort: function(obj, compare) {
+        if (!obj || typeof obj !== 'object') return false;
+
+        var keys = [], result = {}, i;
+        for (i in obj) {
+            keys.push(i);
+        }
+        
+        keys.sort(compare);
+        for (i = 0; i < keys.length; i++) {
+            result[keys[i]] = obj[keys[i]];
+        }
+
+        return result;
     }
 };
 
@@ -748,12 +868,10 @@ game.initializing = false;
 game.fnTest = /xyz/.test(function() {
     var xyz; return xyz;
 }) ? /\b_super\b/ : /[\D|\d]*/;
-
 /**
     @class Class
 **/
 game.Class = function() {};
-
 /**
     Extend class.
     @method extend
@@ -858,4 +976,4 @@ game.Class.extend = function(prop) {
 };
 
 if (typeof exports !== 'undefined') exports = module.exports = game;
-else game.boot();
+else game._boot();

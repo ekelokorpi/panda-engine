@@ -357,7 +357,7 @@ game.createClass('Body', {
     **/
     setCollisionGroup: function(group) {
         if (this.world && typeof this.collisionGroup === 'number') this.world.removeBodyCollision(this);
-        this.collisionGroup = group;        
+        this.collisionGroup = group;
         if (this.world) this.world.addBodyCollision(this);
     },
 

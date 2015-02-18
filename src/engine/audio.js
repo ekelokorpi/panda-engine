@@ -56,7 +56,7 @@ game.createClass('Audio', {
     soundMuted: false,
 
     init: function() {
-        game.normalizeVendorAttribute(window, 'AudioContext');
+        game._normalizeVendorAttribute(window, 'AudioContext');
 
         // Disable audio on iOS 5
         if (game.device.iOS5) game.Audio.enabled = false;

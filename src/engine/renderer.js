@@ -258,8 +258,8 @@ game.Sprite.prototype.crop = function(x, y, width, height) {
 /**
     Position sprite to system center.
     @method center
-    @param {Number} offsetX Offset x coordinate to system center
-    @param {Number} offsetY Offset y coordinate to system center
+    @param {Number} [offsetX] Offset x coordinate to system center
+    @param {Number} [offsetY] Offset y coordinate to system center
     @chainable
 **/
 game.Sprite.prototype.center = function(offsetX, offsetY) {

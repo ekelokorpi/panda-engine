@@ -15,8 +15,14 @@ game.module(
 **/
 game.createClass('Scene', {
     /**
+        @property {Array} _updateOrder
+        @private
+    **/
+    _updateOrder: [],
+    /**
         Background color of scene.
         @property {Number} backgroundColor
+        @default 0x000000
     **/
     backgroundColor: 0x000000,
     /**
@@ -30,7 +36,7 @@ game.createClass('Scene', {
     **/
     timers: [],
     /**
-        List of particle emitters in scene.
+        List of emitters in scene.
         @property {Array} emitters
     **/
     emitters: [],
@@ -75,25 +81,148 @@ game.createClass('Scene', {
         game.system.stage.mouseout = this.mouseout.bind(this);
 
         this.stage = new game.Container();
-        if (game.system.webGL && game.device.cocoonJS) {
-            var rendererRatio = game.renderer.width / game.renderer.height;
-            var systemRatio = game.system.width / game.system.height;
-            if (rendererRatio < systemRatio) {
-                var scale = game.renderer.width / game.system.width;
-                this.stage.scale.set(scale, scale);
-                this.stage.position.y = game.renderer.height / 2 - game.system.height * scale / 2;
-            }
-            else {
-                var scale = game.renderer.height / game.system.height;
-                this.stage.scale.set(scale, scale);
-                this.stage.position.x = game.renderer.width / 2 - game.system.width * scale / 2;
-            }
-        }
+
         game.system.stage.addChild(this.stage);
 
-        if (game.debugDraw) game.debugDraw.reset();
+        for (var i = 0; i < game.Scene.updateOrder.length; i++) {
+            this._updateOrder.push(game.Scene.updateOrder[i].ucfirst());
+        }
     },
 
+    /**
+        @method _mousedown
+        @param {Object} event
+        @private
+    **/
+    _mousedown: function(event) {
+        event.startTime = Date.now();
+        event.swipeX = event.global.x;
+        event.swipeY = event.global.y;
+        this.mousedown(event);
+    },
+
+    /**
+        @method _mousemove
+        @param {Object} event
+        @private
+    **/
+    _mousemove: function(event) {
+        this.mousemove(event);
+        if (!event.startTime) return;
+        if (event.global.x - event.swipeX >= this.swipeDist) this._swipe(event, 'right');
+        else if (event.global.x - event.swipeX <= -this.swipeDist) this._swipe(event, 'left');
+        else if (event.global.y - event.swipeY >= this.swipeDist) this._swipe(event, 'down');
+        else if (event.global.y - event.swipeY <= -this.swipeDist) this._swipe(event, 'up');
+    },
+
+    /**
+        @method _swipe
+        @param {Object} event
+        @param {String} dir
+        @private
+    **/
+    _swipe: function(event, dir) {
+        var time = Date.now() - event.startTime;
+        event.startTime = null;
+        if (time <= this.swipeTime || this.swipeTime === 0) this.swipe(dir);
+    },
+    
+    /**
+        @method _run
+        @private
+    **/
+    _run: function() {
+        this._update();
+        this._render();
+    },
+    
+    /**
+        @method _update
+        @private
+    **/
+    _update: function() {
+        this.update();
+        for (var i = 0; i < this._updateOrder.length; i++) {
+            this['_update' + this._updateOrder[i]]();
+        }
+    },
+    
+    /**
+        @method _updateTweens
+        @private
+    **/
+    _updateTweens: function() {
+        if (game.tweenEngine) game.tweenEngine.update();
+    },
+    
+    /**
+        @method _updatePhysics
+        @private
+    **/
+    _updatePhysics: function() {
+        if (this.world) this.world.update();
+    },
+    
+    /**
+        @method _updateTimers
+        @private
+    **/
+    _updateTimers: function() {
+        for (var i = this.timers.length - 1; i >= 0; i--) {
+            if (this.timers[i].time() >= 0) {
+                if (typeof this.timers[i].callback === 'function') this.timers[i].callback();
+                if (this.timers[i].repeat) this.timers[i].reset();
+                else this.timers.splice(i, 1);
+            }
+        }
+    },
+    
+    /**
+        @method _updateEmitters
+        @private
+    **/
+    _updateEmitters: function() {
+        for (var i = this.emitters.length - 1; i >= 0; i--) {
+            this.emitters[i].update();
+            if (this.emitters[i]._remove) this.emitters.splice(i, 1);
+        }
+    },
+    
+    /**
+        @method _updateObjects
+        @private
+    **/
+    _updateObjects: function() {
+        for (var i = this.objects.length - 1; i >= 0; i--) {
+            if (typeof this.objects[i].update === 'function') this.objects[i].update();
+            if (this.objects[i]._remove) this.objects.splice(i, 1);
+        }
+    },
+    
+    /**
+        @method _render
+        @private
+    **/
+    _render: function() {
+        game.system.renderer.render(game.system.stage);
+    },
+    
+    /**
+        @method _pause
+        @private
+    **/
+    _pause: function() {
+        if (game.audio) game.audio.systemPause();
+    },
+    
+    /**
+        @method _resume
+        @private
+    **/
+    _resume: function() {
+        if (game.audio) game.audio.systemResume();
+    },
+    
     /**
         Clear stage.
         @method clear
@@ -110,10 +239,10 @@ game.createClass('Scene', {
         @param {Object} object
     **/
     addObject: function(object) {
-        if (object._remove) object._remove = false;
+        object._remove = false;
         this.objects.push(object);
     },
-
+    
     /**
         Remove object from scene.
         @method removeObject
@@ -122,7 +251,7 @@ game.createClass('Scene', {
     removeObject: function(object) {
         object._remove = true;
     },
-
+    
     /**
         Add particle emitter to scene.
         @method addEmitter
@@ -131,7 +260,7 @@ game.createClass('Scene', {
     addEmitter: function(emitter) {
         this.emitters.push(emitter);
     },
-
+    
     /**
         Remove emitter from scene.
         @method removeEmitter
@@ -140,13 +269,13 @@ game.createClass('Scene', {
     removeEmitter: function(emitter) {
         emitter.remove();
     },
-
+    
     /**
-        Add timer to game scene.
+        Add timer to scene.
         @method addTimer
-        @param {Number} time Time in milliseconds
+        @param {Number} time Time (ms).
         @param {Function} callback Callback function to run, when timer ends.
-        @param {Boolean} repeat
+        @param {Boolean} [repeat]
         @return {game.Timer}
     **/
     addTimer: function(time, callback, repeat) {
@@ -156,12 +285,12 @@ game.createClass('Scene', {
         this.timers.push(timer);
         return timer;
     },
-
+    
     /**
         Remove timer from scene.
         @method removeTimer
         @param {game.Timer} timer
-        @param {Boolean} doCallback
+        @param {Boolean} [doCallback]
     **/
     removeTimer: function(timer, doCallback) {
         if (!timer) return;
@@ -169,14 +298,15 @@ game.createClass('Scene', {
         timer.repeat = false;
         timer.set(0);
     },
-
+    
     /**
         Shorthand for adding tween.
         @method addTween
         @param {Object} obj
         @param {Object} props
         @param {Number} time
-        @param {Object} settings
+        @param {Object} [settings]
+        @return {game.Tween}
     **/
     addTween: function(obj, props, time, settings) {
         var tween = new game.Tween(obj);
@@ -193,128 +323,86 @@ game.createClass('Scene', {
         @param {InteractionData} InteractionData
     **/
     click: function() {},
-
+    
     /**
         Callback for mousedown and touchstart on the scene stage.
         @method mousedown
         @param {InteractionData} InteractionData
     **/
     mousedown: function() {},
-
+    
     /**
         Callback for mouseup and touchend on the scene stage.
         @method mouseup
         @param {InteractionData} InteractionData
     **/
     mouseup: function() {},
-
+    
     /**
         Callback for mousemove and touchmove on the scene stage.
         @method mousemove
         @param {InteractionData} InteractionData
     **/
     mousemove: function() {},
-
+    
     /**
-        Callback for mouseout on the scene stage.
+        Callback for mouseout.
         @method mouseout
         @param {InteractionData} InteractionData
     **/
     mouseout: function() {},
-
+    
     /**
         Callback for keydown.
         @method keydown
     **/
     keydown: function() {},
-
+    
     /**
         Callback for keyup.
         @method keyup
     **/
     keyup: function() {},
-
-    _mousedown: function(event) {
-        event.startTime = Date.now();
-        event.swipeX = event.global.x;
-        event.swipeY = event.global.y;
-        this.mousedown(event);
-    },
-
-    _mousemove: function(event) {
-        this.mousemove(event);
-
-        if (!event.startTime) return;
-
-        if (event.global.x - event.swipeX >= this.swipeDist) this._swipe(event, 'right');
-        else if (event.global.x - event.swipeX <= -this.swipeDist) this._swipe(event, 'left');
-        else if (event.global.y - event.swipeY >= this.swipeDist) this._swipe(event, 'down');
-        else if (event.global.y - event.swipeY <= -this.swipeDist) this._swipe(event, 'up');
-    },
-
-    _swipe: function(event, dir) {
-        var time = Date.now() - event.startTime;
-        event.startTime = null;
-        if (time <= this.swipeTime || this.swipeTime === 0) this.swipe(dir);
-    },
-
+    
     /**
         Callback for swipe.
         @method swipe
         @param {String} direction
     **/
-    swipe: function() {
-    },
-
-    run: function() {
-        this.update();
-        if (game.debugDraw) game.debugDraw.update();
-        this.render();
-    },
-
-    render: function() {
-        game.renderer.render(game.system.stage);
-    },
-
-    pause: function() {
-        if (game.audio) game.audio.systemPause();
-    },
-
-    resume: function() {
-        if (game.audio) game.audio.systemResume();
-    },
-
+    swipe: function() {},
+    
     /**
-        Called, when scene is changed.
+        This is called, when system is resized.
+        @method onResize
+    **/
+    onResize: function() {},
+    
+    /**
+        Called, before scene is changed.
         @method exit
     **/
-    exit: function() {
-    },
-
+    exit: function() {},
+    
     /**
         This is called every frame.
         @method update
     **/
-    update: function() {
-        var i;
-        if (game.tweenEngine) game.tweenEngine.update();
-        if (this.world) this.world.update();
-        for (i = this.timers.length - 1; i >= 0; i--) {
-            if (this.timers[i].time() >= 0) {
-                if (typeof this.timers[i].callback === 'function') this.timers[i].callback();
-                if (this.timers[i].repeat) this.timers[i].reset();
-                else this.timers.splice(i, 1);
-            }
-        }
-        for (i = this.emitters.length - 1; i >= 0; i--) {
-            this.emitters[i].update();
-            if (this.emitters[i]._remove) this.emitters.splice(i, 1);
-        }
-        for (i = this.objects.length - 1; i >= 0; i--) {
-            if (typeof this.objects[i].update === 'function') this.objects[i].update();
-            if (this.objects[i]._remove) this.objects.splice(i, 1);
-        }
-    }
+    update: function() {}
+});
+
+game.addAttributes('Scene', {
+    /**
+        Update order for scene.
+        @attribute {Array} updateOrder
+        @default tweens,physics,timers,emitters,objects
+    **/
+    updateOrder: [
+        'tweens',
+        'physics',
+        'timers',
+        'emitters',
+        'objects'
+    ]
 });
 
 });

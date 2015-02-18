@@ -9,7 +9,9 @@ game.module(
     'engine.pixi',
     'engine.physics',
     'engine.camera',
-    'engine.renderer'
+    'engine.renderer',
+    'engine.scene',
+    'engine.system'
 )
 .body(function() {
 'use strict';
@@ -293,6 +295,31 @@ game.addAttributes('DebugDraw', {
         @default 0.5
     **/
     bodyAlpha: 0.5
+});
+
+game.Scene.inject({
+    staticInit: function() {
+        this._super();
+        if (game.debugDraw) game.debugDraw.reset();
+    },
+
+    _run: function() {
+        if (game.system.debug) game.system.debug.reset();
+        this._super();
+        if (game.system.debug) game.system.debug.update();
+    },
+
+    _render: function() {
+        if (game.debugDraw) game.debugDraw.update();
+        this._super();
+    }
+});
+
+game.System.inject({
+    _setSceneNow: function(sceneClass, removeAssets) {
+        this._super(sceneClass, removeAssets);
+        if (game.Debug && game.Debug.enabled && !game.device.cocoonJS && !this.debug) this.debug = new game.Debug();
+    }
 });
 
 game.World.inject({
