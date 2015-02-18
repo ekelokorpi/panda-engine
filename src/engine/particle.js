@@ -1,6 +1,5 @@
 /**
     @module particle
-    @namespace game
 **/
 game.module(
     'engine.particle'
@@ -10,7 +9,7 @@ game.module(
 
 /**
     @class Particle
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('Particle', {
     /**
@@ -60,7 +59,7 @@ game.createClass('Particle', {
 /**
     Particle emitter.
     @class Emitter
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Object} [settings]
 **/

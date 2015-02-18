@@ -1,6 +1,5 @@
 /**
     @module pool
-    @namespace game
 **/
 game.module(
     'engine.pool'
@@ -11,7 +10,7 @@ game.module(
 /**
     Object pool.
     @class Pool
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('Pool', {
     /**

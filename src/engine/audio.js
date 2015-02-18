@@ -1,6 +1,5 @@
 /**
     @module audio
-    @namespace game
 **/
 game.module(
     'engine.audio'
@@ -10,7 +9,7 @@ game.module(
 
 /**
     @class Audio
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('Audio', {
     audioId: 1,

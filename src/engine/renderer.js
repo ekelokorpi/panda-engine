@@ -1,6 +1,5 @@
 /**
     @module renderer
-    @namespace game
 **/
 game.module(
     'engine.renderer'
@@ -11,6 +10,10 @@ game.module(
 .body(function() {
 'use strict';
 
+/**
+    @property {Object} PIXI
+    @for Core
+**/
 game.PIXI.dontSayHello = true;
 game.PIXI.RETINA_PREFIX = false;
 
@@ -289,7 +292,7 @@ game.Texture = game.PIXI.Texture;
 
 /**
     @property {Object} TextureCache
-    @for game.Core
+    @for Core
 **/
 game.TextureCache = game.PIXI.TextureCache;
 
@@ -329,7 +332,7 @@ game.TilingSprite.prototype.update = function() {
 
 /**
     @class SpriteSheet
-    @extends game.Class
+    @extends Class
     @constructor
     @param {String} id Asset ID
     @param {Number} width Sprite frame width
@@ -337,7 +340,8 @@ game.TilingSprite.prototype.update = function() {
 **/
 game.createClass('SpriteSheet', {
     /**
-        @propety {Array} textures
+        List of textures.
+        @property {Array} textures
     **/
     textures: [],
     /**
@@ -402,7 +406,7 @@ game.createClass('SpriteSheet', {
 
 /**
     @class Video
-    @extends game.Class
+    @extends Class
     @constructor
     @param {String} source
 **/

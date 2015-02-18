@@ -1,6 +1,5 @@
 /**
     @module physics
-    @namespace game
 **/
 game.module(
     'engine.physics'
@@ -11,7 +10,7 @@ game.module(
 /**
     Physics world.
     @class World
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Number} x Gravity x
     @param {Number} y Gravity y
@@ -156,7 +155,7 @@ game.createClass('World', {
 /**
     Physics collision solver.
     @class CollisionSolver
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('CollisionSolver', {
     /**
@@ -238,13 +237,16 @@ game.createClass('CollisionSolver', {
                 return true;
             }
         }
+        else {
+            if (a.collide(b)) return true;
+        }
     }
 });
 
 /**
     Physics body.
     @class Body
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Object} [properties]
 **/
@@ -420,7 +422,7 @@ game.createClass('Body', {
 /**
     Rectangle shape for physic body.
     @class Rectangle
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Number} width
     @param {Number} height
@@ -448,7 +450,7 @@ game.createClass('Rectangle', {
 /**
     Circle shape for physic body.
     @class Circle
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Number} radius
 **/
@@ -468,7 +470,7 @@ game.createClass('Circle', {
 /**
     Vector class.
     @class Vector
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Number} [x]
     @param {Number} [y]

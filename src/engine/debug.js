@@ -1,6 +1,5 @@
 /**
     @module debug
-    @namespace game
 **/
 game.module(
     'engine.debug'
@@ -20,7 +19,7 @@ game.module(
     Show debug box.
     Automatically enabled, if URL contains `?debug`.
     @class Debug
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('Debug', {
     frames: 0,

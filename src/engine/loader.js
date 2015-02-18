@@ -1,6 +1,5 @@
 /**
     @module loader
-    @namespace game
 **/
 game.module(
     'engine.loader'
@@ -11,7 +10,7 @@ game.module(
 /**
     Dynamic loader for assets and audio files.
     @class Loader
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Function|String} callback Callback function or scene name
 **/

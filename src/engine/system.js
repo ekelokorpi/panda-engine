@@ -1,6 +1,5 @@
 /**
     @module system
-    @namespace game
 **/
 game.module(
     'engine.system'
@@ -10,7 +9,7 @@ game.module(
 
 /**
     @class System
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('System', {
     /**
@@ -18,6 +17,10 @@ game.createClass('System', {
         @private
     **/
     _running: false,
+    /**
+        @property {Boolean} _rotateScreenVisible
+    **/
+    _rotateScreenVisible: false,
     /**
         @property {game.Scene} _newSceneClass
         @private
@@ -79,11 +82,6 @@ game.createClass('System', {
     **/
     retina: false,
     /**
-        Is rotate screen visible.
-        @property {Boolean} rotateScreenVisible
-    **/
-    rotateScreenVisible: false,
-    /**
         Is WebGL enabled.
         @property {Boolean} webGL
     **/
@@ -126,7 +124,7 @@ game.createClass('System', {
 
         // Calculate game.scale value for HiRes mode
         for (var i = 2; i <= game.System.hires; i *= 2) {
-            if (window.innerWidth >= width * i && window.innerHeight >= height * i) {
+            if (window.innerWidth >= this.originalWidth * i && window.innerHeight >= this.originalHeight * i) {
                 this.hires = true;
                 game.scale = i;
             }
@@ -150,12 +148,6 @@ game.createClass('System', {
         this.ratio = Math.max(this.width, this.height) / Math.min(this.width, this.height);
 
         this._initRenderer();
-
-        // Set canvas to Retina size
-        if (this.retina) {
-            this.canvas.style.width = this.width / 2 + 'px';
-            this.canvas.style.height = this.height / 2 + 'px';
-        }
 
         // Init device motion
         if (game.device.mobile) {
@@ -213,6 +205,7 @@ game.createClass('System', {
             this.canvas = document.createElement('canvas');
             if (game.device.cocoonJS) this.canvas.screencanvas = !!game.System.screenCanvas;
             this.canvas.id = game.System.canvasId;
+            this.canvas.style.display = 'block';
             document.body.appendChild(this.canvas);
         }
         
@@ -245,7 +238,17 @@ game.createClass('System', {
         @private
     **/
     _onResize: function() {
-        if (this._toggleRotateScreen()) return;
+        if (game.device.mobile && game.System.rotateScreen) {
+            this._rotateScreenVisible = this._isRotateScreenVisible();
+            if (this._rotateScreenVisible) {
+                document.body.className = game.System.rotateScreenClass;
+                return;
+            }
+            else {
+                document.body.className = '';
+                if (game._loader && !game._loader.started) game._loader.start();
+            }
+        }
 
         if (game.System.scale) {
             if (window.innerWidth / this.originalWidth < window.innerHeight / this.originalHeight) {
@@ -294,6 +297,12 @@ game.createClass('System', {
         if (game.System.scale || game.System.resize) {
             this.canvas.style.width = this.canvasWidth + 'px';
             this.canvas.style.height = this.canvasHeight + 'px';
+        }
+
+        // Set canvas to Retina size
+        if (this.retina) {
+            // this.canvas.style.width = this.canvasWidth / 2 + 'px';
+            // this.canvas.style.height = this.canvasHeight / 2 + 'px';
         }
     },
 
@@ -348,11 +357,17 @@ game.createClass('System', {
     },
 
     /**
-        @method _toggleRotateScreen
+        @method _isRotateScreenVisible
         @private
     **/
-    _toggleRotateScreen: function() {
-        if (!game.device.mobile) return false;
+    _isRotateScreenVisible: function() {
+        if (!game.device.mobile || !game.System.rotateScreen) return false;
+
+        if (this.originalWidth > this.originalHeight && window.innerWidth < window.innerHeight ||
+            this.originalHeight > this.originalWidth && window.innerHeight < window.innerWidth) {
+            return true;
+        }
+        return false;
     },
 
     /**
@@ -456,6 +471,12 @@ game.addAttributes('System', {
         @default true
     **/
     rotateScreen: true,
+    /**
+        Class name for body, when rotate screen visible.
+        @attribute {String} rotateScreenClass
+        @default rotate
+    **/
+    rotateScreenClass: 'rotate',
     /**
         System width.
         @attribute {Number} width

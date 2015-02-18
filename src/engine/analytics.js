@@ -1,6 +1,5 @@
 /**
     @module analytics
-    @namespace game
 **/
 game.module(
     'engine.analytics'
@@ -11,7 +10,7 @@ game.module(
 /**
     Google Analytics tracking.
     @class Analytics
-    @extends game.Class
+    @extends Class
     @constructor
     @param {String} id
 **/

@@ -1,6 +1,5 @@
 /**
     @module scene
-    @namespace game
 **/
 game.module(
     'engine.scene'
@@ -11,7 +10,7 @@ game.module(
 /**
     Game scene.
     @class Scene
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('Scene', {
     /**

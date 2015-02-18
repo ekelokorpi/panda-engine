@@ -1,6 +1,5 @@
 /**
     @module storage
-    @namespace game
 **/
 game.module(
     'engine.storage'
@@ -11,7 +10,7 @@ game.module(
 /**
     Local storage.
     @class Storage
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('Storage', {
     init: function(id) {

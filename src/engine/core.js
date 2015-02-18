@@ -1,7 +1,6 @@
 /**
     Panda.js HTML5 game engine
     @module game
-    @namespace game
     @author Eemeli Kelokorpi <eemeli.kelokorpi@gmail.com>
 **/
 'use strict';
@@ -10,6 +9,80 @@
     @class Core
 **/
 var game = {
+    /**
+        @property {String} _nocache
+        @private
+    **/
+    _nocache: '',
+    /**
+        @property {Function} _fnTest
+        @private
+    **/
+    _fnTest: /xyz/.test(function() {
+        var xyz; return xyz;
+    }) ? /\b_super\b/ : /[\D|\d]*/,
+    /**
+        @property {Boolean} _initializing
+        @private
+    **/
+    _initializing: false,
+    /**
+        @property {Boolean} _loadFinished
+        @private
+    **/
+    _loadFinished: false,
+    /**
+        @property {Number} _waitForLoad
+        @private
+    **/
+    _waitForLoad: 0,
+    /**
+        @property {Boolean} _DOMLoaded
+        @private
+    **/
+    _DOMLoaded: false,
+    /**
+        @property {Number} _gameLoopId
+        @private
+    **/
+    _gameLoopId: 1,
+    /**
+        @property {Object} _gameLoops
+        @private
+    **/
+    _gameLoops: {},
+    /**
+        @property {Object} _current
+        @private
+    **/
+    _current: null,
+    /**
+        @property {Array} _coreModules
+        @private
+    **/
+    _coreModules: [
+        'engine.analytics',
+        'engine.audio',
+        'engine.camera',
+        'engine.debug',
+        'engine.keyboard',
+        'engine.loader',
+        'engine.particle',
+        'engine.physics',
+        'engine.pixi',
+        'engine.pool',
+        'engine.renderer',
+        'engine.scene',
+        'engine.storage',
+        'engine.system',
+        'engine.timer',
+        'engine.tween'
+    ],
+    /**
+        @property {game.Loader} _loader
+        @private
+    **/
+    _loader: null,
     /**
         Engine version.
         @property {String} version
@@ -21,10 +94,14 @@ var game = {
     **/
     config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
     /**
-        Scale factor for Retina and HiRes mode.
+        Scale multiplier for Retina and HiRes mode.
         @property {Number} scale
     **/
     scale: 1,
+    /**
+        @property {game.Audio} audio
+    **/
+    audio: null,
     /**
         @property {game.Scene} scene
     **/
@@ -37,10 +114,6 @@ var game = {
         @property {game.System} system
     **/
     system: null,
-    /**
-        @property {game.Audio} sound
-    **/
-    audio: null,
     /**
         @property {game.Pool} pool
     **/
@@ -58,6 +131,11 @@ var game = {
         @property {Object} device
     **/
     device: {},
+    /**
+        Device acceleration.
+        @property {DeviceAcceleration} devicemotion
+    **/
+    devicemotion: null,
     /**
         Module load queue.
         @property {Array} moduleQueue
@@ -93,53 +171,7 @@ var game = {
         @property {Object} modules
     **/
     modules: {},
-    /**
-        @property {String} _nocache
-        @private
-    **/
-    _nocache: '',
-    /**
-        @property {Number} _waitForLoad
-        @private
-    **/
-    _waitForLoad: 0,
-    /**
-        @property {Boolean} _DOMLoaded
-        @private
-    **/
-    _DOMLoaded: false,
-    /**
-        @property {Number} _gameLoopId
-        @private
-    **/
-    _gameLoopId: 1,
-    /**
-        @property {Object} _gameLoops
-        @private
-    **/
-    _gameLoops: {},
-    /**
-        @property {Array} _coreModules
-        @private
-    **/
-    _coreModules: [
-        'engine.analytics',
-        'engine.audio',
-        'engine.camera',
-        'engine.debug',
-        'engine.keyboard',
-        'engine.loader',
-        'engine.particle',
-        'engine.physics',
-        'engine.pixi',
-        'engine.pool',
-        'engine.renderer',
-        'engine.scene',
-        'engine.storage',
-        'engine.system',
-        'engine.timer',
-        'engine.tween'
-    ],
+
     /**
         @method _setVendorAttribute
         @private
@@ -270,7 +302,7 @@ var game = {
             throw 'unresolved modules:\n' + unresolved.join('\n');
         }
         else {
-            this.loadFinished = true;
+            this._loadFinished = true;
         }
     },
 
@@ -289,7 +321,7 @@ var game = {
             }
         }
 
-        if (this.config.autoStart !== false && !this.system) this.start();
+        if (this.config.autoStart !== false && !this.system) this._start();
         else this.ready();
     },
 
@@ -584,16 +616,16 @@ var game = {
         @param {String} name
     **/
     module: function(name) {
-        if (this.current) throw 'module ' + this.current.name + ' has no body';
+        if (this._current) throw 'module ' + this._current.name + ' has no body';
         if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
 
-        this.current = { name: name, requires: [], loaded: false };
+        this._current = { name: name, requires: [], loaded: false };
         
-        if (name.indexOf('game.') === 0) this.current.requires.push('engine.core');
+        if (name.indexOf('game.') === 0) this._current.requires.push('engine.core');
         if (this.moduleQueue.length === 1 && this._DOMLoaded) this._loadModules();
 
-        this.modules[name] = this.current;
-        this.moduleQueue.push(this.current);
+        this.modules[name] = this._current;
+        this.moduleQueue.push(this._current);
 
         if (name === 'engine.core') {
             if (this.config.ignoreModules) {
@@ -601,7 +633,7 @@ var game = {
                     if (this.config.ignoreModules.indexOf(this._coreModules[i]) !== -1) this._coreModules.splice(i, 1);
                 }
             }
-            this.current.requires = this._coreModules;
+            this._current.requires = this._coreModules;
             this.body(function() {});
         }
         return this;
@@ -615,7 +647,7 @@ var game = {
     require: function(modules) {
         var i, modules = Array.prototype.slice.call(arguments);
         for (i = 0; i < modules.length; i++) {
-            if (modules[i] && this.current.requires.indexOf(modules[i]) === -1) this.current.requires.push(modules[i]);
+            if (modules[i] && this._current.requires.indexOf(modules[i]) === -1) this._current.requires.push(modules[i]);
         }
         return this;
     },
@@ -626,16 +658,16 @@ var game = {
         @param {Function} body
     **/
     body: function(body) {
-        this.current.body = body;
-        this.current = null;
-        if (this.loadFinished) this._loadModules();
+        this._current.body = body;
+        this._current = null;
+        if (this._loadFinished) this._loadModules();
     },
 
     /**
-        Start engine.
-        @method start
+        @method _start
+        @private
     **/
-    start: function() {
+    _start: function() {
         if (this.moduleQueue.length > 0) return;
 
         this.system = new this.System();
@@ -652,10 +684,16 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this.loader = new this.Loader(this.System.startScene);
-        if (!this.system.rotateScreenVisible) this.loader.start();
+        this._loader = new this.Loader(this._onLoaded.bind(this));
+        this._loader.dynamic = false;
+        if (!this.system._rotateScreenVisible) this._loader.start();
 
         this.onStart();
+    },
+
+    _onLoaded: function() {
+        this._loader = null;
+        game.system.setScene(this.System.startScene);
     },
 
     /**
@@ -863,11 +901,6 @@ var game = {
 
 game.Core = game;
 
-// http://ejohn.org/blog/simple-javascript-inheritance/
-game.initializing = false;
-game.fnTest = /xyz/.test(function() {
-    var xyz; return xyz;
-}) ? /\b_super\b/ : /[\D|\d]*/;
 /**
     @class Class
 **/
@@ -881,9 +914,9 @@ game.Class = function() {};
 **/
 game.Class.extend = function(prop) {
     var parent = this.prototype;
-    game.initializing = true;
+    game._initializing = true;
     var prototype = new this();
-    game.initializing = false;
+    game._initializing = false;
 
     var makeFn = function(name, fn) {
         return function() {
@@ -899,7 +932,7 @@ game.Class.extend = function(prop) {
         if (
             typeof prop[name] === 'function' &&
             typeof parent[name] === 'function' &&
-            game.fnTest.test(prop[name])
+            game._fnTest.test(prop[name])
         ) {
             prototype[name] = makeFn(name, prop[name]);
         }
@@ -909,7 +942,7 @@ game.Class.extend = function(prop) {
     }
 
     function Class() {
-        if (!game.initializing) {
+        if (!game._initializing) {
             if (this.staticInit) {
                 /**
                     This method is called before constructor.
@@ -961,7 +994,7 @@ game.Class.extend = function(prop) {
             if (
                 typeof prop[name] === 'function' &&
                 typeof proto[name] === 'function' &&
-                game.fnTest.test(prop[name])
+                game._fnTest.test(prop[name])
             ) {
                 parent[name] = proto[name];
                 proto[name] = makeFn(name, prop[name]);

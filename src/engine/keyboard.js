@@ -1,6 +1,5 @@
 /**
     @module keyboard
-    @namespace game
 **/
 game.module(
     'engine.keyboard'
@@ -10,7 +9,7 @@ game.module(
 
 /**
     @class Keyboard
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('Keyboard', {
     keysDown: [],

@@ -1,6 +1,5 @@
 /**
     @module timer
-    @namespace game
 **/
 game.module(
     'engine.timer'
@@ -11,7 +10,7 @@ game.module(
 /**
     Basic timer.
     @class Timer
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Number} [ms]
 **/

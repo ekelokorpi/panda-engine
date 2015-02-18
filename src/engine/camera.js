@@ -1,6 +1,5 @@
 /**
     @module camera
-    @namespace game
 **/
 game.module(
     'engine.camera'
@@ -10,7 +9,7 @@ game.module(
 
 /**
     @class Camera
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('Camera', {
     /**

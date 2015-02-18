@@ -1,8 +1,5 @@
-// Based on https://github.com/sole/tween.js/
-
 /**
     @module tween
-    @namespace game
 **/
 game.module(
     'engine.tween'
@@ -12,7 +9,7 @@ game.module(
 
 /**
     @class TweenEngine
-    @extends game.Class
+    @extends Class
 **/
 game.createClass('TweenEngine', {
     /**
@@ -74,7 +71,7 @@ game.createClass('TweenEngine', {
 
 /**
     @class Tween
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Object} object
 **/
@@ -657,7 +654,7 @@ game.Tween.Interpolation = {
 
 /**
     @class TweenGroup
-    @extends game.Class
+    @extends Class
     @constructor
     @param {Function} [onComplete]
 **/
