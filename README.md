@@ -9,9 +9,12 @@ Free HTML5 game engine for mobile and desktop with Canvas and WebGL rendering.
 ### Install
 
     $ sudo npm install -g pandatool
-    $ panda create myGame
-    $ cd myGame
-    $ panda start
+
+### Usage
+
+	$ panda create myGame
+	$ cd myGame
+	$ panda start
 
 ### Support
 
