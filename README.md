@@ -4,14 +4,14 @@
 
 Free HTML5 game engine for mobile and desktop with Canvas and WebGL rendering.
 
-http://www.pandajs.net
+[www.pandajs.net](http://www.pandajs.net)
 
 ### Install
 
     $ sudo npm install -g pandatool
-    $ mkdir MyPandaGame
-    $ cd MyPandaGame
-    $ panda install
+    $ panda create myGame
+    $ cd myGame
+    $ panda start
 
 ### Support
 
