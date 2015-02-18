@@ -120,7 +120,7 @@ game.createClass('Audio', {
         var ext = path.split('.').pop();
         if (this.formats.indexOf(ext) === -1) ext = this.formats[0];
         
-        var realPath = path.replace(/[^\.]+$/, ext + game.nocache);
+        var realPath = path.replace(/[^\.]+$/, ext + game._nocache);
 
         // Web Audio
         if (this.context) {
