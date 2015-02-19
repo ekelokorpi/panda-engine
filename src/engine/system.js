@@ -240,12 +240,17 @@ game.createClass('System', {
     _onResize: function() {
         if (game.device.mobile && game.System.rotateScreen) {
             this._rotateScreenVisible = this._isRotateScreenVisible();
+
             if (this._rotateScreenVisible) {
+                this.canvas.style.display = 'none';
                 document.body.className = game.System.rotateScreenClass;
                 return;
             }
             else {
+                this.canvas.style.display = 'block';
                 document.body.className = '';
+
+                // Start main loader, if it's not started yet
                 if (game._loader && !game._loader.started) game._loader.start();
             }
         }
@@ -273,16 +278,16 @@ game.createClass('System', {
 
                 if (widthSpace > 0) {
                     var ratio = widthSpace / this.canvasWidth;
-                    var newWidth = ~~(this.originalWidth + this.originalWidth * ratio);
+                    var newWidth = ~~(this.originalWidth * game.scale + this.originalWidth * ratio * game.scale);
                     
-                    this.resize(newWidth, this.originalHeight);
+                    this.resize(newWidth, this.originalHeight * game.scale);
                     this.canvasWidth += widthSpace;
                 }
                 else if (heightSpace > 0) {
                     var ratio = heightSpace / this.canvasHeight;
-                    var newHeight = ~~(this.originalHeight + this.originalHeight * ratio);
+                    var newHeight = ~~(this.originalHeight * game.scale + this.originalHeight * ratio * game.scale);
                     
-                    this.resize(this.originalWidth, newHeight);
+                    this.resize(this.originalWidth * game.scale, newHeight);
                     this.canvasHeight += heightSpace;
                 }
             }
@@ -297,12 +302,6 @@ game.createClass('System', {
         if (game.System.scale || game.System.resize) {
             this.canvas.style.width = this.canvasWidth + 'px';
             this.canvas.style.height = this.canvasHeight + 'px';
-        }
-
-        // Set canvas to Retina size
-        if (this.retina) {
-            // this.canvas.style.width = this.canvasWidth / 2 + 'px';
-            // this.canvas.style.height = this.canvasHeight / 2 + 'px';
         }
     },
 
@@ -444,9 +443,9 @@ game.addAttributes('System', {
     /**
         Scale canvas to fit window.
         @attribute {Boolean} scale
-        @default false
+        @default true
     **/
-    scale: false,
+    scale: true,
     /**
         HiRes mode.
         @attribute {Number} hires
@@ -472,7 +471,7 @@ game.addAttributes('System', {
     **/
     rotateScreen: true,
     /**
-        Class name for body, when rotate screen visible.
+        Class name for document body, when rotate screen visible.
         @attribute {String} rotateScreenClass
         @default rotate
     **/
