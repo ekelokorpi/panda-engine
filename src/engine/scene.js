@@ -83,6 +83,7 @@ game.createClass('Scene', {
 
         game.system.stage.addChild(this.stage);
 
+        this._updateOrder.length = 0;
         for (var i = 0; i < game.Scene.updateOrder.length; i++) {
             this._updateOrder.push(game.Scene.updateOrder[i].ucfirst());
         }

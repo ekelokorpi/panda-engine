@@ -690,16 +690,10 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this._loader = new this.Loader(this._onLoaded.bind(this));
-        this._loader.dynamic = false;
+        this._loader = new this.Loader(this.System.startScene);
         if (!this.system._rotateScreenVisible) this._loader.start();
 
         this.onStart();
-    },
-
-    _onLoaded: function() {
-        this._loader = null;
-        game.system.setScene(this.System.startScene);
     },
 
     /**
