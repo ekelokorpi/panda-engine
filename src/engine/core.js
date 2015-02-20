@@ -84,6 +84,11 @@ var game = {
     **/
     _loader: null,
     /**
+        @property {Object} _currentModule
+        @private
+    **/
+    _currentModule: null,
+    /**
         Engine version.
         @property {String} version
     **/
@@ -276,6 +281,7 @@ var game = {
             if (dependenciesLoaded && module.body) {
                 this.moduleQueue.splice(i, 1);
                 module.loaded = true;
+                this._currentModule = module;
                 module.body();
                 moduleLoaded = true;
                 i--;
@@ -619,7 +625,7 @@ var game = {
         if (this._current) throw 'module ' + this._current.name + ' has no body';
         if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
 
-        this._current = { name: name, requires: [], loaded: false };
+        this._current = { name: name, requires: [], loaded: false, classes: [] };
         
         if (name.indexOf('game.') === 0) this._current.requires.push('engine.core');
         if (this.moduleQueue.length === 1 && this._DOMLoaded) this._loadModules();
@@ -723,7 +729,9 @@ var game = {
             extend = 'Class';
         }
 
-        return game[name] = game[extend].extend(content);
+        var newClass = game[name] = game[extend].extend(content);
+        this._currentModule.classes.push(name);
+        return newClass;
     },
 
     /**
