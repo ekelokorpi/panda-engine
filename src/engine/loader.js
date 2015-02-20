@@ -122,7 +122,7 @@ game.createClass('Loader', {
 
             this.initStage();
 
-            if (!game.scene) this.loopId = game._setGameLoop(this.run.bind(this), game.system.canvas);
+            if (!game.scene) this.loopId = game._setGameLoop(this._run.bind(this), game.system.canvas);
             else game.scene = this;
         }
 
@@ -183,7 +183,11 @@ game.createClass('Loader', {
 
     exit: function() {},
 
-    run: function() {
+    /**
+        @method run
+        @private
+    **/
+    _run: function() {
         if (this.loopId) {
             this.last = game.Timer.time;
             game.Timer.update();
