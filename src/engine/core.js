@@ -625,7 +625,7 @@ var game = {
         if (this._current) throw 'module ' + this._current.name + ' has no body';
         if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
 
-        this._current = { name: name, requires: [], loaded: false, classes: [] };
+        this._current = { name: name, requires: [], loaded: false };
         
         if (name.indexOf('game.') === 0) this._current.requires.push('engine.core');
         if (this.moduleQueue.length === 1 && this._DOMLoaded) this._loadModules();
@@ -723,9 +723,8 @@ var game = {
             extend = 'Class';
         }
 
-        var newClass = game[name] = game[extend].extend(content);
-        this._currentModule.classes.push(name);
-        return newClass;
+        game[name] = game[extend].extend(content);
+        return game[name];
     },
 
     /**
