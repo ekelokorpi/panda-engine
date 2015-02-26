@@ -1,29 +1,77 @@
-![Panda.js Logo](http://www.pandajs.net/img/panda_178x120.png)
+# Panda Engine
 
-## Panda.js HTML5 game engine
+### HTML5 game engine with Canvas and WebGL rendering
 
-Free HTML5 game engine for mobile and desktop with Canvas and WebGL rendering.
+With Panda Engine, you can make games written in [JavaScript](http://www.w3schools.com/js/), play them on any major browser, or wrap them into native applications.
 
-[www.pandajs.net](http://www.pandajs.net)
+## Install
 
-### Install
+1. Download latest [Panda Engine](https://github.com/ekelokorpi/panda.js/archive/master.zip) zip
+2. Install local [web server](https://www.google.com/search?q=install%20local%20web%20server&rct=j)
+3. Unzip and open `dev.html` in your browser
 
-    $ sudo npm install -g pandajs
+## Example
 
-### Usage
+Short example on how the game code looks:
 
-	$ panda create myGame
+```javascript
+game.addAsset('logo.png');
 
-Open `myGame/dev.html` with your browser.
+game.createScene('Main', {
+    backgroundColor: 0xb9bec7,
 
-### Support
+    init: function() {
+        var logo = new game.Sprite('logo.png');
+        logo.addTo(this.stage);
+    }
+});
+```
+
+## Main features
+
+- Canvas / WebGL
+	- Pixi.js powered rendering with super fast speed
+- Particle engine
+	- Create stunning special effects using particles
+- Tweening
+	- Tween anything with easing, looping and grouping
+- Physics engine
+	- Hit detection and response with different shapes
+- Timers
+	- Add timers with callback functions and repeating
+- Mobile support
+	- Make games for mobile and tablet devices
+- Sound manager
+	- Play sound effects and music in your game
+- Modules
+	- Keep your code organized using modules
+
+## Other features
+
+- Dynamic loader
+- Sprite sheets
+- Animations
+- Interactivity
+- Bitmap fonts
+- Plugins
+- Retina / HiRes support
+- Object pooling
+- Local storage
+- Debug draw
+- Page visibility
+- Fullscreen
+- CocoonJS
+- Analytics
+- Keyboard
+- Sitelock
+- Accelerometer
+- Offline
+
+## Documentation
+
+[API Documentation](http://www.pandajs.net/engine/docs)
+
+## Support
 
 Join the discussion at official [Panda.js forum](http://www.html5gamedevs.com/forum/19-pandajs/).
 
-### License
-
-Panda.js is released under the [MIT License](http://opensource.org/licenses/MIT).
-
-Financed by [Yle](http://en.wikipedia.org/wiki/Yle).
-
-[![Analytics](https://ga-beacon.appspot.com/UA-42024756-3/panda.js/index?pixel)](https://github.com/igrigorik/ga-beacon)
