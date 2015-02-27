@@ -31,13 +31,14 @@ game.createClass('Debug', {
         this.debugDiv.id = 'pandaDebug';
         this.debugDiv.style.position = 'absolute';
         this.debugDiv.style.left = game.Debug.positionX + 'px';
-        this.debugDiv.style.top = game.Debug.positionY + 'px';
+        this.debugDiv.style.bottom = game.Debug.positionY + 'px';
         this.debugDiv.style.zIndex = 9999;
         this.debugDiv.style.backgroundColor = game.Debug.backgroundColor;
-        this.debugDiv.style.padding = '2px';
+        this.debugDiv.style.padding = '4px 2px';
         this.debugDiv.style.color = game.Debug.color;
         this.debugDiv.style.fontFamily = 'Arial';
         this.debugDiv.style.fontSize = '14px';
+        this.debugDiv.style.width = '100%';
         document.body.appendChild(this.debugDiv);
     },
 
@@ -90,7 +91,7 @@ game.addAttributes('Debug', {
         @attribute {String} backgroundColor
         @default black
     **/
-    backgroundColor: 'black',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     /**
         X position of debug box.
         @attribute {Number} positionX
