@@ -30,11 +30,10 @@ game.createClass('Debug', {
         this.debugDiv = document.createElement('div');
         this.debugDiv.id = 'pandaDebug';
         this.debugDiv.style.position = 'absolute';
-        this.debugDiv.style.left = game.Debug.positionX + 'px';
-        this.debugDiv.style.bottom = game.Debug.positionY + 'px';
+        this.debugDiv.style.left = '0px';
+        this.debugDiv.style[game.Debug.position] = '0px';
         this.debugDiv.style.zIndex = 9999;
         this.debugDiv.style.backgroundColor = game.Debug.backgroundColor;
-        this.debugDiv.style.padding = '4px 2px';
         this.debugDiv.style.color = game.Debug.color;
         this.debugDiv.style.fontFamily = 'Arial';
         this.debugDiv.style.fontSize = '14px';
@@ -64,6 +63,10 @@ game.createClass('Debug', {
         if (game.scene.world) {
             text += ' BODIES:' + game.scene.world.bodies.length;
         }
+        this.setText(text);
+    },
+
+    setText: function(text) {
         this.debugDiv.innerHTML = text;
     }
 });
@@ -81,29 +84,23 @@ game.addAttributes('Debug', {
     **/
     frequency: 500,
     /**
-        Text color of debug box.
+        Text color of debug bar.
         @attribute {String} color
         @default red
     **/
     color: 'red',
     /**
-        Background color of debug box.
+        Background color of debug bar.
         @attribute {String} backgroundColor
         @default black
     **/
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     /**
-        X position of debug box.
-        @attribute {Number} positionX
-        @default 0
+        Position of debug bar.
+        @attribute {String} position
+        @default bottom
     **/
-    positionX: 0,
-    /**
-        Y position of debug box.
-        @attribute {Number} positionY
-        @default 0,0
-    **/
-    positionY: 0
+    position: 'bottom'
 });
 
 game.PIXI.DisplayObject.prototype._updateTransform = game.PIXI.DisplayObject.prototype.updateTransform;
