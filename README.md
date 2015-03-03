@@ -1,8 +1,8 @@
 # Panda Engine
 
-### HTML5 game engine with Canvas and WebGL rendering
+### HTML5 game engine for mobile and desktop
 
-With Panda Engine, you can make games written in [JavaScript](http://www.w3schools.com/js/), play them on any major browser, or wrap them into native applications.
+Make games written in [JavaScript](http://www.w3schools.com/js/), play them on any major browser, or wrap them into native applications.
 
 ## Install
 
@@ -27,7 +27,7 @@ game.createScene('Main', {
 });
 ```
 
-## Main features
+## Features
 
 - Canvas / WebGL
 	- Pixi.js powered rendering with super fast speed
@@ -45,27 +45,6 @@ game.createScene('Main', {
 	- Play sound effects and music in your game
 - Modules
 	- Keep your code organized using modules
-
-## Other features
-
-- Dynamic loader
-- Sprite sheets
-- Animations
-- Interactivity
-- Bitmap fonts
-- Plugins
-- Retina / HiRes support
-- Object pooling
-- Local storage
-- Debug draw
-- Page visibility
-- Fullscreen
-- CocoonJS
-- Analytics
-- Keyboard
-- Sitelock
-- Accelerometer
-- Offline
 
 ## Documentation
 
