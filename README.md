@@ -2,7 +2,7 @@
 
 ### HTML5 game engine for mobile and desktop
 
-Make games written in [JavaScript](http://www.w3schools.com/js/), play them on any major browser, or wrap them into native applications.
+Make games written in JavaScript and play them on any major browser, or wrap them into mobile applications.
 
 ## Install
 
@@ -10,47 +10,40 @@ Make games written in [JavaScript](http://www.w3schools.com/js/), play them on a
 2. Install local [web server](https://www.google.com/search?q=install%20local%20web%20server&rct=j)
 3. Unzip and open `dev.html` in your browser
 
-## Example
-
-Short example on how the game code looks:
-
-```javascript
-game.addAsset('logo.png');
-
-game.createScene('Main', {
-    backgroundColor: 0xb9bec7,
-
-    init: function() {
-        var logo = new game.Sprite('logo.png');
-        logo.addTo(this.stage);
-    }
-});
-```
-
 ## Features
 
-- Canvas / WebGL
-	- Pixi.js powered rendering with super fast speed
-- Particle engine
-	- Create stunning special effects using particles
-- Tweening
-	- Tween anything with easing, looping and grouping
-- Physics engine
-	- Hit detection and response with different shapes
-- Timers
-	- Add timers with callback functions and repeating
-- Mobile support
-	- Make games for mobile and tablet devices
-- Sound manager
-	- Play sound effects and music in your game
+- Rendering
+	- Fast Canvas / WebGL rendering powered by [Pixi.js](http://www.pixijs.com)
 - Modules
-	- Keep your code organized using modules
+	- Split your code into separate modules
+- Classes
+	- Extend classes with simple JavaScript inheritance
+- Mobile
+	- Play on mobile browser or wrap using [CocoonJS](http://www.ludei.com/cocoonjs/) or [PhoneGap](http://www.phonegap.com)
+- Plugins
+	- Extend your game features with plugins
+- Physics
+	- Gravity, AABB hit detection and collision response
+- Particles
+	- Create stunning special effects using particles
+- Tweens
+	- Tween anything with easing, looping and grouping
+- Analytics
+	- Easily track your game events
+- Sounds
+	- Play sound effects and music using multiple formats
 
 ## Documentation
 
-[API Documentation](http://www.pandajs.net/engine/docs)
+- [API Documentation](http://www.pandajs.net/engine/docs)
 
 ## Support
 
-Join the discussion at official [Panda.js forum](http://www.html5gamedevs.com/forum/19-pandajs/).
+- [Panda.js forum](http://www.html5gamedevs.com/forum/19-pandajs/)
+- [Panda Engine chat](https://gitter.im/ekelokorpi/panda.js-engine)
 
+## License
+
+Panda Engine is released under the [MIT License](http://opensource.org/licenses/MIT).
+
+Financed by [Yleisradio](http://en.wikipedia.org/wiki/Yle).
