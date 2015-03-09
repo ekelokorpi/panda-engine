@@ -296,39 +296,39 @@ game.addAttributes('DebugDraw', {
 
 game.Scene.inject({
     staticInit: function() {
-        this._super();
+        this.super();
         if (game.debugDraw) game.debugDraw.reset();
     },
 
     _run: function() {
         if (game.system.debug) game.system.debug.reset();
-        this._super();
+        this.super();
         if (game.system.debug) game.system.debug.update();
     },
 
     _render: function() {
         if (game.debugDraw) game.debugDraw.update();
-        this._super();
+        this.super();
     }
 });
 
 game.System.inject({
     _setSceneNow: function(sceneClass, removeAssets) {
-        this._super(sceneClass, removeAssets);
+        this.super(sceneClass, removeAssets);
         if (game.Debug && game.Debug.enabled && !game.device.cocoonJS && !this.debug) this.debug = new game.Debug();
     }
 });
 
 game.World.inject({
     addBody: function(body) {
-        this._super(body);
+        this.super(body);
         if (game.debugDraw && body.shape) game.debugDraw.addBody(body);
     }
 });
 
 game.Camera.inject({
     init: function(x, y) {
-        this._super(x, y);
+        this.super(x, y);
 
         if (game.debugDraw && game.Camera.debug) {
             this.debugBox = new game.Graphics();
@@ -340,7 +340,7 @@ game.Camera.inject({
     },
 
     setSensor: function(width, height) {
-        this._super(width, height);
+        this.super(width, height);
 
         if (this.debugBox) {
             this.debugBox.clear();
@@ -350,12 +350,12 @@ game.Camera.inject({
     },
 
     moveCamera: function() {
-        this._super();
+        this.super();
         if (this.debugBox) this.debugBox.alpha = game.Camera.debugAlpha * ((this.speed.x === 0 && this.speed.y === 0) ? 1 : 2);
     },
 
     update: function() {
-        this._super();
+        this.super();
         if (this.debugBox) this.debugBox.position.set(this.sensorPosition.x - this.position.x, this.sensorPosition.y - this.position.y);
     }
 });

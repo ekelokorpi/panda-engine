@@ -20,7 +20,7 @@ var game = {
     **/
     _fnTest: /xyz/.test(function() {
         var xyz; return xyz;
-    }) ? /\b_super\b/ : /[\D|\d]*/,
+    }) ? /\bsuper\b/ : /[\D|\d]*/,
     /**
         @property {Boolean} _initializing
         @private
@@ -922,10 +922,10 @@ game.Class.extend = function(prop) {
 
     var makeFn = function(name, fn) {
         return function() {
-            var tmp = this._super;
-            this._super = parent[name];
+            var tmp = this.super;
+            this.super = parent[name];
             var ret = fn.apply(this, arguments);
-            this._super = tmp;
+            this.super = tmp;
             return ret;
         };
     };
@@ -984,10 +984,10 @@ game.Class.extend = function(prop) {
 
         var makeFn = function(name, fn) {
             return function() {
-                var tmp = this._super;
-                this._super = parent[name];
+                var tmp = this.super;
+                this.super = parent[name];
                 var ret = fn.apply(this, arguments);
-                this._super = tmp;
+                this.super = tmp;
                 return ret;
             };
         };
