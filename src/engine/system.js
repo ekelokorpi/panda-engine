@@ -181,8 +181,9 @@ game.createClass('System', {
         // No need for centering, if resizing
         if (game.System.resize) {
             game.System.center = false;
-            document.body.style.margin = 0;
         }
+
+        document.body.style.margin = 0;
 
         if (typeof window.onorientationchange !== 'undefined' && !game.device.android) {
             window.onorientationchange = this._onResize.bind(this);
