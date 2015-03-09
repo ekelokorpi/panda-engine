@@ -239,8 +239,10 @@ game.createClass('Scene', {
         @param {Object} object
     **/
     addObject: function(object) {
-        object._remove = false;
-        this.objects.push(object);
+        if (this.objects.indexOf(object) === -1) {
+            object._remove = false;
+            this.objects.push(object);
+        }
     },
     
     /**
