@@ -111,6 +111,11 @@ game.createClass('System', {
         @property {Number} canvasHeight
     **/
     canvasHeight: 0,
+    /**
+        System stage.
+        @property {game.Container} stage
+    **/
+    stage: null,
 
     init: function() {
         this.timer = new game.Timer();
@@ -224,6 +229,7 @@ game.createClass('System', {
         }
 
         this.webGL = !!this.renderer.gl;
+        this.stage = new game.Container();
 
         game._normalizeVendorAttribute(this.canvas, 'requestFullscreen');
         game._normalizeVendorAttribute(this.canvas, 'requestFullScreen');
