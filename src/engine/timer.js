@@ -15,13 +15,29 @@ game.module(
     @param {Number} [ms]
 **/
 game.createClass('Timer', {
+    /**
+        @property {Number} _last
+        @private
+    **/
+    _last: 0,
+    /**
+        @property {Number} _pauseTime
+        @private
+    **/
+    _pauseTime: 0,
+    /**
+        Timer's target time.
+        @property {Number} target
+    **/
     target: 0,
+    /**
+        Timer's base time.
+        @property {Number} base
+    **/
     base: 0,
-    last: 0,
-    pauseTime: 0,
     
     init: function(ms) {
-        this.last = game.Timer.time;
+        this._last = game.Timer.time;
         this.set(ms);
     },
     
@@ -42,7 +58,7 @@ game.createClass('Timer', {
     **/
     reset: function() {
         this.base = game.Timer.time;
-        this.pauseTime = 0;
+        this._pauseTime = 0;
     },
     
     /**
@@ -50,9 +66,9 @@ game.createClass('Timer', {
         @method delta
     **/
     delta: function() {
-        var delta = game.Timer.time - this.last;
-        this.last = game.Timer.time;
-        return this.pauseTime ? 0 : delta;
+        var delta = game.Timer.time - this._last;
+        this._last = game.Timer.time;
+        return this._pauseTime ? 0 : delta;
     },
     
     /**
@@ -60,7 +76,7 @@ game.createClass('Timer', {
         @method time
     **/
     time: function() {
-        var time = (this.pauseTime || game.Timer.time) - this.base - this.target;
+        var time = (this._pauseTime || game.Timer.time) - this.base - this.target;
         return time;
     },
 
@@ -69,7 +85,7 @@ game.createClass('Timer', {
         @method pause
     **/
     pause: function() {
-        if (!this.pauseTime) this.pauseTime = game.Timer.time;
+        if (!this._pauseTime) this._pauseTime = game.Timer.time;
     },
 
     /**
@@ -77,24 +93,45 @@ game.createClass('Timer', {
         @method resume
     **/
     resume: function() {
-        if (this.pauseTime) {
-            this.base += game.Timer.time - this.pauseTime;
-            this.pauseTime = 0;
+        if (this._pauseTime) {
+            this.base += game.Timer.time - this._pauseTime;
+            this._pauseTime = 0;
         }
     }
 });
 
 game.addAttributes('Timer', {
-    last: 0,
+    /**
+        @attribute {Number} _last
+        @private
+    **/
+    _last: 0,
+    /**
+        Current time.
+        @attribute {Number} time
+    **/
     time: Number.MIN_VALUE,
+    /**
+        Main timer's speed factor.
+        @attribute {Number} speedFactor
+        @default 1
+    **/
     speedFactor: 1,
+    /**
+        Main timer's minimum fps.
+        @attribute {Number} minFPS
+        @default 20
+    **/
     minFPS: 20,
-
+    /**
+        Update main timer.
+        @attribute {Function} update
+    **/
     update: function() {
         var now = Date.now();
-        if (!game.Timer.last) game.Timer.last = now;
-        game.Timer.time += Math.min((now - game.Timer.last), 1000 / game.Timer.minFPS) * game.Timer.speedFactor;
-        game.Timer.last = now;
+        if (!game.Timer._last) game.Timer._last = now;
+        game.Timer.time += Math.min((now - game.Timer._last), 1000 / game.Timer.minFPS) * game.Timer.speedFactor;
+        game.Timer._last = now;
     }
 });
 
