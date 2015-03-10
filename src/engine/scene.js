@@ -19,12 +19,6 @@ game.createClass('Scene', {
     **/
     _updateOrder: [],
     /**
-        Background color of scene.
-        @property {Number} backgroundColor
-        @default 0x000000
-    **/
-    backgroundColor: 0x000000,
-    /**
         List of objects in scene.
         @property {Array} objects
     **/
@@ -64,6 +58,10 @@ game.createClass('Scene', {
             game.audio.pausedSounds.length = 0;
             game.audio.playingSounds.length = 0;
         }
+
+        for (var i = 0; i < game.system.stage.children.length; i++) {
+            game.system.stage.children[i].remove();
+        }
         
         game.scene = this;
         
@@ -75,6 +73,7 @@ game.createClass('Scene', {
         this.stage.mouseup = this.stage.mouseupoutside = this.stage.touchend = this.stage.touchendoutside = this.mouseup.bind(this);
         this.stage.mouseout = this.mouseout.bind(this);
         this.stage.hitArea = new game.HitRectangle(0, 0, game.system.width, game.system.height);
+        this.stage.addTo(game.system.stage);
 
         this._updateOrder.length = 0;
         for (var i = 0; i < game.Scene.updateOrder.length; i++) {
@@ -197,7 +196,7 @@ game.createClass('Scene', {
         @private
     **/
     _render: function() {
-        game.system.renderer.render(this.stage);
+        game.system.renderer.render(game.system.stage);
     },
     
     /**
@@ -219,11 +218,14 @@ game.createClass('Scene', {
     /**
         Clear stage.
         @method clear
+        @return {Number} number of objects removed
     **/
     clear: function() {
-        for (var i = this.stage.children.length - 1; i >= 0; i--) {
-            this.stage.removeChild(this.stage.children[i]);
+        var count = this.stage.children.length;
+        for (var i = count - 1; i >= 0; i--) {
+            this.stage.children[i].remove();
         }
+        return count;
     },
     
     /**
