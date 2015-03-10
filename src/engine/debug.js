@@ -16,15 +16,32 @@ game.module(
 'use strict';
 
 /**
-    Show debug box.
+    Show debug bar.
     Automatically enabled, if URL contains `?debug`.
     @class Debug
     @extends Class
 **/
 game.createClass('Debug', {
-    frames: 0,
+    /**
+        @property {Number} frames
+        @private
+    **/
+    _frames: 0,
+    /**
+        Time of last update.
+        @property {Number} last
+    **/
     last: 0,
+    /**
+        Sprites count.
+        @property {Number} sprites
+    **/
     sprites: 0,
+    /**
+        Current fps.
+        @property {Number} fps
+    **/
+    fps: 0,
 
     init: function() {
         this.debugDiv = document.createElement('div');
@@ -41,17 +58,25 @@ game.createClass('Debug', {
         document.body.appendChild(this.debugDiv);
     },
 
-    reset: function() {
-        this.sprites = -1;
+    /**
+        @method _reset
+        @private
+    **/
+    _reset: function() {
+        this.sprites = -2;
     },
 
-    update: function() {
-        this.frames++;
+    /**
+        @method _update
+        @private
+    **/
+    _update: function() {
+        this._frames++;
 
-        if (game.Timer.last >= this.last + game.Debug.frequency) {
-            this.fps = (Math.round((this.frames * 1000) / (game.Timer.last - this.last)));
-            this.last = game.Timer.last;
-            this.frames = 0;
+        if (game.Timer.time >= this.last + game.Debug.frequency) {
+            this.fps = (Math.round((this._frames * 1000) / (game.Timer.time - this.last)));
+            this.last = game.Timer.time;
+            this._frames = 0;
         }
 
         var text = 'FPS: ' + this.fps;
@@ -60,13 +85,15 @@ game.createClass('Debug', {
         if (game.tweenEngine) text += ' TWEENS: ' + game.tweenEngine.tweens.length;
         if (game.scene.timers) text += ' TIMERS: ' + game.scene.timers.length;
         if (game.scene.emitters) text += ' EMITTERS: ' + game.scene.emitters.length;
-        if (game.scene.world) {
-            text += ' BODIES:' + game.scene.world.bodies.length;
-        }
-        this.setText(text);
+        if (game.scene.world) text += ' BODIES:' + game.scene.world.bodies.length;
+        this._setText(text);
     },
 
-    setText: function(text) {
+    /**
+        @method _setText
+        @private
+    **/
+    _setText: function(text) {
         this.debugDiv.innerHTML = text;
     }
 });
@@ -86,17 +113,17 @@ game.addAttributes('Debug', {
     /**
         Text color of debug bar.
         @attribute {String} color
-        @default red
+        @default #ff0000
     **/
-    color: 'red',
+    color: '#ff0000',
     /**
         Background color of debug bar.
         @attribute {String} backgroundColor
-        @default black
+        @default rgba(0, 0, 0, 0.7)
     **/
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     /**
-        Position of debug bar.
+        Y position of debug bar.
         @attribute {String} position
         @default bottom
     **/
@@ -117,36 +144,44 @@ game.PIXI.DisplayObject.prototype.displayObjectUpdateTransform = game.PIXI.Displ
     @extends game.Class
 **/
 game.createClass('DebugDraw', {
-    spriteContainer: null,
-    bodyContainer: null,
+    /**
+        @property {game.Container} _spriteContainer
+        @private
+    **/
+    _spriteContainer: null,
+    /**
+        @property {game.Container} _bodyContainer
+        @private
+    **/
+    _bodyContainer: null,
 
     init: function() {
-        this.spriteContainer = new game.Container();
-        this.bodyContainer = new game.Container();
+        this._spriteContainer = new game.Container();
+        this._bodyContainer = new game.Container();
     },
 
     /**
-        Remove all sprites from DebugDraw.
-        @method reset
+        @method _reset
+        @private
     **/
-    reset: function() {
-        for (var i = this.spriteContainer.children.length - 1; i >= 0; i--) {
-            this.spriteContainer.removeChild(this.spriteContainer.children[i]);
+    _reset: function() {
+        for (var i = this._spriteContainer.children.length - 1; i >= 0; i--) {
+            this._spriteContainer.children[i].remove();
         }
-        game.system.stage.addChild(this.spriteContainer);
+        game.system.stage.addChild(this._spriteContainer);
 
-        for (var i = this.bodyContainer.children.length - 1; i >= 0; i--) {
-            this.bodyContainer.removeChild(this.bodyContainer.children[i]);
+        for (var i = this._bodyContainer.children.length - 1; i >= 0; i--) {
+            this._bodyContainer.children[i].remove();
         }
-        game.system.stage.addChild(this.bodyContainer);
+        game.system.stage.addChild(this._bodyContainer);
     },
 
     /**
-        Add interactive sprite to DebugDraw.
-        @method addSprite
+        @method _addSprite
         @param {game.Sprite} sprite
+        @private
     **/
-    addSprite: function(sprite) {
+    _addSprite: function(sprite) {
         var grap = new game.Graphics();
         grap.beginFill(game.DebugDraw.spriteColor);
         grap.lineStyle(1, game.DebugDraw.spriteLineColor);
@@ -167,32 +202,32 @@ game.createClass('DebugDraw', {
         grap.position.y = sprite.position.y;
         grap.target = sprite;
         grap.alpha = game.DebugDraw.spriteAlpha;
-        this.spriteContainer.addChild(grap);
+        this._spriteContainer.addChild(grap);
     },
 
     /**
-        Add physic body to DebugDraw.
-        @method addBody
+        @method _addBody
         @param {game.Body} body
+        @private
     **/
-    addBody: function(body) {
+    _addBody: function(body) {
         var sprite = new game.Graphics();
-        this.drawBodySprite(sprite, body);
+        this._drawBodySprite(sprite, body);
 
         sprite.position.x = body.position.x;
         sprite.position.y = body.position.y;
         sprite.target = body;
         sprite.alpha = game.DebugDraw.bodyAlpha;
-        this.bodyContainer.addChild(sprite);
+        this._bodyContainer.addChild(sprite);
     },
 
     /**
-        Draw debug sprite for physics body.
-        @method drawBodySprite
+        @method _drawBodySprite
         @param {game.Graphics} sprite
         @param {game.Body} body
+        @private
     **/
-    drawBodySprite: function(sprite, body) {
+    _drawBodySprite: function(sprite, body) {
         sprite.clear();
         sprite.beginFill(game.DebugDraw.bodyColor);
         sprite.lineStyle(1, game.DebugDraw.bodyLineColor);
@@ -205,48 +240,55 @@ game.createClass('DebugDraw', {
         }
     },
 
-    updateSprites: function() {
+    /**
+        @method updateSprites
+        @private
+    **/
+    _updateSprites: function() {
         var sprite;
-        for (var i = this.spriteContainer.children.length - 1; i >= 0; i--) {
-            sprite = this.spriteContainer.children[i];
+        for (var i = this._spriteContainer.children.length - 1; i >= 0; i--) {
+            sprite = this._spriteContainer.children[i];
             sprite.rotation = sprite.target.rotation;
             sprite.visible = sprite.target.worldVisible;
             sprite.position.x = sprite.target.worldTransform.tx;
             sprite.position.y = sprite.target.worldTransform.ty;
             sprite.scale.x = sprite.target.scale.x;
             sprite.scale.y = sprite.target.scale.y;
-            if (!sprite.target.parent) this.spriteContainer.removeChild(sprite);
+            if (!sprite.target.parent) this._spriteContainer.removeChild(sprite);
         }
-        game.system.debug.sprites -= this.spriteContainer.children.length;
+        game.system.debug.sprites -= this._spriteContainer.children.length;
     },
 
-    updateBodies: function() {
+    /**
+        @method updateBodies
+        @private
+    **/
+    _updateBodies: function() {
         var body;
-        for (var i = this.bodyContainer.children.length - 1; i >= 0; i--) {
-            body = this.bodyContainer.children[i];
+        for (var i = this._bodyContainer.children.length - 1; i >= 0; i--) {
+            body = this._bodyContainer.children[i];
             body.rotation = body.target.rotation;
             if (body.width !== body.target.shape.width ||
                 body.height !== body.target.shape.height) {
-                this.drawBodySprite(body, body.target);
+                this._drawBodySprite(body, body.target);
             }
             else if (body.radius !== body.target.shape.radius) {
-                this.drawBodySprite(body, body.target);
+                this._drawBodySprite(body, body.target);
             }
             body.position.x = body.target.position.x;
             body.position.y = body.target.position.y;
             if (!body.target.world) body.remove();
         }
-        game.system.debug.sprites -= this.bodyContainer.children.length;
+        game.system.debug.sprites -= this._bodyContainer.children.length;
     },
 
     /**
-        Update DebugDraw sprites.
-        @method update
+        @method _update
     **/
-    update: function() {
+    _update: function() {
         game.system.debug.sprites -= 2;
-        this.updateSprites();
-        this.updateBodies();
+        this._updateSprites();
+        this._updateBodies();
     }
 });
 
@@ -297,17 +339,17 @@ game.addAttributes('DebugDraw', {
 game.Scene.inject({
     staticInit: function() {
         this.super();
-        if (game.debugDraw) game.debugDraw.reset();
+        if (game.debugDraw) game.debugDraw._reset();
     },
 
     _run: function() {
-        if (game.system.debug) game.system.debug.reset();
+        if (game.system.debug) game.system.debug._reset();
         this.super();
-        if (game.system.debug) game.system.debug.update();
+        if (game.system.debug) game.system.debug._update();
     },
 
     _render: function() {
-        if (game.debugDraw) game.debugDraw.update();
+        if (game.debugDraw) game.debugDraw._update();
         this.super();
     }
 });
@@ -322,7 +364,7 @@ game.System.inject({
 game.World.inject({
     addBody: function(body) {
         this.super(body);
-        if (game.debugDraw && body.shape) game.debugDraw.addBody(body);
+        if (game.debugDraw && body.shape) game.debugDraw._addBody(body);
     }
 });
 
@@ -368,7 +410,7 @@ game.addAttributes('Camera', {
 
 game.PIXI.DisplayObjectContainer.prototype._addChild = game.PIXI.DisplayObjectContainer.prototype.addChild;
 game.PIXI.DisplayObjectContainer.prototype.addChild = function(child) {
-    if (game.debugDraw && child.interactive) game.debugDraw.addSprite(child);
+    if (game.debugDraw && child.interactive) game.debugDraw._addSprite(child);
     this._addChild(child);
 };
 
