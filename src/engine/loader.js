@@ -16,6 +16,30 @@ game.module(
 **/
 game.createClass('Loader', {
     /**
+        List of assets to load.
+        @property {Array} assetQueue
+        @private
+    **/
+    _assetQueue: [],
+    /**
+        List of audios to load.
+        @property {Array} audioQueue
+        @private
+    **/
+    _audioQueue: [],
+    /**
+        Callback for loader.
+        @property {Function|String} _callback
+        @private
+    **/
+    _callback: null,
+    /**
+        Is loader in dynamic mode.
+        @property {Boolean} _dynamic
+        @private
+    **/
+    _dynamic: true,
+    /**
         Number of files loaded.
         @property {Number} loaded
     **/
@@ -26,49 +50,144 @@ game.createClass('Loader', {
     **/
     percent: 0,
     /**
-        List of assets to load.
-        @property {Array} assetQueue
-    **/
-    assetQueue: [],
-    /**
-        List of audios to load.
-        @property {Array} audioQueue
-    **/
-    audioQueue: [],
-    /**
         Is loader started.
         @property {Boolean} started
         @default false
     **/
     started: false,
-    dynamic: true,
-    callback: null,
     
     init: function(callback) {
         this.onComplete(callback);
-        this.stage = game.system.stage;
+        this.stage = new game.Container();
 
         for (var i = 0; i < game.assetQueue.length; i++) {
             if (game.TextureCache[game.assetQueue[i]]) continue;
-            this.assetQueue.push(this.getPath(game.assetQueue[i]));
+            this._assetQueue.push(this._getPath(game.assetQueue[i]));
         }
         game.assetQueue.length = 0;
 
         if (game.Audio.enabled) {
             for (var i = 0; i < game.audioQueue.length; i++) {
-                this.audioQueue.push(game.audioQueue[i]);
+                this._audioQueue.push(game.audioQueue[i]);
             }
             game.audioQueue.length = 0;
         }
 
-        if (this.assetQueue.length > 0) {
-            this.loader = new game.AssetLoader(this.assetQueue, game.Loader.crossorigin);
-            this.loader.onProgress = this.progress.bind(this);
-            this.loader.onComplete = this.loadAudio.bind(this);
-            this.loader.onError = this.error.bind(this);
+        if (this._assetQueue.length > 0) {
+            this.loader = new game.AssetLoader();
+            for (var i = 0; i < this._assetQueue.length; i++) {
+                this.loader.add(this._assetQueue[i]);
+            }
+            this.loader.once('progress', this._progress.bind(this));
+            this.loader.once('complete', this._loadAudio.bind(this));
+            this.loader.once('error', this.error.bind(this));
         }
 
-        if (this.assetQueue.length + this.audioQueue.length === 0) this.percent = 100;
+        if (this._assetQueue.length + this._audioQueue.length === 0) this.percent = 100;
+    },
+
+    /**
+        @method _progress
+        @private
+    **/
+    _progress: function(loader) {
+        if (loader && loader.json) game.json[loader.url] = loader.json;
+        this.loaded++;
+        this.percent = Math.round(this.loaded / (this._assetQueue.length + this._audioQueue.length) * 100);
+        this.onPercentChange();
+
+        if (this._dynamic && this.loaded === this._assetQueue.length + this._audioQueue.length) this._ready();
+    },
+
+    /**
+        @method _loadAudio
+        @private
+    **/
+    _loadAudio: function() {
+        for (var i = this._audioQueue.length - 1; i >= 0; i--) {
+            game.audio._load(this._audioQueue[i], this._progress.bind(this), this.error.bind(this, this._audioQueue[i]));
+        }
+    },
+
+    /**
+        @method _ready
+        @private
+    **/
+    _ready: function() {
+        if (game.system.hires || game.system.retina) {
+            for (var i in game.TextureCache) {
+                if (i.indexOf('@' + game.scale + 'x') !== -1) {
+                    game.TextureCache[i.replace('@' + game.scale + 'x', '')] = game.TextureCache[i];
+                    delete game.TextureCache[i];
+                }
+            }
+        }
+
+        if (typeof this._callback === 'function') this._callback();
+        else this._setScene();
+    },
+
+    /**
+        @method _setScene
+        @private
+    **/
+    _setScene: function() {
+        game.system.timer.last = 0;
+        game.Timer.time = Number.MIN_VALUE;
+        if (this.loopId) game._clearGameLoop(this.loopId);
+        game.system.setScene(this._callback);
+    },
+
+    /**
+        @method _run
+        @private
+    **/
+    _run: function() {
+        if (this.loopId) {
+            this.last = game.Timer.time;
+            game.Timer.update();
+            game.system.delta = (game.Timer.time - this.last) / 1000;
+        }
+
+        this._update();
+        this._render();
+    },
+
+    /**
+        @method _update
+        @private
+    **/
+    _update: function() {
+        if (game.tweenEngine) game.tweenEngine.update();
+
+        if (this._isReady) return;
+        if (this.timeoutTimer) {
+            if (this.timeoutTimer.time() >= 0) {
+                this._isReady = true;
+                this._ready();
+            }
+        }
+        else if (this.loaded === this._assetQueue.length + this._audioQueue.length) {
+            var loadTime = Date.now() - this.startTime;
+            var waitTime = Math.max(0, game.Loader.time - loadTime);
+            this.timeoutTimer = new game.Timer(waitTime);
+        }
+    },
+
+    /**
+        @method _render
+        @private
+    **/
+    _render: function() {
+        game.system.renderer.render(this.stage);
+    },
+
+    /**
+        @method _getPath
+        @private
+    **/
+    _getPath: function(path) {
+        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
     },
 
     /**
@@ -99,8 +218,8 @@ game.createClass('Loader', {
         @param {Function|String} callback
     **/
     onComplete: function(callback) {
-        if (typeof callback === 'string') this.dynamic = false;
-        this.callback = callback;
+        if (typeof callback === 'string') this._dynamic = false;
+        this._callback = callback;
         return this;
     },
 
@@ -111,14 +230,8 @@ game.createClass('Loader', {
     start: function() {
         this.started = true;
 
-        if (!this.dynamic) {
-            for (var i = this.stage.children.length - 1; i >= 0; i--) {
-                this.stage.removeChild(this.stage.children[i]);
-            }
-            this.stage.interactive = false;
+        if (!this._dynamic) {
             if (game.tweenEngine) game.tweenEngine.removeAll();
-        
-            this.stage.setBackgroundColor(game.Loader.bgColor);
 
             this.initStage();
 
@@ -128,22 +241,18 @@ game.createClass('Loader', {
 
         this.startTime = Date.now();
 
-        if (this.assetQueue.length > 0) this.loader.load();
-        else if (this.audioQueue.length > 0) this.loadAudio();
-        else if (this.dynamic) this.ready();
+        if (this._assetQueue.length > 0) this.loader.load();
+        else if (this._audioQueue.length > 0) this._loadAudio();
+        else if (this._dynamic) this._ready();
     },
 
+    /**
+        Called, when loading failed.
+        @method error
+        @param {String} path
+    **/
     error: function(path) {
         throw 'loading file ' + path;
-    },
-
-    progress: function(loader) {
-        if (loader && loader.json) game.json[loader.url] = loader.json;
-        this.loaded++;
-        this.percent = Math.round(this.loaded / (this.assetQueue.length + this.audioQueue.length) * 100);
-        this.onPercentChange();
-
-        if (this.dynamic && this.loaded === this.assetQueue.length + this.audioQueue.length) this.ready();
     },
 
     /**
@@ -154,86 +263,12 @@ game.createClass('Loader', {
         if (this.barFg) this.barFg.scale.x = this.percent / 100;
     },
 
-    loadAudio: function() {
-        for (var i = this.audioQueue.length - 1; i >= 0; i--) {
-            game.audio._load(this.audioQueue[i], this.progress.bind(this), this.error.bind(this, this.audioQueue[i]));
-        }
-    },
-
-    ready: function() {
-        if (game.system.hires || game.system.retina) {
-            for (var i in game.TextureCache) {
-                if (i.indexOf('@' + game.scale + 'x') !== -1) {
-                    game.TextureCache[i.replace('@' + game.scale + 'x', '')] = game.TextureCache[i];
-                    delete game.TextureCache[i];
-                }
-            }
-        }
-
-        if (typeof this.callback === 'function') this.callback();
-        else this.setScene();
-    },
-
-    setScene: function() {
-        game.system.timer.last = 0;
-        game.Timer.time = Number.MIN_VALUE;
-        if (this.loopId) game._clearGameLoop(this.loopId);
-        game.system.setScene(this.callback);
-    },
-
     exit: function() {},
-
-    /**
-        @method run
-        @private
-    **/
-    _run: function() {
-        if (this.loopId) {
-            this.last = game.Timer.time;
-            game.Timer.update();
-            game.system.delta = (game.Timer.time - this.last) / 1000;
-        }
-
-        this.update();
-        this.render();
-    },
-
-    update: function() {
-        if (game.tweenEngine) game.tweenEngine.update();
-
-        if (this._ready) return;
-        if (this.timeoutTimer) {
-            if (this.timeoutTimer.time() >= 0) {
-                this._ready = true;
-                this.ready();
-            }
-        }
-        else if (this.loaded === this.assetQueue.length + this.audioQueue.length) {
-            var loadTime = Date.now() - this.startTime;
-            var waitTime = Math.max(0, game.Loader.time - loadTime);
-            this.timeoutTimer = new game.Timer(waitTime);
-        }
-    },
-
-    render: function() {
-        game.system.renderer.render(this.stage);
-    },
-
-    getPath: function(path) {
-        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
-    },
-
     keydown: function() {},
     keyup: function() {}
 });
 
 game.addAttributes('Loader', {
-    /**
-        Loader background color.
-        @attribute {Number} bgColor
-        @default 0x000000
-    **/
-    bgColor: 0x000000,
     /**
         Minimum time to show loader (ms).
         @attribute {Number} time
@@ -243,7 +278,7 @@ game.addAttributes('Loader', {
     /**
         Loading bar background color.
         @attribute {Number} barBg
-        @default 0x231f20
+        @default 0x515e73
     **/
     barBgColor: 0x515e73,
     /**
@@ -251,7 +286,7 @@ game.addAttributes('Loader', {
         @attribute {Number} barColor
         @default 0xe6e7e8
     **/
-    barColor: 0xb9bec7,
+    barColor: 0xe6e7e8,
     /**
         Width of the loading bar.
         @attribute {Number} barWidth
@@ -263,13 +298,7 @@ game.addAttributes('Loader', {
         @attribute {Number} barHeight
         @default 20
     **/
-    barHeight: 20,
-    /**
-        Threat requests as crossorigin.
-        @attribute {Boolean} crossorigin
-        @default true
-    **/
-    crossorigin: true
+    barHeight: 20
 });
 
 });
