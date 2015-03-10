@@ -67,21 +67,14 @@ game.createClass('Scene', {
         
         game.scene = this;
         
-        for (var i = game.system.stage.children.length - 1; i >= 0; i--) {
-            game.system.stage.removeChild(game.system.stage.children[i]);
-        }
-        game.system.stage.setBackgroundColor(this.backgroundColor);
-
-        game.system.stage.interactive = true;
-        game.system.stage.mousemove = game.system.stage.touchmove = this._mousemove.bind(this);
-        game.system.stage.click = game.system.stage.tap = this.click.bind(this);
-        game.system.stage.mousedown = game.system.stage.touchstart = this._mousedown.bind(this);
-        game.system.stage.mouseup = game.system.stage.mouseupoutside = game.system.stage.touchend = game.system.stage.touchendoutside = this.mouseup.bind(this);
-        game.system.stage.mouseout = this.mouseout.bind(this);
-
         this.stage = new game.Container();
-
-        game.system.stage.addChild(this.stage);
+        this.stage.interactive = true;
+        this.stage.mousemove = this.stage.touchmove = this._mousemove.bind(this);
+        this.stage.click = this.stage.tap = this.click.bind(this);
+        this.stage.mousedown = this.stage.touchstart = this._mousedown.bind(this);
+        this.stage.mouseup = this.stage.mouseupoutside = this.stage.touchend = this.stage.touchendoutside = this.mouseup.bind(this);
+        this.stage.mouseout = this.mouseout.bind(this);
+        this.stage.hitArea = new game.HitRectangle(0, 0, game.system.width, game.system.height);
 
         this._updateOrder.length = 0;
         for (var i = 0; i < game.Scene.updateOrder.length; i++) {
@@ -96,8 +89,8 @@ game.createClass('Scene', {
     **/
     _mousedown: function(event) {
         event.startTime = Date.now();
-        event.swipeX = event.global.x;
-        event.swipeY = event.global.y;
+        event.swipeX = event.data.global.x;
+        event.swipeY = event.data.global.y;
         this.mousedown(event);
     },
 
@@ -109,10 +102,10 @@ game.createClass('Scene', {
     _mousemove: function(event) {
         this.mousemove(event);
         if (!event.startTime) return;
-        if (event.global.x - event.swipeX >= this.swipeDist) this._swipe(event, 'right');
-        else if (event.global.x - event.swipeX <= -this.swipeDist) this._swipe(event, 'left');
-        else if (event.global.y - event.swipeY >= this.swipeDist) this._swipe(event, 'down');
-        else if (event.global.y - event.swipeY <= -this.swipeDist) this._swipe(event, 'up');
+        if (event.data.global.x - event.swipeX >= this.swipeDist) this._swipe(event, 'right');
+        else if (event.data.global.x - event.swipeX <= -this.swipeDist) this._swipe(event, 'left');
+        else if (event.data.global.y - event.swipeY >= this.swipeDist) this._swipe(event, 'down');
+        else if (event.data.global.y - event.swipeY <= -this.swipeDist) this._swipe(event, 'up');
     },
 
     /**
@@ -204,7 +197,7 @@ game.createClass('Scene', {
         @private
     **/
     _render: function() {
-        game.system.renderer.render(game.system.stage);
+        game.system.renderer.render(this.stage);
     },
     
     /**
@@ -260,7 +253,9 @@ game.createClass('Scene', {
         @param {game.Emitter} emitter
     **/
     addEmitter: function(emitter) {
-        this.emitters.push(emitter);
+        if (this.emitters.indexOf(emitter) === -1) {
+            this.emitters.push(emitter);
+        }
     },
     
     /**
@@ -269,7 +264,7 @@ game.createClass('Scene', {
         @param {game.Emitter} emitter
     **/
     removeEmitter: function(emitter) {
-        emitter.remove();
+        if (emitter) emitter.remove();
     },
     
     /**
