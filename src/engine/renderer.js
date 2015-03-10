@@ -27,13 +27,6 @@ game.autoDetectRenderer = game.PIXI.autoDetectRenderer;
     @param {Array} textures Textures this animation made up of
 **/
 game.Animation = function(textures) {
-    /**
-        Play animation in reverse.
-        @property {Boolean} reverse
-        @default false
-    **/
-    this.reverse = false;
-
     if (typeof textures === 'string') {
         var frames = Array.prototype.slice.call(arguments);
 
@@ -48,33 +41,6 @@ game.Animation = function(textures) {
 
 game.Animation.prototype = Object.create(game.PIXI.MovieClip.prototype);
 game.Animation.prototype.constructor = game.Animation;
-
-/**
-    Play animation.
-    @method play
-    @param {Boolean} loop
-**/
-game.Animation.prototype.play = function(loop) {
-    if (typeof loop === 'boolean') this.loop = loop;
-    this.playing = true;
-};
-
-game.Animation.prototype.updateTransform = function() {
-    if (this.playing) {
-        this.currentFrame -= this.animationSpeed;
-        this.currentFrame += this.animationSpeed * (this.reverse ? -1 : 1) * 60 * game.system.delta;
-        
-        if (this.currentFrame < 0 && this.reverse) {
-            if (!this.loop) {
-                if (this.onComplete) this.onComplete();
-                this.currentFrame = 0;
-                this.playing = false;
-            }
-            else this.currentFrame = this.totalFrames - 1 + this.currentFrame;
-        }
-    }
-    game.PIXI.MovieClip.prototype.updateTransform.call(this);
-};
 
 /**
     @method fromFrames
@@ -96,7 +62,7 @@ game.Animation.fromFrames = function(name, reverse) {
 };
 
 game.AssetLoader = game.PIXI.Loader;
-game.blendModes = game.PIXI.blendModes;
+game.BLEND_MODES = game.PIXI.BLEND_MODES;
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/BaseTexture.html
