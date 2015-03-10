@@ -14,7 +14,7 @@ game.module(
     @property {Object} PIXI
     @for Core
 **/
-game.PIXI.dontSayHello = true;
+game.PIXI.utils._saidHello = true;
 game.PIXI.RETINA_PREFIX = false;
 
 game.autoDetectRenderer = game.PIXI.autoDetectRenderer;
@@ -95,7 +95,7 @@ game.Animation.fromFrames = function(name, reverse) {
     return new game.Animation(textures);
 };
 
-game.AssetLoader = game.PIXI.AssetLoader;
+game.AssetLoader = game.PIXI.Loader;
 game.blendModes = game.PIXI.blendModes;
 
 /**
@@ -116,7 +116,7 @@ game.CanvasRenderer = game.PIXI.CanvasRenderer;
     @class Container
     @extends game.DisplayObject
 **/
-game.Container = game.PIXI.DisplayObjectContainer;
+game.Container = game.PIXI.Container;
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/DisplayObject.html
@@ -148,15 +148,15 @@ game.DisplayObject.prototype.addTo = function(container) {
     @extends game.DisplayObject
 **/
 game.Graphics = game.PIXI.Graphics;
-game.HitCircle = game.PIXI.Circle;
-game.HitEllipse = game.PIXI.Ellipse;
-game.HitPolygon = game.PIXI.Polygon;
-game.HitRectangle = game.PIXI.Rectangle;
+game.HitCircle = game.PIXI.math.Circle;
+game.HitEllipse = game.PIXI.math.Ellipse;
+game.HitPolygon = game.PIXI.math.Polygon;
+game.HitRectangle = game.PIXI.math.Rectangle;
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/Point.html
     @class Point
 **/
-game.Point = game.PIXI.Point;
+game.Point = game.PIXI.math.Point;
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/RenderTexture.html
@@ -276,8 +276,6 @@ game.Sprite.prototype.center = function(offsetX, offsetY) {
 game.Sprite.fromFrame = game.PIXI.Sprite.fromFrame;
 game.Sprite.fromImage = game.PIXI.Sprite.fromImage;
 
-game.Stage = game.PIXI.Stage;
-
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/Text.html
     @class Text
@@ -294,7 +292,7 @@ game.Texture = game.PIXI.Texture;
     @property {Object} TextureCache
     @for Core
 **/
-game.TextureCache = game.PIXI.TextureCache;
+game.TextureCache = game.PIXI.utils.TextureCache;
 
 /**
     http://www.goodboydigital.com/pixijs/docs/classes/TilingSprite.html
