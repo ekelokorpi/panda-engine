@@ -249,10 +249,10 @@ game.createClass('Loader', {
     /**
         Called, when loading failed.
         @method error
-        @param {String} path
+        @param {String} err
     **/
-    error: function(path) {
-        throw 'loading file ' + path;
+    error: function(err) {
+        throw err;
     },
 
     /**
