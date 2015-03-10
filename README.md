@@ -9,6 +9,7 @@ Make games written in JavaScript and play them on any major browser, or wrap the
 1. Download latest [Panda Engine](https://github.com/ekelokorpi/panda.js/archive/master.zip) zip
 2. Install local [web server](https://www.google.com/search?q=install%20local%20web%20server&rct=j)
 3. Unzip and open `dev.html` in your browser
+4. Open `src/game/main.js` in your favorite code editor and start coding!
 
 ## Features
 
