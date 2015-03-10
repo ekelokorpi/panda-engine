@@ -111,11 +111,6 @@ game.createClass('System', {
         @property {Number} canvasHeight
     **/
     canvasHeight: 0,
-    /**
-        System stage.
-        @property {game.Stage} stage
-    **/
-    stage: null,
 
     init: function() {
         this.timer = new game.Timer();
@@ -210,11 +205,12 @@ game.createClass('System', {
             document.body.appendChild(this.canvas);
         }
         
-        game.PIXI.scaleModes.DEFAULT = game.PIXI.scaleModes[game.System.scaleMode.toUpperCase()] || 0;
+        game.PIXI.SCALE_MODES.DEFAULT = game.PIXI.SCALE_MODES[game.System.scaleMode.toUpperCase()] || 0;
 
         var options = {
             view: this.canvas,
-            transparent: game.System.transparent
+            transparent: game.System.transparent,
+            backgroundColor: game.System.backgroundColor
         };
 
         if (game.System.webGL) {
@@ -228,7 +224,6 @@ game.createClass('System', {
         }
 
         this.webGL = !!this.renderer.gl;
-        this.stage = new game.Stage();
 
         game._normalizeVendorAttribute(this.canvas, 'requestFullscreen');
         game._normalizeVendorAttribute(this.canvas, 'requestFullScreen');
@@ -430,23 +425,29 @@ game.createClass('System', {
 
 game.addAttributes('System', {
     /**
+        Canvas background color.
+        @property {Number} backgroundColor
+        @default 0x000000
+    **/
+    backgroundColor: 0x000000,
+    /**
         Position canvas to center of window.
         @attribute {Boolean} center
         @default true
     **/
     center: true,
     /**
-        Resize canvas to fill window.
-        @attribute {Boolean} resize
-        @default false
-    **/
-    resize: false,
-    /**
         Scale canvas to fit window.
         @attribute {Boolean} scale
         @default true
     **/
     scale: true,
+    /**
+        Resize canvas to fill window.
+        @attribute {Boolean} resize
+        @default false
+    **/
+    resize: false,
     /**
         HiRes mode.
         @attribute {Number} hires
@@ -539,7 +540,7 @@ game.addAttributes('System', {
     **/
     clearBeforeRender: true,
     /**
-        Enables drawing buffer preservation, enable this if you need to call toDataUrl on the WebGL context.
+        Enables drawing buffer preservation, enable this if you need to call toDataUrl on the WebGL renderer.
         @attribute {Boolean} preserveDrawingBuffer
         @default false
     **/
