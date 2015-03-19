@@ -9,7 +9,6 @@ game.module(
 
 /**
     @class Camera
-    @extends Class
 **/
 game.createClass('Camera', {
     /**

@@ -10,7 +10,6 @@ game.module(
 /**
     Object pool.
     @class Pool
-    @extends Class
 **/
 game.createClass('Pool', {
     /**

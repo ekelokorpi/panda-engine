@@ -10,6 +10,95 @@
 **/
 var game = {
     /**
+        Engine version.
+        @property {String} version
+    **/
+    version: '2.0.0',
+    /**
+        Engine config.
+        @property {Object} config
+    **/
+    config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
+    /**
+        Scale multiplier for Retina and HiRes mode.
+        @property {Number} scale
+        @default 1
+    **/
+    scale: 1,
+    /**
+        @property {Audio} audio
+    **/
+    audio: null,
+    /**
+        @property {Scene} scene
+    **/
+    scene: null,
+    /**
+        @property {Debug} debug
+    **/
+    debug: null,
+    /**
+        @property {System} system
+    **/
+    system: null,
+    /**
+        @property {Pool} pool
+    **/
+    pool: null,
+    /**
+        @property {Storage} storage
+    **/
+    storage: null,
+    /**
+        @property {Keyboard} keyboard
+    **/
+    keyboard: null,
+    /**
+        Device / browser information.
+        @property {Object} device
+    **/
+    device: {},
+    /**
+        Device acceleration.
+        @property {DeviceAcceleration} devicemotion
+    **/
+    devicemotion: null,
+    /**
+        Module load queue.
+        @property {Array} moduleQueue
+    **/
+    moduleQueue: [],
+    /**
+        Asset load queue.
+        @property {Array} assetQueue
+    **/
+    assetQueue: [],
+    /**
+        Audio load queue.
+        @property {Array} audioQueue
+    **/
+    audioQueue: [],
+    /**
+        List of asset paths.
+        @property {Object} paths
+    **/
+    paths: {},
+    /**
+        List of plugins.
+        @property {Object} plugins
+    **/
+    plugins: {},
+    /**
+        List of JSON files.
+        @property {Object} json
+    **/
+    json: {},
+    /**
+        List of modules.
+        @property {Object} modules
+    **/
+    modules: {},
+    /**
         @property {String} _nocache
         @private
     **/
@@ -69,9 +158,14 @@ var game = {
         'engine.loader',
         'engine.particle',
         'engine.physics',
-        'engine.pixi',
         'engine.pool',
-        'engine.renderer',
+        'engine.renderer.animation',
+        'engine.renderer.bitmaptext',
+        'engine.renderer.container',
+        'engine.renderer.core',
+        'engine.renderer.graphics',
+        'engine.renderer.sprite',
+        'engine.renderer.texture',
         'engine.scene',
         'engine.storage',
         'engine.system',
@@ -79,7 +173,7 @@ var game = {
         'engine.tween'
     ],
     /**
-        @property {game.Loader} _loader
+        @property {Loader} _loader
         @private
     **/
     _loader: null,
@@ -88,94 +182,323 @@ var game = {
         @private
     **/
     _currentModule: null,
+
     /**
-        Engine version.
-        @property {String} version
+        Remove asset from memory.
+        @method removeAsset
+        @param {String} id
     **/
-    version: '1.14.0',
+    removeAsset: function(id) {
+        var path = this.paths[id];
+        if (this.json[path] && this.json[path].frames) {
+            // Sprite sheet
+            for (var key in this.json[path].frames) {
+                this.TextureCache[key].destroy(true);
+                delete this.TextureCache[key];
+            }
+        }
+        else if (this.TextureCache[path]) {
+            // Sprite
+            this.TextureCache[path].destroy(true);
+            delete this.TextureCache[path];
+        }
+        delete this.paths[id];
+    },
+
     /**
-        Engine config.
-        @property {Object} config
+        Remove all assets from memory.
+        @method removeAssets
     **/
-    config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
+    removeAssets: function() {
+        for (var key in this.TextureCache) {
+            this.TextureCache[key].destroy(true);
+            delete this.TextureCache[key];
+        }
+        this.paths = {};
+    },
+
     /**
-        Scale multiplier for Retina and HiRes mode.
-        @property {Number} scale
+        Define new module.
+        @method module
+        @param {String} name
     **/
-    scale: 1,
+    module: function(name) {
+        if (this._current) throw 'module ' + this._current.name + ' has no body';
+        if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
+
+        this._current = { name: name, requires: [], loaded: false, classes: [] };
+        
+        if (name.indexOf('game.') === 0) this._current.requires.push('engine.core');
+        if (this.moduleQueue.length === 1 && this._DOMLoaded) this._loadModules();
+
+        this.modules[name] = this._current;
+        this.moduleQueue.push(this._current);
+
+        if (name === 'engine.core') {
+            if (this.config.ignoreModules) {
+                for (var i = this._coreModules.length - 1; i >= 0; i--) {
+                    if (this.config.ignoreModules.indexOf(this._coreModules[i]) !== -1) this._coreModules.splice(i, 1);
+                }
+            }
+            this._current.requires = this._coreModules;
+            this.body(function() {});
+        }
+        return this;
+    },
+
     /**
-        @property {game.Audio} audio
+        Require module.
+        @method require
+        @param {Array} modules
     **/
-    audio: null,
+    require: function(modules) {
+        var i, modules = Array.prototype.slice.call(arguments);
+        for (i = 0; i < modules.length; i++) {
+            if (modules[i] && this._current.requires.indexOf(modules[i]) === -1) this._current.requires.push(modules[i]);
+        }
+        return this;
+    },
+
     /**
-        @property {game.Scene} scene
+        Define body for module.
+        @method body
+        @param {Function} body
     **/
-    scene: null,
+    body: function(body) {
+        this._current.body = body;
+        this._current = null;
+        if (this._loadFinished) this._loadModules();
+    },
+
     /**
-        @property {game.Debug} debug
+        Called, when engine is started.
+        @method onStart
     **/
-    debug: null,
+    onStart: function() {},
+
     /**
-        @property {game.System} system
+        Called, when core is ready, and autoStart not enabled.
+        @method ready
     **/
-    system: null,
+    ready: function() {},
+
     /**
-        @property {game.Pool} pool
+        Create new class.
+        @method createClass
+        @param {String} name
+        @param {String} [extend]
+        @param {Object} content
     **/
-    pool: null,
+    createClass: function(name, extend, content) {
+        if (game[name]) throw 'class ' + name + ' already created';
+
+        if (typeof extend === 'object') {
+            content = extend;
+            extend = 'Class';
+        }
+
+        game[name] = game[extend].extend(content);
+        this._currentModule.classes.push(name);
+        return game[name];
+    },
+
     /**
-        @property {game.Storage} storage
+        Create new scene.
+        @method createScene
+        @param {String} name
+        @param {Object} content
     **/
-    storage: null,
+    createScene: function(name, content) {
+        return this.createClass('Scene' + name, 'Scene', content);
+    },
+
     /**
-        @property {game.Keyboard} keyboard
+        Add attributes to class.
+        @method addAttributes
+        @param {String} className
+        @param {Object} attributes
     **/
-    keyboard: null,
+    addAttributes: function(className, attributes) {
+        if (!this[className]) throw 'class ' + className + ' not found';
+
+        for (var name in attributes) {
+            this[className][name] = attributes[name];
+        }
+    },
+
     /**
-        Device / browser information.
-        @property {Object} device
+        Get texture from texture cache.
+        @method getTexture
+        @param {String} id
     **/
-    device: {},
+    getTexture: function(id) {
+        return this.TextureCache[this.paths[id]];
+    },
+
     /**
-        Device acceleration.
-        @property {DeviceAcceleration} devicemotion
+        Vibrate device.
+        @method vibrate
+        @param {Number} [time] Time to vibrate (ms).
     **/
-    devicemotion: null,
+    vibrate: function(time) {
+        if (navigator.vibrate) navigator.vibrate(time || 500);
+    },
+
     /**
-        Module load queue.
-        @property {Array} moduleQueue
+        Request fullscreen mode.
+        @method fullscreen
     **/
-    moduleQueue: [],
+    fullscreen: function() {
+        if (this.system.canvas.requestFullscreen) this.system.canvas.requestFullscreen();
+        else if (this.system.canvas.requestFullScreen) this.system.canvas.requestFullScreen();
+    },
+
     /**
-        Asset load queue.
-        @property {Array} assetQueue
+        Test fullscreen support.
+        @method fullscreenSupport
+        @return {Boolean} Return true, if browser supports fullscreen mode.
     **/
-    assetQueue: [],
+    fullscreenSupport: function() {
+        return !!(this.system.canvas.requestFullscreen || this.system.canvas.requestFullScreen);
+    },
+
     /**
-        Audio load queue.
-        @property {Array} audioQueue
+        Add asset to loader.
+        @method addAsset
+        @param {String} path
+        @param {String} [id]
     **/
-    audioQueue: [],
+    addAsset: function(path, id) {
+        this._addFileToQueue(path, id, 'assetQueue');
+    },
+
     /**
-        List of asset paths.
-        @property {Object} paths
+        Add audio to loader.
+        @method addAudio
+        @param {String} path
+        @param {String} [id]
     **/
-    paths: {},
+    addAudio: function(path, id) {
+        this._addFileToQueue(path, id, 'audioQueue');
+    },
+
     /**
-        List of plugins.
-        @property {Object} plugins
+        Get JSON data.
+        @method getJSON
+        @param {String} id
+        @return {Object}
     **/
-    plugins: {},
+    getJSON: function(id) {
+        return this.json[this.paths[id]];
+    },
+
     /**
-        List of JSON files.
-        @property {Object} json
+        Copy object.
+        @method copy
+        @param {Object} object
     **/
-    json: {},
+    copy: function(object) {
+        var l, c, i;
+        if (
+            !object || typeof object !== 'object' ||
+            object instanceof HTMLElement ||
+            object instanceof this.Class ||
+            (this.Container && object instanceof this.Container)
+        ) {
+            return object;
+        }
+        else if (object instanceof Array) {
+            c = [];
+            for (i = 0, l = object.length; i < l; i++) {
+                c[i] = this.copy(object[i]);
+            }
+            return c;
+        }
+        else {
+            c = {};
+            for (i in object) {
+                c[i] = this.copy(object[i]);
+            }
+            return c;
+        }
+    },
+
     /**
-        List of modules.
-        @property {Object} modules
+        Merge objects.
+        @method merge
+        @param {Object} to
+        @param {Object} from
     **/
-    modules: {},
+    merge: function(to, from) {
+        for (var key in from) {
+            var ext = from[key];
+            if (
+                typeof ext !== 'object' ||
+                ext instanceof HTMLElement ||
+                ext instanceof this.Class ||
+                ext instanceof this.Container
+            ) {
+                to[key] = ext;
+            }
+            else {
+                if (!to[key] || typeof to[key] !== 'object') {
+                    to[key] = (ext instanceof Array) ? [] : {};
+                }
+                this.merge(to[key], ext);
+            }
+        }
+        return to;
+    },
+    
+    /**
+        Sort object by key names.
+        @method ksort
+        @param {Object} obj
+        @param {Function} [compare]
+    **/
+    ksort: function(obj, compare) {
+        if (!obj || typeof obj !== 'object') return false;
+
+        var keys = [], result = {}, i;
+        for (i in obj) {
+            keys.push(i);
+        }
+        
+        keys.sort(compare);
+        for (i = 0; i < keys.length; i++) {
+            result[keys[i]] = obj[keys[i]];
+        }
+
+        return result;
+    },
+
+    /**
+        @method _start
+        @private
+    **/
+    _start: function() {
+        if (this.moduleQueue.length > 0) return;
+
+        this.system = new this.System();
+
+        if (this.Audio) this.audio = new this.Audio();
+        if (this.Pool) this.pool = new this.Pool();
+        if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
+        if (this.DebugDraw && this.DebugDraw.enabled && this.Debug.enabled) this.debugDraw = new this.DebugDraw();
+        if (this.Storage && this.Storage.id) this.storage = new this.Storage();
+        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
+        if (this.TweenEngine) this.tweenEngine = new this.TweenEngine();
+
+        // Load plugins
+        for (var name in this.plugins) {
+            this.plugins[name] = new (this.plugins[name])();
+        }
+
+        this._loader = new this.Loader(this.System.startScene);
+        if (!this.system._rotateScreenVisible) this._loader.start();
+
+        this.onStart();
+    },
 
     /**
         @method _setVendorAttribute
@@ -207,19 +530,24 @@ var game = {
 
     /**
         @method _addFileToQueue
+        @param {String} path
+        @param {String} id
+        @param {String} queue
         @private
     **/
     _addFileToQueue: function(path, id, queue) {
-        id = id || path;
-        path = this._getFilePath(path) + this._nocache;
-        if (this.paths[id]) return id;
-        this.paths[id] = path;
-        if (this[queue].indexOf(path) === -1) this[queue].push(path);
+        if (id && this.paths[id]) return;
+        if (this.paths[path]) return;
+        var realPath = this._getFilePath(path) + this._nocache;
+        if (id) this.paths[id] = realPath;
+        this.paths[path] = realPath;
+        if (this[queue].indexOf(realPath) === -1) this[queue].push(realPath);
         return id;
     },
 
     /**
         @method _getFilePath
+        @param {String} file
         @private
     **/
     _getFilePath: function(file) {
@@ -335,7 +663,7 @@ var game = {
         @method _setGameLoop
         @private
     **/
-    _setGameLoop: function(callback, element) {
+    _setGameLoop: function(callback) {
         if (game.System.frameRate) return window.setInterval(callback, 1000 / game.System.frameRate);
         if (window.requestAnimationFrame) {
             var id = this._gameLoopId++;
@@ -343,10 +671,10 @@ var game = {
 
             var animate = function() {
                 if (!game._gameLoops[id]) return;
-                window.requestAnimationFrame(animate, element);
+                window.requestAnimationFrame(animate);
                 callback();
             };
-            window.requestAnimationFrame(animate, element);
+            window.requestAnimationFrame(animate);
             return id;
         }
         else {
@@ -559,6 +887,13 @@ var game = {
             }
         }
 
+        // Init device motion
+        if (this.device.mobile) {
+            window.addEventListener('devicemotion', function(event) {
+                game.devicemotion = event.accelerationIncludingGravity;
+            });
+        }
+
         this.module('engine.core');
 
         if (document.readyState === 'complete') {
@@ -580,324 +915,6 @@ var game = {
             this._DOMLoaded = true;
             if (this.moduleQueue.length > 1) this._loadModules();
         }
-    },
-
-    /**
-        Remove asset from memory.
-        @method removeAsset
-        @param {String} id
-    **/
-    removeAsset: function(id) {
-        var path = this.paths[id];
-        if (this.json[path] && this.json[path].frames) {
-            // Sprite sheet
-            for (var key in this.json[path].frames) {
-                this.TextureCache[key].destroy(true);
-                delete this.TextureCache[key];
-            }
-        }
-        else if (this.TextureCache[path]) {
-            // Sprite
-            this.TextureCache[path].destroy(true);
-            delete this.TextureCache[path];
-        }
-        delete this.paths[id];
-    },
-
-    /**
-        Remove all assets from memory.
-        @method removeAssets
-    **/
-    removeAssets: function() {
-        for (var key in this.TextureCache) {
-            this.TextureCache[key].destroy(true);
-            delete this.TextureCache[key];
-        }
-        this.paths = {};
-    },
-
-    /**
-        Define new module.
-        @method module
-        @param {String} name
-    **/
-    module: function(name) {
-        if (this._current) throw 'module ' + this._current.name + ' has no body';
-        if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
-
-        this._current = { name: name, requires: [], loaded: false, classes: [] };
-        
-        if (name.indexOf('game.') === 0) this._current.requires.push('engine.core');
-        if (this.moduleQueue.length === 1 && this._DOMLoaded) this._loadModules();
-
-        this.modules[name] = this._current;
-        this.moduleQueue.push(this._current);
-
-        if (name === 'engine.core') {
-            if (this.config.ignoreModules) {
-                for (var i = this._coreModules.length - 1; i >= 0; i--) {
-                    if (this.config.ignoreModules.indexOf(this._coreModules[i]) !== -1) this._coreModules.splice(i, 1);
-                }
-            }
-            this._current.requires = this._coreModules;
-            this.body(function() {});
-        }
-        return this;
-    },
-
-    /**
-        Require module.
-        @method require
-        @param {Array} modules
-    **/
-    require: function(modules) {
-        var i, modules = Array.prototype.slice.call(arguments);
-        for (i = 0; i < modules.length; i++) {
-            if (modules[i] && this._current.requires.indexOf(modules[i]) === -1) this._current.requires.push(modules[i]);
-        }
-        return this;
-    },
-
-    /**
-        Define body for module.
-        @method body
-        @param {Function} body
-    **/
-    body: function(body) {
-        this._current.body = body;
-        this._current = null;
-        if (this._loadFinished) this._loadModules();
-    },
-
-    /**
-        @method _start
-        @private
-    **/
-    _start: function() {
-        if (this.moduleQueue.length > 0) return;
-
-        this.system = new this.System();
-
-        if (this.Audio) this.audio = new this.Audio();
-        if (this.Pool) this.pool = new this.Pool();
-        if (this.DebugDraw && this.DebugDraw.enabled && this.Debug.enabled) this.debugDraw = new this.DebugDraw();
-        if (this.Storage && this.Storage.id) this.storage = new this.Storage();
-        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
-        if (this.TweenEngine) this.tweenEngine = new this.TweenEngine();
-
-        // Load plugins
-        for (var name in this.plugins) {
-            this.plugins[name] = new (this.plugins[name])();
-        }
-
-        this._loader = new this.Loader(this.System.startScene);
-        if (!this.system._rotateScreenVisible) this._loader.start();
-
-        this.onStart();
-    },
-
-    /**
-        Called, when engine is started.
-        @method onStart
-    **/
-    onStart: function() {},
-
-    /**
-        Called, when core is ready, and autoStart not enabled.
-        @method ready
-    **/
-    ready: function() {},
-
-    /**
-        Create new class.
-        @method createClass
-        @param {String} name
-        @param {String} [extend]
-        @param {Object} content
-    **/
-    createClass: function(name, extend, content) {
-        if (game[name]) throw 'class ' + name + ' already created';
-
-        if (typeof extend === 'object') {
-            content = extend;
-            extend = 'Class';
-        }
-
-        game[name] = game[extend].extend(content);
-        this._currentModule.classes.push(name);
-        return game[name];
-    },
-
-    /**
-        Create new scene.
-        @method createScene
-        @param {String} name
-        @param {Object} content
-    **/
-    createScene: function(name, content) {
-        return this.createClass('Scene' + name, 'Scene', content);
-    },
-
-    /**
-        Add attributes to class.
-        @method addAttributes
-        @param {String} className
-        @param {Object} attributes
-    **/
-    addAttributes: function(className, attributes) {
-        if (!this[className]) throw 'class ' + className + ' not found';
-
-        for (var name in attributes) {
-            this[className][name] = attributes[name];
-        }
-    },
-
-    /**
-        Get texture from texture cache.
-        @method getTexture
-        @param {String} id
-    **/
-    getTexture: function(id) {
-        return this.TextureCache[this.paths[id]];
-    },
-
-    /**
-        Vibrate device.
-        @method vibrate
-        @param {Number} [time] Time to vibrate (ms).
-    **/
-    vibrate: function(time) {
-        if (navigator.vibrate) navigator.vibrate(time || 500);
-    },
-
-    /**
-        Request fullscreen mode.
-        @method fullscreen
-    **/
-    fullscreen: function() {
-        if (this.system.canvas.requestFullscreen) this.system.canvas.requestFullscreen();
-        else if (this.system.canvas.requestFullScreen) this.system.canvas.requestFullScreen();
-    },
-
-    /**
-        Test fullscreen support.
-        @method fullscreenSupport
-        @return {Boolean} Return true, if browser supports fullscreen mode.
-    **/
-    fullscreenSupport: function() {
-        return !!(this.system.canvas.requestFullscreen || this.system.canvas.requestFullScreen);
-    },
-
-    /**
-        Add asset to loader.
-        @method addAsset
-        @param {String} path
-        @param {String} [id]
-        @return {String} id
-    **/
-    addAsset: function(path, id) {
-        return this._addFileToQueue(path, id, 'assetQueue');
-    },
-
-    /**
-        Add audio to loader.
-        @method addAudio
-        @param {String} path
-        @param {String} [id]
-        @return {String} id
-    **/
-    addAudio: function(path, id) {
-        return this._addFileToQueue(path, id, 'audioQueue');
-    },
-
-    /**
-        Get JSON data.
-        @method getJSON
-        @param {String} id
-        @return {Object}
-    **/
-    getJSON: function(id) {
-        return this.json[this.paths[id]];
-    },
-
-    /**
-        Copy object.
-        @method copy
-        @param {Object} object
-    **/
-    copy: function(object) {
-        var l, c, i;
-        if (
-            !object || typeof object !== 'object' ||
-            object instanceof HTMLElement ||
-            object instanceof this.Class ||
-            (this.Container && object instanceof this.Container)
-        ) {
-            return object;
-        }
-        else if (object instanceof Array) {
-            c = [];
-            for (i = 0, l = object.length; i < l; i++) {
-                c[i] = this.copy(object[i]);
-            }
-            return c;
-        }
-        else {
-            c = {};
-            for (i in object) {
-                c[i] = this.copy(object[i]);
-            }
-            return c;
-        }
-    },
-
-    /**
-        Merge objects.
-        @method merge
-        @param {Object} to
-        @param {Object} from
-    **/
-    merge: function(to, from) {
-        for (var key in from) {
-            var ext = from[key];
-            if (
-                typeof ext !== 'object' ||
-                ext instanceof HTMLElement ||
-                ext instanceof this.Class ||
-                ext instanceof this.Container
-            ) {
-                to[key] = ext;
-            }
-            else {
-                if (!to[key] || typeof to[key] !== 'object') {
-                    to[key] = (ext instanceof Array) ? [] : {};
-                }
-                this.merge(to[key], ext);
-            }
-        }
-        return to;
-    },
-    
-    /**
-        Sort object by key names.
-        @method ksort
-        @param {Object} obj
-        @param {Function} [compare]
-    **/
-    ksort: function(obj, compare) {
-        if (!obj || typeof obj !== 'object') return false;
-
-        var keys = [], result = {}, i;
-        for (i in obj) {
-            keys.push(i);
-        }
-        
-        keys.sort(compare);
-        for (i = 0; i < keys.length; i++) {
-            result[keys[i]] = obj[keys[i]];
-        }
-
-        return result;
     }
 };
 
@@ -912,7 +929,7 @@ game.Class = function() {};
     @method extend
     @static
     @param {Object} prop
-    @return {game.Class}
+    @return {Class}
 **/
 game.Class.extend = function(prop) {
     var parent = this.prototype;
@@ -945,6 +962,11 @@ game.Class.extend = function(prop) {
 
     function Class() {
         if (!game._initializing) {
+            for (var p in this) {
+                if (typeof this[p] === 'object') {
+                    this[p] = game.copy(this[p]);
+                }
+            }
             /**
                 This method is called before constructor.
                 @method staticInit
@@ -952,11 +974,7 @@ game.Class.extend = function(prop) {
                 @param {Array} arguments
             **/
             if (this.staticInit) this.staticInit.apply(this, arguments);
-            for (var p in this) {
-                if (typeof this[p] === 'object') {
-                    this[p] = game.copy(this[p]);
-                }
-            }
+
             if (this.init) this.init.apply(this, arguments);
             if (game.scene && typeof this.update === 'function' && this !== game.scene) {
                 game.scene.addObject(this);

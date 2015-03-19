@@ -10,11 +10,31 @@ game.module(
 /**
     Dynamic loader for assets and audio files.
     @class Loader
-    @extends Class
     @constructor
     @param {Function|String} callback Callback function or scene name
 **/
 game.createClass('Loader', {
+    /**
+        Number of files loaded.
+        @property {Number} loaded
+    **/
+    loaded: 0,
+    /**
+        Percent of files loaded.
+        @property {Number} percent
+    **/
+    percent: 0,
+    /**
+        Is loader started.
+        @property {Boolean} started
+        @default false
+    **/
+    started: false,
+    /**
+        Total files to load.
+        @property {Number} totalFiles
+    **/
+    totalFiles: 0,
     /**
         List of assets to load.
         @property {Array} assetQueue
@@ -40,28 +60,21 @@ game.createClass('Loader', {
     **/
     _dynamic: true,
     /**
-        Number of files loaded.
-        @property {Number} loaded
+        @property {Object} _loaders
+        @private
     **/
-    loaded: 0,
-    /**
-        Percent of files loaded.
-        @property {Number} percent
-    **/
-    percent: 0,
-    /**
-        Is loader started.
-        @property {Boolean} started
-        @default false
-    **/
-    started: false,
+    _loaders: {
+        png: 'Image',
+        jpg: 'Image',
+        jpeg: 'Image',
+        json: 'JSON',
+        fnt: 'BitmapFont'
+    },
     
     init: function(callback) {
-        this.onComplete(callback);
-        this.stage = new game.Container();
+        this.onComplete = callback;
 
         for (var i = 0; i < game.assetQueue.length; i++) {
-            if (game.TextureCache[game.assetQueue[i]]) continue;
             this._assetQueue.push(this._getPath(game.assetQueue[i]));
         }
         game.assetQueue.length = 0;
@@ -73,40 +86,210 @@ game.createClass('Loader', {
             game.audioQueue.length = 0;
         }
 
-        if (this._assetQueue.length > 0) {
-            this.loader = new game.AssetLoader();
-            for (var i = 0; i < this._assetQueue.length; i++) {
-                this.loader.add(this._assetQueue[i]);
-            }
-            this.loader.once('progress', this._progress.bind(this));
-            this.loader.once('complete', this._loadAudio.bind(this));
-            this.loader.once('error', this.error.bind(this));
+        this.totalFiles = this._assetQueue.length + this._audioQueue.length;
+        if (this.totalFiles === 0) this.percent = 100;
+    },
+
+    /**
+        Called, when loader is started.
+        @method onStart
+    **/
+    onStart: function() {
+        var barWidth = game.Loader.barWidth * game.scale;
+        var barHeight = game.Loader.barHeight * game.scale;
+
+        var barBg = new game.Graphics();
+        barBg.beginFill(game.Loader.barBgColor);
+        barBg.drawRect(0, 0, barWidth, barHeight);
+        barBg.position.set((game.system.width - barWidth) / 2, (game.system.height - barHeight) / 2);
+        barBg.addTo(this.stage);
+
+        this.barFg = new game.Graphics();
+        this.barFg.beginFill(game.Loader.barColor);
+        this.barFg.drawRect(0, 0, barWidth, barHeight);
+        this.barFg.position.set((game.system.width - barWidth) / 2, (game.system.height - barHeight) / 2);
+        this.barFg.addTo(this.stage);
+        this.onProgress();
+    },
+
+    /**
+        Called, when file is loaded.
+        @method onProgress
+    **/
+    onProgress: function() {
+        this.barFg.scale.x = this.percent / 100;
+    },
+
+    /**
+        Called, when loader is completed.
+        @method onComplete
+    **/
+    onComplete: function() {
+    },
+
+    /**
+        Start loader.
+        @method start
+    **/
+    start: function() {
+        this.started = true;
+        if (typeof this.onComplete === 'string') this._dynamic = false;
+
+        if (!this._dynamic) {
+            game.Timer.time = 0;
+            if (game.tweenEngine) game.tweenEngine.removeAll();
+            if (game.system.stage) game.system.stage.removeAll();
+            this.stage = new game.Container();
+            this.onStart();
+            game.scene = this;
+            if (!game.system._running) game.system._startRunLoop();
         }
 
-        if (this._assetQueue.length + this._audioQueue.length === 0) this.percent = 100;
+        // Nothing to load
+        if (this.percent === 100) this._ready();
+        else this._startLoading();
+    },
+
+    /**
+        @method _startLoading
+        @private
+    **/
+    _startLoading: function() {
+        for (var i = 0; i < this._assetQueue.length; i++) {
+            var filePath = this._assetQueue[i];
+            var fileType = filePath.split('?').shift().split('.').pop().toLowerCase();
+            if (!this._loaders[fileType]) throw 'Unsupported file type ' + fileType;
+            this['_load' + this._loaders[fileType]](filePath, this._progress.bind(this));
+        }
+
+        for (var i = 0; i < this._audioQueue.length; i++) {
+            var audio = this._audioQueue[i];
+            game.audio._load(audio, this._progress.bind(this));
+        }
+    },
+
+    /**
+        @method _loadImage
+        @param {String} filePath
+        @param {Function} callback
+        @private
+    **/
+    _loadImage: function(filePath, callback) {
+        game.BaseTexture.fromImage(filePath, callback);
+    },
+
+    /**
+        @method _loadBitmapFont
+        @param {String} filePath
+        @param {Function} callback
+        @private
+    **/
+    _loadBitmapFont: function(filePath, callback) {
+        this._loadFile(filePath, this._parseXML, callback);
+    },
+
+    /**
+        @method _loadJSON
+        @param {String} filePath
+        @param {Function} callback
+        @private
+    **/
+    _loadJSON: function(filePath, callback) {
+        this._loadFile(filePath, this._parseJSON, callback);
+    },
+
+    /**
+        @method _loadFile
+        @param {String} filePath
+        @param {Function} callback
+        @param {Function} loadCallback
+        @private
+    **/
+    _loadFile: function(filePath, callback, loadCallback) {
+        var request = new XMLHttpRequest();
+        request.onload = callback.bind(this, request, loadCallback);
+        request.open('GET', filePath, true);
+        request.send();
+    },
+
+    /**
+        @method _parseXML
+        @param {XMLHttpRequest} request
+        @param {Function} callback
+        @private
+    **/
+    _parseXML: function(request, callback) {
+        if (!request.responseText) throw 'Error loading XML';
+
+        var parser = new DOMParser();
+        var data = parser.parseFromString(request.responseText, 'text/xml');
+        var font = data.getElementsByTagName('page')[0].getAttribute('file');
+        var image = game._getFilePath(font);
+
+        this._loadImage(image, this._parseBitmapFont.bind(this, data, callback));
+    },
+
+    /**
+        @method _parseBitmapFont
+        @param {XML} data
+        @param {Function} callback
+        @private
+    **/
+    _parseBitmapFont: function(data, callback) {
+        game.BitmapFont.fromData(data);
+        callback();
+    },
+
+    /**
+        @method _parseJSON
+        @param {XMLHttpRequest} request
+        @param {Function} callback
+        @private
+    **/
+    _parseJSON: function(request, callback) {
+        if (!request.responseText) throw 'Error loading JSON';
+
+        var json = JSON.parse(request.responseText);
+        if (json.frames) {
+            // Spritesheet
+            var image = game._getFilePath(json.meta.image);
+            this._loadImage(image, this._parseSpriteSheet.bind(this, json, callback));
+        }
+        else {
+            // TODO save json
+            callback();
+        }
+    },
+
+    /**
+        @method _parseSpriteSheet
+        @param {JSON} json
+        @param {Function} callback
+        @private
+    **/
+    _parseSpriteSheet: function(json, callback) {
+        var image = game._getFilePath(json.meta.image);
+        var baseTexture = game.BaseTexture.fromImage(image);
+        var frames = json.frames;
+
+        for (var i in frames) {
+            var frame = frames[i].frame;
+            var texture = new game.Texture(baseTexture, frame.x, frame.y, frame.w, frame.h);
+            game.Texture.cache[i] = texture;
+        }
+
+        callback();
     },
 
     /**
         @method _progress
         @private
     **/
-    _progress: function(loader) {
-        if (loader && loader.json) game.json[loader.url] = loader.json;
+    _progress: function() {
         this.loaded++;
-        this.percent = Math.round(this.loaded / (this._assetQueue.length + this._audioQueue.length) * 100);
-        this.onPercentChange();
-
-        if (this._dynamic && this.loaded === this._assetQueue.length + this._audioQueue.length) this._ready();
-    },
-
-    /**
-        @method _loadAudio
-        @private
-    **/
-    _loadAudio: function() {
-        for (var i = this._audioQueue.length - 1; i >= 0; i--) {
-            game.audio._load(this._audioQueue[i], this._progress.bind(this), this.error.bind(this, this._audioQueue[i]));
-        }
+        this.percent = Math.round(this.loaded / this.totalFiles * 100);
+        this.onProgress();
+        if (this.percent === 100) this._ready();
     },
 
     /**
@@ -115,27 +298,15 @@ game.createClass('Loader', {
     **/
     _ready: function() {
         if (game.system.hires || game.system.retina) {
-            for (var i in game.TextureCache) {
+            for (var i in game.Texture.cache) {
                 if (i.indexOf('@' + game.scale + 'x') !== -1) {
-                    game.TextureCache[i.replace('@' + game.scale + 'x', '')] = game.TextureCache[i];
-                    delete game.TextureCache[i];
+                    game.Texture.cache[i.replace('@' + game.scale + 'x', '')] = game.Texture.cache[i];
+                    delete game.Texture.cache[i];
                 }
             }
         }
 
-        if (typeof this._callback === 'function') this._callback();
-        else this._setScene();
-    },
-
-    /**
-        @method _setScene
-        @private
-    **/
-    _setScene: function() {
-        game.system.timer.last = 0;
-        game.Timer.time = Number.MIN_VALUE;
-        if (this.loopId) game._clearGameLoop(this.loopId);
-        game.system.setScene(this._callback);
+        if (this._dynamic) this.onComplete();
     },
 
     /**
@@ -143,12 +314,6 @@ game.createClass('Loader', {
         @private
     **/
     _run: function() {
-        if (this.loopId) {
-            this.last = game.Timer.time;
-            game.Timer.update();
-            game.system.delta = (game.Timer.time - this.last) / 1000;
-        }
-
         this._update();
         this._render();
     },
@@ -158,19 +323,9 @@ game.createClass('Loader', {
         @private
     **/
     _update: function() {
-        if (game.tweenEngine) game.tweenEngine.update();
-
-        if (this._isReady) return;
-        if (this.timeoutTimer) {
-            if (this.timeoutTimer.time() >= 0) {
-                this._isReady = true;
-                this._ready();
-            }
-        }
-        else if (this.loaded === this._assetQueue.length + this._audioQueue.length) {
-            var loadTime = Date.now() - this.startTime;
-            var waitTime = Math.max(0, game.Loader.time - loadTime);
-            this.timeoutTimer = new game.Timer(waitTime);
+        if (this._dynamic) return;
+        if (this.percent === 100 && game.Timer.time >= game.Loader.time) {
+            game.system.setScene(this.onComplete);
         }
     },
 
@@ -179,7 +334,7 @@ game.createClass('Loader', {
         @private
     **/
     _render: function() {
-        game.system.renderer.render(this.stage);
+        game.system.renderer._render(this.stage);
     },
 
     /**
@@ -188,105 +343,28 @@ game.createClass('Loader', {
     **/
     _getPath: function(path) {
         return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
-    },
-
-    /**
-        Init loader stage, when not using dynamic mode.
-        @method initStage
-    **/
-    initStage: function() {
-        var barWidth = game.Loader.barWidth * game.scale;
-        var barHeight = game.Loader.barHeight * game.scale;
-
-        this.barBg = new game.Graphics();
-        this.barBg.beginFill(game.Loader.barBgColor);
-        this.barBg.drawRect(0, 0, barWidth, barHeight);
-        this.barBg.position.set(Math.round(game.system.width / 2 - (barWidth / 2)), Math.round(game.system.height / 2 - (barHeight / 2)));
-        this.stage.addChild(this.barBg);
-
-        this.barFg = new game.Graphics();
-        this.barFg.beginFill(game.Loader.barColor);
-        this.barFg.drawRect(0, 0, barWidth, barHeight);
-        this.barFg.position.set(Math.round(game.system.width / 2 - (barWidth / 2)), Math.round(game.system.height / 2 - (barHeight / 2)));
-        this.barFg.scale.x = this.percent / 100;
-        this.stage.addChild(this.barFg);
-    },
-
-    /**
-        Set callback function or scene name for loader.
-        @method onComplete
-        @param {Function|String} callback
-    **/
-    onComplete: function(callback) {
-        if (typeof callback === 'string') this._dynamic = false;
-        this._callback = callback;
-        return this;
-    },
-
-    /**
-        Start loader.
-        @method start
-    **/
-    start: function() {
-        this.started = true;
-
-        if (!this._dynamic) {
-            if (game.tweenEngine) game.tweenEngine.removeAll();
-
-            this.initStage();
-
-            if (!game.scene) this.loopId = game._setGameLoop(this._run.bind(this), game.system.canvas);
-            else game.scene = this;
-        }
-
-        this.startTime = Date.now();
-
-        if (this._assetQueue.length > 0) this.loader.load();
-        else if (this._audioQueue.length > 0) this._loadAudio();
-        else if (this._dynamic) this._ready();
-    },
-
-    /**
-        Called, when loading failed.
-        @method error
-        @param {String} err
-    **/
-    error: function(err) {
-        throw err;
-    },
-
-    /**
-        Called when percent is changed.
-        @method onPercentChange
-    **/
-    onPercentChange: function() {
-        if (this.barFg) this.barFg.scale.x = this.percent / 100;
-    },
-
-    exit: function() {},
-    keydown: function() {},
-    keyup: function() {}
+    }
 });
 
 game.addAttributes('Loader', {
     /**
-        Minimum time to show loader (ms).
+        Minimum time to show loader (ms). Not used in dynamic mode.
         @attribute {Number} time
         @default 200
     **/
     time: 200,
     /**
         Loading bar background color.
-        @attribute {Number} barBg
-        @default 0x515e73
+        @attribute {String} barBg
+        @default #515e73
     **/
-    barBgColor: 0x515e73,
+    barBgColor: '#515e73',
     /**
         Loading bar color.
-        @attribute {Number} barColor
-        @default 0xe6e7e8
+        @attribute {String} barColor
+        @default #e6e7e8
     **/
-    barColor: 0xe6e7e8,
+    barColor: '#e6e7e8',
     /**
         Width of the loading bar.
         @attribute {Number} barWidth

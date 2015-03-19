@@ -9,7 +9,6 @@ game.module(
 
 /**
     @class TweenEngine
-    @extends Class
 **/
 game.createClass('TweenEngine', {
     /**
@@ -24,7 +23,7 @@ game.createClass('TweenEngine', {
     **/
     removeAll: function() {
         for (var i = 0; i < this.tweens.length; i++) {
-            this.tweens[i].shouldRemove = true;
+            this.tweens[i]._shouldRemove = true;
         }
     },
     
@@ -43,6 +42,7 @@ game.createClass('TweenEngine', {
         Get first tween for specific object.
         @method getTweenForObject
         @param {Object} object
+        @return {game.Tween}
     **/
     getTweenForObject: function(object) {
         for (var i = this.tweens.length - 1; i >= 0; i--) {
@@ -51,19 +51,33 @@ game.createClass('TweenEngine', {
         return false;
     },
 
-    add: function(tween) {
+    /**
+        @method _add
+        @param {game.Tween} tween
+        @private
+    **/
+    _add: function(tween) {
         this.tweens.push(tween);
     },
 
-    remove: function(tween) {
+    /**
+        @method _remove
+        @param {game.Tween} tween
+        @private
+    **/
+    _remove: function(tween) {
         var i = this.tweens.indexOf(tween);
-        if (i !== -1) this.tweens[i].shouldRemove = true;
+        if (i !== -1) this.tweens[i]._shouldRemove = true;
     },
 
-    update: function() {
+    /**
+        @method _update
+        @private
+    **/
+    _update: function() {
         if (this.tweens.length === 0) return false;
         for (var i = this.tweens.length - 1; i >= 0; i--) {
-            if (!this.tweens[i].update()) this.tweens.splice(i, 1);
+            if (!this.tweens[i]._update()) this.tweens.splice(i, 1);
         }
         return true;
     }
@@ -71,7 +85,6 @@ game.createClass('TweenEngine', {
 
 /**
     @class Tween
-    @extends Class
     @constructor
     @param {Object} object
 **/
@@ -86,95 +99,195 @@ game.createClass('Tween', {
         @property {Boolean} paused
     **/
     paused: false,
+    /**
+        Tween's target object.
+        @property {Object} object
+    **/
     object: null,
-    valuesStart: {},
-    valuesEnd: null,
-    valuesStartRepeat: {},
+    /**
+        Tween duration.
+        @property {Number} duration
+        @default 1000
+    **/
     duration: 1000,
+    /**
+        Tween's repeat count.
+        @property {Number} repeatCount
+    **/
     repeatCount: 0,
-    repeats: 0,
+    /**
+        Is yoyo enabled.
+        @property {Boolean} yoyoEnabled
+    **/
     yoyoEnabled: false,
+    /**
+        Is tween currently reversed.
+        @property {Boolean} reversed
+    **/
     reversed: false,
+    /**
+        Tween's delay time.
+        @property {Number} delayTime
+        @default 0
+    **/
     delayTime: 0,
+    /**
+        Is delay repeating.
+        @property {Boolean} delayRepeat
+        @default false
+    **/
     delayRepeat: false,
-    startTime: null,
-    originalStartTime: null,
+    /**
+        Tween's easing function.
+        @property {Function} easingFunction
+    **/
     easingFunction: null,
+    /**
+        Tween's interpolation function.
+        @property {Function} interpolationFunction
+    **/
     interpolationFunction: null,
+    /**
+        List of chainged tweens.
+        @property {Array} chainedTweens
+    **/
     chainedTweens: [],
+    /**
+        Tween's start callback.
+        @property {Function} onStartCallback
+    **/
     onStartCallback: null,
-    onStartCallbackFired: false,
+    /**
+        Tween's update callback.
+        @property {Function} onUpdateCallback
+    **/
     onUpdateCallback: null,
+    /**
+        Tween's complete callback.
+        @property {Function} onCompleteCallback
+    **/
     onCompleteCallback: null,
+    /**
+        Tween's repeat callback.
+        @property {Function} onRepeatCallback
+    **/
     onRepeatCallback: null,
-    currentTime: 0,
-    shouldRemove: false,
+    /**
+        @property {Number} _currentTime
+        @private
+    **/
+    _currentTime: 0,
+    /**
+        @property {Boolean} _shouldRemove
+        @private
+    **/
+    _shouldRemove: false,
+    /**
+        @property {Boolean} _onStartCallbackFired
+        @private
+    **/
+    _onStartCallbackFired: false,
+    /**
+        @property {Object} _valuesStart
+        @private
+    **/
+    _valuesStart: {},
+    /**
+        @property {Object} _valuesEnd
+        @private
+    **/
+    _valuesEnd: null,
+    /**
+        @property {Object} _valuesStartRepeat
+        @private
+    **/
+    _valuesStartRepeat: {},
+    /**
+        @property {Number} _repeats
+        @private
+    **/
+    _repeats: 0,
+    /**
+        @property {Number} _startTime
+        @private
+    **/
+    _startTime: null,
+    /**
+        @property {Number} _originalStartTime
+        @private
+    **/
+    _originalStartTime: null,
 
     init: function(object) {
-        if (typeof object !== 'object') throw('Tween parameter must be object');
+        if (typeof object !== 'object') throw 'Tween parameter must be object';
         this.object = object;
 
         this.easingFunction = game.Tween.Easing.Linear.None;
         this.interpolationFunction = game.Tween.Interpolation.Linear;
 
         for (var field in object) {
-            this.valuesStart[field] = parseFloat(object[field], 10);
+            this._valuesStart[field] = parseFloat(object[field], 10);
         }
     },
 
     /**
+        Set tween properties
         @method to
         @param {Object} properties
         @param {Number} duration
+        @chainable
     **/
     to: function(properties, duration) {
         this.duration = duration || this.duration;
-        this.valuesEnd = properties;
+        this._valuesEnd = properties;
         return this;
     },
 
     /**
+        Start tween.
         @method start
+        @chainable
     **/
     start: function() {
-        game.tweenEngine.add(this);
-        this.currentTime = 0;
+        game.tweenEngine._add(this);
+        this._currentTime = 0;
         this.playing = true;
-        this.onStartCallbackFired = false;
-        this.startTime = this.delayTime;
-        this.originalStartTime = this.startTime;
-        for (var property in this.valuesEnd) {
+        this._onStartCallbackFired = false;
+        this._startTime = this.delayTime;
+        this._originalStartTime = this._startTime;
+        for (var property in this._valuesEnd) {
             // check ifan Array was provided as property value
-            if (this.valuesEnd[property] instanceof Array) {
-                if (this.valuesEnd[property].length === 0) {
+            if (this._valuesEnd[property] instanceof Array) {
+                if (this._valuesEnd[property].length === 0) {
                     continue;
                 }
                 // create a local copy of the Array with the start value at the front
-                this.valuesEnd[property] = [this.object[property]].concat(this.valuesEnd[property]);
+                this._valuesEnd[property] = [this.object[property]].concat(this._valuesEnd[property]);
             }
-            this.valuesStart[property] = this.object[property];
-            if ((this.valuesStart[property] instanceof Array) === false) {
-                this.valuesStart[property] *= 1.0; // Ensures we're using numbers, not strings
+            this._valuesStart[property] = this.object[property];
+            if ((this._valuesStart[property] instanceof Array) === false) {
+                this._valuesStart[property] *= 1.0; // Ensures we're using numbers, not strings
             }
-            this.valuesStartRepeat[property] = this.valuesStart[property] || 0;
+            this._valuesStartRepeat[property] = this._valuesStart[property] || 0;
         }
         return this;
     },
 
     /**
+        Stop tween.
         @method stop
+        @chainable
     **/
     stop: function() {
-        if (!this.playing) {
-            return this;
-        }
-        game.tweenEngine.remove(this);
+        if (!this.playing) return this;
+        game.tweenEngine._remove(this);
         this.playing = false;
-        this.stopChainedTweens();
+        this._stopChainedTweens();
         return this;
     },
 
     /**
+        Pause tween.
         @method pause
     **/
     pause: function() {
@@ -182,6 +295,7 @@ game.createClass('Tween', {
     },
 
     /**
+        Resume tween.
         @method resume
     **/
     resume: function() {
@@ -189,18 +303,11 @@ game.createClass('Tween', {
     },
 
     /**
-        @method stopChainedTweens
-    **/
-    stopChainedTweens: function() {
-        for (var i = 0, numChainedTweens = this.chainedTweens.length; i < numChainedTweens; i++) {
-            this.chainedTweens[i].stop();
-        }
-    },
-
-    /**
+        Set delay for tween.
         @method delay
         @param {Number} time
         @param {Boolean} repeat
+        @chainable
     **/
     delay: function(time, repeat) {
         this.delayTime = time;
@@ -209,8 +316,10 @@ game.createClass('Tween', {
     },
 
     /**
+        Set repeat for tween.
         @method repeat
         @param {Number} times
+        @chainable
     **/
     repeat: function(times) {
         if (typeof times === 'undefined') times = Infinity;
@@ -219,8 +328,10 @@ game.createClass('Tween', {
     },
 
     /**
+        Set tween to yoyo.
         @method yoyo
         @param {Boolean} enabled
+        @chainable
     **/
     yoyo: function(enabled) {
         if (typeof enabled === 'undefined') enabled = true;
@@ -229,8 +340,10 @@ game.createClass('Tween', {
     },
 
     /**
+        Set easing for tween.
         @method easing
-        @param {Function} easing
+        @param {String} easing
+        @chainable
     **/
     easing: function(easing) {
         if (typeof easing === 'string') {
@@ -244,8 +357,10 @@ game.createClass('Tween', {
     },
 
     /**
+        Set interpolation for tween.
         @method interpolation
         @param {Function} interpolation
+        @chainable
     **/
     interpolation: function(interpolation) {
         this.interpolationFunction = interpolation;
@@ -253,8 +368,10 @@ game.createClass('Tween', {
     },
 
     /**
+        Chain tween.
         @method chain
         @param {game.Tween} tween
+        @chainable
     **/
     chain: function() {
         this.chainedTweens = arguments;
@@ -262,8 +379,10 @@ game.createClass('Tween', {
     },
 
     /**
+        Set onStart callback for tween.
         @method onStart
         @param {Function} callback
+        @chainable
     **/
     onStart: function(callback) {
         this.onStartCallback = callback;
@@ -271,8 +390,10 @@ game.createClass('Tween', {
     },
 
     /**
+        Set onUpdate callback for tween.
         @method onUpdate
         @param {Function} callback
+        @chainable
     **/
     onUpdate: function(callback) {
         this.onUpdateCallback = callback;
@@ -280,8 +401,10 @@ game.createClass('Tween', {
     },
 
     /**
+        Set onComplete callback for tween.
         @method onComplete
         @param {Function} callback
+        @chainable
     **/
     onComplete: function(callback) {
         this.onCompleteCallback = callback;
@@ -289,36 +412,52 @@ game.createClass('Tween', {
     },
     
     /**
+        Set onRepeat callback for tween.
         @method onRepeat
         @param {Function} callback
+        @chainable
     **/
     onRepeat: function(callback) {
         this.onRepeatCallback = callback;
         return this;
     },
 
-    update: function() {
-        if (this.shouldRemove) return false;
+    /**
+        @method _stopChainedTweens
+        @private
+    **/
+    _stopChainedTweens: function() {
+        for (var i = 0, numChainedTweens = this.chainedTweens.length; i < numChainedTweens; i++) {
+            this.chainedTweens[i].stop();
+        }
+    },
+
+    /**
+        @method _update
+        @private
+    **/
+    _update: function() {
+        if (this._shouldRemove) return false;
         if (this.paused) return true;
 
-        this.currentTime += game.system.delta * 1000;
+        this._currentTime += game.system.delta * 1000;
 
-        if (this.currentTime < this.startTime) return true;
+        if (this._currentTime < this._startTime) return true;
         
-        if (this.onStartCallbackFired === false) {
+        if (this._onStartCallbackFired === false) {
             if (this.onStartCallback !== null) {
                 this.onStartCallback.call(this.object);
             }
-            this.onStartCallbackFired = true;
+            this._onStartCallbackFired = true;
         }
         
-        var elapsed = (this.currentTime - this.startTime) / this.duration;
+        var elapsed = (this._currentTime - this._startTime) / this.duration;
         elapsed = elapsed > 1 ? 1 : elapsed;
         var value = this.easingFunction(elapsed);
         var property;
-        for (property in this.valuesEnd) {
-            var start = this.valuesStart[property] || 0;
-            var end = this.valuesEnd[property];
+        for (property in this._valuesEnd) {
+            var start = this._valuesStart[property] || 0;
+            var end = this._valuesEnd[property];
             if (end instanceof Array) {
                 this.object[property] = this.interpolationFunction(end, value);
             }
@@ -341,22 +480,22 @@ game.createClass('Tween', {
                 if (isFinite(this.repeatCount)) {
                     this.repeatCount--;
                 }
-                this.repeats += 1;
+                this._repeats += 1;
                 // reassign starting values, restart by making startTime = now
-                for (property in this.valuesStartRepeat) {
-                    if (typeof this.valuesEnd[property] === 'string') {
-                        this.valuesStartRepeat[property] = this.valuesStartRepeat[property] + parseFloat(this.valuesEnd[property], 10);
+                for (property in this._valuesStartRepeat) {
+                    if (typeof this._valuesEnd[property] === 'string') {
+                        this._valuesStartRepeat[property] = this._valuesStartRepeat[property] + parseFloat(this._valuesEnd[property], 10);
                     }
                     if (this.yoyoEnabled) {
-                        var tmp = this.valuesStartRepeat[property];
-                        this.valuesStartRepeat[property] = this.valuesEnd[property];
-                        this.valuesEnd[property] = tmp;
+                        var tmp = this._valuesStartRepeat[property];
+                        this._valuesStartRepeat[property] = this._valuesEnd[property];
+                        this._valuesEnd[property] = tmp;
                         this.reversed = !this.reversed;
                     }
-                    this.valuesStart[property] = this.valuesStartRepeat[property];
+                    this._valuesStart[property] = this._valuesStartRepeat[property];
                 }
                 if (!this.delayRepeat) this.delayTime = 0;
-                this.startTime = this.originalStartTime + this.repeats * (this.duration + this.delayTime);
+                this._startTime = this._originalStartTime + this._repeats * (this.duration + this.delayTime);
                 if (this.onRepeatCallback !== null) {
                     this.onRepeatCallback.call(this.object);
                 }
@@ -654,14 +793,25 @@ game.Tween.Interpolation = {
 
 /**
     @class TweenGroup
-    @extends Class
     @constructor
     @param {Function} [onComplete]
 **/
 game.createClass('TweenGroup', {
+    /**
+        List of tweens in group.
+        @property {Array} tweens
+    **/
     tweens: [],
+    /**
+        On complete callback for group.
+        @property {Function} onComplete
+    **/
     onComplete: null,
-    complete: false,
+    /**
+        @property {Boolean} _complete
+        @private
+    **/
+    _complete: false,
 
     init: function(onComplete) {
         this.onComplete = onComplete;
@@ -674,24 +824,13 @@ game.createClass('TweenGroup', {
         @return {game.Tween} tween
     **/
     add: function(tween) {
-        tween.onComplete(this.tweenComplete.bind(this));
+        tween.onComplete(this._tweenComplete.bind(this));
         this.tweens.push(tween);
         return tween;
     },
 
     /**
-        @method tweenComplete
-    **/
-    tweenComplete: function() {
-        if (this.complete) return;
-        for (var i = 0; i < this.tweens.length; i++) {
-            if (this.tweens[i].playing) return;
-        }
-        this.complete = true;
-        if (typeof this.onComplete === 'function') this.onComplete();
-    },
-
-    /**
+        Remove tween from group.
         @method remove
         @param {game.Tween} tween
     **/
@@ -700,6 +839,7 @@ game.createClass('TweenGroup', {
     },
 
     /**
+        Start tweening.
         @method start
     **/
     start: function() {
@@ -709,6 +849,7 @@ game.createClass('TweenGroup', {
     },
 
     /**
+        Pause tweening.
         @method pause
     **/
     pause: function() {
@@ -718,6 +859,7 @@ game.createClass('TweenGroup', {
     },
 
     /**
+        Resume tweening.
         @method resume
     **/
     resume: function() {
@@ -727,19 +869,33 @@ game.createClass('TweenGroup', {
     },
 
     /**
+        Stop tweening.
         @method stop
         @param {Boolean} doComplete Call onComplete function
         @param {Boolean} endTween Set started tweens to end values
     **/
     stop: function(doComplete, endTween) {
-        if (this.complete) return;
+        if (this._complete) return;
 
         for (var i = 0; i < this.tweens.length; i++) {
             this.tweens[i].stop(endTween);
         }
         
-        if (!this.complete && doComplete) this.tweenComplete();
-        this.complete = true;
+        if (!this._complete && doComplete) this._tweenComplete();
+        this._complete = true;
+    },
+
+    /**
+        @method _tweenComplete
+        @private
+    **/
+    _tweenComplete: function() {
+        if (this._complete) return;
+        for (var i = 0; i < this.tweens.length; i++) {
+            if (this.tweens[i].playing) return;
+        }
+        this._complete = true;
+        if (typeof this.onComplete === 'function') this.onComplete();
     }
 });
 

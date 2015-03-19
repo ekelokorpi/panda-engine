@@ -5,10 +5,9 @@ game.module(
     'engine.debug'
 )
 .require(
-    'engine.pixi',
     'engine.physics',
     'engine.camera',
-    'engine.renderer',
+    'engine.renderer.core',
     'engine.scene',
     'engine.system'
 )
@@ -16,17 +15,11 @@ game.module(
 'use strict';
 
 /**
-    Show debug bar.
+    Debug bar.
     Automatically enabled, if URL contains `?debug`.
     @class Debug
-    @extends Class
 **/
 game.createClass('Debug', {
-    /**
-        @property {Number} frames
-        @private
-    **/
-    _frames: 0,
     /**
         Time of last update.
         @property {Number} last
@@ -42,11 +35,16 @@ game.createClass('Debug', {
         @property {Number} fps
     **/
     fps: 0,
+    /**
+        @property {Number} _frames
+        @private
+    **/
+    _frames: 0,
 
     init: function() {
         this.debugDiv = document.createElement('div');
         this.debugDiv.id = 'pandaDebug';
-        this.debugDiv.style.position = 'absolute';
+        this.debugDiv.style.position = 'fixed';
         this.debugDiv.style.left = '0px';
         this.debugDiv.style[game.Debug.position] = '0px';
         this.debugDiv.style.zIndex = 9999;
@@ -55,7 +53,23 @@ game.createClass('Debug', {
         this.debugDiv.style.fontFamily = 'Arial';
         this.debugDiv.style.fontSize = '14px';
         this.debugDiv.style.width = '100%';
+        this.debugDiv.style.pointerEvents = 'none';
         document.body.appendChild(this.debugDiv);
+
+        game.Sprite.inject({
+            _render: function(context) {
+                this.super(context);
+                game.debug.sprites++;
+            }
+        });
+
+        game.Scene.inject({
+            _update: function() {
+                if (game.debug) game.debug._reset();
+                this.super();
+                if (game.debug) game.debug._update();
+            }
+        });
     },
 
     /**
@@ -63,7 +77,7 @@ game.createClass('Debug', {
         @private
     **/
     _reset: function() {
-        this.sprites = -2;
+        this.sprites = 0;
     },
 
     /**
@@ -122,6 +136,7 @@ game.addAttributes('Debug', {
         @default rgba(0, 0, 0, 0.7)
     **/
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    alpha: 0.7,
     /**
         Y position of debug bar.
         @attribute {String} position
@@ -129,13 +144,6 @@ game.addAttributes('Debug', {
     **/
     position: 'bottom'
 });
-
-game.PIXI.DisplayObject.prototype._updateTransform = game.PIXI.DisplayObject.prototype.updateTransform;
-game.PIXI.DisplayObject.prototype.updateTransform = function() {
-    if (game.system.debug) game.system.debug.sprites++;
-    this._updateTransform();
-};
-game.PIXI.DisplayObject.prototype.displayObjectUpdateTransform = game.PIXI.DisplayObject.prototype.updateTransform;
 
 /**
     DebugDraw will draw all interactive sprite hit areas and physic shapes.
@@ -158,6 +166,28 @@ game.createClass('DebugDraw', {
     init: function() {
         this._spriteContainer = new game.Container();
         this._bodyContainer = new game.Container();
+
+        game.Container.inject({
+            _render: function(context) {
+                this.super(context);
+                context.setTransform(1, 0, 0, 1, 0, 0);
+                context.globalAlpha = 0.3;
+                context.fillStyle = '#0000ff';
+                context.fillRect(this._worldBounds.x, this._worldBounds.y, this._worldBounds.width, this._worldBounds.height);
+            }
+        });
+
+        // game.Scene.inject({
+        //     staticInit: function() {
+        //         this.super();
+        //         game.debugDraw._reset();
+        //     },
+
+        //     _render: function() {
+        //         game.debugDraw._update();
+        //         this.super();
+        //     }
+        // });
     },
 
     /**
@@ -165,15 +195,10 @@ game.createClass('DebugDraw', {
         @private
     **/
     _reset: function() {
-        for (var i = this._spriteContainer.children.length - 1; i >= 0; i--) {
-            this._spriteContainer.children[i].remove();
-        }
-        game.system.stage.addChild(this._spriteContainer);
-
-        for (var i = this._bodyContainer.children.length - 1; i >= 0; i--) {
-            this._bodyContainer.children[i].remove();
-        }
-        game.system.stage.addChild(this._bodyContainer);
+        this._spriteContainer.removeAll();
+        this._spriteContainer.addTo(game.system.stage);
+        this._bodyContainer.removeAll();
+        this._bodyContainer.addTo(game.system.stage);
     },
 
     /**
@@ -256,7 +281,7 @@ game.createClass('DebugDraw', {
             sprite.scale.y = sprite.target.scale.y;
             if (!sprite.target.parent) this._spriteContainer.removeChild(sprite);
         }
-        game.system.debug.sprites -= this._spriteContainer.children.length;
+        // game.system.debug.sprites -= this._spriteContainer.children.length;
     },
 
     /**
@@ -279,14 +304,13 @@ game.createClass('DebugDraw', {
             body.position.y = body.target.position.y;
             if (!body.target.world) body.remove();
         }
-        game.system.debug.sprites -= this._bodyContainer.children.length;
+        // game.system.debug.sprites -= this._bodyContainer.children.length;
     },
 
     /**
         @method _update
     **/
     _update: function() {
-        game.system.debug.sprites -= 2;
         this._updateSprites();
         this._updateBodies();
     }
@@ -303,13 +327,13 @@ game.addAttributes('DebugDraw', {
         @attribute {Number} spriteColor
         @default 0xff0000
     **/
-    spriteColor: 0xff0000,
+    spriteColor: '#ff0000',
     /**
         Stroke color of DebugDraw sprites.
         @attribute {Number} spriteLineColor
         @default 0x0000ff
     **/
-    spriteLineColor: 0x0000ff,
+    spriteLineColor: '#0000ff',
     /**
         Alpha of DebugDraw sprites.
         @attribute {Number} spriteAlpha
@@ -321,13 +345,13 @@ game.addAttributes('DebugDraw', {
         @attribute {Number} bodyColor
         @default 0x0000ff
     **/
-    bodyColor: 0x0000ff,
+    bodyColor: '#0000ff',
     /**
         Stroke color of DebugDraw bodies.
         @attribute {Number} bodyLineColor
         @default 0xff0000
     **/
-    bodyLineColor: 0xff0000,
+    bodyLineColor: '#ff0000',
     /**
         Alpha of DebugDraw bodies.
         @attribute {Number} bodyAlpha
@@ -336,30 +360,7 @@ game.addAttributes('DebugDraw', {
     bodyAlpha: 0.5
 });
 
-game.Scene.inject({
-    staticInit: function() {
-        this.super();
-        if (game.debugDraw) game.debugDraw._reset();
-    },
 
-    _run: function() {
-        if (game.system.debug) game.system.debug._reset();
-        this.super();
-        if (game.system.debug) game.system.debug._update();
-    },
-
-    _render: function() {
-        if (game.debugDraw) game.debugDraw._update();
-        this.super();
-    }
-});
-
-game.System.inject({
-    _setSceneNow: function(sceneClass, removeAssets) {
-        this.super(sceneClass, removeAssets);
-        if (game.Debug && game.Debug.enabled && !game.device.cocoonJS && !this.debug) this.debug = new game.Debug();
-    }
-});
 
 game.World.inject({
     addBody: function(body) {
@@ -408,19 +409,16 @@ game.addAttributes('Camera', {
     debugAlpha: 0.2
 });
 
-game.PIXI.DisplayObjectContainer.prototype._addChild = game.PIXI.DisplayObjectContainer.prototype.addChild;
-game.PIXI.DisplayObjectContainer.prototype.addChild = function(child) {
-    if (game.debugDraw && child.interactive) game.debugDraw._addSprite(child);
-    this._addChild(child);
-};
-
 game.onStart = function() {
     if (game.Debug && game.Debug.enabled) {
-        console.log('Panda.js ' + game.version);
-        console.log('Pixi.js ' + game.PIXI.VERSION.replace('v', ''));
-        console.log((this.system.renderer.gl ? 'WebGL' : 'Canvas') + ' renderer ' + this.system.width + 'x' + this.system.height);
-        if (this.Audio && this.Audio.enabled) console.log((this.audio.context ? 'Web Audio' : 'HTML5 Audio') + ' engine');
-        else console.log('Audio disabled');
+        console.log('Panda Engine ' + game.version);
+        console.log('Canvas ' + this.system.width + 'x' + this.system.height);
+        if (this.Audio && this.Audio.enabled) {
+            console.log((this.audio.context ? 'Web' : 'HTML5') + ' Audio engine');
+        }
+        else {
+            console.log('Audio disabled');
+        }
         if (this.config.version) console.log((this.config.name ? this.config.name : 'Game') + ' ' + this.config.version);
     }
 };

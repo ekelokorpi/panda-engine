@@ -10,7 +10,6 @@ game.module(
 /**
     Physics world.
     @class World
-    @extends Class
     @constructor
     @param {Number} x Gravity x
     @param {Number} y Gravity y
@@ -23,25 +22,26 @@ game.createClass('World', {
     **/
     gravity: null,
     /**
-        @property {game.CollisionSolver} solver
-    **/
-    solver: null,
-    /**
         List of bodies in world.
         @property {Array} bodies
     **/
     bodies: [],
     /**
-        List of collision groups.
-        @property {Object} collisionGroups
+        @property {Object} _collisionGroups
+        @private
     **/
-    collisionGroups: {},
+    _collisionGroups: {},
+    /**
+        @property {game.CollisionSolver} _solver
+        @private
+    **/
+    _solver: null,
 
     init: function(x, y) {
         x = typeof x === 'number' ? x : 0;
         y = typeof y === 'number' ? y : 980;
         this.gravity = new game.Vector(x, y);
-        this.solver = new game.CollisionSolver();
+        this._solver = new game.CollisionSolver();
     },
 
     /**
@@ -53,7 +53,7 @@ game.createClass('World', {
         body.world = this;
         body._remove = false;
         this.bodies.push(body);
-        this.addBodyCollision(body);
+        this._addBodyCollision(body);
     },
 
     /**
@@ -68,40 +68,40 @@ game.createClass('World', {
     },
 
     /**
-        Add body to collision group.
-        @method addBodyCollision
+        @method _addBodyCollision
         @param {game.Body} body
+        @private
     **/
-    addBodyCollision: function(body) {
+    _addBodyCollision: function(body) {
         if (typeof body.collisionGroup !== 'number') return;
-        this.collisionGroups[body.collisionGroup] = this.collisionGroups[body.collisionGroup] || [];
-        if (this.collisionGroups[body.collisionGroup].indexOf(body) !== -1) return;
-        this.collisionGroups[body.collisionGroup].push(body);
+        this._collisionGroups[body.collisionGroup] = this._collisionGroups[body.collisionGroup] || [];
+        if (this._collisionGroups[body.collisionGroup].indexOf(body) !== -1) return;
+        this._collisionGroups[body.collisionGroup].push(body);
     },
 
     /**
-        Remove body from collision group.
-        @method removeBodyCollision
+        @method _removeBodyCollision
         @param {game.Body} body
+        @private
     **/
-    removeBodyCollision: function(body) {
+    _removeBodyCollision: function(body) {
         if (typeof body.collisionGroup !== 'number') return;
-        if (!this.collisionGroups[body.collisionGroup]) return;
-        if (this.collisionGroups[body.collisionGroup].indexOf(body) === -1) return;
-        this.collisionGroups[body.collisionGroup].erase(body);
+        if (!this._collisionGroups[body.collisionGroup]) return;
+        if (this._collisionGroups[body.collisionGroup].indexOf(body) === -1) return;
+        this._collisionGroups[body.collisionGroup].erase(body);
     },
 
     /**
-        Collide body against it's `collideAgainst` groups.
-        @method collide
+        @method _collide
         @param {game.Body} body
+        @private
     **/
-    collide: function(body) {
+    _collide: function(body) {
         var g, i, b, group;
 
         for (g = 0; g < body.collideAgainst.length; g++) {
             body._collides.length = 0;
-            group = this.collisionGroups[body.collideAgainst[g]];
+            group = this._collisionGroups[body.collideAgainst[g]];
             
             if (!group) continue;
 
@@ -109,13 +109,13 @@ game.createClass('World', {
                 if (!group) break;
                 b = group[i];
                 if (body !== b) {
-                    if (this.solver.hitTest(body, b)) {
+                    if (this._solver.hitTest(body, b)) {
                         body._collides.push(b);
                     }
                 }
             }
             for (i = body._collides.length - 1; i >= 0; i--) {
-                if (this.solver.hitResponse(body, body._collides[i])) {
+                if (this._solver.hitResponse(body, body._collides[i])) {
                     body.afterCollide(body._collides[i]);
                 }
             }
@@ -123,29 +123,28 @@ game.createClass('World', {
     },
 
     /**
-        Update physics world.
-        @method update
+        @method _update
+        @private
     **/
-    update: function() {
+    _update: function() {
         var i, j;
         for (i = this.bodies.length - 1; i >= 0; i--) {
             if (this.bodies[i]._remove) {
-                this.removeBodyCollision(this.bodies[i]);
+                this._removeBodyCollision(this.bodies[i]);
                 this.bodies.splice(i, 1);
             }
             else {
-                this.bodies[i].update();
+                this.bodies[i]._update();
             }
         }
-        for (i in this.collisionGroups) {
-            // Remove empty collision group
-            if (this.collisionGroups[i].length === 0) {
-                delete this.collisionGroups[i];
+        for (i in this._collisionGroups) {
+            if (this._collisionGroups[i].length === 0) {
+                delete this._collisionGroups[i];
                 continue;
             }
-            for (j = this.collisionGroups[i].length - 1; j >= 0; j--) {
-                if (this.collisionGroups[i][j] && this.collisionGroups[i][j].collideAgainst.length > 0) {
-                    this.collide(this.collisionGroups[i][j]);
+            for (j = this._collisionGroups[i].length - 1; j >= 0; j--) {
+                if (this._collisionGroups[i][j] && this._collisionGroups[i][j].collideAgainst.length > 0) {
+                    this._collide(this._collisionGroups[i][j]);
                 }
             }
         }
@@ -155,7 +154,6 @@ game.createClass('World', {
 /**
     Physics collision solver.
     @class CollisionSolver
-    @extends Class
 **/
 game.createClass('CollisionSolver', {
     /**
@@ -195,29 +193,29 @@ game.createClass('CollisionSolver', {
         @method hitResponse
         @param {game.Body} a
         @param {game.Body} b
-        @return {Boolean}
+        @return {Boolean} Returns true, if body is moved.
     **/
     hitResponse: function(a, b) {
         if (a.shape.width && b.shape.width) {
-            if (a.last.y + a.shape.height / 2 <= b.last.y - b.shape.height / 2) {
+            if (a._last.y + a.shape.height / 2 <= b._last.y - b.shape.height / 2) {
                 if (a.collide(b, 'DOWN')) {
                     a.position.y = b.position.y - b.shape.height / 2 - a.shape.height / 2;
                     return true;
                 }
             }
-            else if (a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
+            else if (a._last.y - a.shape.height / 2 >= b._last.y + b.shape.height / 2) {
                 if (a.collide(b, 'UP')) {
                     a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
                     return true;
                 }
             }
-            else if (a.last.x + a.shape.width / 2 <= b.last.x - b.shape.width / 2) {
+            else if (a._last.x + a.shape.width / 2 <= b._last.x - b.shape.width / 2) {
                 if (a.collide(b, 'RIGHT')) {
                     a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
                     return true;
                 }
             }
-            else if (a.last.x - a.shape.width / 2 >= b.last.x + b.shape.width / 2) {
+            else if (a._last.x - a.shape.width / 2 >= b._last.x + b.shape.width / 2) {
                 if (a.collide(b, 'LEFT')) {
                     a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
                     return true;
@@ -240,13 +238,13 @@ game.createClass('CollisionSolver', {
         else {
             if (a.collide(b)) return true;
         }
+        return false;
     }
 });
 
 /**
     Physics body.
     @class Body
-    @extends Class
     @constructor
     @param {Object} [properties]
 **/
@@ -266,11 +264,6 @@ game.createClass('Body', {
         @property {game.Vector} position
     **/
     position: null,
-    /**
-        Last position of body.
-        @property {game.Vector} last
-    **/
-    last: null,
     /**
         Body's velocity.
         @property {game.Vector} velocity
@@ -312,15 +305,23 @@ game.createClass('Body', {
         @default 0
     **/
     damping: 0,
+    /**
+        @property {game.Vector} _last
+        @private
+    **/
+    _last: null,
+    /**
+        @property {Array} _collides
+        @private
+    **/
     _collides: [],
 
     init: function(properties) {
         this.position = new game.Vector();
         this.velocity = new game.Vector();
         this.velocityLimit = new game.Vector();
-        this.last = new game.Vector();
+        this._last = new game.Vector();
         this.force = new game.Vector();
-
         game.merge(this, properties);
     },
 
@@ -328,6 +329,7 @@ game.createClass('Body', {
         Add shape to body.
         @method addShape
         @param {game.Shape} shape
+        @chainable
     **/
     addShape: function(shape) {
         this.shape = shape;
@@ -347,7 +349,7 @@ game.createClass('Body', {
     /**
         This is called after hit response.
         @method afterCollide
-        @param {game.Body} bodyB body that it collided with.
+        @param {game.Body} body body that it collided with.
     **/
     afterCollide: function() {
     },
@@ -356,29 +358,34 @@ game.createClass('Body', {
         Set new collision group for body.
         @method setCollisionGroup
         @param {Number} group
+        @chainable
     **/
     setCollisionGroup: function(group) {
-        if (this.world && typeof this.collisionGroup === 'number') this.world.removeBodyCollision(this);
+        if (this.world && typeof this.collisionGroup === 'number') this.world._removeBodyCollision(this);
         this.collisionGroup = group;
-        if (this.world) this.world.addBodyCollision(this);
+        if (this.world) this.world._addBodyCollision(this);
+        return this;
     },
 
     /**
         Set body's collideAgainst groups.
         @method setCollideAgainst
         @param {Number} groups
+        @chainable
     **/
     setCollideAgainst: function() {
         this.collideAgainst.length = 0;
         for (var i = 0; i < arguments.length; i++) {
             this.collideAgainst.push(arguments[i]);
         }
+        return this;
     },
 
     /**
         Add body to world.
         @method addTo
         @param {game.World} world
+        @chainable
     **/
     addTo: function(world) {
         if (this.world) return;
@@ -389,24 +396,29 @@ game.createClass('Body', {
     /**
         Remove body from it's world.
         @method remove
+        @chainable
     **/
     remove: function() {
         if (this.world) this.world.removeBody(this);
+        return this;
     },
 
     /**
         Remove collision from body.
         @method removeCollision
+        @chainable
     **/
     removeCollision: function() {
-        if (this.world) this.world.removeBodyCollision(this);
+        if (this.world) this.world._removeBodyCollision(this);
+        return this;
     },
 
     /**
-        @method update
+        @method _update
+        @private
     **/
-    update: function() {
-        this.last.copy(this.position);
+    _update: function() {
+        this._last.copy(this.position);
 
         if (this.mass !== 0) this.velocity.multiplyAdd(this.world.gravity, this.mass * game.system.delta);
         this.velocity.multiplyAdd(this.force, game.system.delta);
@@ -422,35 +434,43 @@ game.createClass('Body', {
 /**
     Rectangle shape for physic body.
     @class Rectangle
-    @extends Class
     @constructor
     @param {Number} width
-    @param {Number} height
+    @param {Number} [height]
 **/
 game.createClass('Rectangle', {
     /**
+        @property {Number} x
+        @default 0
+    **/
+    x: 0,
+    /**
+        @property {Number} y
+        @default 0
+    **/
+    y: 0,
+    /**
         Width of rectangle.
         @property {Number} width
-        @default 50
+        @default 0
     **/
-    width: 50,
+    width: 0,
     /**
         Height of rectangle.
         @property {Number} height
-        @default 50
+        @default 0
     **/
-    height: 50,
+    height: 0,
 
     init: function(width, height) {
-        this.width = width || this.width * game.scale;
-        this.height = height || this.height * game.scale;
+        this.width = width || this.width;
+        this.height = typeof height === 'number' ? height : this.width;
     }
 });
 
 /**
     Circle shape for physic body.
     @class Circle
-    @extends Class
     @constructor
     @param {Number} radius
 **/
@@ -458,42 +478,45 @@ game.createClass('Circle', {
     /**
         Radius of circle.
         @property {Number} radius
-        @default 50
+        @default 0
     **/
-    radius: 50,
+    radius: 0,
 
     init: function(radius) {
-        this.radius = radius || this.radius * game.scale;
+        this.radius = radius;
     }
 });
 
 /**
-    Vector class.
     @class Vector
-    @extends Class
     @constructor
     @param {Number} [x]
     @param {Number} [y]
 **/
 game.createClass('Vector', {
+    /**
+        @property {Number} x
+    **/
     x: 0,
+    /**
+        @property {Number} y
+    **/
     y: 0,
 
     init: function(x, y) {
-        if (typeof x === 'number') this.x = x;
-        if (typeof y === 'number') this.y = y;
+        this.set(x, y);
     },
 
     /**
         Set vector values.
         @method set
         @param {Number} x
-        @param {Number} y
-        @return {game.Vector}
+        @param {Number} [y]
+        @chainable
     **/
     set: function(x, y) {
-        this.x = x;
-        this.y = y;
+        this.x = typeof x === 'number' ? x : this.x;
+        this.y = typeof y === 'number' ? y : this.x;
         return this;
     },
 
@@ -510,7 +533,7 @@ game.createClass('Vector', {
         Copy values from another vector.
         @method copy
         @param {game.Vector} v
-        @return {game.Vector}
+        @chainable
     **/
     copy: function(v) {
         this.x = v.x;
@@ -523,7 +546,7 @@ game.createClass('Vector', {
         @method add
         @param {Number|game.Vector} x
         @param {Number} [y]
-        @return {game.Vector}
+        @chainable
     **/
     add: function(x, y) {
         this.x += x instanceof game.Vector ? x.x : x;
@@ -536,7 +559,7 @@ game.createClass('Vector', {
         @method subtract
         @param {Number|game.Vector} x
         @param {Number} [y]
-        @return {game.Vector}
+        @chainable
     **/
     subtract: function(x, y) {
         this.x -= x instanceof game.Vector ? x.x : x;
@@ -549,7 +572,7 @@ game.createClass('Vector', {
         @method multiply
         @param {Number|game.Vector} x
         @param {Number} [y]
-        @return {game.Vector}
+        @chainable
     **/
     multiply: function(x, y) {
         this.x *= x instanceof game.Vector ? x.x : x;
@@ -562,7 +585,7 @@ game.createClass('Vector', {
         @method multiplyAdd
         @param {Number|game.Vector} x
         @param {Number} [y]
-        @return {game.Vector}
+        @chainable
     **/
     multiplyAdd: function(x, y) {
         this.x += x instanceof game.Vector ? x.x * y : x * y;
@@ -575,7 +598,7 @@ game.createClass('Vector', {
         @method divide
         @param {Number|game.Vector} x
         @param {Number} [y]
-        @return {game.Vector}
+        @chainable
     **/
     divide: function(x, y) {
         this.x /= x instanceof game.Vector ? x.x : x;
@@ -587,7 +610,7 @@ game.createClass('Vector', {
         Get distance of two vectors.
         @method distance
         @param {game.Vector} vector
-        @return {Number}
+        @chainable
     **/
     distance: function(vector) {
         var x = vector.x - this.x;
@@ -639,7 +662,7 @@ game.createClass('Vector', {
         Rotate vector in radians.
         @method rotate
         @param {Number} angle
-        @return {game.Vector}
+        @chainable
     **/
     rotate: function(angle) {
         var c = Math.cos(angle);
@@ -654,7 +677,7 @@ game.createClass('Vector', {
     /**
         Normalize vector.
         @method normalize
-        @return {game.Vector}
+        @chainable
     **/
     normalize: function() {
         var len = this.length();
@@ -667,7 +690,7 @@ game.createClass('Vector', {
         Limit vector values.
         @method limit
         @param {game.Vector} vector
-        @return {game.Vector}
+        @chainable
     **/
     limit: function(vector) {
         this.x = this.x.limit(-vector.x, vector.x);
@@ -698,7 +721,7 @@ game.createClass('Vector', {
     /**
         Round vector values.
         @method round
-        @return {game.Vector}
+        @chainable
     **/
     round: function() {
         this.x = Math.round(this.x);

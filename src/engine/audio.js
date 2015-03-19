@@ -8,30 +8,10 @@ game.module(
 'use strict';
 
 /**
+    Audio manager.
     @class Audio
-    @extends Class
 **/
 game.createClass('Audio', {
-    /**
-        @property {Number} _audioId
-        @private
-    **/
-    _audioId: 1,
-    /**
-        @property {Object} _audioObjects
-        @private
-    **/
-    _audioObjects: {},
-    /**
-        @property {Array} _systemPaused
-        @private
-    **/
-    _systemPaused: [],
-    /**
-        @property {Object} _sources
-        @private
-    **/
-    _sources: {},
     /**
         List of supported audio formats.
         @property {Array} formats
@@ -69,6 +49,26 @@ game.createClass('Audio', {
         @default false
     **/
     soundMuted: false,
+    /**
+        @property {Number} _audioId
+        @private
+    **/
+    _audioId: 1,
+    /**
+        @property {Object} _audioObjects
+        @private
+    **/
+    _audioObjects: {},
+    /**
+        @property {Array} _systemPaused
+        @private
+    **/
+    _systemPaused: [],
+    /**
+        @property {Object} _sources
+        @private
+    **/
+    _sources: {},
 
     init: function() {
         game._normalizeVendorAttribute(window, 'AudioContext');
@@ -116,278 +116,6 @@ game.createClass('Audio', {
     },
 
     /**
-        @method _decode
-        @private
-    **/
-    _decode: function(request, path, callback, errorCallback) {
-        this.context.decodeAudioData(
-            request.response,
-            this._loaded.bind(this, path, callback),
-            errorCallback
-        );
-    },
-    
-    /**
-        @method _load
-        @private
-    **/
-    _load: function(path, callback, errorCallback) {
-        if (!game.Audio.enabled) {
-            if (typeof callback === 'function') callback();
-            return;
-        }
-
-        var ext = path.split('.').pop();
-        if (this.formats.indexOf(ext) === -1) ext = this.formats[0];
-        
-        var realPath = path.replace(/[^\.]+$/, ext + game._nocache);
-
-        // Web Audio
-        if (this.context) {
-            var request = new XMLHttpRequest();
-            request.open('GET', realPath, true);
-            request.responseType = 'arraybuffer';
-            request.onload = this._decode.bind(this, request, path, callback, errorCallback);
-            request.send();
-        }
-        // HTML5 Audio
-        else {
-            var audio = new Audio(realPath);
-            if (game.device.ie) {
-                // Sometimes IE fails to trigger events, when loading audio
-                this._loaded(path, callback, audio);
-            }
-            else {
-                audio.loadCallback = this._loaded.bind(this, path, callback, audio);
-                audio.addEventListener('canplaythrough', audio.loadCallback);
-                audio.addEventListener('error', errorCallback);
-            }
-            audio.preload = 'auto';
-            audio.load();
-        }
-    },
-
-    /**
-        @method _loaded
-        @private
-    **/
-    _loaded: function(path, callback, audio) {
-        for (var name in game.paths) {
-            if (game.paths[name] === path) {
-                var id = name;
-                break;
-            }
-        }
-
-        this._sources[id] = {
-            audio: audio,
-            path: path
-        };
-
-        if (!this.context) {
-            audio.removeEventListener('canplaythrough', audio.loadCallback);
-            audio.addEventListener('ended', function() {
-                this.playing = false;
-            });
-        }
-
-        if (typeof callback === 'function') callback(path);
-    },
-
-    /**
-        @method _onended
-        @private
-    **/
-    _onended: function(id) {
-        var index = this.playingSounds.indexOf(id);
-        if (index !== -1) this.playingSounds.splice(index, 1);
-
-        if (id === this.currentMusic) {
-            this.currentMusic = null;
-            this.currentMusicName = null;
-        }
-
-        var audio = this._audioObjects[id];
-        if (!audio) return false;
-
-        if (typeof audio.callback === 'function') audio.callback();
-
-        delete this._audioObjects[id];
-    },
-
-    /**
-        @method _play
-        @private
-    **/
-    _play: function(name, loop, volume, callback, rate, time, audioId) {
-        if (!game.Audio.enabled) return false;
-        if (typeof audioId !== 'number') audioId = this._audioId++;
-
-        // Web Audio
-        if (this.context) {
-            var audio = this.context.createBufferSource();
-            audio.buffer = this._sources[name].audio;
-            audio.loop = !!loop;
-            audio.playbackRate.value = rate || 1;
-            audio.callback = callback;
-            audio.onended = this._onended.bind(this, audioId);
-
-            var gainNode = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
-            gainNode.gain.value = typeof volume === 'number' ? volume : 1;
-            gainNode.connect(this.gainNode);
-            audio.connect(gainNode);
-            audio.gainNode = gainNode;
-
-            var startTime = time || 0;
-            if (audio.start) audio.start(0, startTime);
-            else audio.noteOn(0, startTime);
-            audio.startTime = this.context.currentTime - startTime;
-        }
-        // HTML5 Audio
-        else {
-            this._sources[name].audio.volume = typeof volume === 'number' ? volume : 1;
-            this._sources[name].audio.loop = loop;
-            this._sources[name].audio.playing = true;
-            this._sources[name].audio.callback = callback;
-            this._sources[name].audio.onended = this._onended.bind(this, audioId);
-            if (!game.device.ie) this._sources[name].audio.currentTime = 0;
-            this._sources[name].audio.play();
-            var audio = this._sources[name].audio;
-        }
-
-        this._audioObjects[audioId] = audio;
-        return audioId;
-    },
-
-    /**
-        @method _stop
-        @private
-    **/
-    _stop: function(id, skipCallback) {
-        var audio = this._audioObjects[id];
-        if (!audio) return false;
-
-        if (skipCallback) audio.callback = null;
-
-        // Web Audio
-        if (this.context) {
-            if (audio.pauseTime >= 0) return false;
-            if (typeof audio.stop === 'function') audio.stop(0);
-            else audio.noteOff(0);
-        }
-        // HTML5 Audio
-        else {
-            audio.pause();
-            audio.playing = false;
-        }
-
-        return true;
-    },
-
-    /**
-        @method _pause
-        @private
-    **/
-    _pause: function(id) {
-        var audio = this._audioObjects[id];
-        if (!audio) return false;
-
-        // Web Audio
-        if (this.context) {
-            audio.onended = null;
-            if (typeof audio.stop === 'function') audio.stop(0);
-            else audio.noteOff(0);
-            audio.pauseTime = (this.context.currentTime - audio.startTime) % audio.buffer.duration;
-        }
-        // HTML5 Audio
-        else {
-            if (audio.currentTime > 0 && audio.currentTime < audio.duration || audio.loop) {
-                audio.pause();
-            }
-        }
-
-        return true;
-    },
-
-    /**
-        @method _resume
-        @private
-    **/
-    _resume: function(id) {
-        var audio = this._audioObjects[id];
-        if (!audio) return false;
-
-        // Web Audio
-        if (this.context) {
-            if (audio.pauseTime >= 0) {
-                var audioName = this._getNameForAudio(audio);
-                this._play(audioName, audio.loop, audio.gainNode.gain.value, audio.callback, audio.playbackRate, audio.pauseTime, id);
-            }
-            else return false;
-        }
-        // HTML5 Audio
-        else {
-            if (audio.playing) audio.play();
-            else return false;
-        }
-
-        return true;
-    },
-
-    /**
-        @method _mute
-        @private
-    **/
-    _mute: function(id) {
-        var audio = this._audioObjects[id];
-        if (!audio) return false;
-
-        // Web Audio
-        if (this.context) {
-            audio.gainNode.gain.value = 0;
-        }
-        // HTML5 Audio
-        else {
-            audio.volume = 0;
-        }
-
-        return true;
-    },
-
-    _unmute: function(id, volume) {
-        var audio = this._audioObjects[id];
-        if (!audio) return false;
-
-        // Web Audio
-        if (this.context) {
-            audio.gainNode.gain.value = volume || 1;
-        }
-        // HTML5 Audio
-        else {
-            audio.volume = volume || 1;
-        }
-
-        return true;
-    },
-
-    _getNameForAudio: function(audio) {
-        // Web Audio
-        if (this.context) {
-            for (var name in this._sources) {
-                if (this._sources[name].audio === audio.buffer) return name;
-            }
-        }
-        // HTML5 Audio
-        else {
-            for (var name in this._sources) {
-                if (this._sources[name].audio === audio) return name;
-            }
-        }
-
-        return false;
-    },
-
-    /**
         Play sound.
         @method playSound
         @param {String} name Name of sound
@@ -400,7 +128,6 @@ game.createClass('Audio', {
         var volume = this.soundMuted ? 0 : this.soundVolume;
         var id = this._play(name, loop, volume, callback, rate);
         if (id) this.playingSounds.push(id);
-
         return id;
     },
 
@@ -445,7 +172,6 @@ game.createClass('Audio', {
             }
             this.playingSounds.length = 0;
         }
-
         return true;
     },
 
@@ -705,7 +431,316 @@ game.createClass('Audio', {
         return this.musicMuted;
     },
 
-    systemPause: function() {
+    /**
+        @method _decode
+        @private
+    **/
+    _decode: function(request, path, callback) {
+        this.context.decodeAudioData(
+            request.response,
+            this._loaded.bind(this, path, callback),
+            this._error.bind(this, path)
+        );
+    },
+    
+    /**
+        @method _load
+        @param {String} path
+        @param {Function} callback
+        @private
+    **/
+    _load: function(path, callback) {
+        var ext = path.split('.').pop();
+        if (this.formats.indexOf(ext) === -1) ext = this.formats[0];
+        
+        var realPath = path.replace(/[^\.]+$/, ext + game._nocache);
+
+        // Web Audio
+        if (this.context) {
+            var request = new XMLHttpRequest();
+            request.open('GET', realPath, true);
+            request.responseType = 'arraybuffer';
+            request.onload = this._decode.bind(this, request, path, callback);
+            request.send();
+        }
+        // HTML5 Audio
+        else {
+            var audio = new Audio(realPath);
+            if (game.device.ie) {
+                // Sometimes IE fails to trigger events, when loading audio
+                this._loaded(path, callback, audio);
+            }
+            else {
+                audio.loadCallback = this._loaded.bind(this, path, callback, audio);
+                audio.addEventListener('canplaythrough', audio.loadCallback);
+                audio.addEventListener('error', this._error.bind(this, path));
+            }
+            audio.preload = 'auto';
+            audio.load();
+        }
+    },
+
+    /**
+        @method _error
+        @param {String} path
+        @private
+    **/
+    _error: function(path) {
+        throw 'Error loading audio ' + path;
+    },
+
+    /**
+        @method _loaded
+        @param {String} path
+        @param {Function} callback
+        @param {Audio} audio
+        @private
+    **/
+    _loaded: function(path, callback, audio) {
+        for (var name in game.paths) {
+            if (game.paths[name] === path) {
+                var id = name;
+                break;
+            }
+        }
+
+        this._sources[id] = {
+            audio: audio,
+            path: path
+        };
+
+        if (!this.context) {
+            audio.removeEventListener('canplaythrough', audio.loadCallback);
+            audio.addEventListener('ended', function() {
+                this.playing = false;
+            });
+        }
+
+        if (typeof callback === 'function') callback(path);
+    },
+
+    /**
+        @method _onended
+        @param {Number} id
+        @private
+    **/
+    _onended: function(id) {
+        var index = this.playingSounds.indexOf(id);
+        if (index !== -1) this.playingSounds.splice(index, 1);
+
+        if (id === this.currentMusic) {
+            this.currentMusic = null;
+            this.currentMusicName = null;
+        }
+
+        var audio = this._audioObjects[id];
+        if (!audio) return false;
+
+        if (typeof audio.callback === 'function') audio.callback();
+
+        delete this._audioObjects[id];
+    },
+
+    /**
+        @method _play
+        @param {String} name
+        @param {Boolean} loop
+        @param {Number} volume
+        @param {Function} callback
+        @param {Number} rate
+        @param {Number} time
+        @param {Number} audioId
+        @private
+    **/
+    _play: function(name, loop, volume, callback, rate, time, audioId) {
+        if (!game.Audio.enabled) return false;
+        if (typeof audioId !== 'number') audioId = this._audioId++;
+
+        // Web Audio
+        if (this.context) {
+            var audio = this.context.createBufferSource();
+            audio.buffer = this._sources[name].audio;
+            audio.loop = !!loop;
+            audio.playbackRate.value = rate || 1;
+            audio.callback = callback;
+            audio.onended = this._onended.bind(this, audioId);
+
+            var gainNode = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
+            gainNode.gain.value = typeof volume === 'number' ? volume : 1;
+            gainNode.connect(this.gainNode);
+            audio.connect(gainNode);
+            audio.gainNode = gainNode;
+
+            var startTime = time || 0;
+            if (audio.start) audio.start(0, startTime);
+            else audio.noteOn(0, startTime);
+            audio.startTime = this.context.currentTime - startTime;
+        }
+        // HTML5 Audio
+        else {
+            this._sources[name].audio.volume = typeof volume === 'number' ? volume : 1;
+            this._sources[name].audio.loop = loop;
+            this._sources[name].audio.playing = true;
+            this._sources[name].audio.callback = callback;
+            this._sources[name].audio.onended = this._onended.bind(this, audioId);
+            if (!game.device.ie) this._sources[name].audio.currentTime = 0;
+            this._sources[name].audio.play();
+            var audio = this._sources[name].audio;
+        }
+
+        this._audioObjects[audioId] = audio;
+        return audioId;
+    },
+
+    /**
+        @method _stop
+        @param {Number} id
+        @param {Boolean} skipCallback
+        @private
+    **/
+    _stop: function(id, skipCallback) {
+        var audio = this._audioObjects[id];
+        if (!audio) return false;
+
+        if (skipCallback) audio.callback = null;
+
+        // Web Audio
+        if (this.context) {
+            if (audio.pauseTime >= 0) return false;
+            if (typeof audio.stop === 'function') audio.stop(0);
+            else audio.noteOff(0);
+        }
+        // HTML5 Audio
+        else {
+            audio.pause();
+            audio.playing = false;
+        }
+
+        return true;
+    },
+
+    /**
+        @method _pause
+        @param {Number} id
+        @private
+    **/
+    _pause: function(id) {
+        var audio = this._audioObjects[id];
+        if (!audio) return false;
+
+        // Web Audio
+        if (this.context) {
+            audio.onended = null;
+            if (typeof audio.stop === 'function') audio.stop(0);
+            else audio.noteOff(0);
+            audio.pauseTime = (this.context.currentTime - audio.startTime) % audio.buffer.duration;
+        }
+        // HTML5 Audio
+        else {
+            if (audio.currentTime > 0 && audio.currentTime < audio.duration || audio.loop) {
+                audio.pause();
+            }
+        }
+
+        return true;
+    },
+
+    /**
+        @method _resume
+        @param {Number} id
+        @private
+    **/
+    _resume: function(id) {
+        var audio = this._audioObjects[id];
+        if (!audio) return false;
+
+        // Web Audio
+        if (this.context) {
+            if (audio.pauseTime >= 0) {
+                var audioName = this._getNameForAudio(audio);
+                this._play(audioName, audio.loop, audio.gainNode.gain.value, audio.callback, audio.playbackRate, audio.pauseTime, id);
+            }
+            else return false;
+        }
+        // HTML5 Audio
+        else {
+            if (audio.playing) audio.play();
+            else return false;
+        }
+
+        return true;
+    },
+
+    /**
+        @method _mute
+        @param {Number} id
+        @private
+    **/
+    _mute: function(id) {
+        var audio = this._audioObjects[id];
+        if (!audio) return false;
+
+        // Web Audio
+        if (this.context) {
+            audio.gainNode.gain.value = 0;
+        }
+        // HTML5 Audio
+        else {
+            audio.volume = 0;
+        }
+
+        return true;
+    },
+
+    /**
+        @method _unmute
+        @param {Number} id
+        @param {Number} volume
+        @private
+    **/
+    _unmute: function(id, volume) {
+        var audio = this._audioObjects[id];
+        if (!audio) return false;
+
+        // Web Audio
+        if (this.context) {
+            audio.gainNode.gain.value = volume || 1;
+        }
+        // HTML5 Audio
+        else {
+            audio.volume = volume || 1;
+        }
+
+        return true;
+    },
+
+    /**
+        @method _getNameForAudio
+        @param {Audio} audio
+        @private
+    **/
+    _getNameForAudio: function(audio) {
+        // Web Audio
+        if (this.context) {
+            for (var name in this._sources) {
+                if (this._sources[name].audio === audio.buffer) return name;
+            }
+        }
+        // HTML5 Audio
+        else {
+            for (var name in this._sources) {
+                if (this._sources[name].audio === audio) return name;
+            }
+        }
+
+        return false;
+    },
+
+    /**
+        @method _systemPause
+        @private
+    **/
+    _systemPause: function() {
         this.pauseMusic();
 
         for (var i = this.playingSounds.length - 1; i >= 0; i--) {
@@ -714,7 +749,11 @@ game.createClass('Audio', {
         }
     },
 
-    systemResume: function() {
+    /**
+        @method _systemResume
+        @private
+    **/
+    _systemResume: function() {
         this.resumeMusic();
 
         for (var i = this._systemPaused.length - 1; i >= 0; i--) {

@@ -10,14 +10,8 @@ game.module(
 /**
     Game scene.
     @class Scene
-    @extends Class
 **/
 game.createClass('Scene', {
-    /**
-        @property {Array} _updateOrder
-        @private
-    **/
-    _updateOrder: [],
     /**
         List of objects in scene.
         @property {Array} objects
@@ -50,6 +44,11 @@ game.createClass('Scene', {
         @default 500
     **/
     swipeTime: 500,
+    /**
+        @property {Array} _updateOrder
+        @private
+    **/
+    _updateOrder: [],
     
     staticInit: function() {
         if (game.audio && game.Audio.stopOnSceneChange && game.scene) {
@@ -59,23 +58,12 @@ game.createClass('Scene', {
             game.audio.playingSounds.length = 0;
         }
 
-        for (var i = 0; i < game.system.stage.children.length; i++) {
-            game.system.stage.children[i].remove();
-        }
+        game.system._stage.removeAll();
         
         game.scene = this;
         
         this.stage = new game.Container();
-        this.stage.interactive = true;
-        this.stage.mousemove = this.stage.touchmove = this._mousemove.bind(this);
-        this.stage.click = this.stage.tap = this.click.bind(this);
-        this.stage.mousedown = this.stage.touchstart = this._mousedown.bind(this);
-        this.stage.mouseup = this.stage.mouseupoutside = this.stage.touchend = this.stage.touchendoutside = this.mouseup.bind(this);
-        this.stage.mouseout = this.mouseout.bind(this);
-        this.stage.hitArea = new game.HitRectangle(0, 0, game.system.width, game.system.height);
-        this.stage.addTo(game.system.stage);
 
-        this._updateOrder.length = 0;
         for (var i = 0; i < game.Scene.updateOrder.length; i++) {
             this._updateOrder.push(game.Scene.updateOrder[i].ucfirst());
         }
@@ -87,10 +75,10 @@ game.createClass('Scene', {
         @private
     **/
     _mousedown: function(event) {
-        event.startTime = Date.now();
-        event.swipeX = event.data.global.x;
-        event.swipeY = event.data.global.y;
-        this.mousedown(event);
+        this._mouseDownTime = event.timeStamp;
+        this._mouseDownX = event.layerX;
+        this._mouseDownY = event.layerY;
+        this.mousedown(event.layerX, event.layerY, event);
     },
 
     /**
@@ -99,12 +87,17 @@ game.createClass('Scene', {
         @private
     **/
     _mousemove: function(event) {
-        this.mousemove(event);
-        if (!event.startTime) return;
-        if (event.data.global.x - event.swipeX >= this.swipeDist) this._swipe(event, 'right');
-        else if (event.data.global.x - event.swipeX <= -this.swipeDist) this._swipe(event, 'left');
-        else if (event.data.global.y - event.swipeY >= this.swipeDist) this._swipe(event, 'down');
-        else if (event.data.global.y - event.swipeY <= -this.swipeDist) this._swipe(event, 'up');
+        this.mousemove(event.layerX, event.layerY, event);
+        if (!this._mouseDownTime) return;
+        if (event.layerX - this._mouseDownX >= this.swipeDist) this._swipe(event, 'right');
+        else if (event.layerX - this._mouseDownX <= -this.swipeDist) this._swipe(event, 'left');
+        else if (event.layerY - this._mouseDownY >= this.swipeDist) this._swipe(event, 'down');
+        else if (event.layerY - this._mouseDownY <= -this.swipeDist) this._swipe(event, 'up');
+    },
+
+    _mouseup: function(event) {
+        this._mouseDownTime = null;
+        this.mouseup(event.layerX, event.layerY, event);
     },
 
     /**
@@ -114,18 +107,9 @@ game.createClass('Scene', {
         @private
     **/
     _swipe: function(event, dir) {
-        var time = Date.now() - event.startTime;
-        event.startTime = null;
+        var time = event.timeStamp - this._mouseDownTime;
+        this._mouseDownTime = null;
         if (time <= this.swipeTime || this.swipeTime === 0) this.swipe(dir);
-    },
-    
-    /**
-        @method _run
-        @private
-    **/
-    _run: function() {
-        this._update();
-        this._render();
     },
     
     /**
@@ -144,7 +128,7 @@ game.createClass('Scene', {
         @private
     **/
     _updateTweens: function() {
-        if (game.tweenEngine) game.tweenEngine.update();
+        if (game.tweenEngine) game.tweenEngine._update();
     },
     
     /**
@@ -152,7 +136,7 @@ game.createClass('Scene', {
         @private
     **/
     _updatePhysics: function() {
-        if (this.world) this.world.update();
+        if (this.world) this.world._update();
     },
     
     /**
@@ -192,11 +176,11 @@ game.createClass('Scene', {
     },
     
     /**
-        @method _render
+        @method _updateRenderer
         @private
     **/
-    _render: function() {
-        game.system.renderer.render(game.system.stage);
+    _updateRenderer: function() {
+        game.system.renderer._render(this.stage);
     },
     
     /**
@@ -204,7 +188,7 @@ game.createClass('Scene', {
         @private
     **/
     _pause: function() {
-        if (game.audio) game.audio.systemPause();
+        if (game.audio) game.audio._systemPause();
     },
     
     /**
@@ -212,7 +196,7 @@ game.createClass('Scene', {
         @private
     **/
     _resume: function() {
-        if (game.audio) game.audio.systemResume();
+        if (game.audio) game.audio._systemResume();
     },
     
     /**
@@ -296,6 +280,12 @@ game.createClass('Scene', {
         if (!doCallback) timer.callback = null;
         timer.repeat = false;
         timer.set(0);
+    },
+
+    removeTimers: function(doCallback) {
+        for (var i = this.timers.length - 1; i >= 0; i--) {
+            this.removeTimer(this.timers[i], doCallback);
+        }
     },
     
     /**
@@ -400,7 +390,8 @@ game.addAttributes('Scene', {
         'physics',
         'timers',
         'emitters',
-        'objects'
+        'objects',
+        'renderer'
     ]
 });
 

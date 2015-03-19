@@ -9,15 +9,14 @@ game.module(
 
 /**
     @class Particle
-    @extends Class
 **/
 game.createClass('Particle', {
     /**
-        @property {game.Point} position
+        @property {game.Vector} position
     **/
     position: null,
     /**
-        @property {game.Point} velocity
+        @property {game.Vector} velocity
     **/
     velocity: null,
     /**
@@ -25,14 +24,14 @@ game.createClass('Particle', {
     **/
     sprite: null,
     /**
-        @property {game.Point} accel
+        @property {game.Vector} accel
     **/
     accel: null,
 
     init: function() {
-        this.position = new game.Point();
-        this.velocity = new game.Point();
-        this.accel = new game.Point();
+        this.position = new game.Vector();
+        this.velocity = new game.Vector();
+        this.accel = new game.Vector();
     },
 
     /**
@@ -59,7 +58,6 @@ game.createClass('Particle', {
 /**
     Particle emitter.
     @class Emitter
-    @extends Class
     @constructor
     @param {Object} [settings]
 **/
@@ -85,11 +83,11 @@ game.createClass('Emitter', {
     **/
     container: null,
     /**
-        @property {game.Point} position
+        @property {game.Vector} position
     **/
     position: null,
     /**
-        @property {game.Point} positionVar
+        @property {game.Vector} positionVar
     **/
     positionVar: null,
     /**
@@ -213,7 +211,7 @@ game.createClass('Emitter', {
     endScaleVar: 0,
     /**
         Target position for particles.
-        @property {game.Point} target
+        @property {game.Vector} target
     **/
     target: null,
     /**
@@ -252,7 +250,7 @@ game.createClass('Emitter', {
         anchor: { x: 0.5, y: 0.5 },
     },
     /**
-        @property {game.Point} velocityLimit
+        @property {game.Vector} velocityLimit
         @default 0
     **/
     velocityLimit: null,
@@ -260,10 +258,10 @@ game.createClass('Emitter', {
 
     init: function(settings) {
         game.pool.create(this.poolName);
-        this.position = new game.Point();
-        this.positionVar = new game.Point();
-        this.velocityLimit = new game.Point();
-        this.target = new game.Point();
+        this.position = new game.Vector();
+        this.positionVar = new game.Vector();
+        this.velocityLimit = new game.Vector();
+        this.target = new game.Vector();
 
         game.merge(this, settings);
     },
@@ -282,7 +280,7 @@ game.createClass('Emitter', {
             if (typeof this[name] === 'number') {
                 this[name] = game.Emitter.prototype[name];
             }
-            if (this[name] instanceof game.Point && resetVec) {
+            if (this[name] instanceof game.Vector && resetVec) {
                 this[name].set(0, 0);
             }
         }

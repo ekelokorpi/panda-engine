@@ -10,21 +10,10 @@ game.module(
 /**
     Basic timer.
     @class Timer
-    @extends Class
     @constructor
     @param {Number} [ms]
 **/
 game.createClass('Timer', {
-    /**
-        @property {Number} _last
-        @private
-    **/
-    _last: 0,
-    /**
-        @property {Number} _pauseTime
-        @private
-    **/
-    _pauseTime: 0,
     /**
         Timer's target time.
         @property {Number} target
@@ -35,6 +24,16 @@ game.createClass('Timer', {
         @property {Number} base
     **/
     base: 0,
+    /**
+        @property {Number} _last
+        @private
+    **/
+    _last: 0,
+    /**
+        @property {Number} _pauseTime
+        @private
+    **/
+    _pauseTime: 0,
     
     init: function(ms) {
         this._last = game.Timer.time;
@@ -102,11 +101,6 @@ game.createClass('Timer', {
 
 game.addAttributes('Timer', {
     /**
-        @attribute {Number} _last
-        @private
-    **/
-    _last: 0,
-    /**
         Current time.
         @attribute {Number} time
     **/
@@ -124,13 +118,24 @@ game.addAttributes('Timer', {
     **/
     minFPS: 20,
     /**
+        Main timer's delta.
+        @attribute {Number} delta
+    **/
+    delta: 0,
+    /**
+        @attribute {Number} _last
+        @private
+    **/
+    _last: 0,
+    /**
         Update main timer.
         @attribute {Function} update
     **/
     update: function() {
         var now = Date.now();
         if (!game.Timer._last) game.Timer._last = now;
-        game.Timer.time += Math.min((now - game.Timer._last), 1000 / game.Timer.minFPS) * game.Timer.speedFactor;
+        game.Timer.delta = Math.min((now - game.Timer._last), 1000 / game.Timer.minFPS) * game.Timer.speedFactor;
+        game.Timer.time += game.Timer.delta;
         game.Timer._last = now;
     }
 });
