@@ -1,5 +1,5 @@
 game.module(
-	'engine.renderer.bitmaptext'
+	'engine.renderer.text'
 )
 .require(
 	'engine.renderer.sprite'
@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 'use strict';
 
-game.createClass('BitmapText', 'Sprite', {
+game.createClass('Text', 'Sprite', {
     text: '',
 
     init: function(text, style) {
@@ -22,8 +22,8 @@ game.createClass('BitmapText', 'Sprite', {
 
     setStyle: function(style) {
         this.style = style;
-        this.font = game.BitmapFont.cache[this.style.font];
-        if (!this.font) throw 'BitmapFont not found';
+        this.font = game.Font.cache[this.style.font];
+        if (!this.font) throw 'Font not found';
         return this;
     },
 
@@ -85,7 +85,7 @@ game.createClass('BitmapText', 'Sprite', {
     }
 });
 
-game.createClass('BitmapFont', {
+game.createClass('Font', {
     chars: {},
     spaceWidth: 0,
 
@@ -119,15 +119,15 @@ game.createClass('BitmapFont', {
     }
 });
 
-game.addAttributes('BitmapFont', {
+game.addAttributes('Font', {
     fromData: function(data) {
         var info = data.getElementsByTagName('info')[0];
         var face = info.getAttribute('face');
-        var font = game.BitmapFont.cache[face];
+        var font = game.Font.cache[face];
 
         if (!font) {
-            font = new game.BitmapFont(data);
-            game.BitmapFont.cache[face] = font;
+            font = new game.Font(data);
+            game.Font.cache[face] = font;
         }
 
         return font;

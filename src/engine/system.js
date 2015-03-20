@@ -67,11 +67,6 @@ game.createClass('System', {
     **/
     canvasHeight: 0,
     /**
-        @property {Container} _stage
-        @private
-    **/
-    _stage: null,
-    /**
         @property {Boolean} _running
         @private
     **/
@@ -99,7 +94,6 @@ game.createClass('System', {
     _pausedOnHide: false,
 
     init: function() {
-        this._stage = new game.Container();
         this.originalWidth = game.System.width;
         this.originalHeight = game.System.height;
 
@@ -119,12 +113,6 @@ game.createClass('System', {
 
         this.canvasWidth = this.width = this.originalWidth * game.scale;
         this.canvasHeight = this.height = this.originalHeight * game.scale;
-
-        // CocoonJS forces system to fullscreen on WebGL
-        if (game.System.webGL && game.device.cocoonJS) {
-            this.width = window.innerWidth * game.device.pixelRatio;
-            this.height = window.innerHeight * game.device.pixelRatio;
-        }
 
         // Init page visibility
         var visibilityChange;
@@ -152,9 +140,6 @@ game.createClass('System', {
         if (game.System.resize) game.System.center = false;
 
         window.addEventListener('resize', this._onWindowResize.bind(this));
-
-        this._initRenderer();
-        this._initEvents();
         this._onWindowResize();
     },
 
@@ -168,7 +153,7 @@ game.createClass('System', {
         if (this.width === width && this.height === height) return;
         this.width = width;
         this.height = height;
-        this.renderer._resize(width, height);
+        game.renderer._resize(width, height);
         if (game.scene) game.scene.onResize();
     },
 
@@ -213,58 +198,6 @@ game.createClass('System', {
         else {
             this._setSceneNow(sceneClass, removeAssets);
         }
-    },
-
-    /**
-        @method _initRenderer
-        @private
-    **/
-    _initRenderer: function() {
-        this.renderer = new game.Renderer(game.System.canvasId, this.width, this.height);
-    },
-
-    /**
-        @method _initEvents
-        @private
-    **/
-    _initEvents: function() {
-        this.renderer.canvas.addEventListener('touchstart', this._mousedown.bind(this));
-        this.renderer.canvas.addEventListener('touchmove', this._mousemove.bind(this));
-        this.renderer.canvas.addEventListener('touchend', this._mouseup.bind(this));
-
-        this.renderer.canvas.addEventListener('mousedown', this._mousedown.bind(this));
-        this.renderer.canvas.addEventListener('mousemove', this._mousemove.bind(this));
-        window.addEventListener('mouseup', this._mouseup.bind(this));
-    },
-
-    /**
-        @method _mousedown
-        @param {MouseEvent} event
-        @private
-    **/
-    _mousedown: function(event) {
-        event.preventDefault();
-        if (game.scene && game.scene._mousedown) game.scene._mousedown(event);
-    },
-
-    /**
-        @method _mousemove
-        @param {MouseEvent} event
-        @private
-    **/
-    _mousemove: function(event) {
-        event.preventDefault();
-        if (game.scene && game.scene._mousemove) game.scene._mousemove(event);
-    },
-
-    /**
-        @method _mouseup
-        @param {MouseEvent} event
-        @private
-    **/
-    _mouseup: function(event) {
-        event.preventDefault();
-        if (game.scene && game.scene._mouseup) game.scene._mouseup(event);
     },
 
     /**
@@ -348,7 +281,7 @@ game.createClass('System', {
     _showRotateScreen: function() {
         if (this._rotateScreenVisible) return;
         this._rotateScreenVisible = true;
-        this.renderer._hide();
+        game.renderer._hide();
         document.body.className = game.System.rotateScreenClass;
     },
 
@@ -359,7 +292,7 @@ game.createClass('System', {
     _hideRotateScreen: function() {
         if (!this._rotateScreenVisible) return;
         this._rotateScreenVisible = false;
-        this.renderer._show();
+        game.renderer._show();
         document.body.className = '';
 
         // Start main loader, if it's not started yet
@@ -373,18 +306,24 @@ game.createClass('System', {
     _onWindowResize: function() {
         if (this._toggleRotateScreen()) return;
 
-        var wWidth = window.innerWidth;
-        var wHeight = window.innerHeight;
+        if (game.device.mobile) {
+            var width = screen.width;
+            var height = screen.height;
+        }
+        else {
+            var width = window.innerWidth;
+            var height = window.innerHeight;
+        }
 
-        this._scale(wWidth, wHeight);
-        this._resize(wWidth, wHeight);
+        this._scale(width, height);
+        this._resize(width, height);
 
         if (game.System.center) {
-            this.renderer._position((wWidth - this.canvasWidth) / 2, (wHeight - this.canvasHeight) / 2);
+            game.renderer._position((width - this.canvasWidth) / 2, (height - this.canvasHeight) / 2);
         }
 
         if (game.System.scale || game.System.resize) {
-            this.renderer._size(this.canvasWidth, this.canvasHeight);
+            game.renderer._size(this.canvasWidth, this.canvasHeight);
         }
     },
 
@@ -443,15 +382,15 @@ game.addAttributes('System', {
     /**
         Position canvas to center of window.
         @attribute {Boolean} center
-        @default true
+        @default false
     **/
-    center: true,
+    center: false,
     /**
         Scale canvas to fit window.
         @attribute {Boolean} scale
-        @default true
+        @default false
     **/
-    scale: true,
+    scale: false,
     /**
         Resize canvas to fill window.
         @attribute {Boolean} resize
@@ -491,15 +430,15 @@ game.addAttributes('System', {
     /**
         System width.
         @attribute {Number} width
-        @default 1280
+        @default 800
     **/
-    width: 1280,
+    width: 800,
     /**
         System height.
         @attribute {Number} height
-        @default 720
+        @default 600
     **/
-    height: 720,
+    height: 600,
     /**
         Name of start scene.
         @attribute {String} startScene

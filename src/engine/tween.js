@@ -249,7 +249,7 @@ game.createClass('Tween', {
         @chainable
     **/
     start: function() {
-        game.tweenEngine._add(this);
+        game.tween._add(this);
         this._currentTime = 0;
         this.playing = true;
         this._onStartCallbackFired = false;
@@ -280,7 +280,7 @@ game.createClass('Tween', {
     **/
     stop: function() {
         if (!this.playing) return this;
-        game.tweenEngine._remove(this);
+        game.tween._remove(this);
         this.playing = false;
         this._stopChainedTweens();
         return this;

@@ -8,66 +8,12 @@ game.module(
 'use strict';
 
 /**
-    @class Particle
-**/
-game.createClass('Particle', {
-    /**
-        @property {game.Vector} position
-    **/
-    position: null,
-    /**
-        @property {game.Vector} velocity
-    **/
-    velocity: null,
-    /**
-        @property {game.Sprite} sprite
-    **/
-    sprite: null,
-    /**
-        @property {game.Vector} accel
-    **/
-    accel: null,
-
-    init: function() {
-        this.position = new game.Vector();
-        this.velocity = new game.Vector();
-        this.accel = new game.Vector();
-    },
-
-    /**
-        @method setVelocity
-        @param {Number} angle
-        @param {Number} speed
-    **/
-    setVeloctity: function(angle, speed) {
-        this.velocity.x = Math.cos(angle) * speed;
-        this.velocity.y = Math.sin(angle) * speed;
-    },
-
-    /**
-        @method setAccel
-        @param {Number} angle
-        @param {Number} speed
-    **/
-    setAccel: function(angle, speed) {
-        this.accel.x = Math.cos(angle) * speed;
-        this.accel.y = Math.sin(angle) * speed;
-    }
-});
-
-/**
     Particle emitter.
     @class Emitter
     @constructor
     @param {Object} [settings]
 **/
 game.createClass('Emitter', {
-    /**
-        Pool name for particles.
-        @property {String} poolName
-        @default emitter
-    **/
-    poolName: 'emitter',
     /**
         @property {Array} particles
     **/
@@ -79,15 +25,15 @@ game.createClass('Emitter', {
     textures: [],
     /**
         Container for particle sprites.
-        @property {game.Container} container
+        @property {Container} container
     **/
     container: null,
     /**
-        @property {game.Vector} position
+        @property {Vector} position
     **/
     position: null,
     /**
-        @property {game.Vector} positionVar
+        @property {Vector} positionVar
     **/
     positionVar: null,
     /**
@@ -211,7 +157,7 @@ game.createClass('Emitter', {
     endScaleVar: 0,
     /**
         Target position for particles.
-        @property {game.Vector} target
+        @property {Vector} target
     **/
     target: null,
     /**
@@ -250,19 +196,18 @@ game.createClass('Emitter', {
         anchor: { x: 0.5, y: 0.5 },
     },
     /**
-        @property {game.Vector} velocityLimit
+        @property {Vector} velocityLimit
         @default 0
     **/
     velocityLimit: null,
     callback: null,
 
     init: function(settings) {
-        game.pool.create(this.poolName);
+        game.pool.create(game.Emitter.poolName);
         this.position = new game.Vector();
         this.positionVar = new game.Vector();
         this.velocityLimit = new game.Vector();
         this.target = new game.Vector();
-
         game.merge(this, settings);
     },
 
@@ -301,7 +246,7 @@ game.createClass('Emitter', {
         @method addParticle
     **/
     addParticle: function() {
-        var particle = game.pool.get(this.poolName);
+        var particle = game.pool.get(game.Emitter.poolName);
         if (!particle) particle = new game.Particle();
 
         particle.position.x = this.position.x + this.getVariance(this.positionVar.x);
@@ -406,10 +351,11 @@ game.createClass('Emitter', {
     /**
         Remove particle from emitter.
         @method removeParticle
+        @param {Particle} particle
     **/
     removeParticle: function(particle) {
-        if (particle.sprite.parent) particle.sprite.parent.removeChild(particle.sprite);
-        game.pool.put(this.poolName, particle);
+        if (particle.sprite.parent) particle.sprite.remove();
+        game.pool.put(game.Emitter.poolName, particle);
         this.particles.erase(particle);
     },
 
@@ -426,10 +372,27 @@ game.createClass('Emitter', {
     },
 
     /**
-        Update particles.
-        @method update
+        Remove emitter from scene.
+        @method remove
     **/
-    update: function() {
+    remove: function() {
+        this._remove = true;
+    },
+
+    /**
+        Add emitter to container.
+        @method addTo
+        @param {Container} container
+    **/
+    addTo: function(container) {
+        this.container = container;
+    },
+
+    /**
+        @method _update
+        @private
+    **/
+    _update: function() {
         if (this._remove) {
             for (var i = this.particles.length - 1; i >= 0; i--) {
                 this.removeParticle(this.particles[i]);
@@ -457,23 +420,58 @@ game.createClass('Emitter', {
         for (var i = this.particles.length - 1; i >= 0; i--) {
             this.updateParticle(this.particles[i]);
         }
+    }
+});
+
+game.addAttributes('Emitter', {
+    poolName: 'emitter'
+});
+
+/**
+    @class Particle
+**/
+game.createClass('Particle', {
+    /**
+        @property {Vector} position
+    **/
+    position: null,
+    /**
+        @property {Vector} velocity
+    **/
+    velocity: null,
+    /**
+        @property {Sprite} sprite
+    **/
+    sprite: null,
+    /**
+        @property {Vector} accel
+    **/
+    accel: null,
+
+    init: function() {
+        this.position = new game.Vector();
+        this.velocity = new game.Vector();
+        this.accel = new game.Vector();
     },
 
     /**
-        Remove emitter from scene.
-        @method remove
+        @method setVelocity
+        @param {Number} angle
+        @param {Number} speed
     **/
-    remove: function() {
-        this._remove = true;
+    setVeloctity: function(angle, speed) {
+        this.velocity.x = Math.cos(angle) * speed;
+        this.velocity.y = Math.sin(angle) * speed;
     },
 
     /**
-        Add emitter to container.
-        @method addTo
-        @param {game.Container} container
+        @method setAccel
+        @param {Number} angle
+        @param {Number} speed
     **/
-    addTo: function(container) {
-        this.container = container;
+    setAccel: function(angle, speed) {
+        this.accel.x = Math.cos(angle) * speed;
+        this.accel.y = Math.sin(angle) * speed;
     }
 });
 

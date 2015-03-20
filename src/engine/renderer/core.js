@@ -6,7 +6,7 @@ game.module(
 )
 .require(
 	'engine.renderer.animation',
-	'engine.renderer.bitmaptext',
+	'engine.renderer.text',
 	'engine.renderer.container',
 	'engine.renderer.graphics',
 	'engine.renderer.sprite',
@@ -17,10 +17,6 @@ game.module(
 
 /**
     @class Renderer
-    @constructor
-    @param {String} canvasId
-    @param {Number} width
-    @param {Number} height
 **/
 game.createClass('Renderer', {
     /**
@@ -32,18 +28,18 @@ game.createClass('Renderer', {
     **/
     context: null,
 
-    init: function(canvasId, width, height) {
-        this.canvas = document.getElementById(canvasId);
+    init: function() {
+        this.canvas = document.getElementById(game.System.canvasId);
 
         if (!this.canvas) {
             this.canvas = document.createElement('canvas');
-            this.canvas.id = canvasId;
+            this.canvas.id = game.System.canvasId;
             document.body.style.margin = 0;
             document.body.appendChild(this.canvas);
             this._show();
         }
 
-        this._resize(width, height);
+        this._resize(game.System.width, game.System.height);
         this.context = this.canvas.getContext('2d');
     },
 

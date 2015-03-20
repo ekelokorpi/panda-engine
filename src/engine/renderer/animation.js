@@ -77,7 +77,7 @@ game.createClass('Animation', 'Sprite', {
             if (this.loop || round < this.textures.length) {
                 this.setTexture(this.textures[round % this.textures.length]);
             }
-            else if(round >= this.textures.length) {
+            else if (round >= this.textures.length) {
                 this.gotoAndStop(this.textures.length - 1);
                 if (this.onComplete) this.onComplete();
             }

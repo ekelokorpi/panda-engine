@@ -177,17 +177,17 @@ game.createClass('DebugDraw', {
             }
         });
 
-        // game.Scene.inject({
-        //     staticInit: function() {
-        //         this.super();
-        //         game.debugDraw._reset();
-        //     },
+        game.Scene.inject({
+            staticInit: function() {
+                this.super();
+                // game.debugDraw._reset();
+            },
 
-        //     _render: function() {
-        //         game.debugDraw._update();
-        //         this.super();
-        //     }
-        // });
+            _render: function() {
+                // game.debugDraw._update();
+                this.super();
+            }
+        });
     },
 
     /**
@@ -359,8 +359,6 @@ game.addAttributes('DebugDraw', {
     **/
     bodyAlpha: 0.5
 });
-
-
 
 game.World.inject({
     addBody: function(body) {

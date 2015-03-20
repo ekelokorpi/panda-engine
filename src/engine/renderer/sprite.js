@@ -126,19 +126,6 @@ game.createClass('Sprite', 'Container', {
         bounds.y = minY;
         bounds.width = maxX - minX;
         bounds.height = maxY - minY;
-
-        // if (!this._debugBounds) {
-        //     var grap = new game.Graphics();
-        //     grap.beginFill('#ff0000', 0.3);
-        //     grap.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
-        //     grap.addTo(game.scene.stage);
-        //     this._debugBounds = grap;
-        // }
-        // else {
-        //     this._debugBounds.clear();
-        //     this._debugBounds.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);   
-        // }
-
         return bounds;
     },
 
@@ -147,6 +134,7 @@ game.createClass('Sprite', 'Container', {
 
         var tx = this._worldTransform.tx;
         var ty = this._worldTransform.ty;
+        
         if (game.Renderer.roundPixels) {
             tx = tx | 0;
             ty = ty | 0;

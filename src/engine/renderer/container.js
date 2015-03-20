@@ -31,6 +31,7 @@ game.createClass('Container', {
     visible: true,
     width: 0,
     height: 0,
+    interactive: false,
     _worldAlpha: 1,
 
     init: function() {
@@ -42,14 +43,29 @@ game.createClass('Container', {
     },
 
     addChild: function(child) {
+        this._addChild(child);
+        if (game.Renderer.updateBounds) {
+            child._updateTransform();
+            this._updateBounds();
+        }
+        return this;
+    },
+
+    addChilds: function(childs) {
+        for (var i = 0; i < childs.length; i++) {
+            this._addChild(childs[i]);
+            if (game.Renderer.updateBounds) childs[i]._updateTransform();    
+        }
+        if (game.Renderer.updateBounds) this._updateBounds();
+        return this;
+    },
+
+    _addChild: function(child) {
         var index = this.children.indexOf(child);
         if (index !== -1) return;
         if (child.parent) child.remove();
         this.children.push(child);
         child.parent = this;
-        this._updateTransform();
-        this._updateBounds();
-        return this;
     },
 
     addTo: function(container) {
@@ -58,17 +74,34 @@ game.createClass('Container', {
     },
 
     removeChild: function(child) {
+        this._removeChild(child);
+        if (game.Renderer.updateBounds) {
+            this._transformChanged = true;
+            this._updateBounds();
+        }
+        return this;
+    },
+
+    removeChilds: function(childs) {
+        for (var i = childs.length - 1; i >= 0; i--) {
+            this._removeChild(childs[i]);
+        }
+        if (game.Renderer.updateBounds) {
+            this._transformChanged = true;
+            this._updateBounds();
+        }
+        return this;
+    },
+
+    _removeChild: function(child) {
         var index = this.children.indexOf(child);
         if (index === -1) return;
         this.children.splice(index, 1);
         child.parent = null;
-        return this;
     },
 
     removeAll: function() {
-        for (var i = this.children.length - 1; i >= 0; i--) {
-            this.removeChild(this.children[i]);
-        }
+        this.removeChilds(this.children);
         return this;
     },
 
@@ -80,7 +113,6 @@ game.createClass('Container', {
     center: function(parent, offsetX, offsetY) {
         if (!parent) return;
         if (!parent.parent) {
-            // Stage
             var x = game.system.width / 2;
             var y = game.system.height / 2;
         }
@@ -97,8 +129,12 @@ game.createClass('Container', {
         this.position.set(x + offsetX, y + offsetY);
     },
 
+    anchorCenter: function() {
+        this.anchor.set(this.width / 2, this.height / 2);
+    },
+
     _updateTransform: function() {
-        if (!this.parent) return this._updateChildrenTransform();
+        if (!this.parent) return this._updateChildTransform();
 
         var pt = this.parent._worldTransform;
         var wt = this._worldTransform;
@@ -156,7 +192,7 @@ game.createClass('Container', {
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
-        this._updateChildrenTransform();
+        this._updateChildTransform();
     },
 
     _updateBounds: function() {
@@ -166,6 +202,13 @@ game.createClass('Container', {
                 var child = this.children[i];
                 child._updateBounds();
             }
+            return;
+        }
+        if (this.children.length === 0) {
+            this._worldBounds.x = 0;
+            this._worldBounds.y = 0;
+            this.width = this._worldBounds.width = 0;
+            this.height = this._worldBounds.height = 0;
             return;
         }
         if (!this._transformChanged) return this._worldBounds;
@@ -194,12 +237,17 @@ game.createClass('Container', {
         return this._worldBounds;
     },
 
+    _hitTest: function(x, y) {
+        var bounds = this._worldBounds;
+        return (x >= bounds.x && y >= bounds.y && x <= bounds.x + bounds.width && y <= bounds.y + bounds.height);
+    },
+
     _setTransformChanged: function() {
         this._transformChanged = true;
         if (this.parent) this.parent._setTransformChanged();
     },
 
-    _updateChildrenTransform: function() {
+    _updateChildTransform: function() {
         for (var i = this.children.length - 1; i >= 0; i--) {
             var child = this.children[i];
             if (!child.visible || child.alpha <= 0) continue;

@@ -20,6 +20,33 @@ var game = {
     **/
     config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
     /**
+        @property {Array} _coreModules
+        @private
+    **/
+    _coreModules: [
+        'engine.analytics',
+        'engine.audio',
+        'engine.camera',
+        'engine.debug',
+        'engine.input',
+        'engine.loader',
+        'engine.particle',
+        'engine.physics',
+        'engine.pool',
+        'engine.renderer.animation',
+        'engine.renderer.text',
+        'engine.renderer.container',
+        'engine.renderer.core',
+        'engine.renderer.graphics',
+        'engine.renderer.sprite',
+        'engine.renderer.texture',
+        'engine.scene',
+        'engine.storage',
+        'engine.system',
+        'engine.timer',
+        'engine.tween'
+    ],
+    /**
         Scale multiplier for Retina and HiRes mode.
         @property {Number} scale
         @default 1
@@ -49,6 +76,10 @@ var game = {
         @property {Storage} storage
     **/
     storage: null,
+    /**
+        @property {TweenEngine} tween
+    **/
+    tween: null,
     /**
         @property {Keyboard} keyboard
     **/
@@ -145,33 +176,6 @@ var game = {
         @private
     **/
     _current: null,
-    /**
-        @property {Array} _coreModules
-        @private
-    **/
-    _coreModules: [
-        'engine.analytics',
-        'engine.audio',
-        'engine.camera',
-        'engine.debug',
-        'engine.keyboard',
-        'engine.loader',
-        'engine.particle',
-        'engine.physics',
-        'engine.pool',
-        'engine.renderer.animation',
-        'engine.renderer.bitmaptext',
-        'engine.renderer.container',
-        'engine.renderer.core',
-        'engine.renderer.graphics',
-        'engine.renderer.sprite',
-        'engine.renderer.texture',
-        'engine.scene',
-        'engine.storage',
-        'engine.system',
-        'engine.timer',
-        'engine.tween'
-    ],
     /**
         @property {Loader} _loader
         @private
@@ -479,15 +483,19 @@ var game = {
     _start: function() {
         if (this.moduleQueue.length > 0) return;
 
+        // Necessary classes
+        this.renderer = new this.Renderer();
         this.system = new this.System();
+        this.input = new this.Input();
 
+        // Optional classes
         if (this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
         if (this.DebugDraw && this.DebugDraw.enabled && this.Debug.enabled) this.debugDraw = new this.DebugDraw();
         if (this.Storage && this.Storage.id) this.storage = new this.Storage();
         if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
-        if (this.TweenEngine) this.tweenEngine = new this.TweenEngine();
+        if (this.TweenEngine) this.tween = new this.TweenEngine();
 
         // Load plugins
         for (var name in this.plugins) {

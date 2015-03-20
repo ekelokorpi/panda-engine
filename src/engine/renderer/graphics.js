@@ -41,7 +41,7 @@ game.createClass('Graphics', 'Container', {
     },
 
     _drawShape: function(shape) {
-        var data = new game.GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, shape); 
+        var data = new game.GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, shape);
         this.data.push(data);
     },
 

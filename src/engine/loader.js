@@ -68,7 +68,7 @@ game.createClass('Loader', {
         jpg: 'Image',
         jpeg: 'Image',
         json: 'JSON',
-        fnt: 'BitmapFont'
+        fnt: 'Font'
     },
     
     init: function(callback) {
@@ -179,12 +179,12 @@ game.createClass('Loader', {
     },
 
     /**
-        @method _loadBitmapFont
+        @method _loadFont
         @param {String} filePath
         @param {Function} callback
         @private
     **/
-    _loadBitmapFont: function(filePath, callback) {
+    _loadFont: function(filePath, callback) {
         this._loadFile(filePath, this._parseXML, callback);
     },
 
@@ -226,17 +226,17 @@ game.createClass('Loader', {
         var font = data.getElementsByTagName('page')[0].getAttribute('file');
         var image = game._getFilePath(font);
 
-        this._loadImage(image, this._parseBitmapFont.bind(this, data, callback));
+        this._loadImage(image, this._parseFont.bind(this, data, callback));
     },
 
     /**
-        @method _parseBitmapFont
+        @method _parseFont
         @param {XML} data
         @param {Function} callback
         @private
     **/
-    _parseBitmapFont: function(data, callback) {
-        game.BitmapFont.fromData(data);
+    _parseFont: function(data, callback) {
+        game.Font.fromData(data);
         callback();
     },
 
@@ -310,15 +310,6 @@ game.createClass('Loader', {
     },
 
     /**
-        @method _run
-        @private
-    **/
-    _run: function() {
-        this._update();
-        this._render();
-    },
-
-    /**
         @method _update
         @private
     **/
@@ -327,14 +318,7 @@ game.createClass('Loader', {
         if (this.percent === 100 && game.Timer.time >= game.Loader.time) {
             game.system.setScene(this.onComplete);
         }
-    },
-
-    /**
-        @method _render
-        @private
-    **/
-    _render: function() {
-        game.system.renderer._render(this.stage);
+        game.renderer._render(this.stage);
     },
 
     /**
