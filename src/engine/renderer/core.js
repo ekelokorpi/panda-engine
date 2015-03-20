@@ -123,7 +123,6 @@ game.createClass('Renderer', {
         this.context.globalAlpha = 1;
         this._clear();
         container._updateTransform();
-        container._updateBounds();
         container._render(this.context);
     }
 });
@@ -139,8 +138,7 @@ game.addAttributes('Renderer', {
         @default #000000
     **/
     backgroundColor: '#000000',
-    roundPixels: false,
-    updateBounds: true
+    roundPixels: false
 });
 
 });

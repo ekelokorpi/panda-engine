@@ -331,6 +331,23 @@ var game = {
     },
 
     /**
+        Define properties to class.
+        @method defineProperties
+        @param {String} className
+        @param {Object} properties
+    **/
+    defineProperties: function(className, properties) {
+        if (!this[className]) throw 'class ' + className + ' not found';
+
+        for (var name in properties) {
+            Object.defineProperty(this[className].prototype, name, {
+                get: properties[name].get,
+                set: properties[name].set
+            });
+        }
+    },
+
+    /**
         Get texture from texture cache.
         @method getTexture
         @param {String} id
@@ -559,6 +576,7 @@ var game = {
         @private
     **/
     _getFilePath: function(file) {
+        if (file.indexOf('http://') === 0) return file;
         if (this.config.mediaFolder) file = this.config.mediaFolder + '/' + file;
         return file;
     },

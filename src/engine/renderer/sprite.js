@@ -19,14 +19,11 @@ game.module(
 game.createClass('Sprite', 'Container', {
     init: function(texture) {
         this.super();
-        this.anchor = new game.Vector();
         this.setTexture(texture);
     },
 
     setTexture: function(texture) {
         this.texture = texture instanceof game.Texture ? texture : game.Texture.fromAsset(texture);
-        this.width = this.texture.width;
-        this.height = this.texture.height;
         return this;
     },
 
@@ -41,8 +38,8 @@ game.createClass('Sprite', 'Container', {
         }
     },
 
-    _updateBounds: function() {
-        if (!this._transformChanged) return this._worldBounds;
+    _getBounds: function() {
+        if (this._worldTransform.tx === null) this._updateTransform();
 
         var width = this.texture.width;
         var height = this.texture.height;
@@ -108,7 +105,7 @@ game.createClass('Sprite', 'Container', {
 
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
-            var childBounds = child._updateBounds();
+            var childBounds = child._getBounds();
 
             w0 = childBounds.x;
             w1 = childBounds.x + childBounds.width;
@@ -121,12 +118,11 @@ game.createClass('Sprite', 'Container', {
             maxY = (maxY > h1) ? maxY : h1;
         }
 
-        var bounds = this._worldBounds;
-        bounds.x = minX;
-        bounds.y = minY;
-        bounds.width = maxX - minX;
-        bounds.height = maxY - minY;
-        return bounds;
+        this._worldBounds.x = minX;
+        this._worldBounds.y = minY;
+        this._worldBounds.width = maxX - minX;
+        this._worldBounds.height = maxY - minY;
+        return this._worldBounds;
     },
 
     _render: function(context) {
@@ -161,6 +157,19 @@ game.createClass('Sprite', 'Container', {
 
         this.super(context);
     }
+});
+
+game.defineProperties('Sprite', {
+    width: {
+        get: function() {
+            return this.scale.x * this.texture.width;
+        }
+    },
+    height: {
+        get: function() {
+            return this.scale.y * this.texture.height;
+        }
+    } 
 });
 
 });

@@ -87,7 +87,7 @@ game.createClass('Input', {
     },
 
     _hitTest: function(container, x, y) {
-        var bounds = container._worldBounds;
+        var bounds = container._getBounds();
         return (x >= bounds.x && y >= bounds.y && x <= bounds.x + bounds.width && y <= bounds.y + bounds.height);
     },
 

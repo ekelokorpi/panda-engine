@@ -4,6 +4,9 @@
 game.module(
 	'engine.renderer.container'
 )
+.require(
+    'engine.physics'
+)
 .body(function() {
 'use strict';
 
@@ -20,17 +23,11 @@ game.createClass('Matrix', {
     @class Container
 **/
 game.createClass('Container', {
-    /**
-        @property {Number} alpha
-        @default 1
-    **/
     alpha: 1,
     children: [],
     parent: null,
     rotation: 0,
     visible: true,
-    width: 0,
-    height: 0,
     interactive: false,
     _worldAlpha: 1,
 
@@ -43,29 +40,12 @@ game.createClass('Container', {
     },
 
     addChild: function(child) {
-        this._addChild(child);
-        if (game.Renderer.updateBounds) {
-            child._updateTransform();
-            this._updateBounds();
-        }
-        return this;
-    },
-
-    addChilds: function(childs) {
-        for (var i = 0; i < childs.length; i++) {
-            this._addChild(childs[i]);
-            if (game.Renderer.updateBounds) childs[i]._updateTransform();    
-        }
-        if (game.Renderer.updateBounds) this._updateBounds();
-        return this;
-    },
-
-    _addChild: function(child) {
         var index = this.children.indexOf(child);
         if (index !== -1) return;
         if (child.parent) child.remove();
         this.children.push(child);
         child.parent = this;
+        return this;
     },
 
     addTo: function(container) {
@@ -74,34 +54,17 @@ game.createClass('Container', {
     },
 
     removeChild: function(child) {
-        this._removeChild(child);
-        if (game.Renderer.updateBounds) {
-            this._transformChanged = true;
-            this._updateBounds();
-        }
-        return this;
-    },
-
-    removeChilds: function(childs) {
-        for (var i = childs.length - 1; i >= 0; i--) {
-            this._removeChild(childs[i]);
-        }
-        if (game.Renderer.updateBounds) {
-            this._transformChanged = true;
-            this._updateBounds();
-        }
-        return this;
-    },
-
-    _removeChild: function(child) {
         var index = this.children.indexOf(child);
         if (index === -1) return;
         this.children.splice(index, 1);
         child.parent = null;
+        return this;
     },
 
     removeAll: function() {
-        this.removeChilds(this.children);
+        for (var i = this.children.length - 1; i >= 0; i--) {
+            this.children[i].remove();
+        }
         return this;
     },
 
@@ -127,10 +90,12 @@ game.createClass('Container', {
         offsetX = offsetX || 0;
         offsetY = offsetY || 0;
         this.position.set(x + offsetX, y + offsetY);
+        return this;
     },
 
     anchorCenter: function() {
         this.anchor.set(this.width / 2, this.height / 2);
+        return this;
     },
 
     mousedown: function() {},
@@ -139,10 +104,10 @@ game.createClass('Container', {
 
     _updateTransform: function() {
         if (!this.parent) return this._updateChildTransform();
-
+        
         var pt = this.parent._worldTransform;
         var wt = this._worldTransform;
-
+        
         if (this.rotation % Math.PI * 2) {
             if (this.rotation !== this._rotationCache) {
                 this._rotationCache = this.rotation;
@@ -178,15 +143,6 @@ game.createClass('Container', {
             var new_ty = tx * pt.b + ty * pt.d + pt.ty;
         }
 
-        if (wt.a !== new_a ||
-            wt.b !== new_b ||
-            wt.c !== new_c ||
-            wt.d !== new_d ||
-            wt.tx !== new_tx ||
-            wt.ty !== new_ty) {
-            this._setTransformChanged();
-        }
-
         wt.a = new_a;
         wt.b = new_b;
         wt.c = new_c;
@@ -199,25 +155,9 @@ game.createClass('Container', {
         this._updateChildTransform();
     },
 
-    _updateBounds: function() {
-        if (!game.Renderer.updateBounds) return;
-        if (!this.parent) {
-            for (var i = 0; i < this.children.length; i++) {
-                var child = this.children[i];
-                child._updateBounds();
-            }
-            return;
-        }
-        if (this.children.length === 0) {
-            this._worldBounds.x = 0;
-            this._worldBounds.y = 0;
-            this.width = this._worldBounds.width = 0;
-            this.height = this._worldBounds.height = 0;
-            return;
-        }
-        if (!this._transformChanged) return this._worldBounds;
-        this._transformChanged = false;
-
+    _getBounds: function() {
+        if (this.children.length === 0) return game.Container.emptyBounds;
+        
         var minX = Infinity;
         var minY = Infinity;
         var maxX = -Infinity;
@@ -225,7 +165,7 @@ game.createClass('Container', {
 
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
-            var childBounds = child._updateBounds();
+            var childBounds = child._getBounds();
             var childMaxX = childBounds.x + childBounds.width;
             var childMaxY = childBounds.y + childBounds.height;
             if (childBounds.x < minX) minX = childBounds.x;
@@ -236,14 +176,9 @@ game.createClass('Container', {
 
         this._worldBounds.x = minX;
         this._worldBounds.y = minY;
-        this.width = this._worldBounds.width = maxX - minX;
-        this.height = this._worldBounds.height = maxY - minY;
+        this._worldBounds.width = maxX - minX;
+        this._worldBounds.height = maxY - minY;
         return this._worldBounds;
-    },
-
-    _setTransformChanged: function() {
-        this._transformChanged = true;
-        if (this.parent) this.parent._setTransformChanged();
     },
 
     _updateChildTransform: function() {
@@ -259,6 +194,44 @@ game.createClass('Container', {
             var child = this.children[i];
             if (!child.visible || child.alpha <= 0) continue;
             child._render(context);
+        }
+    }
+});
+
+game.addAttributes('Container', {
+    emptyBounds: new game.Rectangle()
+});
+
+game.defineProperties('Container', {
+    /**
+        @property {Number} width
+        @default 0
+        @readOnly
+    **/
+    width: {
+        get: function() {
+            return this.scale.x * this._getBounds().width;
+        }
+    },
+    height: {
+        get: function() {
+            return this.scale.y * this._getBounds().height;
+        }
+    },
+    x: {
+        get: function() {
+            return this.position.x;
+        },
+        set: function(value) {
+            this.position.x = value;
+        }
+    },
+    y: {
+        get: function() {
+            return this.position.y;
+        },
+        set: function(value) {
+            this.position.y = value;
         }
     }
 });
