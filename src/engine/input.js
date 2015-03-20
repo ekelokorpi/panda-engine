@@ -46,8 +46,8 @@ game.createClass('Input', {
     _mousedown: function(event) {
         if (event.preventDefault) event.preventDefault();
         var rect = game.renderer.canvas.getBoundingClientRect();
-        var x = event.clientX - rect.left;
-        var y = event.clientY - rect.top;
+        var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
+        var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
         if (game.scene._mousedown) game.scene._mousedown(x, y, event);
         this._processMouseDown(game.scene.stage, x, y, event);
     },
@@ -77,7 +77,7 @@ game.createClass('Input', {
 
         container.parent._waitForInput--;
         
-        if (container._hitTest(x, y) && container[eventName]) {
+        if (this._hitTest(container, x, y)) {
             container.parent._inputFired = true;
             container[eventName](x, y, originalEvent);
             return;
@@ -86,8 +86,9 @@ game.createClass('Input', {
         if (container.parent) this._fireEvent(container.parent, eventName, x, y, originalEvent);
     },
 
-    _hitTest: function(x, y) {
-
+    _hitTest: function(container, x, y) {
+        var bounds = container._worldBounds;
+        return (x >= bounds.x && y >= bounds.y && x <= bounds.x + bounds.width && y <= bounds.y + bounds.height);
     },
 
     /**
@@ -105,14 +106,7 @@ game.createClass('Input', {
     },
 
     _processMouseMove: function(container, x, y) {
-        for (var i = 0; i < container.children.length; i++) {
-            var child = container.children[i];
-            if (!child.interactive) continue;
-            if (child._hitTest(x, y)) {
-                if (child.mousemove) child.mousemove(x, y, event);
-            }
-            this._processMouseMove(child, x, y)
-        }
+
     },
 
     /**

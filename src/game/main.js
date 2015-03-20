@@ -18,11 +18,16 @@ game.createScene('Main', {
         };
         this.container.addTo(this.stage);
         this.addSprites(4);
-        console.log(this.container.width, this.container.height);
+        // console.log(this.container.width, this.container.height);
+
+        var panda = this.createSprite();
+        panda.addTo(this.stage);
+        this.panda = panda;
+        console.log(panda._worldBounds);
     },
 
     mousedown: function(x, y) {
-        console.log(x + ':' + y);
+        console.log(x + ' : ' + y);
         // this.addSprite(x, y);
         // this.addSprites(500);
         // console.log(this.container.width, this.container.height);

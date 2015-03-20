@@ -133,6 +133,10 @@ game.createClass('Container', {
         this.anchor.set(this.width / 2, this.height / 2);
     },
 
+    mousedown: function() {},
+    mousemove: function() {},
+    mouseup: function() {},
+
     _updateTransform: function() {
         if (!this.parent) return this._updateChildTransform();
 
@@ -235,11 +239,6 @@ game.createClass('Container', {
         this.width = this._worldBounds.width = maxX - minX;
         this.height = this._worldBounds.height = maxY - minY;
         return this._worldBounds;
-    },
-
-    _hitTest: function(x, y) {
-        var bounds = this._worldBounds;
-        return (x >= bounds.x && y >= bounds.y && x <= bounds.x + bounds.width && y <= bounds.y + bounds.height);
     },
 
     _setTransformChanged: function() {
