@@ -23,6 +23,9 @@ game.createClass('Matrix', {
     @class Container
 **/
 game.createClass('Container', {
+    position: null,
+    scale: null,
+    anchor: null,
     alpha: 1,
     children: [],
     parent: null,
@@ -33,8 +36,10 @@ game.createClass('Container', {
     _rotationCache: null,
     _cosCache: null,
     _sinCache: null,
+    _worldTransform: null,
+    _worldBounds: null,
 
-    init: function() {
+    staticInit: function() {
         this.position = new game.Vector();
         this.scale = new game.Vector(1, 1);
         this.anchor = new game.Vector();

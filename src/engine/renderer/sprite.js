@@ -17,7 +17,7 @@ game.module(
     @param {Texture|String} texture
 **/
 game.createClass('Sprite', 'Container', {
-    init: function(texture) {
+    staticInit: function(texture) {
         this.super();
         this.setTexture(texture);
     },
@@ -39,7 +39,10 @@ game.createClass('Sprite', 'Container', {
     },
 
     _getBounds: function() {
-        if (this._worldTransform.tx === null) this.updateTransform();
+        if (this._worldTransform.tx === null) {
+            // Transform is "new", so update it
+            this.updateTransform();
+        }
 
         var width = this.texture.width;
         var height = this.texture.height;

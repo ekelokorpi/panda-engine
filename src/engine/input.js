@@ -99,8 +99,8 @@ game.createClass('Input', {
     _mousemove: function(event) {
         if (event.preventDefault) event.preventDefault();
         var rect = game.renderer.canvas.getBoundingClientRect();
-        var x = event.clientX - rect.left;
-        var y = event.clientY - rect.top;
+        var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
+        var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
         if (game.scene._mousemove) game.scene._mousemove(x, y, event);
         this._processMouseMove(game.scene.stage, x, y);
     },
@@ -117,8 +117,8 @@ game.createClass('Input', {
     _mouseup: function(event) {
         if (event.preventDefault) event.preventDefault();
         var rect = game.renderer.canvas.getBoundingClientRect();
-        var x = event.clientX - rect.left;
-        var y = event.clientY - rect.top;
+        var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
+        var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
         if (game.scene._mouseup) game.scene._mouseup(x, y, event);
     }
 });

@@ -1,6 +1,5 @@
 .DS_Store
-game.min.js
-game.cache
+*.min.js
 node_modules
 plugins
 editor

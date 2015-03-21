@@ -97,8 +97,8 @@ game.createClass('Renderer', {
     },
 
     /**
-        Clears the canvas.
-        @method clear
+        Clear canvas.
+        @method _clear
         @private
     **/
     _clear: function() {
@@ -114,7 +114,7 @@ game.createClass('Renderer', {
 
     /**
         Render container to canvas.
-        @method render
+        @method _render
         @param {Container} container
         @private
     **/
@@ -138,6 +138,10 @@ game.addAttributes('Renderer', {
         @default #000000
     **/
     backgroundColor: '#000000',
+    /**
+        @attribute {Boolean} roundPixels
+        @default false
+    **/
     roundPixels: false
 });
 
