@@ -17,7 +17,7 @@ game.module(
 game.createClass('World', {
     /**
         Gravity of physics world.
-        @property {game.Vector} gravity
+        @property {Vector} gravity
         @default 0,980
     **/
     gravity: null,
@@ -32,7 +32,7 @@ game.createClass('World', {
     **/
     _collisionGroups: {},
     /**
-        @property {game.CollisionSolver} _solver
+        @property {CollisionSolver} _solver
         @private
     **/
     _solver: null,
@@ -47,7 +47,7 @@ game.createClass('World', {
     /**
         Add body to world.
         @method addBody
-        @param {game.Body} body
+        @param {Body} body
     **/
     addBody: function(body) {
         body.world = this;
@@ -59,7 +59,7 @@ game.createClass('World', {
     /**
         Remove body from world.
         @method removeBody
-        @param {game.Body} body
+        @param {Body} body
     **/
     removeBody: function(body) {
         if (!body.world) return;
@@ -69,7 +69,7 @@ game.createClass('World', {
 
     /**
         @method _addBodyCollision
-        @param {game.Body} body
+        @param {Body} body
         @private
     **/
     _addBodyCollision: function(body) {
@@ -81,7 +81,7 @@ game.createClass('World', {
 
     /**
         @method _removeBodyCollision
-        @param {game.Body} body
+        @param {Body} body
         @private
     **/
     _removeBodyCollision: function(body) {
@@ -93,7 +93,7 @@ game.createClass('World', {
 
     /**
         @method _collide
-        @param {game.Body} body
+        @param {Body} body
         @private
     **/
     _collide: function(body) {
@@ -159,8 +159,8 @@ game.createClass('CollisionSolver', {
     /**
         Hit test a versus b.
         @method hitTest
-        @param {game.Body} a
-        @param {game.Body} b
+        @param {Body} a
+        @param {Body} b
         @return {Boolean} return true, if bodies hit.
     **/
     hitTest: function(a, b) {
@@ -191,8 +191,8 @@ game.createClass('CollisionSolver', {
     /**
         Hit response a versus b.
         @method hitResponse
-        @param {game.Body} a
-        @param {game.Body} b
+        @param {Body} a
+        @param {Body} b
         @return {Boolean} Returns true, if body is moved.
     **/
     hitResponse: function(a, b) {
@@ -251,27 +251,27 @@ game.createClass('CollisionSolver', {
 game.createClass('Body', {
     /**
         Body's physic world.
-        @property {game.World} world
+        @property {World} world
     **/
     world: null,
     /**
         Body's shape.
-        @property {game.Shape} shape
+        @property {Shape} shape
     **/
     shape: null,
     /**
         Position of body.
-        @property {game.Vector} position
+        @property {Vector} position
     **/
     position: null,
     /**
         Body's velocity.
-        @property {game.Vector} velocity
+        @property {Vector} velocity
     **/
     velocity: null,
     /**
         Body's maximum velocity.
-        @property {game.Vector} velocityLimit
+        @property {Vector} velocityLimit
         @default 0,0
     **/
     velocityLimit: null,
@@ -295,7 +295,7 @@ game.createClass('Body', {
     collideAgainst: [],
     /**
         Body's force.
-        @property {game.Vector} force
+        @property {Vector} force
         @default 0,0
     **/
     force: null,
@@ -306,7 +306,7 @@ game.createClass('Body', {
     **/
     damping: 0,
     /**
-        @property {game.Vector} _last
+        @property {Vector} _last
         @private
     **/
     _last: null,
@@ -328,7 +328,7 @@ game.createClass('Body', {
     /**
         Add shape to body.
         @method addShape
-        @param {game.Shape} shape
+        @param {Shape} shape
         @chainable
     **/
     addShape: function(shape) {
@@ -339,7 +339,7 @@ game.createClass('Body', {
     /**
         This is called, when body collides with another body.
         @method collide
-        @param {game.Body} body body that it collided with.
+        @param {Body} body body that it collided with.
         @return {Boolean} Return true, to apply hit response.
     **/
     collide: function() {
@@ -349,7 +349,7 @@ game.createClass('Body', {
     /**
         This is called after hit response.
         @method afterCollide
-        @param {game.Body} body body that it collided with.
+        @param {Body} body body that it collided with.
     **/
     afterCollide: function() {
     },
@@ -384,7 +384,7 @@ game.createClass('Body', {
     /**
         Add body to world.
         @method addTo
-        @param {game.World} world
+        @param {World} world
         @chainable
     **/
     addTo: function(world) {
@@ -523,7 +523,7 @@ game.createClass('Vector', {
     /**
         Clone vector.
         @method clone
-        @return {game.Vector}
+        @return {Vector}
     **/
     clone: function() {
         return new game.Vector(this.x, this.y);
@@ -532,7 +532,7 @@ game.createClass('Vector', {
     /**
         Copy values from another vector.
         @method copy
-        @param {game.Vector} v
+        @param {Vector} v
         @chainable
     **/
     copy: function(v) {
@@ -609,7 +609,7 @@ game.createClass('Vector', {
     /**
         Get distance of two vectors.
         @method distance
-        @param {game.Vector} vector
+        @param {Vector} vector
         @chainable
     **/
     distance: function(vector) {
@@ -630,7 +630,7 @@ game.createClass('Vector', {
     /**
         Get dot of vector.
         @method dot
-        @param {game.Vector} [vector]
+        @param {Vector} [vector]
         @return {Number}
     **/
     dot: function(vector) {
@@ -641,7 +641,7 @@ game.createClass('Vector', {
     /**
         Get normalized dot of vector.
         @method dotNormalized
-        @param {game.Vector} [vector]
+        @param {Vector} [vector]
         @return {Number}
     **/
     dotNormalized: function(vector) {
@@ -689,7 +689,7 @@ game.createClass('Vector', {
     /**
         Limit vector values.
         @method limit
-        @param {game.Vector} vector
+        @param {Vector} vector
         @chainable
     **/
     limit: function(vector) {
@@ -701,7 +701,7 @@ game.createClass('Vector', {
     /**
         Get angle between two vectors.
         @method angle
-        @param {game.Vector} vector
+        @param {Vector} vector
         @return {Number}
     **/
     angle: function(vector) {
@@ -711,7 +711,7 @@ game.createClass('Vector', {
     /**
         Get angle between two vectors from origin.
         @method angleFromOrigin
-        @param {game.Vector} vector
+        @param {Vector} vector
         @return {Number}
     **/
     angleFromOrigin: function(vector) {

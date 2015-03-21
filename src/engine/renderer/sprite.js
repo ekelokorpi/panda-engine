@@ -39,7 +39,7 @@ game.createClass('Sprite', 'Container', {
     },
 
     _getBounds: function() {
-        if (this._worldTransform.tx === null) this._updateTransform();
+        if (this._worldTransform.tx === null) this.updateTransform();
 
         var width = this.texture.width;
         var height = this.texture.height;

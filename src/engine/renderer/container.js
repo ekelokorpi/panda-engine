@@ -30,6 +30,9 @@ game.createClass('Container', {
     visible: true,
     interactive: false,
     _worldAlpha: 1,
+    _rotationCache: null,
+    _cosCache: null,
+    _sinCache: null,
 
     init: function() {
         this.position = new game.Vector();
@@ -102,7 +105,7 @@ game.createClass('Container', {
     mousemove: function() {},
     mouseup: function() {},
 
-    _updateTransform: function() {
+    updateTransform: function() {
         if (!this.parent) return this._updateChildTransform();
         
         var pt = this.parent._worldTransform;
@@ -111,14 +114,14 @@ game.createClass('Container', {
         if (this.rotation % Math.PI * 2) {
             if (this.rotation !== this._rotationCache) {
                 this._rotationCache = this.rotation;
-                this._sr = Math.sin(this.rotation);
-                this._cr = Math.cos(this.rotation);
+                this._sinCache = Math.sin(this.rotation);
+                this._cosCache = Math.cos(this.rotation);
             }
 
-            var a = this._cr * this.scale.x;
-            var b = this._sr * this.scale.x;
-            var c = -this._sr * this.scale.y;
-            var d = this._cr * this.scale.y;
+            var a = this._cosCache * this.scale.x;
+            var b = this._sinCache * this.scale.x;
+            var c = -this._sinCache * this.scale.y;
+            var d = this._cosCache * this.scale.y;
             var tx = this.position.x - (this.anchor.x * a + this.anchor.y * c) + this.parent.anchor.x;
             var ty = this.position.y - (this.anchor.x * b + this.anchor.y * d) + this.parent.anchor.y;
 
@@ -155,8 +158,16 @@ game.createClass('Container', {
         this._updateChildTransform();
     },
 
+    _updateChildTransform: function() {
+        for (var i = this.children.length - 1; i >= 0; i--) {
+            var child = this.children[i];
+            if (!child.visible || child.alpha <= 0) continue;
+            child.updateTransform();
+        }
+    },
+
     _getBounds: function() {
-        if (this.children.length === 0) return game.Container.emptyBounds;
+        if (!this.children.length) return game.Container.emptyBounds;
         
         var minX = Infinity;
         var minY = Infinity;
@@ -179,14 +190,6 @@ game.createClass('Container', {
         this._worldBounds.width = maxX - minX;
         this._worldBounds.height = maxY - minY;
         return this._worldBounds;
-    },
-
-    _updateChildTransform: function() {
-        for (var i = this.children.length - 1; i >= 0; i--) {
-            var child = this.children[i];
-            if (!child.visible || child.alpha <= 0) continue;
-            child._updateTransform();
-        }
     },
 
     _render: function(context) {

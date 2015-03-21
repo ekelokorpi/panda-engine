@@ -170,8 +170,8 @@ game.createClass('DebugDraw', {
         game.Container.inject({
             _render: function(context) {
                 this.super(context);
+                
                 var bounds = this._getBounds();
-                if (!bounds) return;
                 context.setTransform(1, 0, 0, 1, 0, 0);
                 context.globalAlpha = 0.3;
                 context.fillStyle = '#0000ff';

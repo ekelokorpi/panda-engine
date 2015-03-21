@@ -122,7 +122,7 @@ game.createClass('Renderer', {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.globalAlpha = 1;
         this._clear();
-        container._updateTransform();
+        container.updateTransform();
         container._render(this.context);
     }
 });
