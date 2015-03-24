@@ -7,6 +7,9 @@ game.module(
 .body(function() {
 'use strict';
 
+/**
+    @class Input
+**/
 game.createClass('Input', {
     init: function() {
         game.renderer.canvas.addEventListener('touchstart', this._touchstart.bind(this));
@@ -40,7 +43,7 @@ game.createClass('Input', {
 
     /**
         @method _mousedown
-        @param {MouseEvent} event
+        @param {MouseEvent|TouchEvent} event
         @private
     **/
     _mousedown: function(event) {
@@ -168,7 +171,6 @@ game.createClass('Keyboard', {
             // Unknown key
             game.Keyboard.keys[event.keyCode] = event.keyCode;
         }
-        if (this._keysDown[game.Keyboard.keys[event.keyCode]]) return; // Key already down
 
         this._keysDown[game.Keyboard.keys[event.keyCode]] = true;
         if (game.scene && game.scene.keydown) {

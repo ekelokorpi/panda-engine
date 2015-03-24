@@ -221,12 +221,22 @@ game.createClass('Loader', {
     _parseXML: function(request, callback) {
         if (!request.responseText) throw 'Error loading XML';
 
-        var parser = new DOMParser();
-        var data = parser.parseFromString(request.responseText, 'text/xml');
-        var font = data.getElementsByTagName('page')[0].getAttribute('file');
+        var responseXML = request.responseXML;
+        if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
+            if (typeof window.DOMParser === 'function') {
+                var domparser = new DOMParser();
+                responseXML = domparser.parseFromString(request.responseText, 'text/xml');
+            } else {
+                var div = document.createElement('div');
+                div.innerHTML = request.responseText;
+                responseXML = div;
+            }
+        }
+
+        var font = responseXML.getElementsByTagName('page')[0].getAttribute('file');
         var image = game._getFilePath(font);
 
-        this._loadImage(image, this._parseFont.bind(this, data, callback));
+        this._loadImage(image, this._parseFont.bind(this, responseXML, callback));
     },
 
     /**
