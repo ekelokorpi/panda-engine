@@ -154,7 +154,7 @@ game.createClass('System', {
         this.width = width;
         this.height = height;
         game.renderer._resize(width, height);
-        if (game.scene) game.scene.onResize();
+        if (game.scene && game.scene.onResize) game.scene.onResize();
     },
 
     /**

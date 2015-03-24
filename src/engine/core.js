@@ -987,24 +987,24 @@ game.Class.extend = function(prop) {
     }
 
     function Class() {
-        if (!game._initializing) {
-            for (var p in this) {
-                if (typeof this[p] === 'object') {
-                    this[p] = game.copy(this[p]);
-                }
-            }
-            /**
-                This method is called before constructor.
-                @method staticInit
-                @static
-                @param {Array} arguments
-            **/
-            if (this.staticInit) this.staticInit.apply(this, arguments);
+        if (game._initializing) return this;
 
-            if (this.init) this.init.apply(this, arguments);
-            if (game.scene && typeof this.update === 'function' && this !== game.scene) {
-                game.scene.addObject(this);
+        for (var p in this) {
+            if (typeof this[p] === 'object') {
+                this[p] = game.copy(this[p]);
             }
+        }
+        /**
+            This method is called before init.
+            @method staticInit
+            @static
+            @param {Array} arguments
+        **/
+        if (this.staticInit) this.staticInit.apply(this, arguments);
+
+        if (this.init) this.init.apply(this, arguments);
+        if (game.scene && typeof this.update === 'function' && this !== game.scene) {
+            game.scene.addObject(this);
         }
         return this;
     }

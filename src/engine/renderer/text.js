@@ -18,7 +18,7 @@ game.createClass('Text', 'Sprite', {
     /**
         @property {String} text
     **/
-    text: '',
+    text: null,
     /**
         @property {Object} style
     **/
@@ -29,8 +29,8 @@ game.createClass('Text', 'Sprite', {
     font: null,
 
     staticInit: function(text, style) {
-        this.setStyle(style);
-        this.super(text);
+        this.setStyle(this.style || style);
+        this.super(this.text || text);
     },
 
     setText: function(text) {

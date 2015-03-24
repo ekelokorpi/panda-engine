@@ -76,7 +76,6 @@ game.createClass('Scene', {
         game.scene = this;
         
         this.stage = new game.Container();
-        this.stage.interactive = true;
 
         for (var i = 0; i < game.Scene.updateOrder.length; i++) {
             this._updateOrder.push(game.Scene.updateOrder[i].ucfirst());

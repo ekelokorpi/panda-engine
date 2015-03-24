@@ -32,10 +32,11 @@ game.createClass('Container', {
     rotation: 0,
     visible: true,
     interactive: false,
-    _worldAlpha: 1,
+    renderable: true,
     _rotationCache: null,
     _cosCache: null,
     _sinCache: null,
+    _worldAlpha: 1,
     _worldTransform: null,
     _worldBounds: null,
 
@@ -88,8 +89,9 @@ game.createClass('Container', {
             var y = game.system.height / 2;
         }
         else {
-            var x = parent._worldBounds.x + parent._worldBounds.width / 2;
-            var y = parent._worldBounds.y + parent._worldBounds.height / 2;
+            var bounds = parent._getBounds();
+            var x = bounds.x + bounds.width / 2;
+            var y = bounds.y + bounds.height / 2;
         }
         x += this.anchor.x * this.scale.x;
         y += this.anchor.y * this.scale.y;
@@ -116,7 +118,7 @@ game.createClass('Container', {
         var pt = this.parent._worldTransform;
         var wt = this._worldTransform;
         
-        if (this.rotation !== this._rotationCache) {
+        if (this._rotationCache !== this.rotation) {
             this._rotationCache = this.rotation;
             this._sinCache = Math.sin(this.rotation);
             this._cosCache = Math.cos(this.rotation);
@@ -129,19 +131,12 @@ game.createClass('Container', {
         var tx = this.position.x - (this.anchor.x * a + this.anchor.y * c) + this.parent.anchor.x;
         var ty = this.position.y - (this.anchor.x * b + this.anchor.y * d) + this.parent.anchor.y;
 
-        var new_a = a * pt.a + b * pt.c;
-        var new_b = a * pt.b + b * pt.d;
-        var new_c = c * pt.a + d * pt.c;
-        var new_d = c * pt.b + d * pt.d;
-        var new_tx = tx * pt.a + ty * pt.c + pt.tx;
-        var new_ty = tx * pt.b + ty * pt.d + pt.ty;
-
-        wt.a = new_a;
-        wt.b = new_b;
-        wt.c = new_c;
-        wt.d = new_d;
-        wt.tx = new_tx;
-        wt.ty = new_ty;
+        wt.a = a * pt.a + b * pt.c;
+        wt.b = a * pt.b + b * pt.d;
+        wt.c = c * pt.a + d * pt.c;
+        wt.d = c * pt.b + d * pt.d;
+        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
+        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
@@ -185,7 +180,7 @@ game.createClass('Container', {
     _render: function(context) {
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
-            if (!child.visible || child.alpha <= 0) continue;
+            if (!child.visible || child.alpha <= 0 || !child.renderable) continue;
             child._render(context);
         }
     }
@@ -211,20 +206,19 @@ game.defineProperties('Container', {
             return this.scale.y * this._getBounds().height;
         }
     },
-    x: {
+    interactive: {
         get: function() {
-            return this.position.x;
+            return this._interactive;
         },
         set: function(value) {
-            this.position.x = value;
-        }
-    },
-    y: {
-        get: function() {
-            return this.position.y;
-        },
-        set: function(value) {
-            this.position.y = value;
+            if (value) {
+                // game.Input.interactiveItems.push(this);
+            }
+            else {
+
+                // game.Input.interactiveItems.erase(this);
+            }
+            this._interactive = value;
         }
     }
 });
