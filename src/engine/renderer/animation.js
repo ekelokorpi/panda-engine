@@ -17,18 +17,20 @@ game.module(
     @param {Array} textures
 **/
 game.createClass('Animation', 'Sprite', {
-    animationSpeed: 1,
+    animationSpeed: 60,
     textures: [],
     playing: false,
     loop: true,
     currentFrame: 0,
 
-    init: function(textures) {
-        textures = Array.prototype.slice.call(arguments);
+    staticInit: function(textures) {
+        textures = this.textures || Array.prototype.slice.call(arguments);
+        var newTextures = [];
         for (var i = 0; i < textures.length; i++) {
             var texture = game.Texture.fromAsset(textures[i]);
-            this.textures.push(texture);
+            newTextures.push(texture);
         }
+        this.textures = newTextures;
         this.super(this.textures[0]);
     },
 
@@ -69,9 +71,9 @@ game.createClass('Animation', 'Sprite', {
         return this;
     },
 
-    _updateTransform: function() {
+    updateTransform: function() {
         if (this.playing) {
-            this.currentFrame += this.animationSpeed * 60 * game.system.delta;
+            this.currentFrame += this.animationSpeed * game.system.delta;
             var round = (this.currentFrame + 0.5) | 0;
             this.currentFrame = this.currentFrame % this.textures.length;
             if (this.loop || round < this.textures.length) {

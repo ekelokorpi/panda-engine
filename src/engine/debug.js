@@ -63,6 +63,13 @@ game.createClass('Debug', {
             }
         });
 
+        game.Graphics.inject({
+            _render: function(context) {
+                this.super(context);
+                game.debug.sprites++;
+            }
+        });
+
         game.Scene.inject({
             _update: function() {
                 if (game.debug) game.debug._reset();
@@ -96,7 +103,7 @@ game.createClass('Debug', {
         var text = 'FPS: ' + this.fps;
         if (game.scene.objects) text += ' OBJECTS: ' + game.scene.objects.length;
         text += ' SPRITES: ' + this.sprites;
-        if (game.tweenEngine) text += ' TWEENS: ' + game.tweenEngine.tweens.length;
+        if (game.tween) text += ' TWEENS: ' + game.tween.tweens.length;
         if (game.scene.timers) text += ' TIMERS: ' + game.scene.timers.length;
         if (game.scene.emitters) text += ' EMITTERS: ' + game.scene.emitters.length;
         if (game.scene.world) text += ' BODIES:' + game.scene.world.bodies.length;

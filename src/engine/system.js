@@ -306,7 +306,9 @@ game.createClass('System', {
     _onWindowResize: function() {
         if (this._toggleRotateScreen()) return;
 
-        if (game.device.mobile) {
+        // Fix this
+        // window.innerWidth/Height is wrong on Android Chrome (only on startup)
+        if (game.device.android && game.device.chrome) {
             var width = screen.width;
             var height = screen.height;
         }
@@ -336,7 +338,7 @@ game.createClass('System', {
     _setSceneNow: function(sceneClass, removeAssets) {
         if (this.paused) this.paused = false;
         if (game.scene && game.scene.exit) game.scene.exit();
-        if (game.tweenEngine) game.tweenEngine.removeAll();
+        if (game.tween) game.tween.removeAll();
         if (removeAssets) game.removeAssets();
         game.scene = new (sceneClass)();
         this._newSceneClass = null;

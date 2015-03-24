@@ -19,7 +19,7 @@ game.module(
 game.createClass('Sprite', 'Container', {
     staticInit: function(texture) {
         this.super();
-        this.setTexture(texture);
+        this.setTexture(this.texture || texture);
     },
 
     setTexture: function(texture) {

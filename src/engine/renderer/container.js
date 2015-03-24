@@ -116,40 +116,25 @@ game.createClass('Container', {
         var pt = this.parent._worldTransform;
         var wt = this._worldTransform;
         
-        if (this.rotation % Math.PI * 2) {
-            if (this.rotation !== this._rotationCache) {
-                this._rotationCache = this.rotation;
-                this._sinCache = Math.sin(this.rotation);
-                this._cosCache = Math.cos(this.rotation);
-            }
-
-            var a = this._cosCache * this.scale.x;
-            var b = this._sinCache * this.scale.x;
-            var c = -this._sinCache * this.scale.y;
-            var d = this._cosCache * this.scale.y;
-            var tx = this.position.x - (this.anchor.x * a + this.anchor.y * c) + this.parent.anchor.x;
-            var ty = this.position.y - (this.anchor.x * b + this.anchor.y * d) + this.parent.anchor.y;
-
-            var new_a = a * pt.a + b * pt.c;
-            var new_b = a * pt.b + b * pt.d;
-            var new_c = c * pt.a + d * pt.c;
-            var new_d = c * pt.b + d * pt.d;
-            var new_tx = tx * pt.a + ty * pt.c + pt.tx;
-            var new_ty = tx * pt.b + ty * pt.d + pt.ty;
+        if (this.rotation !== this._rotationCache) {
+            this._rotationCache = this.rotation;
+            this._sinCache = Math.sin(this.rotation);
+            this._cosCache = Math.cos(this.rotation);
         }
-        else {
-            var a = this.scale.x;
-            var d = this.scale.y;
-            var tx = this.position.x - this.anchor.x * a + this.parent.anchor.x;
-            var ty = this.position.y - this.anchor.y * a + this.parent.anchor.y;
 
-            var new_a = a * pt.a;
-            var new_b = a * pt.b;
-            var new_c = d * pt.c;
-            var new_d = d * pt.d;
-            var new_tx = tx * pt.a + ty * pt.c + pt.tx;
-            var new_ty = tx * pt.b + ty * pt.d + pt.ty;
-        }
+        var a = this._cosCache * this.scale.x;
+        var b = this._sinCache * this.scale.x;
+        var c = -this._sinCache * this.scale.y;
+        var d = this._cosCache * this.scale.y;
+        var tx = this.position.x - (this.anchor.x * a + this.anchor.y * c) + this.parent.anchor.x;
+        var ty = this.position.y - (this.anchor.x * b + this.anchor.y * d) + this.parent.anchor.y;
+
+        var new_a = a * pt.a + b * pt.c;
+        var new_b = a * pt.b + b * pt.d;
+        var new_c = c * pt.a + d * pt.c;
+        var new_d = c * pt.b + d * pt.d;
+        var new_tx = tx * pt.a + ty * pt.c + pt.tx;
+        var new_ty = tx * pt.b + ty * pt.d + pt.ty;
 
         wt.a = new_a;
         wt.b = new_b;

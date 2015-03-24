@@ -173,10 +173,10 @@ game.createClass('Tween', {
     **/
     onRepeatCallback: null,
     /**
-        @property {Number} _currentTime
-        @private
+        Current time of tween.
+        @property {Number} currentTime
     **/
-    _currentTime: 0,
+    currentTime: 0,
     /**
         @property {Boolean} _shouldRemove
         @private
@@ -250,7 +250,7 @@ game.createClass('Tween', {
     **/
     start: function() {
         game.tween._add(this);
-        this._currentTime = 0;
+        this.currentTime = 0;
         this.playing = true;
         this._onStartCallbackFired = false;
         this._startTime = this.delayTime;
@@ -440,9 +440,9 @@ game.createClass('Tween', {
         if (this._shouldRemove) return false;
         if (this.paused) return true;
 
-        this._currentTime += game.system.delta * 1000;
+        this.currentTime += game.system.delta * 1000;
 
-        if (this._currentTime < this._startTime) return true;
+        if (this.currentTime < this._startTime) return true;
         
         if (this._onStartCallbackFired === false) {
             if (this.onStartCallback !== null) {
@@ -451,7 +451,7 @@ game.createClass('Tween', {
             this._onStartCallbackFired = true;
         }
         
-        var elapsed = (this._currentTime - this._startTime) / this.duration;
+        var elapsed = (this.currentTime - this._startTime) / this.duration;
         elapsed = elapsed > 1 ? 1 : elapsed;
         var value = this.easingFunction(elapsed);
         var property;

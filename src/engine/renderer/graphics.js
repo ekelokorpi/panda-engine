@@ -45,9 +45,7 @@ game.createClass('Graphics', 'Container', {
         this.data.push(data);
     },
 
-    _render: function(context, x, y) {
-        context.globalAlpha = this._worldAlpha;
-
+    _render: function(context) {
         context.setTransform(
             this._worldTransform.a,
             this._worldTransform.b,
@@ -57,9 +55,9 @@ game.createClass('Graphics', 'Container', {
             this._worldTransform.ty);
 
         for (var i = 0; i < this.data.length; i++) {
-            this.data[i]._render(context);
+            this.data[i]._render(context, this._worldAlpha);
         }
-        this.super(context, x, y);
+        this.super(context);
     }
 });
 
@@ -85,8 +83,8 @@ game.createClass('GraphicsData', {
         this.shape = shape;
     },
 
-    _render: function(context) {
-        context.globalAlpha = this.fillAlpha;
+    _render: function(context, alpha) {
+        context.globalAlpha = this.fillAlpha * alpha;
         context.fillStyle = this.fillColor;
         if (this.shape instanceof game.Rectangle) {
             context.fillRect(this.shape.x, this.shape.y, this.shape.width, this.shape.height);
