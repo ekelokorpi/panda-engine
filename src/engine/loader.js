@@ -70,6 +70,8 @@ game.createClass('Loader', {
         json: 'JSON',
         fnt: 'Font'
     },
+    _startTime: 0,
+    _readyTime: 0,
     
     init: function(callback) {
         this.onComplete = callback;
@@ -95,6 +97,7 @@ game.createClass('Loader', {
         @method onStart
     **/
     onStart: function() {
+        if (this._dynamic) return;
         var barWidth = game.Loader.barWidth * game.scale;
         var barHeight = game.Loader.barHeight * game.scale;
 
@@ -117,7 +120,7 @@ game.createClass('Loader', {
         @method onProgress
     **/
     onProgress: function() {
-        this.barFg.scale.x = this.percent / 100;
+        if (this.barFg) this.barFg.scale.x = this.percent / 100;
     },
 
     /**
@@ -136,14 +139,15 @@ game.createClass('Loader', {
         if (typeof this.onComplete === 'string') this._dynamic = false;
 
         if (!this._dynamic) {
-            game.Timer.time = 0;
+            this._startTime = game.Timer.time;
             if (game.tweenEngine) game.tweenEngine.removeAll();
             if (game.system.stage) game.system.stage.removeAll();
             this.stage = new game.Container();
-            this.onStart();
             game.scene = this;
             if (!game.system._running) game.system._startRunLoop();
         }
+
+        this.onStart();
 
         // Nothing to load
         if (this.percent === 100) this._ready();
@@ -317,6 +321,13 @@ game.createClass('Loader', {
         }
 
         if (this._dynamic) this.onComplete();
+        else {
+            var loadTime = game.Timer.time - this._startTime;
+            var timeToWait = game.Loader.time - loadTime;
+            // Show 100% for at least 100ms
+            if (timeToWait < 100) timeToWait = 100;
+            this._readyTime = game.Timer.time + timeToWait;
+        }
     },
 
     /**
@@ -325,7 +336,7 @@ game.createClass('Loader', {
     **/
     _update: function() {
         if (this._dynamic) return;
-        if (this.percent === 100 && game.Timer.time >= game.Loader.time) {
+        if (this.percent === 100 && game.Timer.time >= this._readyTime) {
             game.system.setScene(this.onComplete);
         }
         game.renderer._render(this.stage);

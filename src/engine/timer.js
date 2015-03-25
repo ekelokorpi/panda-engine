@@ -104,7 +104,7 @@ game.addAttributes('Timer', {
         Current time.
         @attribute {Number} time
     **/
-    time: Number.MIN_VALUE,
+    time: 0,
     /**
         Main timer's speed factor.
         @attribute {Number} speedFactor
