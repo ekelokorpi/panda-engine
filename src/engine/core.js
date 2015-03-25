@@ -503,7 +503,7 @@ var game = {
         // Necessary classes
         this.renderer = new this.Renderer();
         this.system = new this.System();
-        this.input = new this.Input();
+        this.input = new this.Input(this.renderer.canvas);
 
         // Optional classes
         if (this.Audio) this.audio = new this.Audio();

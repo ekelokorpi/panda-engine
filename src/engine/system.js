@@ -374,6 +374,7 @@ game.createClass('System', {
         game.Timer.update();
         this.delta = game.Timer.delta / 1000;
 
+        game.input._update();
         game.scene._update();
 
         if (this._newSceneClass) this._setSceneNow(this._newSceneClass, this._removeAssets);

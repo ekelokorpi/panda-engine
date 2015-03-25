@@ -11,31 +11,37 @@ game.module(
     @class Input
 **/
 game.createClass('Input', {
-    init: function() {
-        game.renderer.canvas.addEventListener('touchstart', this._touchstart.bind(this));
-        game.renderer.canvas.addEventListener('touchmove', this._touchmove.bind(this));
-        game.renderer.canvas.addEventListener('touchend', this._touchend.bind(this));
-        game.renderer.canvas.addEventListener('mousedown', this._mousedown.bind(this));
-        game.renderer.canvas.addEventListener('mousemove', this._mousemove.bind(this));
+    items: [],
+    _needUpdate: false,
+    _mouseDownTime: null,
+    _mouseDownItem: null,
+    _mouseUpItem: null,
+
+    init: function(canvas) {
+        canvas.addEventListener('touchstart', this._touchstart.bind(this));
+        canvas.addEventListener('touchmove', this._touchmove.bind(this));
+        canvas.addEventListener('touchend', this._touchend.bind(this));
+        canvas.addEventListener('mousedown', this._mousedown.bind(this));
+        canvas.addEventListener('mousemove', this._mousemove.bind(this));
         window.addEventListener('mouseup', this._mouseup.bind(this));
     },
 
     _touchstart: function(event) {
-        event.preventDefault();
+        if (game.Input.preventDefault) event.preventDefault();
         for (var i = 0; i < event.changedTouches.length; i++) {
             this._mousedown(event.changedTouches[i]);
         }
     },
 
     _touchmove: function(event) {
-        event.preventDefault();
+        if (game.Input.preventDefault) event.preventDefault();
         for (var i = 0; i < event.changedTouches.length; i++) {
             this._mousemove(event.changedTouches[i]);
         }
     },
 
     _touchend: function(event) {
-        event.preventDefault();
+        if (game.Input.preventDefault) event.preventDefault();
         for (var i = 0; i < event.changedTouches.length; i++) {
             this._mouseup(event.changedTouches[i]);
         }
@@ -47,46 +53,70 @@ game.createClass('Input', {
         @private
     **/
     _mousedown: function(event) {
-        if (event.preventDefault) event.preventDefault();
+        this._preventDefault(event);
+        this._calculateXY(event);
+        
+        this._mouseDownItem = this._processEvent('mousedown', event);
+        this._mouseDownTime = game.Timer.time;
+
+        if (game.scene._mousedown) game.scene._mousedown(event.canvasX, event.canvasY, event);
+    },
+
+    /**
+        @method _mousemove
+        @param {MouseEvent|TouchEvent} event
+        @private
+    **/
+    _mousemove: function(event) {
+        this._preventDefault(event);
+        this._calculateXY(event);
+        
+        this._processEvent('mousemove', event);
+
+        if (game.scene._mousemove) game.scene._mousemove(event.canvasX, event.canvasY, event);
+    },
+
+    /**
+        @method _mouseup
+        @param {MouseEvent|TouchEvent} event
+        @private
+    **/
+    _mouseup: function(event) {
+        this._preventDefault(event);
+        this._calculateXY(event);
+
+        this._mouseUpItem = this._processEvent('mouseup', event);
+        if (this._mouseDownItem && this._mouseDownItem === this._mouseUpItem) {
+            var time = game.Timer.time - this._mouseDownTime;
+            if (game.Input.clickTimeout === 0 || time < game.Input.clickTimeout) {
+                this._mouseDownItem.click(event.canvasX, event.canvasY, event);
+            }
+        }
+
+        if (game.scene._mouseup) game.scene._mouseup(event.canvasX, event.canvasY, event);
+    },
+
+    _preventDefault: function(event) {
+        if (!event.preventDefault || !game.Input.preventDefault) return;
+        event.preventDefault();
+    },
+
+    _processEvent: function(eventName, event) {
+        for (var i = this.items.length - 1; i >= 0; i--) {
+            var item = this.items[i];
+            if (item._interactive && this._hitTest(item, event.canvasX, event.canvasY)) {
+                item[eventName](event.canvasX, event.canvasY, event);
+                return item;
+            }
+        }
+    },
+
+    _calculateXY: function(event) {
         var rect = game.renderer.canvas.getBoundingClientRect();
         var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
         var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
-        if (game.scene._mousedown) game.scene._mousedown(x, y, event);
-        this._processMouseDown(game.scene.stage, x, y, event);
-    },
-
-    _processMouseDown: function(container, x, y, event) {
-        if (!container.interactive && container.parent) {
-            this._fireEvent(container.parent, 'mousedown', x, y, event);
-            return;
-        }
-        if (container.children.length === 0) {
-            this._fireEvent(container, 'mousedown', x, y, event);
-            return;
-        }
-        container._waitForInput = container.children.length;
-        container._inputFired = false;
-        for (var i = 0; i < container.children.length; i++) {
-            var child = container.children[i];
-            if (!child.interactive) continue;
-            this._processMouseDown(child, x, y, event);
-        }
-    },
-
-    _fireEvent: function(container, eventName, x, y, originalEvent) {
-        if (!container.parent) return;
-        if (container._waitForInput > 0) return;
-        if (container._inputFired) return;
-
-        container.parent._waitForInput--;
-        
-        if (this._hitTest(container, x, y)) {
-            container.parent._inputFired = true;
-            container[eventName](x, y, originalEvent);
-            return;
-        }
-
-        if (container.parent) this._fireEvent(container.parent, eventName, x, y, originalEvent);
+        event.canvasX = x;
+        event.canvasY = y;
     },
 
     _hitTest: function(container, x, y) {
@@ -94,36 +124,35 @@ game.createClass('Input', {
         return (x >= bounds.x && y >= bounds.y && x <= bounds.x + bounds.width && y <= bounds.y + bounds.height);
     },
 
-    /**
-        @method _mousemove
-        @param {MouseEvent} event
-        @private
-    **/
-    _mousemove: function(event) {
-        if (event.preventDefault) event.preventDefault();
-        var rect = game.renderer.canvas.getBoundingClientRect();
-        var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
-        var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
-        if (game.scene._mousemove) game.scene._mousemove(x, y, event);
-        this._processMouseMove(game.scene.stage, x, y);
+    _updateItems: function(container) {
+        for (var i = 0; i < container.children.length; i++) {
+            var child = container.children[i];
+            if (child._interactive) this.items.push(child);
+            if (child.children.length > 0) this._updateItems(child);
+        }
     },
 
-    _processMouseMove: function(container, x, y) {
+    _update: function() {
+        if (!this._needUpdate) return;
 
-    },
-
-    /**
-        @method _mouseup
-        @param {MouseEvent} event
-        @private
-    **/
-    _mouseup: function(event) {
-        if (event.preventDefault) event.preventDefault();
-        var rect = game.renderer.canvas.getBoundingClientRect();
-        var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
-        var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
-        if (game.scene._mouseup) game.scene._mouseup(x, y, event);
+        this.items.length = 0;
+        this._updateItems(game.scene.stage);
     }
+});
+
+game.addAttributes('Input', {
+    /**
+        Time after click is not called (ms).
+        @attribute {Number} clickTimeout
+        @default 500
+    **/
+    clickTimeout: 500,
+    /**
+        Should events prevent default action.
+        @attribute {Boolean} preventDefault
+        @default true
+    **/
+    preventDefault: true
 });
 
 /**

@@ -107,6 +107,7 @@ game.createClass('Debug', {
         if (game.scene.timers) text += ' TIMERS: ' + game.scene.timers.length;
         if (game.scene.emitters) text += ' EMITTERS: ' + game.scene.emitters.length;
         if (game.scene.world) text += ' BODIES:' + game.scene.world.bodies.length;
+        text += ' INPUTS: ' + game.input.items.length;
         this._setText(text);
     },
 

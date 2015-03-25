@@ -76,6 +76,7 @@ game.createClass('Scene', {
         game.scene = this;
         
         this.stage = new game.Container();
+        this.stage.stage = this.stage;
 
         for (var i = 0; i < game.Scene.updateOrder.length; i++) {
             this._updateOrder.push(game.Scene.updateOrder[i].ucfirst());
@@ -361,7 +362,7 @@ game.createClass('Scene', {
     **/
     _updateObjects: function() {
         for (var i = this.objects.length - 1; i >= 0; i--) {
-            if (typeof this.objects[i].update === 'function') this.objects[i].update();
+            if (typeof this.objects[i].update === 'function' && !this.objects[i]._remove) this.objects[i].update();
             if (this.objects[i]._remove) this.objects.splice(i, 1);
         }
     },

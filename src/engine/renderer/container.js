@@ -33,6 +33,9 @@ game.createClass('Container', {
     visible: true,
     interactive: false,
     renderable: true,
+    stage: null,
+    _interactive: false,
+    _interactiveChildren: false,
     _rotationCache: null,
     _cosCache: null,
     _sinCache: null,
@@ -54,6 +57,7 @@ game.createClass('Container', {
         if (child.parent) child.remove();
         this.children.push(child);
         child.parent = this;
+        if (this.stage) child._setStageReference(this.stage);
         return this;
     },
 
@@ -67,6 +71,7 @@ game.createClass('Container', {
         if (index === -1) return;
         this.children.splice(index, 1);
         child.parent = null;
+        if (this.stage) child._removeStageReference();
         return this;
     },
 
@@ -111,6 +116,7 @@ game.createClass('Container', {
     mousedown: function() {},
     mousemove: function() {},
     mouseup: function() {},
+    click: function() {},
 
     updateTransform: function() {
         if (!this.parent) return this._updateChildTransform();
@@ -141,6 +147,26 @@ game.createClass('Container', {
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
         this._updateChildTransform();
+    },
+
+    _setStageReference: function(stage) {
+        this.stage = stage;
+        if (this._interactive) game.input._needUpdate = true;
+
+        for (var i = 0; i < this.children.length; i++) {
+            var child = this.children[i];
+            child._setStageReference(stage);
+        }
+    },
+
+    _removeStageReference: function() {
+        for (var i = 0; i < this.children.length; i++) {
+            var child = this.children[i];
+            child._removeStageReference();
+        }
+
+        if (this._interactive) game.input._needUpdate = true;
+        this.stage = null;
     },
 
     _updateChildTransform: function() {
@@ -211,14 +237,9 @@ game.defineProperties('Container', {
             return this._interactive;
         },
         set: function(value) {
-            if (value) {
-                // game.Input.interactiveItems.push(this);
-            }
-            else {
-
-                // game.Input.interactiveItems.erase(this);
-            }
+            if (this._interactive === value) return;
             this._interactive = value;
+            if (this.stage) game.input._needUpdate = true;
         }
     }
 });
