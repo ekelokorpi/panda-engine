@@ -17,10 +17,32 @@ game.module(
     @param {Array} textures
 **/
 game.createClass('Animation', 'Sprite', {
-    animationSpeed: 60,
-    textures: [],
+    /**
+        Speed of animation (frames per second).
+        @property {Number} speed
+        @default 60
+    **/
+    speed: 60,
+    /**
+        @property {Array} textures
+    **/
+    textures: null,
+    /**
+        Is animation playing.
+        @property {Boolean} playing
+        @default false
+    **/
     playing: false,
+    /**
+        Is animation looping.
+        @property {Boolean} loop
+        @default true
+    **/
     loop: true,
+    /**
+        @property {Number} currentFrame
+        @default 0
+    **/
     currentFrame: 0,
 
     staticInit: function(textures) {
@@ -73,7 +95,7 @@ game.createClass('Animation', 'Sprite', {
 
     updateTransform: function() {
         if (this.playing) {
-            this.currentFrame += this.animationSpeed * game.system.delta;
+            this.currentFrame += this.speed * game.system.delta;
             var round = (this.currentFrame + 0.5) | 0;
             this.currentFrame = this.currentFrame % this.textures.length;
             if (this.loop || round < this.textures.length) {

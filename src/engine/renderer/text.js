@@ -56,7 +56,7 @@ game.createClass('Text', 'Sprite', {
             var charCode = this.text.charCodeAt(i);
             id += charCode;
             if (charCode === 32) {
-                this.width += this.font.spaceWidth;
+                width += this.font.spaceWidth;
                 continue;
             }
             var charObj = this.font.chars[charCode];
