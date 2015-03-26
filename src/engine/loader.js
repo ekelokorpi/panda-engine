@@ -199,7 +199,7 @@ game.createClass('Loader', {
         @private
     **/
     _loadJSON: function(filePath, callback) {
-        this._loadFile(filePath, this._parseJSON, callback);
+        this._loadFile(filePath, this._parseJSON.bind(this, filePath), callback);
     },
 
     /**
@@ -256,12 +256,13 @@ game.createClass('Loader', {
 
     /**
         @method _parseJSON
+        @param {String} filePath
         @param {XMLHttpRequest} request
         @param {Function} callback
         @private
     **/
-    _parseJSON: function(request, callback) {
-        if (!request.responseText) throw 'Error loading JSON';
+    _parseJSON: function(filePath, request, callback) {
+        if (!request.responseText) throw 'Error loading JSON: ' + filePath;
 
         var json = JSON.parse(request.responseText);
         if (json.frames) {
@@ -270,7 +271,13 @@ game.createClass('Loader', {
             this._loadImage(image, this._parseSpriteSheet.bind(this, json, callback));
         }
         else {
-            // TODO save json
+            // Get id for JSON
+            for (var name in game.paths) {
+                if (game.paths[name] === filePath) {
+                    game.json[name] = json;
+                    break;
+                }
+            }
             callback();
         }
     },
