@@ -107,10 +107,10 @@ game.addAttributes('Timer', {
     time: 0,
     /**
         Main timer's speed factor.
-        @attribute {Number} speedFactor
+        @attribute {Number} speed
         @default 1
     **/
-    speedFactor: 1,
+    speed: 1,
     /**
         Main timer's minimum fps.
         @attribute {Number} minFPS
@@ -118,7 +118,7 @@ game.addAttributes('Timer', {
     **/
     minFPS: 20,
     /**
-        Main timer's delta.
+        Main timer's delta (ms).
         @attribute {Number} delta
     **/
     delta: 0,
@@ -127,16 +127,18 @@ game.addAttributes('Timer', {
         @private
     **/
     _last: 0,
+    _realDelta: 0,
     /**
         Update main timer.
         @attribute {Function} update
     **/
     update: function() {
         var now = Date.now();
-        if (!game.Timer._last) game.Timer._last = now;
-        game.Timer.delta = Math.min((now - game.Timer._last), 1000 / game.Timer.minFPS) * game.Timer.speedFactor;
-        game.Timer.time += game.Timer.delta;
-        game.Timer._last = now;
+        if (!this._last) this._last = now;
+        this._realDelta = now - this._last;
+        this.delta = Math.min(this._realDelta, 1000 / this.minFPS) * this.speed;
+        this.time += this.delta;
+        this._last = now;
     }
 });
 

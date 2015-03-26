@@ -94,9 +94,10 @@ game.createClass('Debug', {
     _update: function() {
         this._frames++;
 
-        if (game.Timer.time >= this.last + game.Debug.frequency) {
-            this.fps = (Math.round((this._frames * 1000) / (game.Timer.time - this.last)));
-            this.last = game.Timer.time;
+        var now = Date.now();
+        if (now >= this.last + game.Debug.frequency) {
+            this.fps = Math.round(this._frames * 1000 / (now - this.last));
+            this.last = now;
             this._frames = 0;
         }
 
