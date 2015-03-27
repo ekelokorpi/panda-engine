@@ -294,6 +294,8 @@ var game = {
         @param {Object} content
     **/
     createClass: function(name, extend, content) {
+        if (typeof name === 'object') return game.Class.extend(name);
+
         if (game[name]) throw 'class ' + name + ' already created';
 
         if (typeof extend === 'object') {
@@ -753,6 +755,10 @@ var game = {
             if (precision) precision = Math.pow(10, precision);
             else precision = 1;
             return Math.round(this * precision) / precision;
+        };
+
+        Number.prototype.random = function() {
+            return Math.random() * this;
         };
 
         Array.prototype.erase = function(item) {
