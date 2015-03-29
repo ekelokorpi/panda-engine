@@ -271,13 +271,7 @@ game.createClass('Loader', {
             this._loadImage(image, this._parseSpriteSheet.bind(this, json, callback));
         }
         else {
-            // Get id for JSON
-            for (var name in game.paths) {
-                if (game.paths[name] === filePath) {
-                    game.json[name] = json;
-                    break;
-                }
-            }
+            game.json[filePath] = json;
             callback();
         }
     },

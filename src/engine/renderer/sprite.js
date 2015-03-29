@@ -129,6 +129,12 @@ game.createClass('Sprite', 'Container', {
     },
 
     _render: function(context) {
+        if (game.renderer.webGL) {
+            game.renderer.spriteBatch.render(this);
+            this.super(context);
+            return;
+        }
+
         context.globalAlpha = this._worldAlpha;
 
         var tx = this._worldTransform.tx;

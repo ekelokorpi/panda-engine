@@ -1,26 +1,35 @@
 # Panda Engine
 
-### HTML5 game engine for mobile and desktop
+### 2D HTML5 game engine for mobile and desktop
 
 Make games written in JavaScript and play them on any major browser, or wrap them into mobile applications.
 
 ## Install
 
-1. Download latest [Panda Engine](https://github.com/ekelokorpi/panda.js/archive/master.zip) zip
+Manually
+
+1. Download latest [Panda Engine](https://github.com/ekelokorpi/panda.js-engine/archive/master.zip) zip
 2. Install local [web server](https://www.google.com/search?q=install%20local%20web%20server&rct=j)
-3. Unzip and open `dev.html` in your browser
+3. Unzip and open the folder in your browser
 4. Open `src/game/main.js` in your favorite code editor and start coding!
+
+Using [Panda Toolkit](https://github.com/ekelokorpi/panda.js-toolkit)
+
+	$ npm install -g pandatool
+	$ panda create MyGame
 
 ## Features
 
 - Rendering
-	- Fast Canvas / WebGL rendering powered by [Pixi.js](http://www.pixijs.com)
+	- Fast Canvas / WebGL rendering based on [Pixi.js](http://www.pixijs.com)
 - Modules
-	- Split your code into separate modules
+	- Split your code into modules
 - Classes
 	- Extend classes with simple JavaScript inheritance
-- Mobile
-	- Play on mobile browser or wrap using [CocoonJS](http://www.ludei.com/cocoonjs/) or [PhoneGap](http://www.phonegap.com)
+- Mobile support
+	- Panda Engine is tested to work on Android 4, iOS 8 and Windows Phone 8.1 devices
+- Native
+	- Wrap your game into native app using [PhoneGap](http://www.phonegap.com)
 - Plugins
 	- Extend your game features with plugins
 - Physics

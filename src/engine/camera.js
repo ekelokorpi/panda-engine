@@ -25,23 +25,23 @@ game.createClass('Camera', {
     acceleration: 3,
     /**
         Camera offset.
-        @property {game.Point} offset
+        @property {Vector} offset
         @default game.system.width / 2, game.system.height / 2
     **/
     offset: null,
     /**
         Sprite, that camera follows.
-        @property {game.Sprite} target
+        @property {Sprite} target
     **/
     target: null,
     /**
         Container, that the camera is moving.
-        @property {game.Container} container
+        @property {Container} container
     **/
     container: null,
     /**
         Current speed of camera.
-        @property {game.Point} speed
+        @property {Vector} speed
     **/
     speed: null,
     /**
@@ -67,10 +67,10 @@ game.createClass('Camera', {
     maxY: null,
     
     init: function(x, y) {
-        this.position = new game.Point();
-        this.speed = new game.Point();
-        this.offset = new game.Point(game.system.width / 2, game.system.height / 2);
-        this.sensorPosition = new game.Point(this.offset.x, this.offset.y);
+        this.position = new game.Vector();
+        this.speed = new game.Vector();
+        this.offset = new game.Vector(game.system.width / 2, game.system.height / 2);
+        this.sensorPosition = new game.Vector(this.offset.x, this.offset.y);
         this.sensorWidth = 200 * game.scale;
         this.sensorHeight = 200 * game.scale;
         if (typeof x === 'number' && typeof y === 'number') this.setPosition(x, y);
@@ -81,7 +81,7 @@ game.createClass('Camera', {
     /**
         Add camera to container.
         @method addTo
-        @param {game.Container} container
+        @param {Container} container
     **/
     addTo: function(container) {
         this.container = container;
@@ -92,7 +92,7 @@ game.createClass('Camera', {
     /**
         Set target for camera.
         @method setTarget
-        @param {game.Sprite} target
+        @param {Sprite} target
     **/
     setTarget: function(target) {
         this.target = target;

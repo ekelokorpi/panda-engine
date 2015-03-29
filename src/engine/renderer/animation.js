@@ -46,10 +46,17 @@ game.createClass('Animation', 'Sprite', {
     currentFrame: 0,
 
     staticInit: function(textures) {
-        textures = this.textures || Array.prototype.slice.call(arguments);
+        textures = this.textures;
+        
+        if (!textures) {
+            if (arguments[0].length) textures = arguments[0];
+            else textures = Array.prototype.slice.call(arguments);
+        }
+
         var newTextures = [];
         for (var i = 0; i < textures.length; i++) {
-            var texture = game.Texture.fromAsset(textures[i]);
+            var texture = textures[i];
+            if (!texture instanceof game.Texture) texture = game.Texture.fromAsset(texture);
             newTextures.push(texture);
         }
         this.textures = newTextures;

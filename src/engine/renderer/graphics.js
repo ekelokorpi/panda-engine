@@ -46,6 +46,8 @@ game.createClass('Graphics', 'Container', {
     },
 
     _render: function(context) {
+        if (game.renderer.webGL) return;
+        
         context.setTransform(
             this._worldTransform.a,
             this._worldTransform.b,

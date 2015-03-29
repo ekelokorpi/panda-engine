@@ -1,19 +1,20 @@
 pandaConfig = {
-    "system": {
-        "width": 800,
-        "height": 600,
-        "startScene": "Main",
-        "rotateScreen": false,
-        "center": true,
-        "scale": true,
-        "resize": false
+    name: 'panda.js-engine',
+    version: '2.0.0',
+
+    system: {
+        width: 1024,
+        height: 768,
+        center: true,
+        scale: true,
+        resize: true
     },
-    "debug": {
-        "enabled": true
+    
+    renderer: {
+        webGL: false  
     },
-    "debugDraw": {
-        "enabled": true
-    },
-    "name": "panda.js-engine",
-    "version": "0.0.0"
+    
+    debug: {
+        enabled: true
+    }
 };

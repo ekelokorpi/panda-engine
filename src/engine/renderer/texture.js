@@ -33,12 +33,41 @@ game.createClass('Texture', {
         @property {Vector} position
     **/
     position: null,
+    /**
+        @property {Object} _uvs
+        @private
+    **/
+    _uvs: {
+        x0: 0,
+        y0: 0,
+        x1: 0,
+        y1: 0,
+        x2: 0,
+        y2: 0,
+        x3: 0,
+        y3: 0
+    },
 
     init: function(baseTexture, x, y, width, height) {
         this.baseTexture = baseTexture instanceof game.BaseTexture ? baseTexture : game.BaseTexture.fromAsset(baseTexture);
         this.position = new game.Vector(x, y);
         this.width = width || this.baseTexture.width;
         this.height = height || this.baseTexture.height;
+
+        if (game.renderer.webGL) this._updateUvs();
+    },
+
+    _updateUvs: function() {
+        var tw = this.baseTexture.width;
+        var th = this.baseTexture.height;
+        this._uvs.x0 = this.position.x / tw;
+        this._uvs.y0 = this.position.y / th;
+        this._uvs.x1 = (this.position.x + this.width) / tw;
+        this._uvs.y1 = this.position.y / th;
+        this._uvs.x2 = (this.position.x + this.width) / tw;
+        this._uvs.y2 = (this.position.y + this.height) / th;
+        this._uvs.x3 = this.position.x / tw;
+        this._uvs.y3 = (this.position.y + this.height) / th;
     }
 });
 
@@ -118,9 +147,14 @@ game.createClass('BaseTexture', {
     width: 0,
     height: 0,
     source: null,
+    loaded: false,
     _loadCallback: null,
     _id: null,
-
+    _dirty: [true, true, true, true],
+    _glTextures: [],
+    _premultipliedAlpha: true,
+    _powerOf2: false,
+    
     init: function(source, loadCallback) {
         this.source = source;
         this._loadCallback = loadCallback;
@@ -138,6 +172,7 @@ game.createClass('BaseTexture', {
     },
 
     onload: function() {
+        this.loaded = true;
         this.width = this.source.width;
         this.height = this.source.height;
         if (this._loadCallback) this._loadCallback();

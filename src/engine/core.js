@@ -350,15 +350,6 @@ var game = {
     },
 
     /**
-        Get texture from texture cache.
-        @method getTexture
-        @param {String} id
-    **/
-    getTexture: function(id) {
-        return this.TextureCache[this.paths[id]];
-    },
-
-    /**
         Vibrate device.
         @method vibrate
         @param {Number} [time] Time to vibrate (ms).
