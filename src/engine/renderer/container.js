@@ -149,6 +149,11 @@ game.createClass('Container', {
         this._updateChildTransform();
     },
 
+    updateParentTransform: function() {
+        if (this.parent) this.parent.updateParentTransform();
+        else this.updateTransform();
+    },
+
     _setStageReference: function(stage) {
         this.stage = stage;
         if (this._interactive) game.input._needUpdate = true;
@@ -179,7 +184,8 @@ game.createClass('Container', {
 
     _getBounds: function() {
         if (!this.children.length) return game.Container.emptyBounds;
-        
+        if (this._worldTransform.tx === null) this.updateParentTransform();
+
         var minX = Infinity;
         var minY = Infinity;
         var maxX = -Infinity;

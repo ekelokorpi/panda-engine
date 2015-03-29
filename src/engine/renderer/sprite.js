@@ -39,10 +39,7 @@ game.createClass('Sprite', 'Container', {
     },
 
     _getBounds: function() {
-        if (this._worldTransform.tx === null) {
-            // Transform is "new", so update it
-            this.updateTransform();
-        }
+        if (this._worldTransform.tx === null) this.updateParentTransform();
 
         var width = this.texture.width;
         var height = this.texture.height;
@@ -128,41 +125,30 @@ game.createClass('Sprite', 'Container', {
         return this._worldBounds;
     },
 
-    _render: function(context) {
-        if (game.renderer.webGL) {
-            game.renderer.spriteBatch.render(this);
-            this.super(context);
-            return;
-        }
+    _renderWebGL: function() {
+        game.renderer.spriteBatch.render(this);
+    },
 
+    _renderCanvas: function(context) {
         context.globalAlpha = this._worldAlpha;
 
-        var tx = this._worldTransform.tx;
-        var ty = this._worldTransform.ty;
+        var t = this.texture;
+        var wt = this._worldTransform;
+        var tx = wt.tx;
+        var ty = wt.ty;
         
         if (game.Renderer.roundPixels) {
             tx = tx | 0;
             ty = ty | 0;
         }
 
-        context.setTransform(
-            this._worldTransform.a,
-            this._worldTransform.b,
-            this._worldTransform.c,
-            this._worldTransform.d,
-            this._worldTransform.tx,
-            this._worldTransform.ty);
+        context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
+        context.drawImage(t.baseTexture.source, t.position.x, t.position.y, t.width, t.height, 0, 0, t.width, t.height);
+    },
 
-        context.drawImage(
-            this.texture.baseTexture.source,
-            this.texture.position.x,
-            this.texture.position.y,
-            this.texture.width,
-            this.texture.height,
-            0,
-            0,
-            this.texture.width,
-            this.texture.height);
+    _render: function(context) {
+        if (game.renderer.webGL) this._renderWebGL();
+        else this._renderCanvas(context);
 
         this.super(context);
     }

@@ -59,6 +59,7 @@ game.createClass('Graphics', 'Container', {
         for (var i = 0; i < this.data.length; i++) {
             this.data[i]._render(context, this._worldAlpha);
         }
+        
         this.super(context);
     }
 });

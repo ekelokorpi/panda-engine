@@ -206,7 +206,7 @@ game.addAttributes('BaseTexture', {
     },
 
     fromCanvas: function(canvas) {
-        if (!canvas._id) canvas._id = 'canvas_' + this.canvasId++;
+        if (!canvas._id) canvas._id = 'canvas_' + this.textureId++;
 
         var baseTexture = this.cache[canvas._id];
 
@@ -226,7 +226,7 @@ game.addAttributes('BaseTexture', {
     },
 
     cache: {},
-    canvasId: 1
+    textureId: 1
 });
 
 });
