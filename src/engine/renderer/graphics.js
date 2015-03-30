@@ -46,7 +46,10 @@ game.createClass('Graphics', 'Container', {
     },
 
     _render: function(context) {
-        if (game.renderer.webGL) return;
+        if (game.renderer.webGL) {
+            this.super(context);
+            return;
+        }
         
         context.setTransform(
             this._worldTransform.a,

@@ -72,6 +72,7 @@ game.createClass('Loader', {
     },
     _startTime: 0,
     _readyTime: 0,
+    _loadCount: 0,
     
     init: function(callback) {
         this.onComplete = callback;
@@ -140,7 +141,7 @@ game.createClass('Loader', {
 
         if (!this._dynamic) {
             this._startTime = game.Timer.time;
-            if (game.tweenEngine) game.tweenEngine.removeAll();
+            if (game.tween) game.tween.removeAll();
             if (game.system.stage) game.system.stage.removeAll();
             this.stage = new game.Container();
             game.scene = this;
@@ -159,16 +160,24 @@ game.createClass('Loader', {
         @private
     **/
     _startLoading: function() {
-        for (var i = 0; i < this._assetQueue.length; i++) {
+        for (var i = this._assetQueue.length - 1; i >= 0; i--) {
             var filePath = this._assetQueue[i];
+            if (!filePath) continue;
             var fileType = filePath.split('?').shift().split('.').pop().toLowerCase();
             if (!this._loaders[fileType]) throw 'Unsupported file type ' + fileType;
+            this._loadCount++;
+            this._assetQueue.splice(i, 1);
             this['_load' + this._loaders[fileType]](filePath, this._progress.bind(this));
+            if (this._loadCount === game.Loader.maxFiles) return;
         }
 
-        for (var i = 0; i < this._audioQueue.length; i++) {
+        for (var i = this._audioQueue.length - 1; i >= 0; i--) {
             var audio = this._audioQueue[i];
+            if (!audio) continue;
+            this._loadCount++;
+            this._audioQueue.splice(i, 1);
             game.audio._load(audio, this._progress.bind(this));
+            if (this._loadCount === game.Loader.maxFiles) return;
         }
     },
 
@@ -301,10 +310,12 @@ game.createClass('Loader', {
         @private
     **/
     _progress: function() {
+        this._loadCount--;
         this.loaded++;
         this.percent = Math.round(this.loaded / this.totalFiles * 100);
         this.onProgress();
         if (this.percent === 100) this._ready();
+        else this._startLoading();
     },
 
     /**
@@ -360,17 +371,17 @@ game.addAttributes('Loader', {
     **/
     time: 200,
     /**
-        Loading bar background color.
-        @attribute {String} barBg
-        @default #515e73
-    **/
-    barBgColor: '#515e73',
-    /**
         Loading bar color.
         @attribute {String} barColor
         @default #e6e7e8
     **/
     barColor: '#e6e7e8',
+    /**
+        Loading bar background color.
+        @attribute {String} barBg
+        @default #515e73
+    **/
+    barBgColor: '#515e73',
     /**
         Width of the loading bar.
         @attribute {Number} barWidth
@@ -382,7 +393,13 @@ game.addAttributes('Loader', {
         @attribute {Number} barHeight
         @default 20
     **/
-    barHeight: 20
+    barHeight: 20,
+    /**
+        How many files to load at same time.
+        @attribute {Number} maxFiles
+        @default 4
+    **/
+    maxFiles: 4
 });
 
 });

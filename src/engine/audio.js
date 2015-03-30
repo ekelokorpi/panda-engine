@@ -578,6 +578,7 @@ game.createClass('Audio', {
         }
         // HTML5 Audio
         else {
+            if (this._sources[name].audio.playing) return false;
             this._sources[name].audio.volume = typeof volume === 'number' ? volume : 1;
             this._sources[name].audio.loop = loop;
             this._sources[name].audio.playing = true;

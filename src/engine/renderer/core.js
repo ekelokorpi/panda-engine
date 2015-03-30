@@ -29,7 +29,7 @@ game.createClass('Renderer', {
     **/
     canvas: null,
     /**
-        @property {CanvasRenderingContext2D} context
+        @property {CanvasRenderingContext2D|WebGLRenderingContext} context
     **/
     context: null,
     /**
@@ -48,8 +48,6 @@ game.createClass('Renderer', {
             document.body.appendChild(this.canvas);
             this._show();
         }
-
-        this._resize(game.System.width, game.System.height);
 
         var webGLSupported = false;
         try {
@@ -71,17 +69,27 @@ game.createClass('Renderer', {
 
             this.projection = new game.Vector();
             this.offset = new game.Vector();
-
             this.shaderManager = new game.WebGLShaderManager();
             this.spriteBatch = new game.WebGLSpriteBatch();
-
             this.shaderManager.setContext(gl);
             this.spriteBatch.setContext(gl);
         }
         else {
             this.context = this.canvas.getContext('2d');
-            this.context.imageSmoothingEnabled = (game.Renderer.scaleMode === 'linear');
+
+            if ('imageSmoothingEnabled' in this.context)
+                this.smoothProperty = 'imageSmoothingEnabled';
+            else if ('webkitImageSmoothingEnabled' in this.context)
+                this.smoothProperty = 'webkitImageSmoothingEnabled';
+            else if ('mozImageSmoothingEnabled' in this.context)
+                this.smoothProperty = 'mozImageSmoothingEnabled';
+            else if ('oImageSmoothingEnabled' in this.context)
+                this.smoothProperty = 'oImageSmoothingEnabled';
+            else if ('msImageSmoothingEnabled' in this.context)
+                this.smoothProperty = 'msImageSmoothingEnabled';
         }
+        
+        this._resize(game.System.width, game.System.height);
     },
 
     /**
@@ -94,6 +102,7 @@ game.createClass('Renderer', {
     _resize: function(width, height) {
         this.canvas.width = width;
         this.canvas.height = height;
+        if (!this.webGL) this.context[this.smoothProperty] = (game.Renderer.scaleMode === 'linear');
     },
 
     /**
