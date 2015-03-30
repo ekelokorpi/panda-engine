@@ -17,22 +17,47 @@ game.createClass('SpriteSheet', {
     **/
     textures: [],
     /**
-        Number of frames
+        Number of frames.
         @property {Number} frames
     **/
     frames: 0,
+    /**
+        Width of frame.
+        @property {Number} width
+    **/
+    width: 0,
+    /**
+        Height of frame.
+        @property {Number} height
+    **/
+    height: 0,
+    /**
+        Asset id of texture to use as spritesheet.
+        @property {String} texture
+    **/
+    texture: null,
+    /**
+        @property {Number} _sx
+        @private
+    **/
+    _sx: 0,
+    /**
+        @property {Number} _sy
+        @private
+    **/
+    _sy: 0,
 
-    init: function(id, width, height) {
-        this.width = width;
-        this.height = height;
-        var baseTexture = game.BaseTexture.cache[game.paths[id]];
-        this.sx = Math.floor(baseTexture.width / this.width);
-        this.sy = Math.floor(baseTexture.height / this.height);
-        this.frames = this.sx * this.sy;
+    staticInit: function(id, width, height) {
+        this.width = this.width || width;
+        this.height = this.height || height;
+        var baseTexture = game.BaseTexture.cache[game.paths[this.texture || id]];
+        this._sx = Math.floor(baseTexture.width / this.width);
+        this._sy = Math.floor(baseTexture.height / this.height);
+        this.frames = this._sx * this._sy;
 
         for (var i = 0; i < this.frames; i++) {
-            var x = (i % this.sx) * this.width;
-            var y = Math.floor(i / this.sx) * this.height;
+            var x = (i % this._sx) * this.width;
+            var y = Math.floor(i / this._sx) * this.height;
             var texture = new game.Texture(baseTexture, x, y, this.width, this.height);
             this.textures.push(texture);
         }
