@@ -140,7 +140,6 @@ game.createClass('System', {
         if (game.System.resize) game.System.center = false;
 
         window.addEventListener('resize', this._onWindowResize.bind(this));
-        this._onWindowResize();
     },
 
     /**

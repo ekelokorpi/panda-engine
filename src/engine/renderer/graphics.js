@@ -1,3 +1,6 @@
+/**
+    @module renderer.graphics
+**/
 game.module(
 	'engine.renderer.graphics'
 )
@@ -33,9 +36,7 @@ game.createClass('Graphics', 'Container', {
     },
 
     drawRect: function(x, y, width, height) {
-        var shape = new game.Rectangle(width, height);
-        shape.x = x;
-        shape.y = y;
+        var shape = new game.Rectangle(width, height, x, y);
         this._drawShape(shape);
         return this;
     },

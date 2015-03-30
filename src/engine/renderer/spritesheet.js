@@ -1,3 +1,6 @@
+/**
+    @module renderer.spritesheet
+**/
 game.module(
 	'engine.renderer.spritesheet'
 )

@@ -8,6 +8,8 @@ game.module(
 	'engine.renderer.animation',
 	'engine.renderer.text',
 	'engine.renderer.container',
+    'engine.renderer.geom.shapes',
+    'engine.renderer.geom.vector',
 	'engine.renderer.graphics',
 	'engine.renderer.sprite',
     'engine.renderer.spritesheet',
@@ -89,7 +91,7 @@ game.createClass('Renderer', {
                 this.smoothProperty = 'msImageSmoothingEnabled';
         }
         
-        this._resize(game.System.width, game.System.height);
+        this._resize(game.system.width, game.system.height);
     },
 
     /**

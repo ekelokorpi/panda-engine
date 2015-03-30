@@ -33,13 +33,20 @@ var game = {
         'engine.particle',
         'engine.physics',
         'engine.pool',
+        'engine.renderer.core',
         'engine.renderer.animation',
         'engine.renderer.text',
         'engine.renderer.container',
-        'engine.renderer.core',
+        'engine.renderer.geom.shapes',
+        'engine.renderer.geom.vector',
         'engine.renderer.graphics',
         'engine.renderer.sprite',
+        'engine.renderer.spritesheet',
         'engine.renderer.texture',
+        'engine.renderer.tilingsprite',
+        'engine.renderer.webgl.spritebatch',
+        'engine.renderer.webgl.shader',
+        'engine.renderer.webgl.shadermanager',
         'engine.scene',
         'engine.storage',
         'engine.system',
@@ -493,9 +500,10 @@ var game = {
     _start: function() {
         if (this.moduleQueue.length > 0) return;
 
-        // Necessary classes
-        this.renderer = new this.Renderer();
+        // Required classes
         this.system = new this.System();
+        this.renderer = new this.Renderer();
+        this.system._onWindowResize();
         this.input = new this.Input(this.renderer.canvas);
 
         // Optional classes
@@ -512,7 +520,8 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this._loader = new this[this.config.loader || 'Loader'](this.System.startScene);
+        var loaderClass = (this.config.loader && this.config.loader.class) ? this.config.loader.class : 'Loader';
+        this._loader = new this[loaderClass](this.System.startScene);
         if (!this.system._rotateScreenVisible) this._loader.start();
 
         this.onStart();

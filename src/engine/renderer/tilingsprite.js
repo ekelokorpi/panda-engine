@@ -1,3 +1,6 @@
+/**
+    @module renderer.tilingsprite
+**/
 game.module(
     'engine.renderer.tilingsprite'
 )

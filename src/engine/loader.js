@@ -82,7 +82,7 @@ game.createClass('Loader', {
         }
         game.assetQueue.length = 0;
 
-        if (game.Audio.enabled) {
+        if (game.Audio && game.Audio.enabled) {
             for (var i = 0; i < game.audioQueue.length; i++) {
                 this._audioQueue.push(game.audioQueue[i]);
             }
@@ -296,10 +296,10 @@ game.createClass('Loader', {
         var baseTexture = game.BaseTexture.fromImage(image);
         var frames = json.frames;
 
-        for (var i in frames) {
+        for (var i = 0; i < frames.length; i++) {
             var frame = frames[i].frame;
             var texture = new game.Texture(baseTexture, frame.x, frame.y, frame.w, frame.h);
-            game.Texture.cache[i] = texture;
+            game.Texture.cache[frames[i].filename] = texture;
         }
 
         callback();
@@ -399,7 +399,8 @@ game.addAttributes('Loader', {
         @attribute {Number} maxFiles
         @default 4
     **/
-    maxFiles: 4
+    maxFiles: 4,
+    class: null
 });
 
 });

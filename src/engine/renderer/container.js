@@ -5,7 +5,7 @@ game.module(
 	'engine.renderer.container'
 )
 .require(
-    'engine.physics'
+    'engine.renderer.geom.shapes'
 )
 .body(function() {
 'use strict';
