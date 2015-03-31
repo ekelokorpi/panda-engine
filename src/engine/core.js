@@ -1,7 +1,13 @@
 /**
-    Panda.js HTML5 game engine
+    Panda Engine
+    ------------
+    Made in Finland by Eemeli Kelokorpi
+    Renderer based on Pixi.js by Mat Groves, Goodboy Digital
+    Financed by Yleisradio
+    Released under the MIT license
+**/
+/**
     @module game
-    @author Eemeli Kelokorpi <eemeli.kelokorpi@gmail.com>
 **/
 'use strict';
 
@@ -507,10 +513,10 @@ var game = {
         this.input = new this.Input(this.renderer.canvas);
 
         // Optional classes
+        if (this.Keyboard) this.keyboard = new this.Keyboard();
         if (this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
-        if (this.DebugDraw && this.DebugDraw.enabled && this.Debug.enabled) this.debugDraw = new this.DebugDraw();
         if (this.Storage && this.Storage.id) this.storage = new this.Storage();
         if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
         if (this.TweenEngine) this.tween = new this.TweenEngine();

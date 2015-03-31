@@ -9,6 +9,8 @@ game.module(
 
 /**
     @class Input
+    @constructor
+    @param {HTMLCanvasElement} canvas
 **/
 game.createClass('Input', {
     items: [],
@@ -26,6 +28,11 @@ game.createClass('Input', {
         window.addEventListener('mouseup', this._mouseup.bind(this));
     },
 
+    /**
+        @method _touchstart
+        @param {TouchEvent} event
+        @private
+    **/
     _touchstart: function(event) {
         if (game.Input.preventDefault) event.preventDefault();
         for (var i = 0; i < event.changedTouches.length; i++) {
@@ -33,6 +40,11 @@ game.createClass('Input', {
         }
     },
 
+    /**
+        @method _touchmove
+        @param {TouchEvent} event
+        @private
+    **/
     _touchmove: function(event) {
         if (game.Input.preventDefault) event.preventDefault();
         for (var i = 0; i < event.changedTouches.length; i++) {
@@ -40,6 +52,11 @@ game.createClass('Input', {
         }
     },
 
+    /**
+        @method _touchend
+        @param {TouchEvent} event
+        @private
+    **/
     _touchend: function(event) {
         if (game.Input.preventDefault) event.preventDefault();
         for (var i = 0; i < event.changedTouches.length; i++) {
@@ -59,7 +76,9 @@ game.createClass('Input', {
         this._mouseDownItem = this._processEvent('mousedown', event);
         this._mouseDownTime = game.Timer.time;
 
-        if (game.scene._mousedown) game.scene._mousedown(event.canvasX, event.canvasY, event);
+        if (game.scene._mousedown) {
+            game.scene._mousedown(event.canvasX, event.canvasY, event.identifier, event);
+        }
     },
 
     /**
@@ -73,7 +92,9 @@ game.createClass('Input', {
         
         this._processEvent('mousemove', event);
 
-        if (game.scene._mousemove) game.scene._mousemove(event.canvasX, event.canvasY, event);
+        if (game.scene._mousemove) {
+            game.scene._mousemove(event.canvasX, event.canvasY, event.identifier, event);
+        }
     },
 
     /**
@@ -93,14 +114,28 @@ game.createClass('Input', {
             }
         }
 
-        if (game.scene._mouseup) game.scene._mouseup(event.canvasX, event.canvasY, event);
+        if (game.scene._mouseup) {
+            game.scene._mouseup(event.canvasX, event.canvasY, event.identifier, event);
+        }
     },
 
+    /**
+        @method _preventDefault
+        @param {MouseEvent|TouchEvent} event
+        @private
+    **/
     _preventDefault: function(event) {
         if (!event.preventDefault || !game.Input.preventDefault) return;
         event.preventDefault();
     },
 
+    /**
+        @method _processEvent
+        @param {String} eventName
+        @param {MouseEvent|TouchEvent} event
+        @return {Object} item
+        @private
+    **/
     _processEvent: function(eventName, event) {
         for (var i = this.items.length - 1; i >= 0; i--) {
             var item = this.items[i];
@@ -111,6 +146,11 @@ game.createClass('Input', {
         }
     },
 
+    /**
+        @method _calculateXY
+        @param {MouseEvent|TouchEvent} event
+        @private
+    **/
     _calculateXY: function(event) {
         var rect = game.renderer.canvas.getBoundingClientRect();
         var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
@@ -119,11 +159,24 @@ game.createClass('Input', {
         event.canvasY = y;
     },
 
+    /**
+        @method _hitTest
+        @param {Container} container
+        @param {Number} x
+        @param {Number} y
+        @return {Boolean}
+        @private
+    **/
     _hitTest: function(container, x, y) {
         var bounds = container._getBounds();
         return (x >= bounds.x && y >= bounds.y && x <= bounds.x + bounds.width && y <= bounds.y + bounds.height);
     },
 
+    /**
+        @method _updateItems
+        @param {Container} container
+        @private
+    **/
     _updateItems: function(container) {
         for (var i = 0; i < container.children.length; i++) {
             var child = container.children[i];
@@ -132,6 +185,10 @@ game.createClass('Input', {
         }
     },
 
+    /**
+        @method _update
+        @private
+    **/
     _update: function() {
         if (!this._needUpdate) return;
 
@@ -317,7 +374,5 @@ game.addAttributes('Keyboard', {
         222: 'SINGLE_QUOTE'
     }
 });
-
-game.keyboard = new game.Keyboard();
 
 });
