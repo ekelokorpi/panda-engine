@@ -296,10 +296,10 @@ game.createClass('Loader', {
         var baseTexture = game.BaseTexture.fromImage(image);
         var frames = json.frames;
 
-        for (var i = 0; i < frames.length; i++) {
-            var frame = frames[i].frame;
-            var texture = new game.Texture(baseTexture, frame.x, frame.y, frame.w, frame.h);
-            game.Texture.cache[frames[i].filename] = texture;
+        for (var name in frames) {
+            var frame = frames[name];
+            var texture = new game.Texture(baseTexture, frame.x, frame.y, frame.width, frame.height);
+            game.Texture.cache[name] = texture;
         }
 
         callback();
