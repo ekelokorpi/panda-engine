@@ -8,7 +8,6 @@ game.module(
 'use strict';
 
 /**
-    Basic timer.
     @class Timer
     @constructor
     @param {Number} [ms]
@@ -63,6 +62,7 @@ game.createClass('Timer', {
     /**
         Get time since last delta.
         @method delta
+        @return {Number} delta
     **/
     delta: function() {
         var delta = game.Timer.time - this._last;
@@ -73,6 +73,7 @@ game.createClass('Timer', {
     /**
         Get time since start.
         @method time
+        @return {Number} time
     **/
     time: function() {
         var time = (this._pauseTime || game.Timer.time) - this.base - this.target;
@@ -127,6 +128,10 @@ game.addAttributes('Timer', {
         @private
     **/
     _last: 0,
+    /**
+        @attribute {Number} _realDelta
+        @private
+    **/
     _realDelta: 0,
     /**
         Update main timer.

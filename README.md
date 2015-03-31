@@ -6,42 +6,54 @@ Make games written in JavaScript and play them on any major browser, or wrap the
 
 ## Install
 
-Manually
-
 1. Download latest [Panda Engine](https://github.com/ekelokorpi/panda.js-engine/archive/master.zip) zip
 2. Install local [web server](https://www.google.com/search?q=install%20local%20web%20server&rct=j)
 3. Unzip and open the folder in your browser
 4. Open `src/game/main.js` in your favorite code editor and start coding!
 
-Using [Panda Toolkit](https://github.com/ekelokorpi/panda.js-toolkit)
-
-	$ npm install -g pandatool
-	$ panda create MyGame
-
 ## Features
 
-- Rendering
-	- Fast Canvas / WebGL rendering based on [Pixi.js](http://www.pixijs.com)
-- Modules
-	- Split your code into modules
-- Classes
-	- Extend classes with simple JavaScript inheritance
-- Mobile support
-	- Panda Engine is tested to work on Android 4, iOS 8 and Windows Phone 8.1 devices
-- Native
-	- Wrap your game into native app using [PhoneGap](http://www.phonegap.com)
-- Plugins
-	- Extend your game features with plugins
+- Analytics
+	- Track your game events using [Google Analytics](http://www.google.com/analytics/)
+- Audio
+	- Play sounds and music using multiple formats
+	- Supports Web Audio and HTML5 Audio
+- Camera
+	- Versatile camera to follow sprites and move containers
+- Core
+	- Split your code into modules and classes
+	- Supports Android 4, iOS 8 and Windows Phone 8.1 devices
+	- Supports wrappers [PhoneGap](http://www.phonegap.com) and [CocoonJS](http://www.ludei.com/cocoonjs)
+	- Extend game features with plugins
+- Debug
+	- Powerful customizable debug panel
+- Input
+	- Multi-touch, mouse and keyboard support
+- Loader
+	- Preload data and use dynamic loader between scenes
+	- Customizable loader layout
+	- Load custom JSON files
+- Particle
+	- Create special effects using particles
 - Physics
 	- Gravity, AABB hit detection and collision response
-- Particles
-	- Create stunning special effects using particles
-- Tweens
-	- Tween anything with easing, looping and grouping
-- Analytics
-	- Easily track your game events
-- Sounds
-	- Play sound effects and music using multiple formats
+- Pool
+	- Increase performance with object pooling
+- Renderer
+	- Fast Canvas / WebGL rendering based on [Pixi.js](http://www.pixijs.com)
+	- Sprite sheet support with [Texture Packer](http://www.codeandweb.com/texturepacker)
+	- Frame-by-frame animation
+	- Texts with bitmap fonts
+- Scene
+	- Build your game around scenes, and easily switch between them
+- Storage
+	- Read and write game data into local storage
+- System
+	- Scale, center and resize your game to fit any device
+- Timer
+	- Use timers with pause, resume and delta-time
+- Tween
+	- Tween any property with easing, looping and grouping	
 
 ## Documentation
 
@@ -52,8 +64,12 @@ Using [Panda Toolkit](https://github.com/ekelokorpi/panda.js-toolkit)
 - [Panda.js forum](http://www.html5gamedevs.com/forum/19-pandajs/)
 - [Panda Engine chat](https://gitter.im/ekelokorpi/panda.js-engine)
 
+## Credits
+
+- Made in Finland by Eemeli Kelokorpi
+- Renderer based on [Pixi.js](http://www.pixijs.com) by Mat Groves, Goodboy Digital
+- Financed by [Yleisradio](http://en.wikipedia.org/wiki/Yle)
+
 ## License
 
-Panda Engine is released under the [MIT License](http://opensource.org/licenses/MIT).
-
-Financed by [Yleisradio](http://en.wikipedia.org/wiki/Yle).
+Released under the [MIT License](http://opensource.org/licenses/MIT).

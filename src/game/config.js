@@ -3,18 +3,14 @@ pandaConfig = {
     version: '2.0.0',
 
     system: {
-        width: 1024,
-        height: 768,
+        width: 480,
+        height: 360,
         center: true,
         scale: true,
         resize: true
     },
     
     renderer: {
-        webGL: false  
-    },
-    
-    debug: {
-        enabled: true
+        webGL: false
     }
 };
