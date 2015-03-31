@@ -78,7 +78,7 @@ game.createClass('Loader', {
         this.onComplete = callback;
 
         for (var i = 0; i < game.assetQueue.length; i++) {
-            this._assetQueue.push(this._getPath(game.assetQueue[i]));
+            this._assetQueue.push(this._getFilePath(game.assetQueue[i]));
         }
         game.assetQueue.length = 0;
 
@@ -326,10 +326,10 @@ game.createClass('Loader', {
     **/
     _ready: function() {
         if (game.system.hires || game.system.retina) {
-            for (var i in game.Texture.cache) {
+            for (var i in game.BaseTexture.cache) {
                 if (i.indexOf('@' + game.scale + 'x') !== -1) {
-                    game.Texture.cache[i.replace('@' + game.scale + 'x', '')] = game.Texture.cache[i];
-                    delete game.Texture.cache[i];
+                    game.BaseTexture.cache[i.replace('@' + game.scale + 'x', '')] = game.BaseTexture.cache[i];
+                    delete game.BaseTexture.cache[i];
                 }
             }
         }
@@ -359,10 +359,10 @@ game.createClass('Loader', {
     },
 
     /**
-        @method _getPath
+        @method _getFilePath
         @private
     **/
-    _getPath: function(path) {
+    _getFilePath: function(path) {
         return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
     }
 });

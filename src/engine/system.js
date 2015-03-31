@@ -316,6 +316,11 @@ game.createClass('System', {
             var height = window.innerHeight;
         }
 
+        if (this.retina) {
+            this.canvasWidth /= 2;
+            this.canvasHeight /= 2;
+        }
+
         this._scale(width, height);
         this._resize(width, height);
 
@@ -323,7 +328,7 @@ game.createClass('System', {
             game.renderer._position((width - this.canvasWidth) / 2, (height - this.canvasHeight) / 2);
         }
 
-        if (game.System.scale || game.System.resize) {
+        if (game.System.scale || game.System.resize || this.retina) {
             game.renderer._size(this.canvasWidth, this.canvasHeight);
         }
     },
