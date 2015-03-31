@@ -322,7 +322,7 @@ var game = {
         @param {Object} content
     **/
     createScene: function(name, content) {
-        return this.createClass('Scene' + name, 'Scene', content);
+        return this.createClass(name, 'Scene', content);
     },
 
     /**

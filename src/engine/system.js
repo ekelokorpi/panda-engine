@@ -187,7 +187,7 @@ game.createClass('System', {
         @param {Boolean} removeAssets
     **/
     setScene: function(sceneName, removeAssets) {
-        var sceneClass = game['Scene' + sceneName];
+        var sceneClass = game[sceneName];
         if (!sceneClass) return;
         this.sceneName = sceneName;
         if (this._running && !this.paused) {

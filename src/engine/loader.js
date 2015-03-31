@@ -198,7 +198,7 @@ game.createClass('Loader', {
         @private
     **/
     _loadFont: function(filePath, callback) {
-        this._loadFile(filePath, this._parseXML, callback);
+        this._loadFile(filePath, this._parseXML.bind(this, filePath), callback);
     },
 
     /**
@@ -227,12 +227,13 @@ game.createClass('Loader', {
 
     /**
         @method _parseXML
+        @param {String} filePath
         @param {XMLHttpRequest} request
         @param {Function} callback
         @private
     **/
-    _parseXML: function(request, callback) {
-        if (!request.responseText) throw 'Error loading XML';
+    _parseXML: function(filePath, request, callback) {
+        if (!request.responseText || request.status === 404) throw 'Error loading XML ' + filePath;
 
         var responseXML = request.responseXML;
         if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
@@ -271,7 +272,7 @@ game.createClass('Loader', {
         @private
     **/
     _parseJSON: function(filePath, request, callback) {
-        if (!request.responseText) throw 'Error loading JSON: ' + filePath;
+        if (!request.responseText || request.status === 404) throw 'Error loading JSON ' + filePath;
 
         var json = JSON.parse(request.responseText);
         if (json.frames) {
