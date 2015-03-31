@@ -240,7 +240,8 @@ game.createClass('Loader', {
             if (typeof window.DOMParser === 'function') {
                 var domparser = new DOMParser();
                 responseXML = domparser.parseFromString(request.responseText, 'text/xml');
-            } else {
+            }
+            else {
                 var div = document.createElement('div');
                 div.innerHTML = request.responseText;
                 responseXML = div;
@@ -333,7 +334,9 @@ game.createClass('Loader', {
             }
         }
 
-        if (this._dynamic) this.onComplete();
+        if (this._dynamic) {
+            this.onComplete();
+        }
         else {
             var loadTime = game.Timer.time - this._startTime;
             var timeToWait = game.Loader.time - loadTime;

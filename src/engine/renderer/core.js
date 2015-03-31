@@ -56,7 +56,7 @@ game.createClass('Renderer', {
             var canvas = document.createElement('canvas');
             webGLSupported = !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
         }
-        catch(e) {
+        catch (e) {
         }
 
         if (webGLSupported && game.Renderer.webGL) {
@@ -189,7 +189,7 @@ game.createClass('Renderer', {
         }
         else {
             this.context.setTransform(1, 0, 0, 1, 0, 0);
-            this.context.globalAlpha = 1;    
+            this.context.globalAlpha = 1;
         }
         
         this._clear();

@@ -214,7 +214,7 @@ game.createClass('WebGLSpriteBatch', {
             sprite = this.sprites[i];
 
             nextTexture = sprite.texture.baseTexture;
-            nextShader = sprite.shader || this.defaultShader;           
+            nextShader = sprite.shader || this.defaultShader;
 
             shaderSwap = currentShader !== nextShader;
 

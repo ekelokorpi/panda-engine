@@ -79,8 +79,8 @@ game.createClass('Sprite', 'Container', {
             var x3 = a * w0 + c * h0 + tx;
             var y3 = d * h0 + b * w0 + ty;
 
-            var x4 =  a * w1 + c * h0 + tx;
-            var y4 =  d * h0 + b * w1 + ty;
+            var x4 = a * w1 + c * h0 + tx;
+            var y4 = d * h0 + b * w1 + ty;
 
             minX = x1;
             minX = x2 < minX ? x2 : minX;
@@ -164,7 +164,7 @@ game.defineProperties('Sprite', {
         get: function() {
             return this.scale.y * this.texture.height;
         }
-    } 
+    }
 });
 
 });

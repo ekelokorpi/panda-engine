@@ -5,7 +5,7 @@ game.module(
     'engine.renderer.tilingsprite'
 )
 .require(
-    'engine.renderer.sprite'  
+    'engine.renderer.sprite'
 )
 .body(function() {
 'use strict';
