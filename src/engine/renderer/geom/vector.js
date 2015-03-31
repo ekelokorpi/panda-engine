@@ -2,7 +2,7 @@
     @module renderer.geom.vector
 **/
 game.module(
-	'engine.renderer.geom.vector'
+    'engine.renderer.geom.vector'
 )
 .body(function() {
 'use strict';

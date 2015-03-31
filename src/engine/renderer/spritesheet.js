@@ -2,7 +2,7 @@
     @module renderer.spritesheet
 **/
 game.module(
-	'engine.renderer.spritesheet'
+    'engine.renderer.spritesheet'
 )
 .body(function() {
 'use strict';

@@ -2,7 +2,7 @@
     @module renderer.geom.shapes
 **/
 game.module(
-	'engine.renderer.geom.shapes'
+    'engine.renderer.geom.shapes'
 )
 .body(function() {
 'use strict';

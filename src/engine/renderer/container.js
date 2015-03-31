@@ -2,7 +2,7 @@
     @module renderer.container
 **/
 game.module(
-	'engine.renderer.container'
+    'engine.renderer.container'
 )
 .require(
     'engine.renderer.geom.shapes'

@@ -2,7 +2,7 @@
     @module renderer.texture
 **/
 game.module(
-	'engine.renderer.texture'
+    'engine.renderer.texture'
 )
 .body(function() {
 'use strict';

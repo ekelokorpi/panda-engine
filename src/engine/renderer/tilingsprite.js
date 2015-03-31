@@ -11,8 +11,8 @@ game.module(
 'use strict';
 
 /**
-	@class TilingSprite
-	@extends Sprite
+    @class TilingSprite
+    @extends Sprite
 **/
 game.createClass('TilingSprite', 'Sprite', {
 });

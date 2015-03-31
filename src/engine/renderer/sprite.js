@@ -2,10 +2,10 @@
     @module renderer.sprite
 **/
 game.module(
-	'engine.renderer.sprite'
+    'engine.renderer.sprite'
 )
 .require(
-	'engine.renderer.container'
+    'engine.renderer.container'
 )
 .body(function() {
 'use strict';

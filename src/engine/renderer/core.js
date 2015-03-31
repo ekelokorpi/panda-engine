@@ -2,15 +2,15 @@
     @module renderer.core
 **/
 game.module(
-	'engine.renderer.core'
+    'engine.renderer.core'
 )
 .require(
-	'engine.renderer.animation',
-	'engine.renderer.container',
+    'engine.renderer.animation',
+    'engine.renderer.container',
     'engine.renderer.geom.shapes',
     'engine.renderer.geom.vector',
-	'engine.renderer.graphics',
-	'engine.renderer.sprite',
+    'engine.renderer.graphics',
+    'engine.renderer.sprite',
     'engine.renderer.spritesheet',
     'engine.renderer.text',
     'engine.renderer.texture',
