@@ -5,7 +5,8 @@ game.module(
 	'engine.renderer.geom.vector'
 )
 .body(function() {
-	
+'use strict';
+
 /**
     @class Vector
     @constructor

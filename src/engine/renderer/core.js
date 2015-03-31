@@ -6,18 +6,18 @@ game.module(
 )
 .require(
 	'engine.renderer.animation',
-	'engine.renderer.text',
 	'engine.renderer.container',
     'engine.renderer.geom.shapes',
     'engine.renderer.geom.vector',
 	'engine.renderer.graphics',
 	'engine.renderer.sprite',
     'engine.renderer.spritesheet',
+    'engine.renderer.text',
     'engine.renderer.texture',
     'engine.renderer.tilingsprite',
-    'engine.renderer.webgl.spritebatch',
     'engine.renderer.webgl.shader',
-    'engine.renderer.webgl.shadermanager'
+    'engine.renderer.webgl.shadermanager',
+    'engine.renderer.webgl.spritebatch'
 )
 .body(function() {
 'use strict';

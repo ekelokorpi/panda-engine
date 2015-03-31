@@ -5,12 +5,15 @@ game.module(
 	'engine.renderer.geom.shapes'
 )
 .body(function() {
-	
+'use strict';
+
 /**
     @class Rectangle
     @constructor
     @param {Number} width
     @param {Number} [height]
+    @param {Number} [x]
+    @param {Number} [y]
 **/
 game.createClass('Rectangle', {
     /**

@@ -24,6 +24,7 @@ game.createClass('Animation', 'Sprite', {
     **/
     speed: 60,
     /**
+        List of textures.
         @property {Array} textures
     **/
     textures: null,
@@ -40,6 +41,7 @@ game.createClass('Animation', 'Sprite', {
     **/
     loop: true,
     /**
+        Current frame index.
         @property {Number} currentFrame
         @default 0
     **/

@@ -1,81 +1,75 @@
 game.module(
-	'engine.renderer.webgl.shadermanager'
+    'engine.renderer.webgl.shadermanager'
 )
 .body(function() {
-	
+'use strict';
+
+/**
+    @class WebGLShaderManager
+**/
 game.createClass('WebGLShaderManager', {
-	maxAttibs: 10,
-	attribState: [],
-	tempAttribState: [],
-	stack: [],
+    maxAttibs: 10,
+    attribState: [],
+    tempAttribState: [],
+    stack: [],
+    context: null,
+    defaultShader: null,
 
-	init: function() {
-		for (var i = 0; i < this.maxAttibs; i++) {
-		    this.attribState[i] = false;
-		}
-	},
+    init: function() {
+        for (var i = 0; i < this.maxAttibs; i++) {
+            this.attribState[i] = false;
+        }
+    },
 
-	setContext: function(gl) {
-	    this.gl = gl;
-	    
-	    // this.primitiveShader = new PIXI.PrimitiveShader(gl);
-	    // this.complexPrimitiveShader = new PIXI.ComplexPrimitiveShader(gl);
-	    this.defaultShader = new game.WebGLShader(gl);
-	    // this.fastShader = new PIXI.PixiFastShader(gl);
-	    // this.stripShader = new PIXI.StripShader(gl);
-	    this.setShader(this.defaultShader);
-	},
+    setContext: function(context) {
+        this.context = context;
+        this.defaultShader = new game.WebGLShader(context);
+        this.setShader(this.defaultShader);
+    },
 
-	setAttribs: function(attribs) {
-	    var i;
+    setAttribs: function(attribs) {
+        var gl = this.context;
 
-	    for (i = 0; i < this.tempAttribState.length; i++) {
-	        this.tempAttribState[i] = false;
-	    }
+        for (var i = 0; i < this.tempAttribState.length; i++) {
+            this.tempAttribState[i] = false;
+        }
 
-	    for (i = 0; i < attribs.length; i++) {
-	        var attribId = attribs[i];
-	        this.tempAttribState[attribId] = true;
-	    }
+        for (var i = 0; i < attribs.length; i++) {
+            var attribId = attribs[i];
+            this.tempAttribState[attribId] = true;
+        }
 
-	    var gl = this.gl;
+        for (var i = 0; i < this.attribState.length; i++) {
+            if (this.attribState[i] === this.tempAttribState[i]) continue;
 
-	    for (i = 0; i < this.attribState.length; i++) {
-	        if (this.attribState[i] !== this.tempAttribState[i]) {
-	            this.attribState[i] = this.tempAttribState[i];
+            this.attribState[i] = this.tempAttribState[i];
 
-	            if (this.tempAttribState[i]) {
-	                gl.enableVertexAttribArray(i);
-	            }
-	            else {
-	                gl.disableVertexAttribArray(i);
-	            }
-	        }
-	    }
-	},
+            if (this.tempAttribState[i]) {
+                gl.enableVertexAttribArray(i);
+            }
+            else {
+                gl.disableVertexAttribArray(i);
+            }
+        }
+    },
 
-	setShader: function(shader) {
-	    if (this._currentId === shader._UID) return false;
+    setShader: function(shader) {
+        if (this._currentId === shader._UID) return false;
 
-	    this._currentId = shader._UID;
-	    this.currentShader = shader;
+        this._currentId = shader._UID;
+        this.currentShader = shader;
+        this.context.useProgram(shader.program);
+        this.setAttribs(shader.attributes);
 
-	    this.gl.useProgram(shader.program);
-	    this.setAttribs(shader.attributes);
+        return true;
+    },
 
-	    return true;
-	},
-
-	destroy: function() {
-	    this.attribState = null;
-	    this.tempAttribState = null;
-	    // this.primitiveShader.destroy();
-	    // this.complexPrimitiveShader.destroy();
-	    this.defaultShader.destroy();
-	    // this.fastShader.destroy();
-	    // this.stripShader.destroy();
-	    this.gl = null;
-	}
+    destroy: function() {
+        this.attribState = null;
+        this.tempAttribState = null;
+        this.defaultShader.destroy();
+        this.context = null;
+    }
 });
 
 });
