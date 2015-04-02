@@ -78,11 +78,11 @@ game.addAttributes('Texture', {
         @param {String} path
     **/
     fromImage: function(path) {
-        var texture = this.cache[path];
+        var texture = game.Texture.cache[path];
 
         if (!texture) {
             texture = new game.Texture(game.BaseTexture.fromImage(path));
-            this.cache[path] = texture;
+            game.Texture.cache[path] = texture;
         }
 
         return texture;
@@ -95,7 +95,7 @@ game.addAttributes('Texture', {
     **/
     fromAsset: function(id) {
         var path = game.paths[id] || id;
-        var texture = this.cache[path];
+        var texture = game.Texture.cache[path];
 
         if (!texture) {
             texture = game.Texture.fromImage(path);
@@ -110,12 +110,12 @@ game.addAttributes('Texture', {
         @param {HTMLCanvasElement} canvas
     **/
     fromCanvas: function(canvas) {
-        var texture = this.cache[canvas._id];
+        var texture = game.Texture.cache[canvas._id];
 
         if (!texture) {
             var baseTexture = game.BaseTexture.fromCanvas(canvas);
             texture = new game.Texture(baseTexture);
-            this.cache[canvas._id] = texture;
+            game.Texture.cache[canvas._id] = texture;
         }
         
         return texture;
@@ -126,8 +126,8 @@ game.addAttributes('Texture', {
         @static
     **/
     clearCache: function() {
-        for (var i in this.cache) {
-            delete this.cache[i];
+        for (var i in game.Texture.cache) {
+            delete game.Texture.cache[i];
         }
     },
 
@@ -181,14 +181,14 @@ game.createClass('BaseTexture', {
 
 game.addAttributes('BaseTexture', {
     fromImage: function(path, loadCallback) {
-        var baseTexture = this.cache[path];
+        var baseTexture = game.BaseTexture.cache[path];
 
         if (!baseTexture) {
             var source = document.createElement('img');
             source.src = path;
             baseTexture = new game.BaseTexture(source, loadCallback);
             baseTexture._id = path;
-            this.cache[path] = baseTexture;
+            game.BaseTexture.cache[path] = baseTexture;
         }
 
         return baseTexture;
@@ -196,7 +196,7 @@ game.addAttributes('BaseTexture', {
 
     fromAsset: function(id) {
         var path = game.paths[id];
-        var baseTexture = this.cache[path];
+        var baseTexture = game.BaseTexture.cache[path];
 
         if (!baseTexture) {
             baseTexture = game.BaseTexture.fromImage(path);
@@ -208,20 +208,20 @@ game.addAttributes('BaseTexture', {
     fromCanvas: function(canvas) {
         if (!canvas._id) canvas._id = 'canvas_' + this.textureId++;
 
-        var baseTexture = this.cache[canvas._id];
+        var baseTexture = game.BaseTexture.cache[canvas._id];
 
         if (!baseTexture) {
             baseTexture = new game.BaseTexture(canvas);
             baseTexture._id = canvas._id;
-            this.cache[canvas._id] = baseTexture;
+            game.BaseTexture.cache[canvas._id] = baseTexture;
         }
 
         return baseTexture;
     },
 
     clearCache: function() {
-        for (var i in this.cache) {
-            delete this.cache[i];
+        for (var i in game.BaseTexture.cache) {
+            delete game.BaseTexture.cache[i];
         }
     },
 
