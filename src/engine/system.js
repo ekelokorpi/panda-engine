@@ -250,9 +250,6 @@ game.createClass('System', {
             this.resize(this.originalWidth * game.scale, newHeight);
             this.canvasHeight += heightSpace;
         }
-        else {
-            this.resize(width, height);
-        }
     },
 
     /**

@@ -108,6 +108,9 @@ game.createClass('Debug', {
                 _render: function(context) {
                     this.super(context);
                     
+                    // TODO
+                    if (game.renderer.webGL) return;
+
                     var bounds = this._getBounds();
                     context.setTransform(1, 0, 0, 1, 0, 0);
                     context.globalAlpha = game.Debug.boundsAlpha;
@@ -306,7 +309,7 @@ game.addAttributes('Debug', {
         @attribute {Boolean} showBounds
         @default false
     **/
-    showBounds: true,
+    showBounds: false,
     /**
         Draw camera debug.
         @attribute {Boolean} showCamera
