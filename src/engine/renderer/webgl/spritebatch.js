@@ -115,23 +115,18 @@ game.createClass('WebGLSpriteBatch', {
 
         var aX = sprite.anchor.x;
         var aY = sprite.anchor.y;
-
         var w0 = texture.width;
         var w1 = 0;
         var h0 = texture.height;
         var h1 = 0;
-
         var index = this.currentBatchSize * 4 * this.vertSize;
-        
-        var worldTransform = sprite._worldTransform;
-
-        var a = worldTransform.a;
-        var b = worldTransform.b;
-        var c = worldTransform.c;
-        var d = worldTransform.d;
-        var tx = worldTransform.tx;
-        var ty = worldTransform.ty;
-
+        var wt = sprite._worldTransform;
+        var a = wt.a;
+        var b = wt.b;
+        var c = wt.c;
+        var d = wt.d;
+        var tx = wt.tx;
+        var ty = wt.ty;
         var colors = this.colors;
         var positions = this.positions;
 
@@ -156,17 +151,18 @@ game.createClass('WebGLSpriteBatch', {
             positions[index + 16] = d * h0 + b * w1 + ty;
         }
         
-        positions[index + 2] = uvs.x0;
-        positions[index + 3] = uvs.y0;
-        positions[index + 7] = uvs.x1;
-        positions[index + 8] = uvs.y1;
-        positions[index + 12] = uvs.x2;
-        positions[index + 13] = uvs.y2;
-        positions[index + 17] = uvs.x3;
-        positions[index + 18] = uvs.y3;
+        positions[index + 2] = uvs[0];
+        positions[index + 3] = uvs[1];
+        positions[index + 7] = uvs[2];
+        positions[index + 8] = uvs[3];
+        positions[index + 12] = uvs[4];
+        positions[index + 13] = uvs[5];
+        positions[index + 17] = uvs[6];
+        positions[index + 18] = uvs[7];
 
         var tint = 0xffffff;
-        colors[index + 4] = colors[index + 9] = colors[index + 14] = colors[index + 19] = (tint >> 16) + (tint & 0xff00) + ((tint & 0xff) << 16) + (sprite._worldAlpha * 255 << 24);
+        var color = (tint >> 16) + (tint & 0xff00) + ((tint & 0xff) << 16) + (sprite._worldAlpha * 255 << 24);
+        colors[index + 4] = colors[index + 9] = colors[index + 14] = colors[index + 19] = color;
 
         this.sprites[this.currentBatchSize++] = sprite;
     },
