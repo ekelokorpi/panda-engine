@@ -368,7 +368,8 @@ game.onStart = function() {
     if (!this.Debug || !this.Debug.enabled) return;
 
     console.log('Panda Engine ' + this.version);
-    console.log('Canvas ' + this.system.width + 'x' + this.system.height);
+    var renderer = game.renderer.webGL ? 'WebGL' : 'Canvas';
+    console.log(renderer + ' ' + this.system.width + 'x' + this.system.height);
 
     if (this.Audio && this.Audio.enabled) {
         console.log((this.audio.context ? 'Web' : 'HTML5') + ' Audio engine');

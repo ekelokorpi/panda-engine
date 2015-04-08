@@ -48,16 +48,6 @@ game.createClass('Texture', {
         if (game.renderer.webGL) this._updateUvs();
     },
 
-    remove: function(all) {
-        for (var i in game.Texture.cache) {
-            var texture = game.Texture.cache[i];
-            if (texture === this || all && texture.baseTexture === this.baseTexture) {
-                delete texture;
-            }
-        }
-        if (all) this.baseTexture.remove();
-    },
-
     /**
         @method _updateUvs
         @private
@@ -77,6 +67,11 @@ game.createClass('Texture', {
 });
 
 game.addAttributes('Texture', {
+    /**
+        @attribute {Object} cache
+    **/
+    cache: {},
+    
     /**
         @method fromImage
         @static
@@ -134,12 +129,7 @@ game.addAttributes('Texture', {
         for (var i in this.cache) {
             delete this.cache[i];
         }
-    },
-
-    /**
-        @attribute {Object} cache
-    **/
-    cache: {}
+    }
 });
 
 /**
@@ -194,14 +184,6 @@ game.createClass('BaseTexture', {
     },
 
     /**
-        Remove BaseTexture from cache.
-        @method remove
-    **/
-    remove: function() {
-        delete game.BaseTexture.cache[this._id];
-    },
-
-    /**
         @method _onload
         @private
     **/
@@ -214,6 +196,15 @@ game.createClass('BaseTexture', {
 });
 
 game.addAttributes('BaseTexture', {
+    /**
+        @attribute {Object} cache
+    **/
+    cache: {},
+    /**
+        @attribute {Number} _id
+    **/
+    _id: 1,
+
     /**
         @method fromImage
         @static
@@ -278,16 +269,7 @@ game.addAttributes('BaseTexture', {
         for (var i in this.cache) {
             delete this.cache[i];
         }
-    },
-
-    /**
-        @attribute {Object} cache
-    **/
-    cache: {},
-    /**
-        @attribute {Number} _id
-    **/
-    _id: 1
+    }
 });
 
 });

@@ -22,22 +22,19 @@ game.createClass('Sprite', 'Container', {
         this.setTexture(this.texture || texture);
     },
 
+    /**
+        @method setTexture
+        @param {Texture|String} texture
+    **/
     setTexture: function(texture) {
         this.texture = texture instanceof game.Texture ? texture : game.Texture.fromAsset(texture);
         return this;
     },
 
-    destroy: function() {
-        this.remove();
-        for (var i in game.Texture.cache) {
-            if (game.Texture.cache[i] === this.texture) {
-                delete this.texture;
-                delete game.Texture.cache[i];
-                delete game.BaseTexture.cache[i];
-            }
-        }
-    },
-
+    /**
+        @method _getBounds
+        @private
+    **/
     _getBounds: function() {
         if (this._worldTransform.tx === null) this.updateParentTransform();
 
@@ -125,11 +122,42 @@ game.createClass('Sprite', 'Container', {
         return this._worldBounds;
     },
 
+    /**
+        @method _render
+        @private
+        @param {CanvasRenderingContext2D} context
+    **/
+    _render: function(context) {
+        if (!this.texture.width && this.texture.baseTexture.width) {
+            this.texture.width = this.texture.baseTexture.width;
+        }
+        if (!this.texture.height && this.texture.baseTexture.height) {
+            this.texture.height = this.texture.baseTexture.height;
+        }
+        if (!this.texture.width || !this.texture.height) return;
+
+        if (game.renderer.webGL) this._renderWebGL();
+        else this._renderCanvas(context);
+
+        this.super(context);
+    },
+
+    /**
+        @method _renderWebGL
+        @private
+    **/
     _renderWebGL: function() {
         game.renderer.spriteBatch.render(this);
     },
 
+    /**
+        @method _renderCanvas
+        @private
+        @param {CanvasRenderingContext2D} context
+    **/
     _renderCanvas: function(context) {
+        if (!this.texture.baseTexture.loaded) return;
+
         context.globalAlpha = this._worldAlpha;
 
         var t = this.texture;
@@ -144,22 +172,21 @@ game.createClass('Sprite', 'Container', {
 
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
         context.drawImage(t.baseTexture.source, t.position.x, t.position.y, t.width, t.height, 0, 0, t.width, t.height);
-    },
-
-    _render: function(context) {
-        if (game.renderer.webGL) this._renderWebGL();
-        else this._renderCanvas(context);
-
-        this.super(context);
     }
 });
 
 game.defineProperties('Sprite', {
+    /**
+        @property {Number} width
+    **/
     width: {
         get: function() {
             return this.scale.x * this.texture.width;
         }
     },
+    /**
+        @property {Number} height
+    **/
     height: {
         get: function() {
             return this.scale.y * this.texture.height;

@@ -201,36 +201,12 @@ var game = {
     _currentModule: null,
 
     /**
-        Remove asset from memory.
-        @method removeAsset
-        @param {String} id
-    **/
-    removeAsset: function(id) {
-        var path = this.paths[id];
-        if (this.json[path] && this.json[path].frames) {
-            // Sprite sheet
-            for (var key in this.json[path].frames) {
-                this.TextureCache[key].destroy(true);
-                delete this.TextureCache[key];
-            }
-        }
-        else if (this.TextureCache[path]) {
-            // Sprite
-            this.TextureCache[path].destroy(true);
-            delete this.TextureCache[path];
-        }
-        delete this.paths[id];
-    },
-
-    /**
         Remove all assets from memory.
         @method removeAssets
     **/
     removeAssets: function() {
-        for (var key in this.TextureCache) {
-            this.TextureCache[key].destroy(true);
-            delete this.TextureCache[key];
-        }
+        game.Texture.clearCache();
+        game.BaseTexture.clearCache();
         this.paths = {};
     },
 
@@ -584,7 +560,7 @@ var game = {
         @private
     **/
     _getFilePath: function(file) {
-        if (file.indexOf('http://') === 0) return file;
+        if (file.indexOf('://') !== -1) return file;
         if (this.config.mediaFolder) file = this.config.mediaFolder + '/' + file;
         return file;
     },
