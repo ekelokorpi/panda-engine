@@ -63,7 +63,7 @@ game.createClass('Text', 'Sprite', {
             if (!charObj) continue;
             var texture = charObj.texture;
             width += charObj.xadvance + charObj.xoffset;
-            height = Math.max(height, texture.height);
+            height = Math.max(height, texture.height + charObj.yoffset);
         }
 
         this.texture = game.Texture.cache[id];
@@ -86,6 +86,7 @@ game.createClass('Text', 'Sprite', {
             var charObj = this.font.chars[charCode];
             if (!charObj) continue;
             var texture = charObj.texture;
+            
             context.drawImage(
                 texture.baseTexture.source,
                 texture.position.x,
@@ -93,7 +94,7 @@ game.createClass('Text', 'Sprite', {
                 texture.width,
                 texture.height,
                 xPos + charObj.xoffset,
-                height - texture.height,
+                charObj.yoffset,
                 texture.width,
                 texture.height);
 
@@ -122,6 +123,7 @@ game.createClass('Font', {
         for (var i = 0; i < chars.length; i++) {
             var xadvance = parseInt(chars[i].getAttribute('xadvance'));
             var xoffset = parseInt(chars[i].getAttribute('xoffset'));
+            var yoffset = parseInt(chars[i].getAttribute('yoffset'));
             var id = parseInt(chars[i].getAttribute('id'));
             if (id === 32) {
                 this.spaceWidth = xadvance;
@@ -136,7 +138,8 @@ game.createClass('Font', {
             this.chars[id] = {
                 texture: texture,
                 xadvance: xadvance,
-                xoffset: xoffset
+                xoffset: xoffset,
+                yoffset: yoffset
             };
         }
     }
