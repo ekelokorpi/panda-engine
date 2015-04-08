@@ -770,6 +770,10 @@ var game = {
             return this;
         };
 
+        Array.prototype.last = function() {
+            return this[this.length - 1];
+        };
+
         // http://jsperf.com/function-bind-performance
         Function.prototype.bind = function(context) {
             var fn = this, linked = [];

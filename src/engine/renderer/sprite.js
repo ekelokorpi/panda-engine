@@ -40,11 +40,6 @@ game.createClass('Sprite', 'Container', {
 
         var width = this.texture.width;
         var height = this.texture.height;
-
-        var w0 = width;
-        var w1 = 0;
-        var h0 = height;
-        var h1 = 0;
         var wt = this._worldTransform;
         var a = wt.a;
         var b = wt.b;
@@ -52,67 +47,53 @@ game.createClass('Sprite', 'Container', {
         var d = wt.d;
         var tx = wt.tx;
         var ty = wt.ty;
-
-        var minX;
-        var maxX;
-        var minY;
-        var maxY;
+        var minX = tx;
+        var maxX = tx;
+        var minY = ty;
+        var maxY = ty;
 
         if (b === 0 && c === 0) {
             if (a < 0) a *= -1;
             if (d < 0) d *= -1;
-            minX = a * w1 + tx;
-            maxX = a * w0 + tx;
-            minY = d * h1 + ty;
-            maxY = d * h0 + ty;
+            maxX = a * width + tx;
+            maxY = d * height + ty;
         }
         else {
-            var x1 = a * w1 + c * h1 + tx;
-            var y1 = d * h1 + b * w1 + ty;
+            var x2 = a * width + tx;
+            var y2 = b * width + ty;
+            var x3 = a * width + c * height + tx;
+            var y3 = d * height + b * width + ty;
+            var x4 = c * height + tx;
+            var y4 = d * height + ty;
 
-            var x2 = a * w0 + c * h1 + tx;
-            var y2 = d * h1 + b * w0 + ty;
-
-            var x3 = a * w0 + c * h0 + tx;
-            var y3 = d * h0 + b * w0 + ty;
-
-            var x4 = a * w1 + c * h0 + tx;
-            var y4 = d * h0 + b * w1 + ty;
-
-            minX = x1;
             minX = x2 < minX ? x2 : minX;
             minX = x3 < minX ? x3 : minX;
             minX = x4 < minX ? x4 : minX;
 
-            minY = y1;
             minY = y2 < minY ? y2 : minY;
             minY = y3 < minY ? y3 : minY;
             minY = y4 < minY ? y4 : minY;
 
-            maxX = x1;
             maxX = x2 > maxX ? x2 : maxX;
             maxX = x3 > maxX ? x3 : maxX;
             maxX = x4 > maxX ? x4 : maxX;
 
-            maxY = y1;
             maxY = y2 > maxY ? y2 : maxY;
             maxY = y3 > maxY ? y3 : maxY;
             maxY = y4 > maxY ? y4 : maxY;
         }
 
         for (var i = 0; i < this.children.length; i++) {
-            var child = this.children[i];
-            var childBounds = child._getBounds();
+            var childBounds = this.children[i]._getBounds();
+            var childMinX = childBounds.x;
+            var childMaxX = childBounds.x + childBounds.width;
+            var childMinY = childBounds.y;
+            var childMaxY = childBounds.y + childBounds.height;
 
-            w0 = childBounds.x;
-            w1 = childBounds.x + childBounds.width;
-            h0 = childBounds.y;
-            h1 = childBounds.y + childBounds.height;
-
-            minX = (minX < w0) ? minX : w0;
-            minY = (minY < h0) ? minY : h0;
-            maxX = (maxX > w1) ? maxX : w1;
-            maxY = (maxY > h1) ? maxY : h1;
+            minX = (minX < childMinX) ? minX : childMinX;
+            minY = (minY < childMinY) ? minY : childMinY;
+            maxX = (maxX > childMaxX) ? maxX : childMaxX;
+            maxY = (maxY > childMaxY) ? maxY : childMaxY;
         }
 
         this._worldBounds.x = minX;

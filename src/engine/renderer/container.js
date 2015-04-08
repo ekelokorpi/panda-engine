@@ -10,38 +10,29 @@ game.module(
 .body(function() {
 'use strict';
 
-game.createClass('Matrix', {
-    a: 1,
-    b: 0,
-    c: 0,
-    d: 1,
-    tx: null,
-    ty: null
-});
-
 /**
     @class Container
 **/
 game.createClass('Container', {
-    position: null,
-    scale: null,
     anchor: null,
     alpha: 1,
     children: [],
-    parent: null,
-    rotation: 0,
-    visible: true,
     interactive: false,
+    parent: null,
+    position: null,
     renderable: true,
+    rotation: 0,
+    scale: null,
     stage: null,
+    visible: true,
+    _cosCache: 1,
     _interactive: false,
     _interactiveChildren: false,
     _rotationCache: 0,
-    _cosCache: 1,
     _sinCache: 0,
     _worldAlpha: 1,
-    _worldTransform: null,
     _worldBounds: null,
+    _worldTransform: null,
 
     staticInit: function() {
         this.position = new game.Vector();
@@ -87,14 +78,15 @@ game.createClass('Container', {
         return this;
     },
 
-    center: function(parent, offsetX, offsetY) {
-        if (!parent) return;
-        if (!parent.parent) {
+    center: function(container, offsetX, offsetY) {
+        if (!container) return;
+
+        if (container === this.stage) {
             var x = game.system.width / 2;
             var y = game.system.height / 2;
         }
         else {
-            var bounds = parent._getBounds();
+            var bounds = container._getBounds();
             var x = bounds.x + bounds.width / 2;
             var y = bounds.y + bounds.height / 2;
         }
@@ -119,7 +111,7 @@ game.createClass('Container', {
     click: function() {},
 
     updateTransform: function() {
-        if (!this.parent) return this._updateChildTransform();
+        if (!this.parent) return this.updateChildTransform();
         
         var pt = this.parent._worldTransform;
         var wt = this._worldTransform;
@@ -146,12 +138,20 @@ game.createClass('Container', {
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
-        this._updateChildTransform();
+        this.updateChildTransform();
     },
 
     updateParentTransform: function() {
         if (this.parent) this.parent.updateParentTransform();
         else this.updateTransform();
+    },
+
+    updateChildTransform: function() {
+        for (var i = this.children.length - 1; i >= 0; i--) {
+            var child = this.children[i];
+            if (!child.visible || child.alpha <= 0) continue;
+            child.updateTransform();
+        }
     },
 
     _setStageReference: function(stage) {
@@ -172,14 +172,6 @@ game.createClass('Container', {
 
         if (this._interactive) game.input._needUpdate = true;
         this.stage = null;
-    },
-
-    _updateChildTransform: function() {
-        for (var i = this.children.length - 1; i >= 0; i--) {
-            var child = this.children[i];
-            if (!child.visible || child.alpha <= 0) continue;
-            child.updateTransform();
-        }
     },
 
     _getBounds: function() {
@@ -225,8 +217,6 @@ game.addAttributes('Container', {
 game.defineProperties('Container', {
     /**
         @property {Number} width
-        @default 0
-        @readOnly
     **/
     width: {
         get: function() {

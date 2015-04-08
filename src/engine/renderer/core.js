@@ -133,6 +133,7 @@ game.createClass('Renderer', {
     },
 
     /**
+        Show canvas.
         @method _show
         @private
     **/
@@ -141,6 +142,7 @@ game.createClass('Renderer', {
     },
 
     /**
+        Hide canvas.
         @method _hide
         @private
     **/
@@ -251,7 +253,41 @@ game.addAttributes('Renderer', {
         @default false
     **/
     webGL: false,
+    /**
+        @attribute {String} scaleMode
+        @default linear
+    **/
     scaleMode: 'linear'
+});
+
+/**
+    @class Matrix
+**/
+game.createClass('Matrix', {
+    /**
+        @property {Number} a
+    **/
+    a: 1,
+    /**
+        @property {Number} b
+    **/
+    b: 0,
+    /**
+        @property {Number} c
+    **/
+    c: 0,
+    /**
+        @property {Number} d
+    **/
+    d: 1,
+    /**
+        @property {Number} tx
+    **/
+    tx: null,
+    /**
+        @property {Number} ty
+    **/
+    ty: null
 });
 
 });
