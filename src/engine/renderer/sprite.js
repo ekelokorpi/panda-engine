@@ -27,6 +27,7 @@ game.createClass('Sprite', 'Container', {
         @param {Texture|String} texture
     **/
     setTexture: function(texture) {
+        if (!texture) return;
         this.texture = texture instanceof game.Texture ? texture : game.Texture.fromAsset(texture);
         return this;
     },
@@ -109,6 +110,7 @@ game.createClass('Sprite', 'Container', {
         @param {CanvasRenderingContext2D} context
     **/
     _render: function(context) {
+        if (!this.texture) return;
         if (!this.texture.width && this.texture.baseTexture.width) {
             this.texture.width = this.texture.baseTexture.width;
         }

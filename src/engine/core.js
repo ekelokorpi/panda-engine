@@ -201,12 +201,14 @@ var game = {
     _currentModule: null,
 
     /**
-        Remove all assets from memory.
-        @method removeAssets
+        Clear engine cache.
+        @method clearCache
     **/
-    removeAssets: function() {
+    clearCache: function() {
         game.Texture.clearCache();
         game.BaseTexture.clearCache();
+        game.Font.clearCache();
+        this.json = {};
         this.paths = {};
     },
 
@@ -502,8 +504,7 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        var loaderClass = (this.config.loader && this.config.loader.class) ? this.config.loader.class : 'Loader';
-        this._loader = new this[loaderClass](this.System.startScene);
+        this._loader = new this.Loader(this.System.startScene);
         if (!this.system._rotateScreenVisible) this._loader.start();
 
         this.onStart();

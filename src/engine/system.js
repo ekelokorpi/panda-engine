@@ -184,18 +184,16 @@ game.createClass('System', {
         Change current scene.
         @method setScene
         @param {String} sceneClass
-        @param {Boolean} removeAssets
     **/
-    setScene: function(sceneName, removeAssets) {
+    setScene: function(sceneName) {
         var sceneClass = game[sceneName];
         if (!sceneClass) return;
         this.sceneName = sceneName;
         if (this._running && !this.paused) {
             this._newSceneClass = sceneClass;
-            this._removeAssets = removeAssets;
         }
         else {
-            this._setSceneNow(sceneClass, removeAssets);
+            this._setSceneNow(sceneClass);
         }
     },
 
@@ -333,14 +331,12 @@ game.createClass('System', {
     /**
         @method _setSceneNow
         @param {Scene} sceneClass
-        @param {Boolean} removeAssets
         @private
     **/
-    _setSceneNow: function(sceneClass, removeAssets) {
+    _setSceneNow: function(sceneClass) {
         if (this.paused) this.paused = false;
         if (game.scene && game.scene.exit) game.scene.exit();
         if (game.tween) game.tween.removeAll();
-        if (removeAssets) game.removeAssets();
         game.scene = new (sceneClass)();
         this._newSceneClass = null;
         this._startRunLoop();

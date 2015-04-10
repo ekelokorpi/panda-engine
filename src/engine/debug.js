@@ -108,6 +108,8 @@ game.createClass('Debug', {
                 _render: function(context) {
                     this.super(context);
                     
+                    if (!this.parent) return;
+                    
                     // TODO
                     if (game.renderer.webGL) return;
 

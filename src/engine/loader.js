@@ -276,20 +276,20 @@ game.createClass('Loader', {
         if (!request.responseText || request.status === 404) throw 'Error loading JSON ' + filePath;
 
         var json = JSON.parse(request.responseText);
+        game.json[filePath] = json;
         if (json.frames) {
-            // Spritesheet
+            // Sprite sheet
             var image = game._getFilePath(json.meta.image);
             this._loadImage(image, this._parseSpriteSheet.bind(this, json, callback));
         }
         else {
-            game.json[filePath] = json;
             callback();
         }
     },
 
     /**
         @method _parseSpriteSheet
-        @param {JSON} json
+        @param {Object} json
         @param {Function} callback
         @private
     **/
@@ -403,8 +403,7 @@ game.addAttributes('Loader', {
         @attribute {Number} maxFiles
         @default 4
     **/
-    maxFiles: 4,
-    class: null
+    maxFiles: 4
 });
 
 });

@@ -14,11 +14,11 @@ game.module(
     @class Animation
     @extends Sprite
     @constructor
-    @param {Array} textures
+    @param {Array|String} textures List of textures or name of JSON file
 **/
 game.createClass('Animation', 'Sprite', {
     /**
-        List of animations
+        List of animations.
         @property {Object} anims
     **/
     anims: {},
@@ -51,16 +51,19 @@ game.createClass('Animation', 'Sprite', {
     _frameTime: 0,
 
     staticInit: function(textures) {
-        textures = this.textures;
-        
-        if (!textures) {
-            if (typeof arguments[0] === 'object') textures = arguments[0];
-            else textures = Array.prototype.slice.call(arguments);
+        this.textures = this.textures || textures;
+
+        if (typeof this.textures === 'string' && this.textures.indexOf('json') !== -1) {
+            var json = game.getJSON(this.textures);
+            this.textures = [];
+            for (var name in json.frames) {
+                this.textures.push(name);
+            }
         }
 
         var newTextures = [];
-        for (var i = 0; i < textures.length; i++) {
-            var texture = textures[i];
+        for (var i = 0; i < this.textures.length; i++) {
+            var texture = this.textures[i];
             if (!texture instanceof game.Texture) texture = game.Texture.fromAsset(texture);
             newTextures.push(texture);
         }
