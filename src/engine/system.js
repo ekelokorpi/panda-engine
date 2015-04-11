@@ -164,7 +164,7 @@ game.createClass('System', {
         if (this.paused) return;
         if (onHide) this._pausedOnHide = true;
         else this.paused = true;
-        if (game.scene) game.scene._pause();
+        if (game.scene && game.scene._pause) game.scene._pause();
     },
 
     /**
@@ -177,7 +177,7 @@ game.createClass('System', {
         if (onHide) this._pausedOnHide = false;
         else this.paused = false;
         game.Timer.last = Date.now();
-        if (game.scene) game.scene._resume();
+        if (game.scene && game.scene._resume) game.scene._resume();
     },
 
     /**

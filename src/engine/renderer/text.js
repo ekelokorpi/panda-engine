@@ -19,13 +19,13 @@ game.module(
 **/
 game.createClass('Text', 'Sprite', {
     /**
-        @property {Font} font
+        @property {String} font
     **/
     font: null,
     /**
-        @property {String} fontName
+        @property {Font} fontClass
     **/
-    fontName: null,
+    fontClass: null,
     /**
         @property {String} text
     **/
@@ -47,7 +47,7 @@ game.createClass('Text', 'Sprite', {
     staticInit: function(text, props) {
         this.text = this.text || text;
         game.merge(this, props);
-        if (this.fontName) this.setFont(this.fontName);
+        if (this.font) this.setFont(this.font);
         this.super();
     },
 
@@ -58,9 +58,9 @@ game.createClass('Text', 'Sprite', {
         @param {String} fontName
     **/
     setFont: function(fontName) {
-        this.fontName = fontName;
-        this.font = game.Font.cache[fontName];
-        if (!this.font) throw 'Font ' + fontName + ' not found';
+        this.font = fontName;
+        this.fontClass = game.Font.cache[fontName];
+        if (!this.fontClass) throw 'Font ' + fontName + ' not found';
         if (this.text) this.setText(this.text);
         return this;
     },
@@ -82,7 +82,7 @@ game.createClass('Text', 'Sprite', {
         @method updateText
     **/
     updateText: function() {
-        if (!this.font) return;
+        if (!this.fontClass) return;
 
         var id = this._getId();
         this.texture = game.Texture.cache[id];
@@ -102,7 +102,7 @@ game.createClass('Text', 'Sprite', {
                 if (curWordWidth > 0) {
                     // Word before space or line break
                     var lineWidth = lines[curLine].width + curWordWidth;
-                    if (lineWidth > this.wrap) {
+                    if (lineWidth > this.wrap && this.wrap > 0 && lines[curLine].words.length > 0) {
                         // Insert new line
                         curLine++;
                         lines.push({ words: [], width: 0 });
@@ -120,10 +120,10 @@ game.createClass('Text', 'Sprite', {
             if (charCode === 32) {
                 // Insert space
                 lines[curLine].words.push({
-                    width: this.font.spaceWidth,
+                    width: this.fontClass.spaceWidth,
                     type: SPACE
                 });
-                lines[curLine].width += this.font.spaceWidth;
+                lines[curLine].width += this.fontClass.spaceWidth;
                 curWordWidth = 0;
                 continue;
             }
@@ -136,7 +136,7 @@ game.createClass('Text', 'Sprite', {
                 continue;
             }
 
-            var charObj = this.font.chars[charCode];
+            var charObj = this.fontClass.chars[charCode];
             if (!charObj) continue;
 
             curWordWidth += charObj.xadvance + charObj.xoffset;
@@ -145,7 +145,7 @@ game.createClass('Text', 'Sprite', {
         // Add last word
         if (curWordWidth > 0) {
             var lineWidth = lines[curLine].width + curWordWidth;
-            if (lineWidth > this.wrap) {
+            if (lineWidth > this.wrap && this.wrap > 0 && lines[curLine].words.length > 0) {
                 // New line
                 curLine++;
                 lines.push({ words: [], width: 0 });
@@ -164,13 +164,13 @@ game.createClass('Text', 'Sprite', {
             if (line.width > width) width = line.width;
             for (var o = line.words.length - 1; o >= 0; o--) {
                 if (line.words[o].type === SPACE) {
-                    line.width -= this.font.spaceWidth;
+                    line.width -= this.fontClass.spaceWidth;
                 }
                 else break;
             }
         }
 
-        var height = lines.length * this.font.lineHeight;
+        var height = lines.length * this.fontClass.lineHeight;
 
         this._lines = lines;
         this._generateTexture(id, width, height);
@@ -205,7 +205,7 @@ game.createClass('Text', 'Sprite', {
                 curLine++;
                 curWord = 0;
 
-                if (x > 0) y += this.font.lineHeight;
+                if (x > 0) y += this.fontClass.lineHeight;
                 x = 0;
 
                 if (this.align === 'center') x = width / 2 - this._lines[curLine].width / 2;
@@ -218,7 +218,7 @@ game.createClass('Text', 'Sprite', {
             if (charCode === 32) {
                 // Only add space if not beginning of line
                 if (x > 0) {
-                    x += this.font.spaceWidth;
+                    x += this.fontClass.spaceWidth;
                     curWord++;
                 }
                 curWord++;
@@ -226,12 +226,12 @@ game.createClass('Text', 'Sprite', {
 
             // Line break
             if (charCode === 10) {
-                y += this.font.lineHeight;
+                y += this.fontClass.lineHeight;
                 x = 0;
                 curWord++;
             }
 
-            var charObj = this.font.chars[charCode];
+            var charObj = this.fontClass.chars[charCode];
             if (!charObj) continue;
 
             var texture = charObj.texture;
