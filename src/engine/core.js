@@ -198,6 +198,11 @@ var game = {
         @private
     **/
     _currentModule: null,
+    /**
+        @property {Boolean} _gameModuleDefined
+        @private
+    **/
+    _gameModuleDefined: false,
 
     /**
         Clear engine cache.
@@ -222,8 +227,11 @@ var game = {
 
         this._current = { name: name, requires: [], loaded: false, classes: [] };
         
-        if (name.indexOf('game.') === 0) this._current.requires.push('engine.core');
-        if (this.moduleQueue.length === 1 && this._DOMLoaded) this._loadModules();
+        if (name.indexOf('game.') === 0) {
+            this._gameModuleDefined = true;
+            this._current.requires.push('engine.core');
+        }
+        if (this._gameModuleDefined && this._DOMLoaded) this._loadModules();
 
         this.modules[name] = this._current;
         this.moduleQueue.push(this._current);
@@ -931,7 +939,7 @@ var game = {
         if (!this._DOMLoaded) {
             if (!document.body) return setTimeout(this._DOMReady.bind(this), 13);
             this._DOMLoaded = true;
-            if (this.moduleQueue.length > 1) this._loadModules();
+            if (this._gameModuleDefined) this._loadModules();
         }
     }
 };
