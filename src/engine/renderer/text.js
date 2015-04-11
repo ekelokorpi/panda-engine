@@ -15,7 +15,6 @@ game.module(
     @extends Sprite
     @constructor
     @param {String} text
-    @param {String} font
     @param {Object} [props]
 **/
 game.createClass('Text', 'Sprite', {
@@ -35,7 +34,15 @@ game.createClass('Text', 'Sprite', {
         @property {Number} wrap
     **/
     wrap: 0,
+    /**
+        @property {String} align
+    **/
     align: 'left',
+    /**
+        @property {Object} _lines
+        @private
+    **/
+    _lines: null,
 
     staticInit: function(text, props) {
         this.text = this.text || text;
@@ -44,37 +51,45 @@ game.createClass('Text', 'Sprite', {
         this.super();
     },
 
-    setFont: function(font) {
-        this.fontName = font;
-        this.font = game.Font.cache[font];
-        if (!this.font) throw 'Font ' + font + ' not found';
+    /**
+        Set new font for text.
+        @method setFont
+        @chainable
+        @param {String} fontName
+    **/
+    setFont: function(fontName) {
+        this.fontName = fontName;
+        this.font = game.Font.cache[fontName];
+        if (!this.font) throw 'Font ' + fontName + ' not found';
         if (this.text) this.setText(this.text);
         return this;
     },
 
+    /**
+        Set new text.
+        @method setText
+        @chainable
+        @param {String} text
+    **/
     setText: function(text) {
         this.text = text;
         this.updateText();
         return this;
     },
 
+    /**
+        Update text texture.
+        @method updateText
+    **/
     updateText: function() {
         if (!this.font) return;
 
-        var SPACE = 0;
-        var WORD = 1;
-
-        // Generate id
-        var id = this.fontName + '_';
-        for (var i = 0; i < this.text.length; i++) {
-            id += this.text.charCodeAt(i);
-        }
-        id += this.align;
+        var id = this._getId();
         this.texture = game.Texture.cache[id];
         if (this.texture) return;
 
-        // New text
-        var textWrap = this.wrap;
+        var SPACE = 0;
+        var WORD = 1;
         var lines = [ { words: [], width: 0 } ];
         var curLine = 0;
         var curWordWidth = 0;
@@ -87,7 +102,7 @@ game.createClass('Text', 'Sprite', {
                 if (curWordWidth > 0) {
                     // Word before space or line break
                     var lineWidth = lines[curLine].width + curWordWidth;
-                    if (lineWidth > textWrap) {
+                    if (lineWidth > this.wrap) {
                         // Insert new line
                         curLine++;
                         lines.push({ words: [], width: 0 });
@@ -130,7 +145,7 @@ game.createClass('Text', 'Sprite', {
         // Add last word
         if (curWordWidth > 0) {
             var lineWidth = lines[curLine].width + curWordWidth;
-            if (lineWidth > textWrap) {
+            if (lineWidth > this.wrap) {
                 // New line
                 curLine++;
                 lines.push({ words: [], width: 0 });
@@ -143,9 +158,10 @@ game.createClass('Text', 'Sprite', {
             lines[curLine].width += curWordWidth;
         }
 
-        // Calculate line widths without spaces at end of lines
+        var width = 0;
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
+            if (line.width > width) width = line.width;
             for (var o = line.words.length - 1; o >= 0; o--) {
                 if (line.words[o].type === SPACE) {
                     line.width -= this.font.spaceWidth;
@@ -154,175 +170,65 @@ game.createClass('Text', 'Sprite', {
             }
         }
 
-        // Calculate max line width
-        var maxLineWidth = 0;
-        for (var i = 0; i < lines.length; i++) {
-            if (lines[i].width > maxLineWidth) maxLineWidth = lines[i].width;
-        }
-
-        var width = maxLineWidth;
         var height = lines.length * this.font.lineHeight;
 
-        this.lines = lines;
+        this._lines = lines;
         this._generateTexture(id, width, height);
-        return;
-
-
-
-
-
-
-
-        console.log(lines);
-        console.log(lines.length);
-
-
-        var textWrap = this.wrap;
-        var id = this.fontName + '_';
-
-        // Calculate word widths
-        var wordWidths = [];
-        var curWidth = 0;
-        var wordTypes = [];
-        for (var i = 0; i < this.text.length; i++) {
-            var charCode = this.text.charCodeAt(i);
-            id += charCode;
-
-            // Space
-            if (charCode === 32 || charCode === 10) {
-                if (curWidth > 0) {
-                    wordWidths.push(curWidth);
-                    wordTypes.push(1);
-                    curWidth = 0;
-                }
-                if (charCode === 32) {
-                    wordWidths.push(this.font.spaceWidth);
-                    wordTypes.push(0);
-                }
-                else {
-                    wordWidths.push(0);
-                    wordTypes.push(-1);
-                }
-                continue;
-            }
-
-            var charObj = this.font.chars[charCode];
-            if (!charObj) continue;
-
-            curWidth += charObj.xadvance + charObj.xoffset;
-        }
-        if (curWidth > 0) wordWidths.push(curWidth);
-        
-        // Calculate lines
-        var lines = [];
-        var curLineWidth = 0;
-        var curLineWordCount = 0;
-        var maxLineWidth = 0;
-        var lineWidhts = [];
-        var totalLines = 0;
-        for (var i = 0; i < wordWidths.length; i++) {
-            if (curLineWidth > maxLineWidth) maxLineWidth = curLineWidth;
-            curLineWordCount++;
-            curLineWidth += wordWidths[i];
-
-            if (wordWidths[i] === 0 && textWrap > 0) {
-                lines.push(curLineWordCount - 1);
-                lines.push(0);
-                
-                lineWidhts.push(curLineWidth);
-                lineWidhts.push(0);
-                totalLines++;
-
-                curLineWidth = 0;
-                curLineWordCount = 0;
-                continue;
-            }
-
-            if (curLineWidth > textWrap && textWrap > 0) {
-                lines.push(curLineWordCount - 1);
-                lineWidhts.push(curLineWidth - wordWidths[i]);
-                totalLines++;
-
-                curLineWidth = wordWidths[i];
-                curLineWordCount = 1;
-            }
-        }
-        if (curLineWidth > 0) {
-            lines.push(curLineWordCount);
-            lineWidhts.push(curLineWidth);
-            totalLines++;
-        }
-        if (curLineWidth > maxLineWidth) maxLineWidth = curLineWidth;
-        if (lines.length === 0) {
-            lines.push(wordWidths.length);
-            lineWidhts.push(0);
-            totalLines++;
-        }
-        // Line word counts
-        this.lines = lines;
-        // Line pixel widths
-        this.lineWidhts = lineWidhts;
-
-        console.log(totalLines);
-        var width = maxLineWidth;
-        console.log(width);
-        var height = totalLines * this.font.lineHeight;
-
-        this.texture = game.Texture.cache[id];
-        if (!this.texture) this._generateTexture(id, width, height);
     },
 
+    /**
+        @method _generateTexture
+        @private
+        @param {String} id
+        @param {Number} width
+        @param {Number} height
+    **/
     _generateTexture: function(id, width, height) {
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
         canvas.width = width;
         canvas.height = height;
         
-        var xPos = 0;
-        var yPos = 0;
+        var x = 0;
+        var y = 0;
         var curLine = 0;
         var curWord = 0;
 
-        if (this.align === 'center') xPos = width / 2 - this.lines[0].width / 2;
-        if (this.align === 'right') xPos = width - this.lines[0].width;
+        if (this.align === 'center') x = width / 2 - this._lines[0].width / 2;
+        if (this.align === 'right') x = width - this._lines[0].width;
 
         for (var i = 0; i < this.text.length; i++) {
-            var line = this.lines[curLine];
-            if (!line) break;
+            var line = this._lines[curLine];
 
+            // End of line
             if (!line.words[curWord]) {
-                var charCode = this.text.charCodeAt(i);
-                // Line break
                 curLine++;
                 curWord = 0;
 
-                if (xPos > 0) yPos += this.font.lineHeight;
-                xPos = 0;
+                if (x > 0) y += this.font.lineHeight;
+                x = 0;
 
-                if (this.align === 'center') xPos = width / 2 - this.lines[curLine].width / 2;
-                if (this.align === 'right') xPos = width - this.lines[curLine].width;
+                if (this.align === 'center') x = width / 2 - this._lines[curLine].width / 2;
+                if (this.align === 'right') x = width - this._lines[curLine].width;
             }
 
             var charCode = this.text.charCodeAt(i);
 
+            // Space
             if (charCode === 32) {
                 // Only add space if not beginning of line
-                if (xPos > 0) {
-                    xPos += this.font.spaceWidth;
+                if (x > 0) {
+                    x += this.font.spaceWidth;
                     curWord++;
                 }
-
-                // Change word after space
                 curWord++;
-                continue;
             }
 
+            // Line break
             if (charCode === 10) {
-                // Line break
-                yPos += this.font.lineHeight;
-                xPos = 0;
+                y += this.font.lineHeight;
+                x = 0;
                 curWord++;
-                continue;
             }
 
             var charObj = this.font.chars[charCode];
@@ -336,46 +242,76 @@ game.createClass('Text', 'Sprite', {
                 texture.position.y,
                 texture.width,
                 texture.height,
-                xPos + charObj.xoffset,
-                yPos + charObj.yoffset,
+                x + charObj.xoffset,
+                y + charObj.yoffset,
                 texture.width,
                 texture.height);
 
-            xPos += charObj.xadvance + charObj.xoffset;
+            x += charObj.xadvance + charObj.xoffset;
         }
 
         canvas._id = id;
         this.texture = game.Texture.fromCanvas(canvas);
+    },
+
+    /**
+        @method _getId
+        @private
+        @return {String}
+    **/
+    _getId: function() {
+        var id = this.fontName;
+        for (var i = 0; i < this.text.length; i++) {
+            id += this.text.charCodeAt(i);
+        }
+        id += this.align;
+        id += this.wrap;
+        return id;
     }
 });
 
 /**
     @class Font
+    @constructor
+    @param {Object} data
 **/
 game.createClass('Font', {
-    chars: {},
-    spaceWidth: 0,
+    /**
+        @property {BaseTexture} baseTexture
+    **/
     baseTexture: null,
+    /**
+        @property {Object} chars
+    **/
+    chars: {},
+    /**
+        @property {Number} lineHeight
+    **/
     lineHeight: 0,
+    /**
+        @property {Number} spaceWidth
+    **/
+    spaceWidth: 0,
 
     init: function(data) {
         var image = data.getElementsByTagName('page')[0].getAttribute('file');
-        this.baseTexture = game.BaseTexture.fromImage(game._getFilePath(image));
-
         var info = data.getElementsByTagName('info')[0];
         var common = data.getElementsByTagName('common')[0];
         var face = info.getAttribute('face');
-        this.lineHeight = parseInt(common.getAttribute('lineHeight'));
         var chars = data.getElementsByTagName('char');
+
+        this.baseTexture = game.BaseTexture.fromImage(game._getFilePath(image));
+        this.lineHeight = parseInt(common.getAttribute('lineHeight'));
+        
         for (var i = 0; i < chars.length; i++) {
             var xadvance = parseInt(chars[i].getAttribute('xadvance'));
-            var xoffset = parseInt(chars[i].getAttribute('xoffset'));
-            var yoffset = parseInt(chars[i].getAttribute('yoffset'));
             var id = parseInt(chars[i].getAttribute('id'));
             if (id === 32) {
                 this.spaceWidth = xadvance;
                 continue;
             }
+            var xoffset = parseInt(chars[i].getAttribute('xoffset'));
+            var yoffset = parseInt(chars[i].getAttribute('yoffset'));
             var x = parseInt(chars[i].getAttribute('x'));
             var y = parseInt(chars[i].getAttribute('y'));
             var width = parseInt(chars[i].getAttribute('width'));
@@ -393,6 +329,16 @@ game.createClass('Font', {
 });
 
 game.addAttributes('Font', {
+    /**
+        @attribute {Object} cache
+    **/
+    cache: {},
+
+    /**
+        @method fromData
+        @static
+        @param {Object} data
+    **/
     fromData: function(data) {
         var info = data.getElementsByTagName('info')[0];
         var face = info.getAttribute('face');
@@ -406,13 +352,15 @@ game.addAttributes('Font', {
         return font;
     },
 
+    /**
+        @method clearCache
+        @static
+    **/
     clearCache: function() {
         for (var i in this.cache) {
             delete this.cache[i];
         }
-    },
-
-    cache: {}
+    }
 });
 
 });
