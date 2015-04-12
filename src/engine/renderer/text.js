@@ -173,22 +173,17 @@ game.createClass('Text', 'Container', {
         var height = lines.length * this.fontClass.lineHeight;
 
         this._lines = lines;
-        this._generateTexture(id, width, height);
+        this._generateText(id, width, height);
     },
 
     /**
-        @method _generateTexture
+        @method _generateText
         @private
         @param {String} id
         @param {Number} width
         @param {Number} height
     **/
-    _generateTexture: function(id, width, height) {
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
-        canvas.width = width;
-        canvas.height = height;
-        
+    _generateText: function(id, width, height) {        
         var x = 0;
         var y = 0;
         var curLine = 0;
@@ -241,22 +236,8 @@ game.createClass('Text', 'Container', {
             sprite.position.y = y + charObj.yoffset;
             this.addChild(sprite);
 
-            context.drawImage(
-                texture.baseTexture.source,
-                texture.position.x,
-                texture.position.y,
-                texture.width,
-                texture.height,
-                x + charObj.xoffset,
-                y + charObj.yoffset,
-                texture.width,
-                texture.height);
-
             x += charObj.xadvance + charObj.xoffset;
         }
-
-        canvas._id = id;
-        this.texture = game.Texture.fromCanvas(canvas);
     },
 
     /**

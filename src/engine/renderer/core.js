@@ -287,7 +287,23 @@ game.createClass('Matrix', {
     /**
         @property {Number} ty
     **/
-    ty: null
+    ty: null,
+
+    /**
+        Reset transform to default.
+        @method reset
+        @chainable
+    **/
+    reset: function() {
+        this.a = 1;
+        this.b = 0;
+        this.c = 0;
+        this.d = 1;
+        this.tx = 0;
+        this.ty = 0;
+
+        return this;
+    }
 });
 
 });

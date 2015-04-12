@@ -190,10 +190,10 @@ game.createClass('Container', {
             return this._worldBounds;
         }
 
-        var minX = Infinity;
-        var minY = Infinity;
-        var maxX = -Infinity;
-        var maxY = -Infinity;
+        var minX = this._worldTransform.tx;
+        var minY = this._worldTransform.ty;
+        var maxX = this._worldTransform.tx;
+        var maxY = this._worldTransform.ty;
 
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
@@ -242,8 +242,12 @@ game.createClass('Container', {
     _generateCachedSprite: function() {
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
+
         canvas.width = this.width;
         canvas.height = this.height;
+
+        this._worldTransform.reset();
+        this.updateChildTransform();
 
         this._render(context);
 
@@ -289,9 +293,10 @@ game.defineProperties('Container', {
         set: function(value) {
             if (this._cacheAsBitmap === value) return;
 
-            this._cacheAsBitmap = value;
             if (value) this._generateCachedSprite();
             else this._destroyCachedSprite();
+
+            this._cacheAsBitmap = value;
         }
     }
 });

@@ -116,7 +116,8 @@ game.createClass('Debug', {
                     this.super(context);
                     
                     if (!this.parent) return;
-                    if (this.parent._cacheAsBitmap) return;
+                    // if (this.parent._cacheAsBitmap) return;
+                    if (context !== game.renderer.context) return;
 
                     // TODO
                     if (game.renderer.webGL) return;

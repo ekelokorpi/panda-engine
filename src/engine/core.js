@@ -231,7 +231,6 @@ var game = {
             this._gameModuleDefined = true;
             this._current.requires.push('engine.core');
         }
-        if (this._gameModuleDefined && this._DOMLoaded) this._loadModules();
 
         this.modules[name] = this._current;
         this.moduleQueue.push(this._current);
@@ -270,6 +269,9 @@ var game = {
         this._current.body = body;
         this._current = null;
         if (this._loadFinished) this._loadModules();
+        if (this._gameModuleDefined && this._DOMLoaded && !this._loadFinished) {
+            this._loadModules();
+        }
     },
 
     /**
