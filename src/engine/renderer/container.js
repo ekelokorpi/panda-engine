@@ -25,6 +25,8 @@ game.createClass('Container', {
     scale: null,
     stage: null,
     visible: true,
+    _cacheAsBitmap: false,
+    _cachedSprite: null,
     _cosCache: 1,
     _interactive: false,
     _interactiveChildren: false,
@@ -126,8 +128,8 @@ game.createClass('Container', {
         var b = this._sinCache * this.scale.x;
         var c = -this._sinCache * this.scale.y;
         var d = this._cosCache * this.scale.y;
-        var tx = this.position.x - (this.anchor.x * a + this.anchor.y * c) + this.parent.anchor.x;
-        var ty = this.position.y - (this.anchor.x * b + this.anchor.y * d) + this.parent.anchor.y;
+        var tx = this.position.x - (this.anchor.x * a + this.anchor.y * c);
+        var ty = this.position.y - (this.anchor.x * b + this.anchor.y * d);
 
         wt.a = a * pt.a + b * pt.c;
         wt.b = a * pt.b + b * pt.d;
@@ -137,6 +139,8 @@ game.createClass('Container', {
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
+
+        if (this._cacheAsBitmap) return;
 
         this.updateChildTransform();
     },
@@ -178,6 +182,14 @@ game.createClass('Container', {
         if (!this.children.length) return game.Container.emptyBounds;
         if (this._worldTransform.tx === null) this.updateParentTransform();
 
+        if (this._cachedSprite) {
+            this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
+            this._worldBounds.y = this._worldTransform.ty + this._cachedSprite.position.y;
+            this._worldBounds.width = this._cachedSprite.texture.width;
+            this._worldBounds.height = this._cachedSprite.texture.height;
+            return this._worldBounds;
+        }
+
         var minX = Infinity;
         var minY = Infinity;
         var maxX = -Infinity;
@@ -202,11 +214,43 @@ game.createClass('Container', {
     },
 
     _render: function(context) {
+        if (this._cachedSprite) {
+            context.globalAlpha = this._worldAlpha;
+
+            var t = this._cachedSprite.texture;
+            var wt = this._worldTransform;
+            var tx = wt.tx;
+            var ty = wt.ty;
+            
+            if (game.Renderer.roundPixels) {
+                tx = tx | 0;
+                ty = ty | 0;
+            }
+
+            context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
+            context.drawImage(t.baseTexture.source, t.position.x, t.position.y, t.width, t.height, 0, 0, t.width, t.height);
+            return;
+        }
+
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
             if (!child.visible || child.alpha <= 0 || !child.renderable) continue;
             child._render(context);
         }
+    },
+
+    _generateCachedSprite: function() {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        canvas.width = this.width;
+        canvas.height = this.height;
+
+        this._render(context);
+
+        var texture = game.Texture.fromCanvas(canvas);
+        var sprite = new game.Sprite(texture);
+
+        this._cachedSprite = sprite;
     }
 });
 
@@ -236,6 +280,18 @@ game.defineProperties('Container', {
             if (this._interactive === value) return;
             this._interactive = value;
             if (this.stage) game.input._needUpdate = true;
+        }
+    },
+    cacheAsBitmap: {
+        get: function() {
+            return this._cacheAsBitmap;
+        },
+        set: function(value) {
+            if (this._cacheAsBitmap === value) return;
+
+            this._cacheAsBitmap = value;
+            if (value) this._generateCachedSprite();
+            else this._destroyCachedSprite();
         }
     }
 });

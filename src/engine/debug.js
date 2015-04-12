@@ -59,6 +59,13 @@ game.createClass('Debug', {
         this.debugDiv.style.pointerEvents = 'none';
         document.body.appendChild(this.debugDiv);
 
+        game.Container.inject({
+            _render: function(context) {
+                this.super(context);
+                if (this._cacheAsBitmap) game.debug.sprites++;
+            }
+        });
+
         game.Sprite.inject({
             _render: function(context) {
                 this.super(context);
@@ -109,7 +116,8 @@ game.createClass('Debug', {
                     this.super(context);
                     
                     if (!this.parent) return;
-                    
+                    if (this.parent._cacheAsBitmap) return;
+
                     // TODO
                     if (game.renderer.webGL) return;
 

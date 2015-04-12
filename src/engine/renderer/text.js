@@ -17,7 +17,7 @@ game.module(
     @param {String} text
     @param {Object} [props]
 **/
-game.createClass('Text', 'Sprite', {
+game.createClass('Text', 'Container', {
     /**
         @property {String} font
     **/
@@ -45,10 +45,10 @@ game.createClass('Text', 'Sprite', {
     _lines: null,
 
     staticInit: function(text, props) {
+        this.super();
         this.text = this.text || text;
         game.merge(this, props);
         if (this.font) this.setFont(this.font);
-        this.super();
     },
 
     /**
@@ -236,6 +236,11 @@ game.createClass('Text', 'Sprite', {
 
             var texture = charObj.texture;
 
+            var sprite = new game.Sprite(texture);
+            sprite.position.x = x + charObj.xoffset;
+            sprite.position.y = y + charObj.yoffset;
+            this.addChild(sprite);
+
             context.drawImage(
                 texture.baseTexture.source,
                 texture.position.x,
@@ -260,7 +265,7 @@ game.createClass('Text', 'Sprite', {
         @return {String}
     **/
     _getId: function() {
-        var id = this.fontName;
+        var id = this.font;
         for (var i = 0; i < this.text.length; i++) {
             id += this.text.charCodeAt(i);
         }
