@@ -83,10 +83,8 @@ game.createClass('Text', 'Container', {
     **/
     updateText: function() {
         if (!this.fontClass) return;
-
-        var id = this._getId();
-        this.texture = game.Texture.cache[id];
-        if (this.texture) return;
+        
+        this.removeAll();
 
         var SPACE = 0;
         var WORD = 1;
@@ -173,17 +171,16 @@ game.createClass('Text', 'Container', {
         var height = lines.length * this.fontClass.lineHeight;
 
         this._lines = lines;
-        this._generateText(id, width, height);
+        this._generateText(width, height);
     },
 
     /**
         @method _generateText
         @private
-        @param {String} id
         @param {Number} width
         @param {Number} height
     **/
-    _generateText: function(id, width, height) {        
+    _generateText: function(width, height) {        
         var x = 0;
         var y = 0;
         var curLine = 0;
@@ -238,21 +235,6 @@ game.createClass('Text', 'Container', {
 
             x += charObj.xadvance + charObj.xoffset;
         }
-    },
-
-    /**
-        @method _getId
-        @private
-        @return {String}
-    **/
-    _getId: function() {
-        var id = this.font;
-        for (var i = 0; i < this.text.length; i++) {
-            id += this.text.charCodeAt(i);
-        }
-        id += this.align;
-        id += this.wrap;
-        return id;
     }
 });
 

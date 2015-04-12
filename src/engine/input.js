@@ -90,7 +90,11 @@ game.createClass('Input', {
         this._preventDefault(event);
         this._calculateXY(event);
         
-        this._processEvent('mousemove', event);
+        var _mouseMoveItem = this._processEvent('mousemove', event);
+        if (this._mouseMoveItem && this._mouseMoveItem !== _mouseMoveItem) {
+            this._mouseMoveItem.mouseout(event.canvasX, event.canvasY, event);
+        }
+        this._mouseMoveItem = _mouseMoveItem;
 
         if (game.scene._mousemove) {
             game.scene._mousemove(event.canvasX, event.canvasY, event.identifier, event);
