@@ -168,19 +168,16 @@ game.createClass('Text', 'Container', {
             }
         }
 
-        var height = lines.length * this.fontClass.lineHeight;
-
         this._lines = lines;
-        this._generateText(width, height);
+        this._generateText(width);
     },
 
     /**
         @method _generateText
         @private
         @param {Number} width
-        @param {Number} height
     **/
-    _generateText: function(width, height) {        
+    _generateText: function(width) {        
         var x = 0;
         var y = 0;
         var curLine = 0;

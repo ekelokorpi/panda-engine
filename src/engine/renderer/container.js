@@ -14,26 +14,105 @@ game.module(
     @class Container
 **/
 game.createClass('Container', {
+    /**
+        @property {Vector} anchor
+    **/
     anchor: null,
+    /**
+        @property {Number} alpha
+        @default 1
+    **/
     alpha: 1,
+    /**
+        @property {Array} children
+    **/
     children: [],
+    /**
+        @property {Boolean} interactive
+        @default false
+    **/
     interactive: false,
+    /**
+        @property {Container} parent
+    **/
     parent: null,
+    /**
+        @property {Vector} position
+    **/
     position: null,
+    /**
+        @property {Boolean} renderable
+        @default true
+    **/
     renderable: true,
+    /**
+        @property {Number} rotation
+        @default 0
+    **/
     rotation: 0,
+    /**
+        @property {Vector} scale
+    **/
     scale: null,
+    /**
+        @property {Container} stage
+    **/
     stage: null,
+    /**
+        @property {Boolean} visible
+        @default true
+    **/
     visible: true,
+    /**
+        @property {Boolean} _cacheAsBitmap
+        @default false
+        @private
+    **/
     _cacheAsBitmap: false,
+    /**
+        @property {Sprite} _cachedSprite
+        @private
+    **/
     _cachedSprite: null,
+    /**
+        @property {Number} _cosCache
+        @default 1
+        @private
+    **/
     _cosCache: 1,
+    /**
+        @property {Boolean} _interactive
+        @default false
+        @private
+    **/
     _interactive: false,
-    _interactiveChildren: false,
+    /**
+        @property {Number} _rotationCache
+        @default 0
+        @private
+    **/
     _rotationCache: 0,
+    /**
+        @property {Number} _sinCache
+        @default 0
+        @private
+    **/
     _sinCache: 0,
+    /**
+        @property {Number} _worldAlpha
+        @default 1
+        @private
+    **/
     _worldAlpha: 1,
+    /**
+        @property {Rectangle} _worldBounds
+        @private
+    **/
     _worldBounds: null,
+    /**
+        @property {Matrix} _worldTransform
+        @private
+    **/
     _worldTransform: null,
 
     staticInit: function() {
@@ -44,6 +123,12 @@ game.createClass('Container', {
         this._worldBounds = new game.Rectangle();
     },
 
+    /**
+        Add container to this.
+        @method addChild
+        @param {Container} child
+        @chainable
+    **/
     addChild: function(child) {
         var index = this.children.indexOf(child);
         if (index !== -1) return;
@@ -54,32 +139,35 @@ game.createClass('Container', {
         return this;
     },
 
+    /**
+        Add this to container.
+        @method addTo
+        @param {Container} container
+        @chainable
+    **/
     addTo: function(container) {
         container.addChild(this);
         return this;
     },
 
-    removeChild: function(child) {
-        var index = this.children.indexOf(child);
-        if (index === -1) return;
-        this.children.splice(index, 1);
-        child.parent = null;
-        if (this.stage) child._removeStageReference();
+    /**
+        Set anchor to center.
+        @method anchorCenter
+        @chainable
+    **/
+    anchorCenter: function() {
+        this.anchor.set(this.width / 2, this.height / 2);
         return this;
     },
 
-    removeAll: function() {
-        for (var i = this.children.length - 1; i >= 0; i--) {
-            this.children[i].remove();
-        }
-        return this;
-    },
-
-    remove: function() {
-        if (this.parent) this.parent.removeChild(this);
-        return this;
-    },
-
+    /**
+        Center this position to container.
+        @method center
+        @chainable
+        @param {Container} container
+        @param {Number} [offsetX]
+        @param {Number} [offsetY]
+    **/
     center: function(container, offsetX, offsetY) {
         if (!container) return;
 
@@ -102,16 +190,82 @@ game.createClass('Container', {
         return this;
     },
 
-    anchorCenter: function() {
-        this.anchor.set(this.width / 2, this.height / 2);
+    /**
+        @method click
+    **/
+    click: function() {},
+
+    /**
+        @method mousedown
+    **/
+    mousedown: function() {},
+
+    /**
+        @method mousemove
+    **/
+    mousemove: function() {},
+
+    /**
+        @method mouseout
+    **/
+    mouseout: function() {},
+
+    /**
+        @method mouseup
+    **/
+    mouseup: function() {},
+
+    /**
+        Remove this from it's parent.
+        @method remove
+        @chainable
+    **/
+    remove: function() {
+        if (this.parent) this.parent.removeChild(this);
         return this;
     },
 
-    mousedown: function() {},
-    mousemove: function() {},
-    mouseup: function() {},
-    click: function() {},
+    /**
+        Remove all childrens.
+        @method removeAll
+        @chainable
+    **/
+    removeAll: function() {
+        for (var i = this.children.length - 1; i >= 0; i--) {
+            this.children[i].remove();
+        }
+        return this;
+    },
 
+    /**
+        Remove children.
+        @method removeChild
+        @chainable
+        @param {Container} child
+    **/
+    removeChild: function(child) {
+        var index = this.children.indexOf(child);
+        if (index === -1) return;
+        this.children.splice(index, 1);
+        child.parent = null;
+        if (this.stage) child._removeStageReference();
+        return this;
+    },
+
+    /**
+        @method updateChildTransform
+    **/
+    updateChildTransform: function() {
+        for (var i = this.children.length - 1; i >= 0; i--) {
+            var child = this.children[i];
+            if (!child.visible || child.alpha <= 0) continue;
+            child.updateTransform();
+        }
+    },
+
+    /**
+        @method updateTransform
+    **/
     updateTransform: function() {
         if (!this.parent) return this.updateChildTransform();
         
@@ -145,39 +299,40 @@ game.createClass('Container', {
         this.updateChildTransform();
     },
 
+    /**
+        @method updateParentTransform
+    **/
     updateParentTransform: function() {
         if (this.parent) this.parent.updateParentTransform();
         else this.updateTransform();
     },
 
-    updateChildTransform: function() {
-        for (var i = this.children.length - 1; i >= 0; i--) {
-            var child = this.children[i];
-            if (!child.visible || child.alpha <= 0) continue;
-            child.updateTransform();
-        }
+    /**
+        @method _generateCachedSprite
+        @private
+    **/
+    _generateCachedSprite: function() {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+
+        canvas.width = this.width;
+        canvas.height = this.height;
+
+        this._worldTransform.reset();
+        this.updateChildTransform();
+
+        this._render(context);
+
+        var texture = game.Texture.fromCanvas(canvas);
+        var sprite = new game.Sprite(texture);
+
+        this._cachedSprite = sprite;
     },
 
-    _setStageReference: function(stage) {
-        this.stage = stage;
-        if (this._interactive) game.input._needUpdate = true;
-
-        for (var i = 0; i < this.children.length; i++) {
-            var child = this.children[i];
-            child._setStageReference(stage);
-        }
-    },
-
-    _removeStageReference: function() {
-        for (var i = 0; i < this.children.length; i++) {
-            var child = this.children[i];
-            child._removeStageReference();
-        }
-
-        if (this._interactive) game.input._needUpdate = true;
-        this.stage = null;
-    },
-
+    /**
+        @method _getBounds
+        @private
+    **/
     _getBounds: function() {
         if (!this.children.length) return game.Container.emptyBounds;
         if (this._worldTransform.tx === null) this.updateParentTransform();
@@ -213,6 +368,25 @@ game.createClass('Container', {
         return this._worldBounds;
     },
 
+    /**
+        @method _removeStageReference
+        @private
+    **/
+    _removeStageReference: function() {
+        for (var i = 0; i < this.children.length; i++) {
+            var child = this.children[i];
+            child._removeStageReference();
+        }
+
+        if (this._interactive) game.input._needUpdate = true;
+        this.stage = null;
+    },
+
+    /**
+        @method _render
+        @private
+        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
+    **/
     _render: function(context) {
         if (this._cachedSprite) {
             context.globalAlpha = this._worldAlpha;
@@ -239,26 +413,26 @@ game.createClass('Container', {
         }
     },
 
-    _generateCachedSprite: function() {
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
+    /**
+        @method _setStageReference
+        @private
+        @param {Container} stage
+    **/
+    _setStageReference: function(stage) {
+        this.stage = stage;
+        if (this._interactive) game.input._needUpdate = true;
 
-        canvas.width = this.width;
-        canvas.height = this.height;
-
-        this._worldTransform.reset();
-        this.updateChildTransform();
-
-        this._render(context);
-
-        var texture = game.Texture.fromCanvas(canvas);
-        var sprite = new game.Sprite(texture);
-
-        this._cachedSprite = sprite;
+        for (var i = 0; i < this.children.length; i++) {
+            var child = this.children[i];
+            child._setStageReference(stage);
+        }
     }
 });
 
 game.addAttributes('Container', {
+    /**
+        @attribute {Rectangle} emptyBounds
+    **/
     emptyBounds: new game.Rectangle()
 });
 
@@ -271,11 +445,18 @@ game.defineProperties('Container', {
             return this.scale.x * this._getBounds().width;
         }
     },
+    /**
+        @property {Number} height
+    **/
     height: {
         get: function() {
             return this.scale.y * this._getBounds().height;
         }
     },
+    /**
+        @property {Boolean} interactive
+        @default false
+    **/
     interactive: {
         get: function() {
             return this._interactive;
@@ -286,6 +467,10 @@ game.defineProperties('Container', {
             if (this.stage) game.input._needUpdate = true;
         }
     },
+    /**
+        @property {Boolean} cacheAsBitmap
+        @default false
+    **/
     cacheAsBitmap: {
         get: function() {
             return this._cacheAsBitmap;
