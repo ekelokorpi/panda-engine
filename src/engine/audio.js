@@ -13,21 +13,6 @@ game.module(
 **/
 game.createClass('Audio', {
     /**
-        List of supported audio formats.
-        @property {Array} formats
-    **/
-    formats: [],
-    /**
-        List of playing sounds.
-        @property {Array} playingSounds
-    **/
-    playingSounds: [],
-    /**
-        List of paused sounds.
-        @property {Array} pausedSounds
-    **/
-    pausedSounds: [],
-    /**
         Current music id.
         @property {Number} currentMusic
     **/
@@ -38,11 +23,26 @@ game.createClass('Audio', {
     **/
     currentMusicName: null,
     /**
+        List of supported audio formats.
+        @property {Array} formats
+    **/
+    formats: [],
+    /**
         Is music muted.
         @property {Boolean} musicMuted
         @default false
     **/
     musicMuted: false,
+    /**
+        List of paused sounds.
+        @property {Array} pausedSounds
+    **/
+    pausedSounds: [],
+    /**
+        List of playing sounds.
+        @property {Array} playingSounds
+    **/
+    playingSounds: [],
     /**
         Is sounds muted.
         @property {Boolean} soundMuted
@@ -60,15 +60,15 @@ game.createClass('Audio', {
     **/
     _audioObjects: {},
     /**
-        @property {Array} _systemPaused
-        @private
-    **/
-    _systemPaused: [],
-    /**
         @property {Object} _sources
         @private
     **/
     _sources: {},
+    /**
+        @property {Array} _systemPaused
+        @private
+    **/
+    _systemPaused: [],
 
     init: function() {
         game._normalizeVendorAttribute(window, 'AudioContext');
@@ -113,6 +113,28 @@ game.createClass('Audio', {
 
         this.musicVolume = game.Audio.musicVolume;
         this.soundVolume = game.Audio.soundVolume;
+    },
+
+    /**
+        Fade in sound.
+        @method fadeIn
+        @param {Number} id
+        @param {Number} time
+        @return {Boolean}
+    **/
+    fadeIn: function(id, time) {
+        return this._fade(id, time, 1);
+    },
+
+    /**
+        Fade out sound.
+        @method fadeOut
+        @param {Number} id
+        @param {Number} time
+        @return {Boolean}
+    **/
+    fadeOut: function(id, time) {
+        return this._fade(id, time, 0);
     },
 
     /**
@@ -374,7 +396,7 @@ game.createClass('Audio', {
     },
 
     /**
-        Change audio playback rate (Web Audio).
+        Set audio playback rate (Web Audio).
         @method setPlaybackRate
         @param {Number} id
         @param {Number} rate
@@ -539,6 +561,33 @@ game.createClass('Audio', {
         if (typeof audio.callback === 'function') audio.callback();
 
         delete this._audioObjects[id];
+    },
+
+    /**
+        @method _fade
+        @private
+    **/
+    _fade: function(id, time, to) {
+        var audio = this._audioObjects[id];
+        if (!audio) return false;
+
+        time = time || 1000;
+        time = time / 1000;
+
+        // Web Audio
+        if (this.context) {
+            var currTime = this.context.currentTime;
+            if (to === 1) audio.gainNode.gain.value = 0;
+            var from = audio.gainNode.gain.value;
+            audio.gainNode.gain.linearRampToValueAtTime(from, currTime);
+            audio.gainNode.gain.linearRampToValueAtTime(to, currTime + time);
+        }
+        // HTML5 Audio
+        else {
+            return false;
+        }
+
+        return true;
     },
 
     /**
@@ -773,12 +822,6 @@ game.addAttributes('Audio', {
     **/
     enabled: true,
     /**
-        Enable Web Audio.
-        @attribute {Boolean} webAudio
-        @default true
-    **/
-    webAudio: true,
-    /**
         List of available audio formats.
         @attribute {Array} formats
     **/
@@ -788,11 +831,11 @@ game.addAttributes('Audio', {
         { ext: 'wav', type: 'audio/wav' }
     ],
     /**
-        Stop audio, when changing scene.
-        @attribute {Boolean} stopOnSceneChange
-        @default true
+        Music volume.
+        @attribute {Number} musicVolume
+        @default 1
     **/
-    stopOnSceneChange: true,
+    musicVolume: 1,
     /**
         Sound volume.
         @attribute {Number} soundVolume
@@ -800,11 +843,17 @@ game.addAttributes('Audio', {
     **/
     soundVolume: 1,
     /**
-        Music volume.
-        @attribute {Number} musicVolume
-        @default 1
+        Stop audio, when changing scene.
+        @attribute {Boolean} stopOnSceneChange
+        @default true
     **/
-    musicVolume: 1
+    stopOnSceneChange: true,
+    /**
+        Enable Web Audio.
+        @attribute {Boolean} webAudio
+        @default true
+    **/
+    webAudio: true
 });
 
 });
