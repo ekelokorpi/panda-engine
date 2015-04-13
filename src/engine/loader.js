@@ -99,19 +99,20 @@ game.createClass('Loader', {
     **/
     onStart: function() {
         if (this._dynamic) return;
-        var barWidth = game.Loader.barWidth * game.scale;
-        var barHeight = game.Loader.barHeight * game.scale;
+
+        var barWidth = game.Loader.barWidth;
+        var barHeight = game.Loader.barHeight;
 
         var barBg = new game.Graphics();
         barBg.beginFill(game.Loader.barBgColor);
         barBg.drawRect(0, 0, barWidth, barHeight);
-        barBg.position.set((game.system.width - barWidth) / 2, (game.system.height - barHeight) / 2);
+        barBg.position.set(game.system.width / 2 - barWidth / 2, game.system.height / 2 - barHeight / 2);
         barBg.addTo(this.stage);
 
         this.barFg = new game.Graphics();
         this.barFg.beginFill(game.Loader.barColor);
         this.barFg.drawRect(0, 0, barWidth, barHeight);
-        this.barFg.position.set((game.system.width - barWidth) / 2, (game.system.height - barHeight) / 2);
+        this.barFg.position.set(game.system.width / 2 - barWidth / 2, game.system.height / 2 - barHeight / 2);
         this.barFg.addTo(this.stage);
         this.onProgress();
     },

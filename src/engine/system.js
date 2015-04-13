@@ -94,8 +94,8 @@ game.createClass('System', {
     _pausedOnHide: false,
 
     init: function() {
-        this.originalWidth = game.System.width;
-        this.originalHeight = game.System.height;
+        this.width = this.originalWidth = game.System.width;
+        this.height = this.originalHeight = game.System.height;
 
         // Get scale value for HiRes
         for (var i = 2; i <= game.System.hires; i *= 2) {
@@ -111,8 +111,8 @@ game.createClass('System', {
             game.scale *= 2;
         }
 
-        this.canvasWidth = this.width = this.originalWidth * game.scale;
-        this.canvasHeight = this.height = this.originalHeight * game.scale;
+        this.canvasWidth = this.originalWidth * game.scale;
+        this.canvasHeight = this.originalHeight * game.scale;
 
         // Init page visibility
         var visibilityChange;

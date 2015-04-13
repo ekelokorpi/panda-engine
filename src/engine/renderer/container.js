@@ -278,12 +278,14 @@ game.createClass('Container', {
             this._cosCache = Math.cos(this.rotation);
         }
 
+        var ax = this.anchor.x;
+        var ay = this.anchor.y;
         var a = this._cosCache * this.scale.x;
         var b = this._sinCache * this.scale.x;
         var c = -this._sinCache * this.scale.y;
         var d = this._cosCache * this.scale.y;
-        var tx = this.position.x - (this.anchor.x * a + this.anchor.y * c);
-        var ty = this.position.y - (this.anchor.x * b + this.anchor.y * d);
+        var tx = this.position.x - (ax * a + ay * c);
+        var ty = this.position.y - (ax * b + ay * d);
 
         wt.a = a * pt.a + b * pt.c;
         wt.b = a * pt.b + b * pt.d;
@@ -291,6 +293,9 @@ game.createClass('Container', {
         wt.d = c * pt.b + d * pt.d;
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+
+        wt.tx *= game.scale;
+        wt.ty *= game.scale;
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
@@ -442,7 +447,7 @@ game.defineProperties('Container', {
     **/
     width: {
         get: function() {
-            return this.scale.x * this._getBounds().width;
+            return this.scale.x * this._getBounds().width / game.scale;
         }
     },
     /**
@@ -450,7 +455,7 @@ game.defineProperties('Container', {
     **/
     height: {
         get: function() {
-            return this.scale.y * this._getBounds().height;
+            return this.scale.y * this._getBounds().height / game.scale;
         }
     },
     /**

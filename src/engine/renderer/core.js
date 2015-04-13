@@ -91,7 +91,7 @@ game.createClass('Renderer', {
                 this.smoothProperty = 'msImageSmoothingEnabled';
         }
         
-        this._resize(game.system.width, game.system.height);
+        this._resize(game.system.canvasWidth, game.system.canvasHeight);
     },
 
     /**

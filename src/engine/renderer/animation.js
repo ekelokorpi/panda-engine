@@ -77,11 +77,17 @@ game.createClass('Animation', 'Sprite', {
         @method addAnim
         @chainable
         @param {String} name
-        @param {Array} frames
+        @param {Array} [frames]
         @param {Object} [props]
     **/
     addAnim: function(name, frames, props) {
         if (this.anims[name]) throw 'Animation ' + name + ' already added';
+        if (!frames) {
+            var frames = [];
+            for (var i = 0; i < this.textures.length; i++) {
+                frames.push(i);
+            }
+        }
         var anim = new game.AnimationData(frames, props);
         this.anims[name] = anim;
         return this;
@@ -92,7 +98,7 @@ game.createClass('Animation', 'Sprite', {
         @method play
         @chainable
         @param {String} name Name of animation
-        @param {Number} [frame] Frame number
+        @param {Number} [frame] Frame index
     **/
     play: function(name, frame) {
         var anim = this.anims[name];
@@ -110,7 +116,7 @@ game.createClass('Animation', 'Sprite', {
         Stop animation.
         @method stop
         @chainable
-        @param {Number} [frame] Frame number
+        @param {Number} [frame] Frame index
     **/
     stop: function(frame) {
         this.playing = false;

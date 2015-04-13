@@ -265,6 +265,7 @@ game.createClass('Debug', {
         if (game.scene.world) text += ' BODIES:' + game.scene.world.bodies.length;
         text += ' INPUTS: ' + game.input.items.length;
         text += ' WEBGL: ' + !!game.renderer.webGL;
+        text += ' HIRES: ' + game.scale;
         this._setText(text);
     },
 

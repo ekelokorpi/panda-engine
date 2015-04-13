@@ -36,6 +36,8 @@ game.createClass('Graphics', 'Container', {
     },
 
     drawRect: function(x, y, width, height) {
+        width *= game.scale;
+        height *= game.scale;
         var shape = new game.Rectangle(width, height, x, y);
         this._drawShape(shape);
         return this;
@@ -46,8 +48,41 @@ game.createClass('Graphics', 'Container', {
         this.data.push(data);
     },
 
+    _getBounds: function() {
+        if (this._worldTransform.tx === null) this.updateParentTransform();
+
+        var minX = this._worldTransform.tx;
+        var minY = this._worldTransform.ty;
+        var maxX = this._worldTransform.tx;
+        var maxY = this._worldTransform.ty;
+
+        for (var i = 0; i < this.data.length; i++) {
+            var data = this.data[i];
+
+            var x = this._worldTransform.tx + data.shape.x;
+            var y = this._worldTransform.ty + data.shape.y;
+
+            if (data.shape instanceof game.Rectangle) {
+                var width = x + data.shape.width;
+                var height = y + data.shape.height;
+            }
+
+            if (x < minX) minX = x;
+            if (y < minY) minY = y;
+            if (width > maxX) maxX = width;
+            if (height > maxY) maxY = height;
+        }
+
+        this._worldBounds.x = minX;
+        this._worldBounds.y = minY;
+        this._worldBounds.width = maxX - minX;
+        this._worldBounds.height = maxY - minY;
+        return this._worldBounds;
+    },
+
     _render: function(context) {
         if (game.renderer.webGL) {
+            // TODO
             this.super(context);
             return;
         }
