@@ -480,36 +480,6 @@ game.addAttributes('Container', {
 
 game.defineProperties('Container', {
     /**
-        @property {Number} width
-    **/
-    width: {
-        get: function() {
-            return this.scale.x * this._getBounds().width / game.scale;
-        }
-    },
-    /**
-        @property {Number} height
-    **/
-    height: {
-        get: function() {
-            return this.scale.y * this._getBounds().height / game.scale;
-        }
-    },
-    /**
-        @property {Boolean} interactive
-        @default false
-    **/
-    interactive: {
-        get: function() {
-            return this._interactive;
-        },
-        set: function(value) {
-            if (this._interactive === value) return;
-            this._interactive = value;
-            if (this.stage) game.input._needUpdate = true;
-        }
-    },
-    /**
         @property {Boolean} cacheAsBitmap
         @default false
     **/
@@ -524,6 +494,67 @@ game.defineProperties('Container', {
             else this._destroyCachedSprite();
 
             this._cacheAsBitmap = value;
+        }
+    },
+
+    /**
+        @property {Number} height
+    **/
+    height: {
+        get: function() {
+            return this.scale.y * this._getBounds().height / game.scale;
+        }
+    },
+
+    /**
+        @property {Boolean} interactive
+        @default false
+    **/
+    interactive: {
+        get: function() {
+            return this._interactive;
+        },
+        set: function(value) {
+            if (this._interactive === value) return;
+            this._interactive = value;
+            if (this.stage) game.input._needUpdate = true;
+        }
+    },
+
+    /**
+        @property {Number} width
+    **/
+    width: {
+        get: function() {
+            return this.scale.x * this._getBounds().width / game.scale;
+        }
+    },
+
+    /**
+        Shorthand for x position.
+        @property {Number} x
+    **/
+    x: {
+        get: function() {
+            return this.position.x;
+        },
+
+        set: function(value) {
+            this.position.x = value;
+        }
+    },
+    
+    /**
+        Shorthand for y position.
+        @property {Number} y
+    **/
+    y: {
+        get: function() {
+            return this.position.y;
+        },
+
+        set: function(value) {
+            this.position.y = value;
         }
     }
 });
