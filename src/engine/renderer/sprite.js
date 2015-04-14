@@ -136,6 +136,7 @@ game.createClass('Sprite', 'Container', {
         @method _renderCanvas
         @private
         @param {CanvasRenderingContext2D} context
+        @param {Rectangle} [rect]
     **/
     _renderCanvas: function(context, rect) {
         if (!this.texture.baseTexture.loaded) return;
@@ -152,8 +153,8 @@ game.createClass('Sprite', 'Container', {
             ty = ty | 0;
         }
 
-        var x = 0;
-        var y = 0;
+        var x = t.position.x;
+        var y = t.position.y;
         var width = t.width;
         var height = t.height;
 
