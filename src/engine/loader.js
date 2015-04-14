@@ -300,8 +300,8 @@ game.createClass('Loader', {
         var frames = json.frames;
 
         for (var name in frames) {
-            var frame = frames[name];
-            var texture = new game.Texture(baseTexture, frame.x, frame.y, frame.width, frame.height);
+            var frame = frames[name].frame || frames[name];
+            var texture = new game.Texture(baseTexture, frame.x, frame.y, frame.w, frame.h);
             game.Texture.cache[name] = texture;
         }
 

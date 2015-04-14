@@ -107,7 +107,7 @@ game.createClass('Sprite', 'Container', {
     /**
         @method _render
         @private
-        @param {CanvasRenderingContext2D} context
+        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
     **/
     _render: function(context) {
         if (!this.texture) return;
@@ -117,10 +117,9 @@ game.createClass('Sprite', 'Container', {
         if (!this.texture.height && this.texture.baseTexture.height) {
             this.texture.height = this.texture.baseTexture.height;
         }
-        if (!this.texture.width || !this.texture.height) return;
-
-        if (game.renderer.webGL) this._renderWebGL();
-        else this._renderCanvas(context);
+        if (!this.texture.width || !this.texture.height) {
+            return this._renderChildren(context);
+        }
 
         this.super(context);
     },
@@ -138,7 +137,7 @@ game.createClass('Sprite', 'Container', {
         @private
         @param {CanvasRenderingContext2D} context
     **/
-    _renderCanvas: function(context) {
+    _renderCanvas: function(context, rect) {
         if (!this.texture.baseTexture.loaded) return;
 
         context.globalAlpha = this._worldAlpha;
@@ -153,8 +152,30 @@ game.createClass('Sprite', 'Container', {
             ty = ty | 0;
         }
 
+        var x = 0;
+        var y = 0;
+        var width = t.width;
+        var height = t.height;
+
+        if (rect) {
+            x = rect.x;
+            y = rect.y;
+            width = rect.width;
+            height = rect.height;
+        }
+
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
-        context.drawImage(t.baseTexture.source, t.position.x, t.position.y, t.width, t.height, 0, 0, t.width, t.height);
+        context.drawImage(
+            t.baseTexture.source,
+            x,
+            y,
+            width,
+            height,
+            0,
+            0,
+            width,
+            height
+        );
     }
 });
 

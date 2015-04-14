@@ -80,13 +80,11 @@ game.createClass('Graphics', 'Container', {
         return this._worldBounds;
     },
 
-    _render: function(context) {
-        if (game.renderer.webGL) {
-            // TODO
-            this.super(context);
-            return;
-        }
-        
+    _renderWebGL: function() {
+        // TODO
+    },
+
+    _renderCanvas: function(context) {
         context.setTransform(
             this._worldTransform.a,
             this._worldTransform.b,

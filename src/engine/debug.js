@@ -114,9 +114,8 @@ game.createClass('Debug', {
             game.Container.inject({
                 _render: function(context) {
                     this.super(context);
-                    
+
                     if (!this.parent) return;
-                    // if (this.parent._cacheAsBitmap) return;
                     if (context !== game.renderer.context) return;
 
                     // TODO

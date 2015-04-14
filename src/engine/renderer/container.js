@@ -393,7 +393,24 @@ game.createClass('Container', {
         @param {CanvasRenderingContext2D|WebGLRenderingContext} context
     **/
     _render: function(context) {
-        if (this._cachedSprite) {
+        if (this._cachedSprite) return this._renderCachedSprite(context);
+
+        if (game.renderer.webGl) this._renderWebGL();
+        else this._renderCanvas(context);
+
+        this._renderChildren(context);
+    },
+
+    /**
+        @method _renderCachedSprite
+        @private
+        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
+    **/
+    _renderCachedSprite: function(context) {
+        if (game.renderer.webGl) {
+            // TODO
+        }
+        else {
             context.globalAlpha = this._worldAlpha;
 
             var t = this._cachedSprite.texture;
@@ -408,15 +425,35 @@ game.createClass('Container', {
 
             context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
             context.drawImage(t.baseTexture.source, t.position.x, t.position.y, t.width, t.height, 0, 0, t.width, t.height);
-            return;
         }
+    },
 
+    /**
+        @method _renderCanvas
+        @private
+        @param {CanvasRenderingContext2D} context
+    **/
+    _renderCanvas: function(context) {},
+
+    /**
+        @method _renderChildren
+        @private
+        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
+    **/
+    _renderChildren: function(context) {
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
             if (!child.visible || child.alpha <= 0 || !child.renderable) continue;
             child._render(context);
         }
     },
+
+    /**
+        @method _renderWebGL
+        @private
+        @param {WebGLRenderingContext} context
+    **/
+    _renderWebGL: function(context) {},
 
     /**
         @method _setStageReference

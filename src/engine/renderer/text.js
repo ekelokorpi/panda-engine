@@ -12,7 +12,7 @@ game.module(
 
 /**
     @class Text
-    @extends Sprite
+    @extends Container
     @constructor
     @param {String} text
     @param {Object} [props]
