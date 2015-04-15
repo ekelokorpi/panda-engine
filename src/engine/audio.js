@@ -110,7 +110,7 @@ game.createClass('Audio', {
             errorCallback
         );
     },
-    
+
     _load: function(path, callback, errorCallback) {
         if (!game.Audio.enabled) {
             if (typeof callback === 'function') callback();
@@ -119,7 +119,7 @@ game.createClass('Audio', {
 
         var ext = path.split('.').pop();
         if (this.formats.indexOf(ext) === -1) ext = this.formats[0];
-        
+
         var realPath = path.replace(/[^\.]+$/, ext + game.nocache);
 
         // Web Audio
@@ -222,6 +222,8 @@ game.createClass('Audio', {
             this.sources[name].audio.play();
             var audio = this.sources[name].audio;
         }
+
+        audio.soundNameId = name;
 
         this.audioObjects[audioId] = audio;
         return audioId;
@@ -414,7 +416,7 @@ game.createClass('Audio', {
         this._resume(id);
         this.playingSounds.push(id);
         this.pausedSounds.splice(index, 1);
-        
+
         return true;
     },
 
@@ -465,6 +467,24 @@ game.createClass('Audio', {
     },
 
     /**
+        Stop specific sound by its name.
+        @method stopSoundByName
+        @param {Number} [id] Id of sound
+        @param {Boolean} [skipCallback] Skip callback function
+        @return {Boolean}
+     **/
+    stopSoundByName: function(name, skipCallback) {//audioObjects
+        var playingSoundsIds = Object.keys(this.audioObjects);
+        for (var i = playingSoundsIds.length - 1; i >= 0; i--) {
+            if (this.audioObjects[playingSoundsIds[i]].soundNameId === name) {
+                this._stop(playingSoundsIds[i], !!skipCallback);
+                return true;
+            }
+        }
+        return false;
+    },    
+
+    /**
         Play music.
         @method playMusic
         @param {Number} name Name of music
@@ -473,14 +493,14 @@ game.createClass('Audio', {
     **/
     playMusic: function(name, loop) {
         var volume = this.musicMuted ? 0 : this.musicVolume;
-        
+
         if (typeof loop === 'undefined') loop = true;
 
         if (this.currentMusic) this._stop(this.currentMusic);
-        
+
         this.currentMusic = this._play(name, !!loop, volume);
         this.currentMusicName = name;
-        
+
         return !!this.currentMusic;
     },
 
