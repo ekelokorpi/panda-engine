@@ -144,8 +144,9 @@ game.createClass('Input', {
         for (var i = this.items.length - 1; i >= 0; i--) {
             var item = this.items[i];
             if (item._interactive && this._hitTest(item, event.canvasX, event.canvasY)) {
-                item[eventName](event.canvasX, event.canvasY, event.identifier, event);
-                return item;
+                if (!item[eventName](event.canvasX, event.canvasY, event.identifier, event)) {
+                    return item;
+                }
             }
         }
     },

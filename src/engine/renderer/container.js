@@ -209,6 +209,7 @@ game.createClass('Container', {
         @param {Number} y
         @param {Number} id
         @param {MouseEvent|TouchEvent} event
+        @return {Boolean} return true, to skip to next object.
     **/
     mousedown: function() {},
 
@@ -218,6 +219,7 @@ game.createClass('Container', {
         @param {Number} y
         @param {Number} id
         @param {MouseEvent|TouchEvent} event
+        @return {Boolean} return true, to skip to next object.
     **/
     mousemove: function() {},
 
@@ -236,6 +238,7 @@ game.createClass('Container', {
         @param {Number} y
         @param {Number} id
         @param {MouseEvent|TouchEvent} event
+        @return {Boolean} return true, to skip to next object.
     **/
     mouseup: function() {},
 
