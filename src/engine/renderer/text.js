@@ -226,8 +226,8 @@ game.createClass('Text', 'Container', {
             var texture = charObj.texture;
 
             var sprite = new game.Sprite(texture);
-            sprite.position.x = x + charObj.xoffset;
-            sprite.position.y = y + charObj.yoffset;
+            sprite.position.x = (x + charObj.xoffset) / game.scale;
+            sprite.position.y = (y + charObj.yoffset) / game.scale;
             this.addChild(sprite);
 
             x += charObj.xadvance + charObj.xoffset;

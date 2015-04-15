@@ -174,16 +174,23 @@ game.createClass('Input', {
     _hitTest: function(container, x, y) {
         var hitArea = container.hitArea;
         if (hitArea) {
-            var hx = (container._worldTransform.tx + hitArea.x) * game.scale;
-            var hy = (container._worldTransform.ty + hitArea.y) * game.scale;
+            var bounds = container._getBounds();
+            var ax = container.anchor.x * container.scale.x / container.width;
+            var ay = container.anchor.y * container.scale.y / container.height;
+            var hx = bounds.x + bounds.width / 2 - container.width / 2 + hitArea.x;
+            var hy = bounds.y + bounds.height / 2 - container.height / 2 + hitArea.y;
+            var hw = hitArea.width * container.scale.x;
+            var hh = hitArea.height * container.scale.y;
+            hx += container.anchor.x * container.scale.x - hw * ax;
+            hy += container.anchor.y * container.scale.y - hh * ay;
         }
         else {
             hitArea = container._getBounds();
             var hx = hitArea.x;
             var hy = hitArea.y;
+            var hw = hitArea.width * game.scale;
+            var hh = hitArea.height * game.scale;
         }
-        var hw = hitArea.width * game.scale;
-        var hh = hitArea.height * game.scale;
 
         return (x >= hx && y >= hy && x <= hx + hw && y <= hy + hh);
     },

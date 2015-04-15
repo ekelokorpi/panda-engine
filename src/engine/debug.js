@@ -134,10 +134,19 @@ game.createClass('Debug', {
                     var hitArea = this.hitArea;
                     if (!hitArea) return;
 
-                    var x = (this._worldTransform.tx + hitArea.x) * game.scale;
-                    var y = (this._worldTransform.ty + hitArea.y) * game.scale;
-                    var width = hitArea.width * game.scale;
-                    var height = hitArea.height * game.scale;
+                    var ax = this.anchor.x * this.scale.x / this.width;
+                    var ay = this.anchor.y * this.scale.y / this.height;
+                    var x = bounds.x + bounds.width / 2 - this.width / 2 + hitArea.x;
+                    var y = bounds.y + bounds.height / 2 - this.height / 2 + hitArea.y;
+                    var hw = hitArea.width * this.scale.x;
+                    var hh = hitArea.height * this.scale.y;
+                    x += this.anchor.x * this.scale.x - hw * ax;
+                    y += this.anchor.y * this.scale.y - hh * ay;
+                    x *= game.scale;
+                    y *= game.scale;
+
+                    var width = hitArea.width * this.scale.x * game.scale;
+                    var height = hitArea.height * this.scale.y * game.scale;
                     context.globalAlpha = game.Debug.hitAreaAlpha;
                     context.fillStyle = game.Debug.hitAreaColor;
                     context.fillRect(x, y, width, height);
