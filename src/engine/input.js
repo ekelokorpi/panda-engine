@@ -92,7 +92,7 @@ game.createClass('Input', {
         
         var _mouseMoveItem = this._processEvent('mousemove', event);
         if (this._mouseMoveItem && this._mouseMoveItem !== _mouseMoveItem) {
-            this._mouseMoveItem.mouseout(event.canvasX, event.canvasY, event);
+            this._mouseMoveItem.mouseout(event.canvasX, event.canvasY, event.identifier, event);
         }
         this._mouseMoveItem = _mouseMoveItem;
 
@@ -114,7 +114,7 @@ game.createClass('Input', {
         if (this._mouseDownItem && this._mouseDownItem === this._mouseUpItem) {
             var time = game.Timer.time - this._mouseDownTime;
             if (game.Input.clickTimeout === 0 || time < game.Input.clickTimeout) {
-                this._mouseDownItem.click(event.canvasX, event.canvasY, event);
+                this._mouseDownItem.click(event.canvasX, event.canvasY, event.identifier, event);
             }
         }
 
@@ -144,7 +144,7 @@ game.createClass('Input', {
         for (var i = this.items.length - 1; i >= 0; i--) {
             var item = this.items[i];
             if (item._interactive && this._hitTest(item, event.canvasX, event.canvasY)) {
-                item[eventName](event.canvasX, event.canvasY, event);
+                item[eventName](event.canvasX, event.canvasY, event.identifier, event);
                 return item;
             }
         }
@@ -159,8 +159,8 @@ game.createClass('Input', {
         var rect = game.renderer.canvas.getBoundingClientRect();
         var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
         var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
-        event.canvasX = x;
-        event.canvasY = y;
+        event.canvasX = x / game.scale;
+        event.canvasY = y / game.scale;
     },
 
     /**
@@ -184,7 +184,7 @@ game.createClass('Input', {
         }
         var hw = hitArea.width * game.scale;
         var hh = hitArea.height * game.scale;
-        
+
         return (x >= hx && y >= hy && x <= hx + hw && y <= hy + hh);
     },
 

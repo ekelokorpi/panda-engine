@@ -187,6 +187,7 @@ game.createClass('Scene', {
         @method mousedown
         @param {Number} x
         @param {Number} y
+        @param {Number} id
         @param {MouseEvent|TouchEvent} event
     **/
     mousedown: function() {},
@@ -196,6 +197,7 @@ game.createClass('Scene', {
         @method mousemove
         @param {Number} x
         @param {Number} y
+        @param {Number} id
         @param {MouseEvent|TouchEvent} event
     **/
     mousemove: function() {},
@@ -205,6 +207,7 @@ game.createClass('Scene', {
         @method mouseup
         @param {Number} x
         @param {Number} y
+        @param {Number} id
         @param {MouseEvent|TouchEvent} event
     **/
     mouseup: function() {},

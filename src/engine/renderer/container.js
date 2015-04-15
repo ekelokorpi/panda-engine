@@ -196,26 +196,46 @@ game.createClass('Container', {
 
     /**
         @method click
+        @param {Number} x
+        @param {Number} y
+        @param {Number} id
+        @param {MouseEvent|TouchEvent} event
     **/
     click: function() {},
 
     /**
         @method mousedown
+        @param {Number} x
+        @param {Number} y
+        @param {Number} id
+        @param {MouseEvent|TouchEvent} event
     **/
     mousedown: function() {},
 
     /**
         @method mousemove
+        @param {Number} x
+        @param {Number} y
+        @param {Number} id
+        @param {MouseEvent|TouchEvent} event
     **/
     mousemove: function() {},
 
     /**
         @method mouseout
+        @param {Number} x
+        @param {Number} y
+        @param {Number} id
+        @param {MouseEvent|TouchEvent} event
     **/
     mouseout: function() {},
 
     /**
         @method mouseup
+        @param {Number} x
+        @param {Number} y
+        @param {Number} id
+        @param {MouseEvent|TouchEvent} event
     **/
     mouseup: function() {},
 
