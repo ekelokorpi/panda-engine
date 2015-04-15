@@ -54,8 +54,8 @@ game.createClass('Text', 'Container', {
     /**
         Set new font for text.
         @method setFont
-        @chainable
         @param {String} fontName
+        @chainable
     **/
     setFont: function(fontName) {
         this.font = fontName;
@@ -67,9 +67,9 @@ game.createClass('Text', 'Container', {
 
     /**
         Set new text.
-        @method setText
-        @chainable
+        @method setText        
         @param {String} text
+        @chainable
     **/
     setText: function(text) {
         this.text = text;
@@ -174,8 +174,8 @@ game.createClass('Text', 'Container', {
 
     /**
         @method _generateText
-        @private
         @param {Number} width
+        @private
     **/
     _generateText: function(width) {        
         var x = 0;

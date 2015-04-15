@@ -122,10 +122,25 @@ game.createClass('Debug', {
                     if (game.renderer.webGL) return;
 
                     var bounds = this._getBounds();
+                    var x = bounds.x * game.scale;
+                    var y = bounds.y * game.scale;
+                    var width = bounds.width * game.scale;
+                    var height = bounds.height * game.scale;
                     context.setTransform(1, 0, 0, 1, 0, 0);
                     context.globalAlpha = game.Debug.boundsAlpha;
                     context.fillStyle = game.Debug.boundsColor;
-                    context.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+                    context.fillRect(x, y, width, height);
+
+                    var hitArea = this.hitArea;
+                    if (!hitArea) return;
+
+                    var x = (this._worldTransform.tx + hitArea.x) * game.scale;
+                    var y = (this._worldTransform.ty + hitArea.y) * game.scale;
+                    var width = hitArea.width * game.scale;
+                    var height = hitArea.height * game.scale;
+                    context.globalAlpha = game.Debug.hitAreaAlpha;
+                    context.fillStyle = game.Debug.hitAreaColor;
+                    context.fillRect(x, y, width, height);
                 }
             });
         }
@@ -368,12 +383,22 @@ game.addAttributes('Debug', {
         @attribute {Number} cameraAlpha
         @default 0.2
     **/
-    cameraAlpha: 0.2
+    cameraAlpha: 0.2,
+    /**
+        @attribute {String} hitAreaColor
+        @default #0000ff
+    **/
+    hitAreaColor: '#0000ff',
+    /**
+        @attribute {Number} hitAreaAlpha
+        @default 0.2
+    **/
+    hitAreaAlpha: 0.2
 });
 
 var href = document.location.href.toLowerCase();
 if (href.match(/\?debug/)) game.Debug.enabled = true;
-if (href.match(/\?debugdraw/)) game.Debug.bodies = true;
+if (href.match(/\?debugdraw/)) game.Debug.showBodies = true;
 
 game.onStart = function() {
     if (!this.Debug || !this.Debug.enabled) return;

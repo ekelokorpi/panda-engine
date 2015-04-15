@@ -75,10 +75,10 @@ game.createClass('Animation', 'Sprite', {
     /**
         Add new animation.
         @method addAnim
-        @chainable
         @param {String} name
         @param {Array} [frames]
         @param {Object} [props]
+        @chainable
     **/
     addAnim: function(name, frames, props) {
         if (this.anims[name]) throw 'Animation ' + name + ' already added';
@@ -96,9 +96,9 @@ game.createClass('Animation', 'Sprite', {
     /**
         Play animation.
         @method play
-        @chainable
         @param {String} name Name of animation
         @param {Number} [frame] Frame index
+        @chainable
     **/
     play: function(name, frame) {
         var anim = this.anims[name];
@@ -115,8 +115,8 @@ game.createClass('Animation', 'Sprite', {
     /**
         Stop animation.
         @method stop
-        @chainable
         @param {Number} [frame] Frame index
+        @chainable
     **/
     stop: function(frame) {
         this.playing = false;
@@ -127,8 +127,8 @@ game.createClass('Animation', 'Sprite', {
     /**
         Jump to specific frame.
         @method gotoFrame
-        @chainable
         @param {Number} frame
+        @chainable
     **/
     gotoFrame: function(frame) {
         var anim = this.anims[this.currentAnim];

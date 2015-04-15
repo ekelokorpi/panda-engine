@@ -32,15 +32,11 @@ game.createClass('Sprite', 'Container', {
         return this;
     },
 
-    /**
-        @method _getBounds
-        @private
-    **/
     _getBounds: function() {
         if (this._worldTransform.tx === null) this.updateParentTransform();
 
-        var width = this.texture.width;
-        var height = this.texture.height;
+        var width = this.texture.width / game.scale;
+        var height = this.texture.height / game.scale;
         var wt = this._worldTransform;
         var a = wt.a;
         var b = wt.b;
@@ -104,11 +100,6 @@ game.createClass('Sprite', 'Container', {
         return this._worldBounds;
     },
 
-    /**
-        @method _render
-        @private
-        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
-    **/
     _render: function(context) {
         if (!this.texture) return;
         if (!this.texture.width && this.texture.baseTexture.width) {
@@ -124,19 +115,15 @@ game.createClass('Sprite', 'Container', {
         this.super(context);
     },
 
-    /**
-        @method _renderWebGL
-        @private
-    **/
     _renderWebGL: function() {
         game.renderer.spriteBatch.render(this);
     },
 
     /**
         @method _renderCanvas
-        @private
         @param {CanvasRenderingContext2D} context
         @param {Rectangle} [rect]
+        @private
     **/
     _renderCanvas: function(context, rect) {
         if (!this.texture.baseTexture.loaded) return;
@@ -153,6 +140,9 @@ game.createClass('Sprite', 'Container', {
             ty = ty | 0;
         }
 
+        tx *= game.scale;
+        ty *= game.scale;
+
         var x = t.position.x;
         var y = t.position.y;
         var width = t.width;
@@ -166,32 +156,17 @@ game.createClass('Sprite', 'Container', {
         }
 
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
-        context.drawImage(
-            t.baseTexture.source,
-            x,
-            y,
-            width,
-            height,
-            0,
-            0,
-            width,
-            height
-        );
+        context.drawImage(t.baseTexture.source, x, y, width, height, 0, 0, width, height);
     }
 });
 
 game.defineProperties('Sprite', {
-    /**
-        @property {Number} width
-    **/
     width: {
         get: function() {
             return this.scale.x * this.texture.width / game.scale;
         }
     },
-    /**
-        @property {Number} height
-    **/
+
     height: {
         get: function() {
             return this.scale.y * this.texture.height / game.scale;

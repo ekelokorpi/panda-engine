@@ -15,26 +15,65 @@ game.module(
     @extends Container
 **/
 game.createClass('Graphics', 'Container', {
-    data: [],
+    /**
+        @property {String} fillColor
+        @default #fff
+    **/
+    fillColor: '#fff',
+    /**
+        @property {Number} fillAlpha
+        @default 1
+    **/
+    fillAlpha: 1,
+    /**
+        @property {Number} lineAlpha
+        @default 1
+    **/
+    lineAlpha: 1,
+    /**
+        @property {String} lineColor
+        @default #fff
+    **/
+    lineColor: '#fff',
+    /**
+        @property {Number} lineWidth
+        @default 0
+    **/
+    lineWidth: 0,
+    /**
+        @property {Array} shapes
+    **/
+    shapes: [],
 
+    /**
+        @method beginFill
+        @param {String} [color]
+        @param {Number} [alpha]
+        @chainable
+    **/
     beginFill: function(color, alpha) {
-        this.fillColor = color;
-        this.fillAlpha = alpha || 1;
+        this.fillColor = color || this.fillColor;
+        this.fillAlpha = alpha || this.fillAlpha;
         return this;
     },
 
-    lineStyle: function(width, color, alpha) {
-        this.lineWidth = width;
-        this.lineColor = color;
-        this.lineAlpha = alpha || 1;
-        return this;
-    },
-
+    /**
+        @method clear
+        @chainable
+    **/
     clear: function() {
-        this.data.length = 0;
+        this.shapes.length = 0;
         return this;
     },
 
+    /**
+        @method drawRect
+        @param {Number} x
+        @param {Number} y
+        @param {Number} width
+        @param {Number} height
+        @chainable
+    **/
     drawRect: function(x, y, width, height) {
         width *= game.scale;
         height *= game.scale;
@@ -43,9 +82,28 @@ game.createClass('Graphics', 'Container', {
         return this;
     },
 
+    /**
+        @method lineStyle
+        @param {Number} [width]
+        @param {String} [color]
+        @param {Number} [alpha]
+        @chainable
+    **/
+    lineStyle: function(width, color, alpha) {
+        this.lineWidth = width || this.lineWidth;
+        this.lineColor = color || this.lineColor;
+        this.lineAlpha = alpha || this.lineAlpha;
+        return this;
+    },
+
+    /**
+        @method _drawShape
+        @param {Rectangle|Circle} shape
+        @private
+    **/
     _drawShape: function(shape) {
         var data = new game.GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, shape);
-        this.data.push(data);
+        this.shapes.push(data);
     },
 
     _getBounds: function() {
@@ -56,8 +114,8 @@ game.createClass('Graphics', 'Container', {
         var maxX = this._worldTransform.tx;
         var maxY = this._worldTransform.ty;
 
-        for (var i = 0; i < this.data.length; i++) {
-            var data = this.data[i];
+        for (var i = 0; i < this.shapes.length; i++) {
+            var data = this.shapes[i];
 
             var x = this._worldTransform.tx + data.shape.x;
             var y = this._worldTransform.ty + data.shape.y;
@@ -85,19 +143,36 @@ game.createClass('Graphics', 'Container', {
     },
 
     _renderCanvas: function(context) {
+        var tx = this._worldTransform.tx * game.scale;
+        var ty = this._worldTransform.ty * game.scale;
+
         context.setTransform(
             this._worldTransform.a,
             this._worldTransform.b,
             this._worldTransform.c,
             this._worldTransform.d,
-            this._worldTransform.tx,
-            this._worldTransform.ty);
+            tx,
+            ty);
 
-        for (var i = 0; i < this.data.length; i++) {
-            this.data[i]._render(context, this._worldAlpha);
+        for (var i = 0; i < this.shapes.length; i++) {
+            this.shapes[i]._render(context, this._worldAlpha);
         }
         
         this.super(context);
+    }
+});
+
+game.defineProperties('Graphics', {
+    width: {
+        get: function() {
+            return this.scale.x * this._getBounds().width / game.scale;
+        }
+    },
+
+    height: {
+        get: function() {
+            return this.scale.y * this._getBounds().height / game.scale;
+        }
     }
 });
 
@@ -116,19 +191,44 @@ game.createClass('GraphicsData', {
         this.lineWidth = lineWidth;
         this.lineColor = lineColor;
         this.lineAlpha = lineAlpha;
-     
         this.fillColor = fillColor;
         this.fillAlpha = fillAlpha;
-     
         this.shape = shape;
     },
 
+    /**
+        @method _render
+        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
+        @param {Number} alpha
+        @private
+    **/
     _render: function(context, alpha) {
+        if (game.renderer.webGL) this._renderWebGL(context, alpha);
+        else this._renderCanvas(context, alpha);
+    },
+
+    /**
+        @method _renderCanvas
+        @param {CanvasRenderingContext2D} context
+        @param {Number} alpha
+        @private
+    **/
+    _renderCanvas: function(context, alpha) {
         context.globalAlpha = this.fillAlpha * alpha;
         context.fillStyle = this.fillColor;
         if (this.shape instanceof game.Rectangle) {
             context.fillRect(this.shape.x, this.shape.y, this.shape.width, this.shape.height);
         }
+    },
+
+    /**
+        @method _renderWebGL
+        @param {WebGLRenderingContext} context
+        @param {Number} alpha
+        @private
+    **/
+    _renderWebGL: function(context, alpha) {
+        // TODO
     }
 });
 

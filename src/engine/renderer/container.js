@@ -28,6 +28,10 @@ game.createClass('Container', {
     **/
     children: [],
     /**
+        @property {Rectangle} hitArea
+    **/
+    hitArea: null,
+    /**
         @property {Boolean} interactive
         @default false
     **/
@@ -163,10 +167,10 @@ game.createClass('Container', {
     /**
         Center this position to container.
         @method center
-        @chainable
         @param {Container} container
         @param {Number} [offsetX]
         @param {Number} [offsetY]
+        @chainable
     **/
     center: function(container, offsetX, offsetY) {
         if (!container) return;
@@ -240,8 +244,8 @@ game.createClass('Container', {
     /**
         Remove children.
         @method removeChild
-        @chainable
         @param {Container} child
+        @chainable
     **/
     removeChild: function(child) {
         var index = this.children.indexOf(child);
@@ -294,9 +298,6 @@ game.createClass('Container', {
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
 
-        wt.tx *= game.scale;
-        wt.ty *= game.scale;
-
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
         if (this._cacheAsBitmap) return;
@@ -320,8 +321,8 @@ game.createClass('Container', {
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
 
-        canvas.width = this.width;
-        canvas.height = this.height;
+        canvas.width = this.width * game.scale;
+        canvas.height = this.height * game.scale;
 
         this._worldTransform.reset();
         this.updateChildTransform();
@@ -345,8 +346,8 @@ game.createClass('Container', {
         if (this._cachedSprite) {
             this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
             this._worldBounds.y = this._worldTransform.ty + this._cachedSprite.position.y;
-            this._worldBounds.width = this._cachedSprite.texture.width;
-            this._worldBounds.height = this._cachedSprite.texture.height;
+            this._worldBounds.width = this._cachedSprite.texture.width / game.scale;
+            this._worldBounds.height = this._cachedSprite.texture.height / game.scale;
             return this._worldBounds;
         }
 
@@ -403,8 +404,8 @@ game.createClass('Container', {
 
     /**
         @method _renderCachedSprite
-        @private
         @param {CanvasRenderingContext2D|WebGLRenderingContext} context
+        @private
     **/
     _renderCachedSprite: function(context) {
         if (game.renderer.webGl) {
@@ -415,8 +416,8 @@ game.createClass('Container', {
 
             var t = this._cachedSprite.texture;
             var wt = this._worldTransform;
-            var tx = wt.tx;
-            var ty = wt.ty;
+            var tx = wt.tx * game.scale;
+            var ty = wt.ty * game.scale;
             
             if (game.Renderer.roundPixels) {
                 tx = tx | 0;
@@ -430,15 +431,15 @@ game.createClass('Container', {
 
     /**
         @method _renderCanvas
-        @private
         @param {CanvasRenderingContext2D} context
+        @private
     **/
     _renderCanvas: function(context) {},
 
     /**
         @method _renderChildren
-        @private
         @param {CanvasRenderingContext2D|WebGLRenderingContext} context
+        @private
     **/
     _renderChildren: function(context) {
         for (var i = 0; i < this.children.length; i++) {
@@ -450,15 +451,15 @@ game.createClass('Container', {
 
     /**
         @method _renderWebGL
-        @private
         @param {WebGLRenderingContext} context
+        @private
     **/
     _renderWebGL: function(context) {},
 
     /**
         @method _setStageReference
-        @private
         @param {Container} stage
+        @private
     **/
     _setStageReference: function(stage) {
         this.stage = stage;
@@ -487,6 +488,7 @@ game.defineProperties('Container', {
         get: function() {
             return this._cacheAsBitmap;
         },
+
         set: function(value) {
             if (this._cacheAsBitmap === value) return;
 
@@ -502,7 +504,7 @@ game.defineProperties('Container', {
     **/
     height: {
         get: function() {
-            return this.scale.y * this._getBounds().height / game.scale;
+            return this.scale.y * this._getBounds().height;
         }
     },
 
@@ -514,6 +516,7 @@ game.defineProperties('Container', {
         get: function() {
             return this._interactive;
         },
+
         set: function(value) {
             if (this._interactive === value) return;
             this._interactive = value;
@@ -526,7 +529,7 @@ game.defineProperties('Container', {
     **/
     width: {
         get: function() {
-            return this.scale.x * this._getBounds().width / game.scale;
+            return this.scale.x * this._getBounds().width;
         }
     },
 
@@ -543,7 +546,7 @@ game.defineProperties('Container', {
             this.position.x = value;
         }
     },
-    
+
     /**
         Shorthand for y position.
         @property {Number} y
