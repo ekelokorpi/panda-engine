@@ -4,13 +4,6 @@
 game.module(
     'engine.debug'
 )
-.require(
-    'engine.physics',
-    'engine.camera',
-    'engine.renderer.core',
-    'engine.scene',
-    'engine.system'
-)
 .body(function() {
 'use strict';
 
@@ -18,6 +11,11 @@ game.module(
     @class Debug
 **/
 game.createClass('Debug', {
+    /**
+        Current fps.
+        @property {Number} fps
+    **/
+    fps: 0,
     /**
         Time of last update.
         @property {Number} last
@@ -29,22 +27,19 @@ game.createClass('Debug', {
     **/
     sprites: 0,
     /**
-        Current fps.
-        @property {Number} fps
+        @property {Container} _bodyContainer
+        @private
     **/
-    fps: 0,
+    _bodyContainer: null,
     /**
         @property {Number} _frames
         @private
     **/
     _frames: 0,
-    /**
-        @property {Container} _bodyContainer
-        @private
-    **/
-    _bodyContainer: null,
 
     init: function() {
+        this._bodyContainer = new game.Container();
+
         this.debugDiv = document.createElement('div');
         this.debugDiv.id = 'pandaDebug';
         this.debugDiv.style.position = 'fixed';
@@ -58,13 +53,6 @@ game.createClass('Debug', {
         this.debugDiv.style.width = '100%';
         this.debugDiv.style.pointerEvents = 'none';
         document.body.appendChild(this.debugDiv);
-
-        game.Container.inject({
-            _render: function(context) {
-                this.super(context);
-                if (this._cacheAsBitmap) game.debug.sprites++;
-            }
-        });
 
         game.Sprite.inject({
             _render: function(context) {
@@ -100,87 +88,22 @@ game.createClass('Debug', {
             }
         });
 
-        if (game.Debug.bodies) {
-            this._bodyContainer = new game.Container();
-            game.World.inject({
-                addBody: function(body) {
-                    this.super(body);
-                    if (game.debug && body.shape) game.debug._addBody(body);
-                }
-            });
-        }
+        game.World.inject({
+            addBody: function(body) {
+                this.super(body);
+                if (body.shape) game.debug._addBody(body);
+            }
+        });
 
-        if (game.Debug.showBounds) {
-            game.Container.inject({
-                _render: function(context) {
-                    this.super(context);
+        game.Container.inject({
+            _render: function(context) {
+                this.super(context);
 
-                    if (!this.parent) return;
-                    if (context !== game.renderer.context) return;
-
-                    // TODO
-                    if (game.renderer.webGL) return;
-
-                    var bounds = this._getBounds();
-                    var x = bounds.x * game.scale;
-                    var y = bounds.y * game.scale;
-                    var width = bounds.width * game.scale;
-                    var height = bounds.height * game.scale;
-                    context.setTransform(1, 0, 0, 1, 0, 0);
-                    context.globalAlpha = game.Debug.boundAlpha;
-                    context.beginPath();
-                    context.lineWidth = 2;
-                    context.strokeStyle = game.Debug.boundColor;
-                    context.rect(x, y, width, height);
-                    context.stroke();
-                }
-            });
-        }
-
-        if (game.Debug.showHitAreas) {
-            game.Container.inject({
-                _render: function(context) {
-                    this.super(context);
-
-                    if (!this.interactive) return;
-                    if (!this.parent) return;
-                    if (context !== game.renderer.context) return;
-
-                    // TODO
-                    if (game.renderer.webGL) return;
-
-                    context.setTransform(1, 0, 0, 1, 0, 0);
-                    context.globalAlpha = game.Debug.hitAreaAlpha;
-                    context.fillStyle = game.Debug.hitAreaColor;
-
-                    var hitArea = this.hitArea;
-                    if (hitArea) {
-                        var ax = this.anchor.x * this.scale.x / this.width;
-                        var ay = this.anchor.y * this.scale.y / this.height;
-                        var x = bounds.x + bounds.width / 2 - this.width / 2 + hitArea.x;
-                        var y = bounds.y + bounds.height / 2 - this.height / 2 + hitArea.y;
-                        var hw = hitArea.width * this.scale.x;
-                        var hh = hitArea.height * this.scale.y;
-                        x += this.anchor.x * this.scale.x - hw * ax;
-                        y += this.anchor.y * this.scale.y - hh * ay;
-                        x *= game.scale;
-                        y *= game.scale;
-
-                        var width = hitArea.width * this.scale.x * game.scale;
-                        var height = hitArea.height * this.scale.y * game.scale;
-                    }
-                    else {
-                        hitArea = this._getBounds();
-                        var x = hitArea.x * game.scale;
-                        var y = hitArea.y * game.scale;
-                        var width = hitArea.width * game.scale;
-                        var height = hitArea.height * game.scale;
-                    }
-
-                    context.fillRect(x, y, width, height);
-                }
-            });
-        }
+                if (this._cacheAsBitmap) game.debug.sprites++;
+                if (game.Debug.showBounds) game.debug._drawBounds(context, this);
+                if (game.Debug.showHitAreas) game.debug._drawHitArea(context, this);
+            }
+        });
 
         if (game.Debug.camera) {
             game.Camera.inject({
@@ -217,6 +140,81 @@ game.createClass('Debug', {
                 }
             });
         }
+    },
+
+    /**
+        @method _drawBounds
+        @private
+        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
+        @param {Container} container
+    **/
+    _drawBounds: function(context, container) {
+        if (!container.parent) return;
+        if (context !== game.renderer.context) return;
+
+        // TODO
+        if (game.renderer.webGL) return;
+
+        var bounds = container._getBounds();
+        var x = bounds.x * game.scale;
+        var y = bounds.y * game.scale;
+        var width = bounds.width * game.scale;
+        var height = bounds.height * game.scale;
+        
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = game.Debug.boundAlpha;
+        context.beginPath();
+        context.lineWidth = 2;
+        context.strokeStyle = game.Debug.boundColor;
+        context.rect(x, y, width, height);
+        context.stroke();
+    },
+
+    /**
+        @method _drawHitArea
+        @private
+        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
+        @param {Container} container
+    **/
+    _drawHitArea: function(context, container) {
+        if (!container.interactive) return;
+        if (!container.parent) return;
+        if (context !== game.renderer.context) return;
+
+        // TODO
+        if (game.renderer.webGL) return;
+
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = game.Debug.hitAreaAlpha;
+        context.fillStyle = game.Debug.hitAreaColor;
+
+        var hitArea = container.hitArea;
+        var bounds = container._getBounds();
+
+        if (hitArea) {
+            var ax = container.anchor.x * container.scale.x / container.width;
+            var ay = container.anchor.y * container.scale.y / container.height;
+            var x = bounds.x + bounds.width / 2 - container.width / 2 + hitArea.x;
+            var y = bounds.y + bounds.height / 2 - container.height / 2 + hitArea.y;
+            var hw = hitArea.width * container.scale.x;
+            var hh = hitArea.height * container.scale.y;
+            x += container.anchor.x * container.scale.x - hw * ax;
+            y += container.anchor.y * container.scale.y - hh * ay;
+            x *= game.scale;
+            y *= game.scale;
+
+            var width = hitArea.width * container.scale.x * game.scale;
+            var height = hitArea.height * container.scale.y * game.scale;
+        }
+        else {
+            hitArea = bounds;
+            var x = hitArea.x * game.scale;
+            var y = hitArea.y * game.scale;
+            var width = hitArea.width * game.scale;
+            var height = hitArea.height * game.scale;
+        }
+
+        context.fillRect(x, y, width, height);
     },
 
     /**
@@ -317,6 +315,7 @@ game.createClass('Debug', {
         text += ' INPUTS: ' + game.input.items.length;
         text += ' WEBGL: ' + !!game.renderer.webGL;
         text += ' HIRES: ' + game.scale;
+
         this._setText(text);
     },
 

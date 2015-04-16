@@ -369,8 +369,8 @@ game.createClass('Container', {
         if (this._cachedSprite) {
             this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
             this._worldBounds.y = this._worldTransform.ty + this._cachedSprite.position.y;
-            this._worldBounds.width = this._cachedSprite.texture.width / game.scale;
-            this._worldBounds.height = this._cachedSprite.texture.height / game.scale;
+            this._worldBounds.width = this._cachedSprite.texture.width * this.scale.x / game.scale;
+            this._worldBounds.height = this._cachedSprite.texture.height * this.scale.y / game.scale;
             return this._worldBounds;
         }
 
