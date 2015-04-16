@@ -127,28 +127,56 @@ game.createClass('Debug', {
                     var width = bounds.width * game.scale;
                     var height = bounds.height * game.scale;
                     context.setTransform(1, 0, 0, 1, 0, 0);
-                    context.globalAlpha = game.Debug.boundsAlpha;
-                    context.fillStyle = game.Debug.boundsColor;
-                    context.fillRect(x, y, width, height);
+                    context.globalAlpha = game.Debug.boundAlpha;
+                    context.beginPath();
+                    context.lineWidth = 2;
+                    context.strokeStyle = game.Debug.boundColor;
+                    context.rect(x, y, width, height);
+                    context.stroke();
+                }
+            });
+        }
 
-                    var hitArea = this.hitArea;
-                    if (!hitArea) return;
+        if (game.Debug.showHitAreas) {
+            game.Container.inject({
+                _render: function(context) {
+                    this.super(context);
 
-                    var ax = this.anchor.x * this.scale.x / this.width;
-                    var ay = this.anchor.y * this.scale.y / this.height;
-                    var x = bounds.x + bounds.width / 2 - this.width / 2 + hitArea.x;
-                    var y = bounds.y + bounds.height / 2 - this.height / 2 + hitArea.y;
-                    var hw = hitArea.width * this.scale.x;
-                    var hh = hitArea.height * this.scale.y;
-                    x += this.anchor.x * this.scale.x - hw * ax;
-                    y += this.anchor.y * this.scale.y - hh * ay;
-                    x *= game.scale;
-                    y *= game.scale;
+                    if (!this.interactive) return;
+                    if (!this.parent) return;
+                    if (context !== game.renderer.context) return;
 
-                    var width = hitArea.width * this.scale.x * game.scale;
-                    var height = hitArea.height * this.scale.y * game.scale;
+                    // TODO
+                    if (game.renderer.webGL) return;
+
+                    context.setTransform(1, 0, 0, 1, 0, 0);
                     context.globalAlpha = game.Debug.hitAreaAlpha;
                     context.fillStyle = game.Debug.hitAreaColor;
+
+                    var hitArea = this.hitArea;
+                    if (hitArea) {
+                        var ax = this.anchor.x * this.scale.x / this.width;
+                        var ay = this.anchor.y * this.scale.y / this.height;
+                        var x = bounds.x + bounds.width / 2 - this.width / 2 + hitArea.x;
+                        var y = bounds.y + bounds.height / 2 - this.height / 2 + hitArea.y;
+                        var hw = hitArea.width * this.scale.x;
+                        var hh = hitArea.height * this.scale.y;
+                        x += this.anchor.x * this.scale.x - hw * ax;
+                        y += this.anchor.y * this.scale.y - hh * ay;
+                        x *= game.scale;
+                        y *= game.scale;
+
+                        var width = hitArea.width * this.scale.x * game.scale;
+                        var height = hitArea.height * this.scale.y * game.scale;
+                    }
+                    else {
+                        hitArea = this._getBounds();
+                        var x = hitArea.x * game.scale;
+                        var y = hitArea.y * game.scale;
+                        var width = hitArea.width * game.scale;
+                        var height = hitArea.height * game.scale;
+                    }
+
                     context.fillRect(x, y, width, height);
                 }
             });
@@ -304,13 +332,13 @@ game.createClass('Debug', {
 
 game.addAttributes('Debug', {
     /**
-        Is debugging enabled.
+        Is debug bar enabled.
         @attribute {Boolean} enabled
         @default false
     **/
     enabled: false,
     /**
-        How fast to update fps (ms).
+        How often to update fps (ms).
         @attribute {Number} frequency
         @default 500
     **/
@@ -328,7 +356,7 @@ game.addAttributes('Debug', {
     **/
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     /**
-        Y position of debug bar (top or bottom).
+        Vertical position of debug bar (top or bottom).
         @attribute {String} position
         @default bottom
     **/
@@ -352,17 +380,23 @@ game.addAttributes('Debug', {
     **/
     showCamera: false,
     /**
+        Draw interactive container hit areas.
+        @attribute {Boolean} showHitAreas
+        @default false
+    **/
+    showHitAreas: false,
+    /**
         Color of bounds.
-        @attribute {Number} boundsColor
+        @attribute {Number} boundColor
         @default #ff0000
     **/
-    boundsColor: '#ff0000',
+    boundColor: '#ff0000',
     /**
         Alpha of bounds.
-        @attribute {Number} boundsAlpha
-        @default 0.2
+        @attribute {Number} boundAlpha
+        @default 0.5
     **/
-    boundsAlpha: 0.2,
+    boundAlpha: 0.5,
     /**
         Color of bodies.
         @attribute {Number} bodyColor
@@ -400,14 +434,18 @@ game.addAttributes('Debug', {
     hitAreaColor: '#0000ff',
     /**
         @attribute {Number} hitAreaAlpha
-        @default 0.2
+        @default 0.5
     **/
-    hitAreaAlpha: 0.2
+    hitAreaAlpha: 0.5
 });
 
 var href = document.location.href.toLowerCase();
 if (href.match(/\?debug/)) game.Debug.enabled = true;
-if (href.match(/\?debugdraw/)) game.Debug.showBodies = true;
+if (href.match(/\?debugdraw/)) {
+    game.Debug.showBodies = true;
+    game.Debug.showBounds = true;
+    game.Debug.showHitAreas = true;
+}
 
 game.onStart = function() {
     if (!this.Debug || !this.Debug.enabled) return;

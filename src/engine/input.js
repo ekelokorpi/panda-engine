@@ -189,8 +189,8 @@ game.createClass('Input', {
             hitArea = container._getBounds();
             var hx = hitArea.x;
             var hy = hitArea.y;
-            var hw = hitArea.width * game.scale;
-            var hh = hitArea.height * game.scale;
+            var hw = hitArea.width;
+            var hh = hitArea.height;
         }
 
         return (x >= hx && y >= hy && x <= hx + hw && y <= hy + hh);
