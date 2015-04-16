@@ -173,6 +173,20 @@ game.createClass('Audio', {
     },
 
     /**
+        Stop all sounds by name.
+        @method stopSoundByName
+        @param {String} name
+        @param {Boolean} skipCallback
+    **/
+    stopSoundByName: function(name, skipCallback) {
+        for (var id in this._audioObjects) {
+            if (this._audioObjects[id].name === name) {
+                this.stopSound(id, skipCallback);
+            }
+        }
+    },
+
+    /**
         Pause specific or all sounds.
         @method pauseSound
         @param {Number} [id] Id of sound
@@ -637,6 +651,8 @@ game.createClass('Audio', {
             this._sources[name].audio.play();
             var audio = this._sources[name].audio;
         }
+
+        audio.name = name;
 
         this._audioObjects[audioId] = audio;
         return audioId;
