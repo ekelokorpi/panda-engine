@@ -102,7 +102,7 @@ game.createClass('WebGLSpriteBatch', {
         this.flush();
     },
 
-    render: function(sprite) {
+    render: function(sprite, transform) {
         var texture = sprite.texture;
 
         if (this.currentBatchSize >= this.size) {
@@ -116,11 +116,11 @@ game.createClass('WebGLSpriteBatch', {
         var aX = sprite.anchor.x;
         var aY = sprite.anchor.y;
         var w0 = texture.width;
-        var w1 = 0;
         var h0 = texture.height;
+        var w1 = 0;
         var h1 = 0;
         var index = this.currentBatchSize * 4 * this.vertSize;
-        var wt = sprite._worldTransform;
+        var wt = transform || sprite._worldTransform;
         var a = wt.a;
         var b = wt.b;
         var c = wt.c;

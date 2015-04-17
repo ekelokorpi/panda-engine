@@ -7,8 +7,7 @@ game.module(
 .require(
     'engine.renderer.animation',
     'engine.renderer.container',
-    'engine.renderer.geom.shapes',
-    'engine.renderer.geom.vector',
+    'engine.renderer.geometry',
     'engine.renderer.graphics',
     'engine.renderer.sprite',
     'engine.renderer.spritesheet',
@@ -258,52 +257,6 @@ game.addAttributes('Renderer', {
         @default linear
     **/
     scaleMode: 'linear'
-});
-
-/**
-    @class Matrix
-**/
-game.createClass('Matrix', {
-    /**
-        @property {Number} a
-    **/
-    a: 1,
-    /**
-        @property {Number} b
-    **/
-    b: 0,
-    /**
-        @property {Number} c
-    **/
-    c: 0,
-    /**
-        @property {Number} d
-    **/
-    d: 1,
-    /**
-        @property {Number} tx
-    **/
-    tx: null,
-    /**
-        @property {Number} ty
-    **/
-    ty: null,
-
-    /**
-        Reset transform to default.
-        @method reset
-        @chainable
-    **/
-    reset: function() {
-        this.a = 1;
-        this.b = 0;
-        this.c = 0;
-        this.d = 1;
-        this.tx = 0;
-        this.ty = 0;
-
-        return this;
-    }
 });
 
 });

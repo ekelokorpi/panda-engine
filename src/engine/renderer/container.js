@@ -5,7 +5,7 @@ game.module(
     'engine.renderer.container'
 )
 .require(
-    'engine.renderer.geom.shapes'
+    'engine.renderer.geometry'
 )
 .body(function() {
 'use strict';
@@ -419,7 +419,9 @@ game.createClass('Container', {
     _render: function(context) {
         if (this._cachedSprite) return this._renderCachedSprite(context);
 
-        if (game.renderer.webGL) this._renderWebGL();
+        if (game.renderer.webGL && context === game.renderer.context) {
+            this._renderWebGL();
+        }
         else this._renderCanvas(context);
 
         this._renderChildren(context);
@@ -431,8 +433,8 @@ game.createClass('Container', {
         @private
     **/
     _renderCachedSprite: function(context) {
-        if (game.renderer.webGl) {
-            // TODO
+        if (game.renderer.webGL) {
+            game.renderer.spriteBatch.render(this._cachedSprite, this._worldTransform);
         }
         else {
             context.globalAlpha = this._worldAlpha;

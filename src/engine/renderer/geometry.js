@@ -1,11 +1,118 @@
 /**
-    @module renderer.geom.vector
+    @module renderer.geometry
 **/
 game.module(
-    'engine.renderer.geom.vector'
+	'engine.renderer.geometry'
 )
 .body(function() {
 'use strict';
+
+/**
+    @class Circle
+    @constructor
+    @param {Number} radius
+**/
+game.createClass('Circle', {
+    /**
+        Radius of circle.
+        @property {Number} radius
+        @default 0
+    **/
+    radius: 0,
+
+    init: function(radius) {
+        this.radius = radius;
+    }
+});
+
+/**
+    @class Matrix
+**/
+game.createClass('Matrix', {
+    /**
+        @property {Number} a
+        @default 1
+    **/
+    a: 1,
+    /**
+        @property {Number} b
+        @default 0
+    **/
+    b: 0,
+    /**
+        @property {Number} c
+        @default 0
+    **/
+    c: 0,
+    /**
+        @property {Number} d
+        @default 1
+    **/
+    d: 1,
+    /**
+        @property {Number} tx
+    **/
+    tx: null,
+    /**
+        @property {Number} ty
+    **/
+    ty: null,
+
+    /**
+        Reset transform to default.
+        @method reset
+        @chainable
+    **/
+    reset: function() {
+        this.a = 1;
+        this.b = 0;
+        this.c = 0;
+        this.d = 1;
+        this.tx = 0;
+        this.ty = 0;
+        return this;
+    }
+});
+
+/**
+    @class Rectangle
+    @constructor
+    @param {Number} width
+    @param {Number} [height]
+    @param {Number} [x]
+    @param {Number} [y]
+**/
+game.createClass('Rectangle', {
+    /**
+        @property {Number} x
+        @default 0
+    **/
+    x: 0,
+    /**
+        @property {Number} y
+        @default 0
+    **/
+    y: 0,
+    /**
+        Width of rectangle.
+        @property {Number} width
+        @default 0
+    **/
+    width: 0,
+    /**
+        Height of rectangle.
+        @property {Number} height
+        @default 0
+    **/
+    height: 0,
+
+    init: function(width, height, x, y) {
+        this.width = width || this.width;
+        this.height = typeof height === 'number' ? height : this.width;
+        this.x = x || this.x;
+        this.y = y || this.y;
+    }
+});
 
 /**
     @class Vector
@@ -16,10 +123,12 @@ game.module(
 game.createClass('Vector', {
     /**
         @property {Number} x
+        @default 0
     **/
     x: 0,
     /**
         @property {Number} y
+        @default 0
     **/
     y: 0,
 
