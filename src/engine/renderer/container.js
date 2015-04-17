@@ -419,7 +419,7 @@ game.createClass('Container', {
     _render: function(context) {
         if (this._cachedSprite) return this._renderCachedSprite(context);
 
-        if (game.renderer.webGl) this._renderWebGL();
+        if (game.renderer.webGL) this._renderWebGL();
         else this._renderCanvas(context);
 
         this._renderChildren(context);

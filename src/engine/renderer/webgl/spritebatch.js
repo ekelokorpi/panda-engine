@@ -125,8 +125,8 @@ game.createClass('WebGLSpriteBatch', {
         var b = wt.b;
         var c = wt.c;
         var d = wt.d;
-        var tx = wt.tx;
-        var ty = wt.ty;
+        var tx = wt.tx * game.scale;
+        var ty = wt.ty * game.scale;
         var colors = this.colors;
         var positions = this.positions;
 
