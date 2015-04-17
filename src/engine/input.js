@@ -13,10 +13,31 @@ game.module(
     @param {HTMLCanvasElement} canvas
 **/
 game.createClass('Input', {
+    /**
+        List of interactive objects.
+        @property {Array} items
+    **/
     items: [],
+    /**
+        @property {Boolean} _needUpdate
+        @default false
+        @private
+    **/
     _needUpdate: false,
+    /**
+        @property {Number} _mouseDownTime
+        @private
+    **/
     _mouseDownTime: null,
+    /**
+        @property {Container} _mouseDownItem
+        @private
+    **/
     _mouseDownItem: null,
+    /**
+        @property {Container} _mouseUpItem
+        @private
+    **/
     _mouseUpItem: null,
 
     init: function(canvas) {
@@ -274,6 +295,7 @@ game.createClass('Keyboard', {
 
     /**
         @method _keydown
+        @param {KeyboardEvent} event
         @private
     **/
     _keydown: function(event) {
@@ -291,6 +313,7 @@ game.createClass('Keyboard', {
 
     /**
         @method _keyup
+        @param {KeyboardEvent} event
         @private
     **/
     _keyup: function(event) {
