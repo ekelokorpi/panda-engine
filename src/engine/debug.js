@@ -27,10 +27,10 @@ game.createClass('Debug', {
     **/
     sprites: 0,
     /**
-        @property {Container} _bodyContainer
+        @property {Array} _bodies
         @private
     **/
-    _bodyContainer: null,
+    _bodies: [],
     /**
         @property {Number} _frames
         @private
@@ -38,8 +38,6 @@ game.createClass('Debug', {
     _frames: 0,
 
     init: function() {
-        this._bodyContainer = new game.Container();
-
         this.debugDiv = document.createElement('div');
         this.debugDiv.id = 'pandaDebug';
         this.debugDiv.style.position = 'fixed';
@@ -73,72 +71,69 @@ game.createClass('Debug', {
                 game.debug._reset();
                 this.super();
                 game.debug._update();
-            }
-        });
-
-        game.Scene.inject({
-            staticInit: function() {
-                this.super();
-                // game.debug._reset();
             },
 
-            _render: function() {
-                // game.debug._update();
+            _updateRenderer: function() {
                 this.super();
+                game.debug._drawBodies();
             }
         });
 
         game.World.inject({
             addBody: function(body) {
                 this.super(body);
-                if (body.shape) game.debug._addBody(body);
+                game.debug._bodies.push(body);
+            },
+
+            removeBody: function(body) {
+                this.super(body);
+                game.debug._bodies.erase(body);
             }
         });
 
         game.Container.inject({
             _render: function(context) {
                 this.super(context);
-
                 if (this._cacheAsBitmap) game.debug.sprites++;
                 if (game.Debug.showBounds) game.debug._drawBounds(context, this);
                 if (game.Debug.showHitAreas) game.debug._drawHitArea(context, this);
             }
         });
+    },
 
-        if (game.Debug.camera) {
-            game.Camera.inject({
-                init: function(x, y) {
-                    this.super(x, y);
+    /**
+        @method _drawBodies
+        @private
+    **/
+    _drawBodies: function() {
+        for (var i = 0; i < this._bodies.length; i++) {
+            this._drawBody(this._bodies[i]);
+        }
+    },
 
-                    if (game.debug && game.Camera.debug) {
-                        this.debugBox = new game.Graphics();
-                        this.debugBox.beginFill(game.Camera.debugColor);
-                        this.debugBox.alpha = game.Camera.debugAlpha;
-                        this.debugBox.drawRect(-this.sensorWidth / 2, -this.sensorHeight / 2, this.sensorWidth, this.sensorHeight);
-                        game.system.stage.addChild(this.debugBox);
-                    }
-                },
+    /**
+        @method _drawBody
+        @param {Body} body
+        @private
+    **/
+    _drawBody: function(body) {
+        if (!body.world || !body.shape) return;
 
-                setSensor: function(width, height) {
-                    this.super(width, height);
+        // TODO
+        if (game.renderer.webGL) return;
 
-                    if (this.debugBox) {
-                        this.debugBox.clear();
-                        this.debugBox.beginFill(game.Camera.debugColor);
-                        this.debugBox.drawRect(-this.sensorWidth / 2, -this.sensorHeight / 2, this.sensorWidth, this.sensorHeight);
-                    }
-                },
+        var context = game.renderer.context;
+        var shape = body.shape;
 
-                moveCamera: function() {
-                    this.super();
-                    if (this.debugBox) this.debugBox.alpha = game.Camera.debugAlpha * ((this.speed.x === 0 && this.speed.y === 0) ? 1 : 2);
-                },
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = game.Debug.bodyAlpha;
+        context.fillStyle = game.Debug.bodyColor;
 
-                update: function() {
-                    this.super();
-                    if (this.debugBox) this.debugBox.position.set(this.sensorPosition.x - this.position.x, this.sensorPosition.y - this.position.y);
-                }
-            });
+        if (shape.width && shape.height) {
+            context.fillRect(body.position.x, body.position.y, shape.width, shape.height);
+        }
+        else if (shape.radius) {
+            // TODO
         }
     },
 
@@ -223,72 +218,6 @@ game.createClass('Debug', {
     **/
     _reset: function() {
         this.sprites = 0;
-    },
-
-    /**
-        @method _clearBodies
-        @private
-    **/
-    _clearBodies: function() {
-        this._bodyContainer.removeAll();
-        this._bodyContainer.addTo(game.system.stage);
-    },
-
-    /**
-        @method _addBody
-        @param {Body} body
-        @private
-    **/
-    _addBody: function(body) {
-        var sprite = new game.Graphics();
-        this._drawBodySprite(sprite, body);
-
-        sprite.position.x = body.position.x;
-        sprite.position.y = body.position.y;
-        sprite.target = body;
-        sprite.alpha = game.DebugDraw.bodyAlpha;
-        this._bodyContainer.addChild(sprite);
-    },
-
-    /**
-        @method _drawBodySprite
-        @param {Graphics} sprite
-        @param {Body} body
-        @private
-    **/
-    _drawBodySprite: function(sprite, body) {
-        sprite.clear();
-        sprite.beginFill(game.DebugDraw.bodyColor);
-        sprite.lineStyle(1, game.DebugDraw.bodyLineColor);
-
-        if (body.shape instanceof game.Rectangle) {
-            sprite.drawRect(-body.shape.width / 2, -body.shape.height / 2, body.shape.width, body.shape.height);
-        }
-        else if (body.shape instanceof game.Circle) {
-            sprite.drawCircle(0, 0, body.shape.radius);
-        }
-    },
-
-    /**
-        @method _updateBodies
-        @private
-    **/
-    _updateBodies: function() {
-        var body;
-        for (var i = this._bodyContainer.children.length - 1; i >= 0; i--) {
-            body = this._bodyContainer.children[i];
-            body.rotation = body.target.rotation;
-            if (body.width !== body.target.shape.width ||
-                body.height !== body.target.shape.height) {
-                this._drawBodySprite(body, body.target);
-            }
-            else if (body.radius !== body.target.shape.radius) {
-                this._drawBodySprite(body, body.target);
-            }
-            body.position.x = body.target.position.x;
-            body.position.y = body.target.position.y;
-            if (!body.target.world) body.remove();
-        }
     },
 
     /**
