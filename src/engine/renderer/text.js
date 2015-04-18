@@ -67,7 +67,7 @@ game.createClass('Text', 'Container', {
 
     /**
         Set new text.
-        @method setText        
+        @method setText
         @param {String} text
         @chainable
     **/
@@ -88,7 +88,7 @@ game.createClass('Text', 'Container', {
 
         var SPACE = 0;
         var WORD = 1;
-        var lines = [ { words: [], width: 0 } ];
+        var lines = [{ words: [], width: 0 }];
         var curLine = 0;
         var curWordWidth = 0;
 
@@ -177,7 +177,7 @@ game.createClass('Text', 'Container', {
         @param {Number} width
         @private
     **/
-    _generateText: function(width) {        
+    _generateText: function(width) {
         var x = 0;
         var y = 0;
         var curLine = 0;

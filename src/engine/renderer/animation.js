@@ -153,7 +153,7 @@ game.createClass('Animation', 'Sprite', {
             if (anim.random && anim.frames.length > 1) {
                 var nextFrame = this.currentFrame;
                 while (nextFrame === this.currentFrame) {
-                    var nextFrame = Math.round(Math.random(0, anim.frames.length - 1));    
+                    var nextFrame = Math.round(Math.random(0, anim.frames.length - 1));
                 }
 
                 this.currentFrame = nextFrame;
