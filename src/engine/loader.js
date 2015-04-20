@@ -15,6 +15,12 @@ game.module(
 **/
 game.createClass('Loader', {
     /**
+        Background color of loader.
+        @property {String} backgroundColor
+        @default #000
+    **/
+    backgroundColor: '#000',
+    /**
         Number of files loaded.
         @property {Number} loaded
     **/
@@ -60,6 +66,11 @@ game.createClass('Loader', {
     **/
     _dynamic: true,
     /**
+        @property {Number} _loadCount
+        @private
+    **/
+    _loadCount: 0,
+    /**
         @property {Object} _loaders
         @private
     **/
@@ -70,10 +81,17 @@ game.createClass('Loader', {
         json: 'JSON',
         fnt: 'Font'
     },
-    _startTime: 0,
+    /**
+        @property {Number} _readyTime
+        @private
+    **/
     _readyTime: 0,
-    _loadCount: 0,
-    
+    /**
+        @property {Number} _startTime
+        @private
+    **/
+    _startTime: 0,
+
     init: function(callback) {
         this.onComplete = callback;
 
@@ -151,7 +169,6 @@ game.createClass('Loader', {
 
         this.onStart();
 
-        // Nothing to load
         if (this.percent === 100) this._ready();
         else this._startLoading();
     },
@@ -404,7 +421,13 @@ game.addAttributes('Loader', {
         @attribute {Number} maxFiles
         @default 4
     **/
-    maxFiles: 4
+    maxFiles: 4,
+    /**
+        Default loader class name.
+        @attribute {String} className
+        @default Loader
+    **/
+    className: 'Loader'
 });
 
 });

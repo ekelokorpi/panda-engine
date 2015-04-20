@@ -136,7 +136,6 @@ game.createClass('System', {
             }
         });
 
-        // No need for centering, if resizing
         if (game.System.resize) game.System.center = false;
 
         window.addEventListener('resize', this._onWindowResize.bind(this));
@@ -150,8 +149,8 @@ game.createClass('System', {
     **/
     resize: function(width, height) {
         if (this.width === width && this.height === height) return;
-        this.width = width;
-        this.height = height;
+        this.width = width / game.scale;
+        this.height = height / game.scale;
         game.renderer._resize(width, height);
         if (game.scene && game.scene.onResize) game.scene.onResize();
     },

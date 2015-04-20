@@ -116,7 +116,7 @@ game.createClass('Sprite', 'Container', {
     },
 
     _renderWebGL: function() {
-        game.renderer.spriteBatch.render(this);
+        game.renderer._spriteBatch.render(this);
     },
 
     /**

@@ -94,7 +94,7 @@ game.createClass('WebGLSpriteBatch', {
 
     begin: function(renderSession) {
         this.renderSession = renderSession;
-        this.shader = this.renderSession.shaderManager.defaultShader;
+        this.shader = this.renderSession._shaderManager.defaultShader;
         this.start();
     },
 
@@ -236,14 +236,14 @@ game.createClass('WebGLSpriteBatch', {
                         currentShader.shaders[gl.id] = shader;
                     }
 
-                    this.renderSession.shaderManager.setShader(shader);
+                    this.renderSession._shaderManager.setShader(shader);
 
                     if (shader.dirty) shader.syncUniforms();
                     
-                    var projection = this.renderSession.projection;
+                    var projection = this.renderSession._projection;
                     gl.uniform2f(shader.projectionVector, projection.x, projection.y);
 
-                    var offsetVector = this.renderSession.offset;
+                    var offsetVector = this.renderSession._offset;
                     gl.uniform2f(shader.offsetVector, offsetVector.x, offsetVector.y);
                 }
             }
@@ -267,7 +267,6 @@ game.createClass('WebGLSpriteBatch', {
         }
 
         gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
-        this.renderSession.drawCount++;
     },
 
     stop: function() {

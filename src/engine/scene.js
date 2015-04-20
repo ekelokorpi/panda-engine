@@ -13,6 +13,12 @@ game.module(
 **/
 game.createClass('Scene', {
     /**
+        Background color of scene.
+        @property {String} backgroundColor
+        @default null
+    **/
+    backgroundColor: null,
+    /**
         List of objects in scene.
         @property {Array} objects
     **/
@@ -44,6 +50,11 @@ game.createClass('Scene', {
         @default 500
     **/
     swipeTime: 500,
+    /**
+        @property {Object} _backgroundColorRgb
+        @private
+    **/
+    _backgroundColorRgb: null,
     /**
         @property {Array} _updateOrder
         @private

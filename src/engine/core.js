@@ -512,7 +512,7 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        var loaderClass = game.config.loader || 'Loader';
+        var loaderClass = game.Loader.className;
         this._loader = new this[loaderClass](this.System.startScene);
         if (!this.system._rotateScreenVisible) this._loader.start();
 

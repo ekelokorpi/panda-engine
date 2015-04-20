@@ -38,6 +38,40 @@ game.createClass('Renderer', {
         @property {Boolean} webGL
     **/
     webGL: false,
+    /**
+        @property {Vector} _offset
+        @private
+    **/
+    _offset: null,
+    /**
+        @property {Vector} _projection
+        @private
+    **/
+    _projection: null,
+    /**
+        @property {WebGLShaderManager} _shaderManager
+        @private
+    **/
+    _shaderManager: null,
+    /**
+        @property {String} _smoothProperty
+        @private
+    **/
+    _smoothProperty: null,
+    /**
+        @property {WebGLSpriteBatch} _spriteBatch
+        @private
+    **/
+    _spriteBatch: null,
+    /**
+        @property {Object} _webGLClearColor
+        @private
+    **/
+    _webGLClearColor: {
+        r: 0,
+        g: 0,
+        b: 0
+    },
 
     init: function() {
         this.canvas = document.getElementById(game.System.canvasId);
@@ -68,42 +102,80 @@ game.createClass('Renderer', {
             gl.enable(gl.BLEND);
             gl.blendFunc(1, 771);
 
-            this.projection = new game.Vector();
-            this.offset = new game.Vector();
-            this.shaderManager = new game.WebGLShaderManager();
-            this.spriteBatch = new game.WebGLSpriteBatch();
-            this.shaderManager.setContext(gl);
-            this.spriteBatch.setContext(gl);
+            this._projection = new game.Vector();
+            this._offset = new game.Vector();
+            this._shaderManager = new game.WebGLShaderManager();
+            this._spriteBatch = new game.WebGLSpriteBatch();
+            this._shaderManager.setContext(gl);
+            this._spriteBatch.setContext(gl);
         }
         else {
             this.context = this.canvas.getContext('2d');
 
-            if ('imageSmoothingEnabled' in this.context)
-                this.smoothProperty = 'imageSmoothingEnabled';
-            else if ('webkitImageSmoothingEnabled' in this.context)
-                this.smoothProperty = 'webkitImageSmoothingEnabled';
-            else if ('mozImageSmoothingEnabled' in this.context)
-                this.smoothProperty = 'mozImageSmoothingEnabled';
-            else if ('oImageSmoothingEnabled' in this.context)
-                this.smoothProperty = 'oImageSmoothingEnabled';
-            else if ('msImageSmoothingEnabled' in this.context)
-                this.smoothProperty = 'msImageSmoothingEnabled';
+            if ('imageSmoothingEnabled' in this.context) this._smoothProperty = 'imageSmoothingEnabled';
+            else if ('webkitImageSmoothingEnabled' in this.context) this._smoothProperty = 'webkitImageSmoothingEnabled';
+            else if ('mozImageSmoothingEnabled' in this.context) this._smoothProperty = 'mozImageSmoothingEnabled';
+            else if ('oImageSmoothingEnabled' in this.context) this._smoothProperty = 'oImageSmoothingEnabled';
+            else if ('msImageSmoothingEnabled' in this.context) this._smoothProperty = 'msImageSmoothingEnabled';
         }
         
         this._resize(game.system.canvasWidth, game.system.canvasHeight);
     },
 
     /**
-        Resize canvas.
-        @method _resize
-        @param {Number} width
-        @param {Number} height
+        Clear canvas.
+        @method _clear
         @private
     **/
-    _resize: function(width, height) {
-        this.canvas.width = width;
-        this.canvas.height = height;
-        if (!this.webGL) this.context[this.smoothProperty] = (game.Renderer.scaleMode === 'linear');
+    _clear: function() {
+        if (this.webGL) {
+            var color = this._webGLClearColor;
+            if (game.scene.backgroundColor) {
+                if (!game.scene._backgroundColorRgb) {
+                    game.scene._backgroundColorRgb = this._hexToRgb(game.scene.backgroundColor);
+                }
+                color = game.scene._backgroundColorRgb;
+            }
+            this.context.clearColor(color.r, color.g, color.b, 1);
+            this.context.clear(this.context.COLOR_BUFFER_BIT);
+        }
+        else {
+            if (game.scene.backgroundColor) {
+                this.context.fillStyle = game.scene.backgroundColor;
+                this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            else {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+    },
+
+    /**
+        @method _hexToRgb
+        @param {String} hex
+        @private
+    **/
+    _hexToRgb: function(hex) {
+        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+            return r + r + g + g + b + b;
+        });
+
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    },
+
+    /**
+        Hide canvas.
+        @method _hide
+        @private
+    **/
+    _hide: function() {
+        this.canvas.style.display = 'none';
     },
 
     /**
@@ -120,15 +192,44 @@ game.createClass('Renderer', {
     },
 
     /**
-        Set canvas size with CSS.
-        @method _size
+        Render container to canvas.
+        @method _render
+        @param {Container} container
+        @private
+    **/
+    _render: function(container) {
+        if (this.webGL) {
+            this.context.viewport(0, 0, this.canvas.width, this.canvas.height);
+            this.context.bindFramebuffer(this.context.FRAMEBUFFER, null);
+            this._projection.x = this.canvas.width / 2;
+            this._projection.y = -this.canvas.height / 2;
+        }
+        else {
+            this.context.setTransform(1, 0, 0, 1, 0, 0);
+            this.context.globalAlpha = 1;
+        }
+        
+        if (game.Renderer.clearBeforeRender) this._clear();
+        container.updateTransform();
+
+        if (this._spriteBatch) this._spriteBatch.begin(this);
+
+        container._render(this.context);
+
+        if (this._spriteBatch) this._spriteBatch.end();
+    },
+
+    /**
+        Resize canvas.
+        @method _resize
         @param {Number} width
         @param {Number} height
         @private
     **/
-    _size: function(width, height) {
-        this.canvas.style.width = width + 'px';
-        this.canvas.style.height = height + 'px';
+    _resize: function(width, height) {
+        this.canvas.width = width;
+        this.canvas.height = height;
+        if (this._smoothProperty) this.context[this._smoothProperty] = (game.Renderer.scaleMode === 'linear');
     },
 
     /**
@@ -141,68 +242,22 @@ game.createClass('Renderer', {
     },
 
     /**
-        Hide canvas.
-        @method _hide
+        Set canvas size with CSS.
+        @method _size
+        @param {Number} width
+        @param {Number} height
         @private
     **/
-    _hide: function() {
-        this.canvas.style.display = 'none';
+    _size: function(width, height) {
+        this.canvas.style.width = width + 'px';
+        this.canvas.style.height = height + 'px';
     },
 
     /**
-        Clear canvas.
-        @method _clear
+        @method _updateTexture
+        @param {Texture} texture
         @private
     **/
-    _clear: function() {
-        if (!game.Renderer.clearBeforeRender) return;
-
-        if (this.webGL) {
-            var gl = this.context;
-            gl.clearColor(0, 0, 0, 1);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            return;
-        }
-
-        if (game.Renderer.backgroundColor) {
-            this.context.fillStyle = game.Renderer.backgroundColor;
-            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        }
-        else {
-            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        }
-    },
-
-    /**
-        Render container to canvas.
-        @method _render
-        @param {Container} container
-        @private
-    **/
-    _render: function(container) {
-        if (this.webGL) {
-            var gl = this.context;
-            gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-            this.drawCount = 0;
-            this.projection.x = this.canvas.width / 2;
-            this.projection.y = -this.canvas.height / 2;
-        }
-        else {
-            this.context.setTransform(1, 0, 0, 1, 0, 0);
-            this.context.globalAlpha = 1;
-        }
-        
-        this._clear();
-        container.updateTransform();
-
-        if (this.webGL) this.spriteBatch.begin(this);
-
-        container._render(this.context);
-
-        if (this.webGL) this.spriteBatch.end();
-    },
-
     _updateTexture: function(texture) {
         if (!texture.loaded) return;
 
@@ -233,26 +288,25 @@ game.createClass('Renderer', {
 
 game.addAttributes('Renderer', {
     /**
+        Clear canvas before rendering.
         @attribute {Boolean} clearBeforeRender
         @default true
     **/
     clearBeforeRender: true,
     /**
-        @attribute {String} backgroundColor
-        @default #000000
-    **/
-    backgroundColor: '#000000',
-    /**
+        Use round positions.
         @attribute {Boolean} roundPixels
         @default false
     **/
     roundPixels: false,
     /**
+        Use WebGL rendering.
         @attribute {Boolean} webGL
         @default false
     **/
     webGL: false,
     /**
+        Renderer scaling mode.
         @attribute {String} scaleMode
         @default linear
     **/
