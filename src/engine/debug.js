@@ -67,6 +67,11 @@ game.createClass('Debug', {
         });
 
         game.Scene.inject({
+            staticInit: function() {
+                this.super();
+                game.debug._bodies.length = 0;
+            },
+
             _update: function() {
                 game.debug._reset();
                 this.super();
@@ -75,7 +80,7 @@ game.createClass('Debug', {
 
             _updateRenderer: function() {
                 this.super();
-                game.debug._drawBodies();
+                if (game.Debug.showBodies) game.debug._drawBodies();
             }
         });
 
@@ -130,7 +135,12 @@ game.createClass('Debug', {
         context.fillStyle = game.Debug.bodyColor;
 
         if (shape.width && shape.height) {
-            context.fillRect(body.position.x, body.position.y, shape.width, shape.height);
+            context.fillRect(
+                (body.position.x - shape.width / 2) * game.scale,
+                (body.position.y - shape.height / 2) * game.scale,
+                shape.width * game.scale,
+                shape.height * game.scale
+            );
         }
         else if (shape.radius) {
             // TODO

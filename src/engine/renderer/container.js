@@ -434,7 +434,7 @@ game.createClass('Container', {
     **/
     _renderCachedSprite: function(context) {
         if (game.renderer.webGL) {
-            game.renderer.spriteBatch.render(this._cachedSprite, this._worldTransform);
+            game.renderer._spriteBatch.render(this._cachedSprite, this._worldTransform);
         }
         else {
             context.globalAlpha = this._worldAlpha;

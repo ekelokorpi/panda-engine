@@ -317,11 +317,11 @@ game.createClass('Body', {
     _collides: [],
 
     init: function(properties) {
+        this.force = new game.Vector();
         this.position = new game.Vector();
         this.velocity = new game.Vector();
         this.velocityLimit = new game.Vector();
         this._last = new game.Vector();
-        this.force = new game.Vector();
         game.merge(this, properties);
     },
 
@@ -427,7 +427,7 @@ game.createClass('Body', {
         if (this.velocityLimit.x > 0) this.velocity.x = this.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
         if (this.velocityLimit.y > 0) this.velocity.y = this.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
 
-        this.position.multiplyAdd(this.velocity, game.scale * game.system.delta);
+        this.position.multiplyAdd(this.velocity, game.system.delta);
     }
 });
 
