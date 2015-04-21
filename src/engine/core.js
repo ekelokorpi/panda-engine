@@ -591,7 +591,7 @@ var game = {
         script.src = path;
         script.onload = this._scriptLoaded.bind(this);
         script.onerror = function() {
-            throw 'to load module ' + name + ' at ' + path + ' required from ' + requiredFrom;
+            throw 'Error loading module ' + name + ' at ' + path + ' required from ' + requiredFrom;
         };
         document.getElementsByTagName('head')[0].appendChild(script);
     },

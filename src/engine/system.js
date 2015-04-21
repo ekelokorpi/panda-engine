@@ -97,15 +97,13 @@ game.createClass('System', {
         this.width = this.originalWidth = game.System.width;
         this.height = this.originalHeight = game.System.height;
 
-        // Get scale value for HiRes
-        for (var i = 2; i <= game.System.hires; i *= 2) {
+        for (var i = game.System.hiresRatio; i <= game.System.hires; i *= 2) {
             if (window.innerWidth >= this.originalWidth * i && window.innerHeight >= this.originalHeight * i) {
                 this.hires = true;
                 game.scale = i;
             }
         }
 
-        // Get scale value for Retina
         if (game.System.retina && game.device.pixelRatio === 2 && game.scale < game.System.hires) {
             this.retina = true;
             game.scale *= 2;
@@ -402,6 +400,12 @@ game.addAttributes('System', {
         @default 0
     **/
     hires: 0,
+    /**
+        Ratio value, when hires mode is used.
+        @attribute {Number} hiresRatio
+        @default 2
+    **/
+    hiresRatio: 2,
     /**
         Use Retina mode.
         @attribute {Boolean} retina
