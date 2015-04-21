@@ -97,10 +97,11 @@ game.createClass('System', {
         this.width = this.originalWidth = game.System.width;
         this.height = this.originalHeight = game.System.height;
 
-        for (var i = game.System.hiresRatio; i <= game.System.hires; i *= 2) {
-            if (window.innerWidth >= this.originalWidth * i && window.innerHeight >= this.originalHeight * i) {
+        for (var i = 1; i <= game.System.hires; i++) {
+            var ratio = game.System.hiresRatio * i;
+            if (window.innerWidth >= this.originalWidth * ratio && window.innerHeight >= this.originalHeight * ratio) {
                 this.hires = true;
-                game.scale = i;
+                game.scale = i * 2;
             }
         }
 
@@ -395,7 +396,7 @@ game.addAttributes('System', {
     **/
     resize: false,
     /**
-        HiRes mode.
+        HiRes mode multiplier.
         @attribute {Number} hires
         @default 0
     **/
