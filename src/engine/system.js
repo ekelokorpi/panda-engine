@@ -12,6 +12,51 @@ game.module(
 **/
 game.createClass('System', {
     /**
+        Canvas height.
+        @property {Number} canvasHeight
+    **/
+    canvasHeight: 0,
+    /**
+        Canvas width.
+        @property {Number} canvasWidth
+    **/
+    canvasWidth: 0,
+    /**
+        Current delta time in seconds.
+        @property {Number} delta
+    **/
+    delta: 0,
+    /**
+        Height of the game screen.
+        @property {Number} height
+    **/
+    height: 0,
+    /**
+        Is engine in HiRes mode.
+        @property {Boolean} hires
+    **/
+    hires: false,
+    /**
+        Original height.
+        @property {Number} originalHeight
+    **/
+    originalHeight: 0,
+    /**
+        Original width.
+        @property {Number} originalWidth
+    **/
+    originalWidth: 0,
+    /**
+        Is engine paused.
+        @property {Boolean} paused
+    **/
+    paused: false,
+    /**
+        Is engine in Retina mode.
+        @property {Boolean} retina
+    **/
+    retina: false,
+    /**
         Name of current scene.
         @property {String} sceneName
     **/
@@ -22,55 +67,15 @@ game.createClass('System', {
     **/
     width: 0,
     /**
-        Height of the game screen.
-        @property {Number} height
-    **/
-    height: 0,
-    /**
-        Current delta time in seconds.
-        @property {Number} delta
-    **/
-    delta: 0,
-    /**
-        Is engine paused.
-        @property {Boolean} paused
-    **/
-    paused: false,
-    /**
-        Is engine in HiRes mode.
-        @property {Boolean} hires
-    **/
-    hires: false,
-    /**
-        Is engine in Retina mode.
-        @property {Boolean} retina
-    **/
-    retina: false,
-    /**
-        Original width.
-        @property {Number} originalWidth
-    **/
-    originalWidth: 0,
-    /**
-        Original height.
-        @property {Number} originalHeight
-    **/
-    originalHeight: 0,
-    /**
-        Canvas width.
-        @property {Number} canvasWidth
-    **/
-    canvasWidth: 0,
-    /**
-        Canvas height.
-        @property {Number} canvasHeight
-    **/
-    canvasHeight: 0,
-    /**
-        @property {Boolean} _running
+        @property {Scene} _newSceneClass
         @private
     **/
-    _running: false,
+    _newSceneClass: null,
+    /**
+        @property {Boolean} _pausedOnHide
+        @private
+    **/
+    _pausedOnHide: false,
     /**
         @property {Boolean} _rotateScreenVisible
         @default false
@@ -78,20 +83,15 @@ game.createClass('System', {
     **/
     _rotateScreenVisible: false,
     /**
-        @property {Scene} _newSceneClass
-        @private
-    **/
-    _newSceneClass: null,
-    /**
         @property {Number} _runLoopId
         @private
     **/
     _runLoopId: 0,
     /**
-        @property {Boolean} _pausedOnHide
+        @property {Boolean} _running
         @private
     **/
-    _pausedOnHide: false,
+    _running: false,
 
     init: function() {
         this.width = this.originalWidth = game.System.width;
@@ -113,7 +113,6 @@ game.createClass('System', {
         this.canvasWidth = this.originalWidth * game.scale;
         this.canvasHeight = this.originalHeight * game.scale;
 
-        // Init page visibility
         var visibilityChange;
         if (typeof document.hidden !== 'undefined') {
             visibilityChange = 'visibilitychange';
@@ -157,6 +156,7 @@ game.createClass('System', {
     /**
         Pause game engine.
         @method pause
+        @param {Boolean} onHide
     **/
     pause: function(onHide) {
         if (this.paused) return;
@@ -168,6 +168,7 @@ game.createClass('System', {
     /**
         Resume game engine.
         @method resume
+        @param {Boolean} onHide
     **/
     resume: function(onHide) {
         if (onHide && this.paused) return;
@@ -181,18 +182,14 @@ game.createClass('System', {
     /**
         Change current scene.
         @method setScene
-        @param {String} sceneClass
+        @param {String} sceneName
     **/
     setScene: function(sceneName) {
         var sceneClass = game[sceneName];
         if (!sceneClass) return;
         this.sceneName = sceneName;
-        if (this._running && !this.paused) {
-            this._newSceneClass = sceneClass;
-        }
-        else {
-            this._setSceneNow(sceneClass);
-        }
+        if (this._running && !this.paused) this._newSceneClass = sceneClass;
+        else this._setSceneNow(sceneClass);
     },
 
     /**
@@ -298,8 +295,8 @@ game.createClass('System', {
     _onWindowResize: function() {
         if (this._toggleRotateScreen()) return;
 
-        // Fix this
-        // window.innerWidth/Height is wrong on Android Chrome (only on startup)
+        // TODO
+        // Fix: window.innerWidth/Height is wrong on Android Chrome (only on startup)
         if (game.device.android && game.device.chrome) {
             var width = screen.width;
             var height = screen.height;
@@ -378,23 +375,23 @@ game.createClass('System', {
 
 game.addAttributes('System', {
     /**
+        Id for canvas element, where game is placed. If none found, it will be created.
+        @attribute {String} canvasId
+        @default canvas
+    **/
+    canvasId: 'canvas',
+    /**
         Position canvas to center of window.
         @attribute {Boolean} center
         @default false
     **/
     center: false,
     /**
-        Scale canvas to fit window.
-        @attribute {Boolean} scale
-        @default false
+        System height.
+        @attribute {Number} height
+        @default 600
     **/
-    scale: false,
-    /**
-        Resize canvas to fill window.
-        @attribute {Boolean} resize
-        @default false
-    **/
-    resize: false,
+    height: 600,
     /**
         HiRes mode multiplier.
         @attribute {Number} hires
@@ -408,17 +405,23 @@ game.addAttributes('System', {
     **/
     hiresRatio: 2,
     /**
-        Use Retina mode.
-        @attribute {Boolean} retina
-        @default false
-    **/
-    retina: false,
-    /**
         Pause engine, when page is hidden.
         @attribute {Boolean} pauseOnHide
         @default true
     **/
     pauseOnHide: true,
+    /**
+        Resize canvas to fill window.
+        @attribute {Boolean} resize
+        @default false
+    **/
+    resize: false,
+    /**
+        Use Retina mode.
+        @attribute {Boolean} retina
+        @default false
+    **/
+    retina: false,
     /**
         Use rotate screen on mobile.
         @attribute {Boolean} rotateScreen
@@ -432,17 +435,11 @@ game.addAttributes('System', {
     **/
     rotateScreenClass: 'rotate',
     /**
-        System width.
-        @attribute {Number} width
-        @default 800
+        Scale canvas to fit window.
+        @attribute {Boolean} scale
+        @default false
     **/
-    width: 800,
-    /**
-        System height.
-        @attribute {Number} height
-        @default 600
-    **/
-    height: 600,
+    scale: false,
     /**
         Name of start scene.
         @attribute {String} startScene
@@ -450,11 +447,11 @@ game.addAttributes('System', {
     **/
     startScene: 'Main',
     /**
-        Id for canvas element, where game is placed. If none found, it will be created.
-        @attribute {String} canvasId
-        @default canvas
+        System width.
+        @attribute {Number} width
+        @default 800
     **/
-    canvasId: 'canvas'
+    width: 800
 });
 
 });
