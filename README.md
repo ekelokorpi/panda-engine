@@ -58,6 +58,7 @@ Make games written in JavaScript and play them on any major browser, or wrap the
 ## Documentation
 
 - [API Documentation](http://www.pandajs.net/engine/docs)
+- [Playground](http://www.pandajs.net/engine/playground)
 
 ## Support
 
@@ -66,7 +67,7 @@ Make games written in JavaScript and play them on any major browser, or wrap the
 
 ## Credits
 
-- Made in Finland by Eemeli Kelokorpi
+- Made by Eemeli Kelokorpi
 - Renderer based on [Pixi.js](http://www.pixijs.com) by Mat Groves, Goodboy Digital
 - Financed by [Yleisradio](http://en.wikipedia.org/wiki/Yle)
 
