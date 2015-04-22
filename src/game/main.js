@@ -5,6 +5,7 @@ game.module(
 
 game.createScene('Main', {
     init: function() {
+    	
     }
 });
 
