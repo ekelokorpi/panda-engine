@@ -152,7 +152,6 @@ game.createClass('World', {
 });
 
 /**
-    Physics collision solver.
     @class CollisionSolver
 **/
 game.createClass('CollisionSolver', {
@@ -256,7 +255,7 @@ game.createClass('Body', {
     world: null,
     /**
         Body's shape.
-        @property {Shape} shape
+        @property {Rectangle|Circle} shape
     **/
     shape: null,
     /**
@@ -328,7 +327,7 @@ game.createClass('Body', {
     /**
         Add shape to body.
         @method addShape
-        @param {Shape} shape
+        @param {Rectangle|Circle} shape
         @chainable
     **/
     addShape: function(shape) {
