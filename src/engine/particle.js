@@ -78,6 +78,10 @@ game.createClass('Emitter', {
         @default 0
     **/
     duration: 0,
+    /**
+        @property {Number} durationTimer
+        @default 0
+    **/
     durationTimer: 0,
     /**
         How often to emit new particles in ms.
@@ -85,6 +89,10 @@ game.createClass('Emitter', {
         @default 100
     **/
     rate: 100,
+    /**
+        @property {Number} rateTimer
+        @default 0
+    **/
     rateTimer: 0,
     /**
         Emit count of particles.
@@ -193,13 +201,16 @@ game.createClass('Emitter', {
         @property {Object} spriteSettings
     **/
     spriteSettings: {
-        anchor: { x: 0.5, y: 0.5 },
+        anchor: { x: 0.5, y: 0.5 }
     },
     /**
         @property {Vector} velocityLimit
-        @default 0
+        @default 0,0
     **/
     velocityLimit: null,
+    /**
+        @property {Function} callback
+    **/
     callback: null,
 
     init: function(settings) {
@@ -211,6 +222,10 @@ game.createClass('Emitter', {
         game.merge(this, settings);
     },
 
+    /**
+        @method onComplete
+        @param {Function} callback
+    **/
     onComplete: function(callback) {
         this.callback = callback;
     },
@@ -235,6 +250,7 @@ game.createClass('Emitter', {
         Get value with variance.
         Example: if you have value 100 with variance of 50, you will get value between 50 to 150.
         @method getVariance
+        @param {Number} value
         @return {Number}
     **/
     getVariance: function(value) {
@@ -256,7 +272,7 @@ game.createClass('Emitter', {
         var angle = this.angle + angleVar;
         var speed = this.speed + this.getVariance(this.speedVar);
 
-        particle.setVeloctity(angle, speed);
+        particle.setVelocity(angle, speed);
 
         if (this.angleVar !== this.accelAngleVar) angleVar = this.getVariance(this.accelAngleVar);
 
@@ -304,6 +320,7 @@ game.createClass('Emitter', {
     /**
         Update particle.
         @method updateParticle
+        @param {Particle} particle
     **/
     updateParticle: function(particle) {
         if (particle.life > 0) {
@@ -354,7 +371,7 @@ game.createClass('Emitter', {
         @param {Particle} particle
     **/
     removeParticle: function(particle) {
-        if (particle.sprite.parent) particle.sprite.remove();
+        particle.sprite.remove();
         game.pool.put(game.Emitter.poolName, particle);
         this.particles.erase(particle);
     },
@@ -383,9 +400,11 @@ game.createClass('Emitter', {
         Add emitter to container.
         @method addTo
         @param {Container} container
+        @chainable
     **/
     addTo: function(container) {
         this.container = container;
+        return this;
     },
 
     /**
@@ -424,6 +443,10 @@ game.createClass('Emitter', {
 });
 
 game.addAttributes('Emitter', {
+    /**
+        @attribute {String} poolName
+        @default emitter
+    **/
     poolName: 'emitter'
 });
 
@@ -448,7 +471,7 @@ game.createClass('Particle', {
     **/
     accel: null,
 
-    init: function() {
+    staticInit: function() {
         this.position = new game.Vector();
         this.velocity = new game.Vector();
         this.accel = new game.Vector();
@@ -459,7 +482,7 @@ game.createClass('Particle', {
         @param {Number} angle
         @param {Number} speed
     **/
-    setVeloctity: function(angle, speed) {
+    setVelocity: function(angle, speed) {
         this.velocity.x = Math.cos(angle) * speed;
         this.velocity.y = Math.sin(angle) * speed;
     },
