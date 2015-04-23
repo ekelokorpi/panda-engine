@@ -25,8 +25,9 @@ game.createClass('Animation', 'Sprite', {
     /**
         Current active animation.
         @property {String} currentAnim
+        @default default
     **/
-    currentAnim: null,
+    currentAnim: 'default',
     /**
         Current frame index.
         @property {Number} currentFrame
@@ -69,6 +70,8 @@ game.createClass('Animation', 'Sprite', {
         }
         this.textures = newTextures;
 
+        this.addAnim('default');
+
         this.super(this.textures[0]);
     },
 
@@ -81,7 +84,6 @@ game.createClass('Animation', 'Sprite', {
         @chainable
     **/
     addAnim: function(name, frames, props) {
-        if (this.anims[name]) throw 'Animation ' + name + ' already added';
         if (!frames) {
             var frames = [];
             for (var i = 0; i < this.textures.length; i++) {
@@ -101,6 +103,7 @@ game.createClass('Animation', 'Sprite', {
         @chainable
     **/
     play: function(name, frame) {
+        name = name || this.currentAnim;
         var anim = this.anims[name];
         if (!anim) return;
         this.playing = true;
@@ -246,9 +249,9 @@ game.createClass('AnimationData', {
     /**
         Speed of animation (frames per second).
         @property {Number} speed
-        @default 60
+        @default 10
     **/
-    speed: 60,
+    speed: 10,
     /**
         Animation frame order.
         @property {Array} frames
