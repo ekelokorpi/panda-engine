@@ -175,7 +175,7 @@ game.createClass('BaseTexture', {
         this.source = source;
         this._loadCallback = loadCallback;
 
-        if (source.complete || source.getContext) {
+        if (source.getContext) {
             this._onload();
         }
         else {
