@@ -55,7 +55,7 @@ game.createClass('Input', {
         @private
     **/
     _touchstart: function(event) {
-        if (game.Input.preventDefault) event.preventDefault();
+        this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
             this._mousedown(event.changedTouches[i]);
         }
@@ -67,7 +67,7 @@ game.createClass('Input', {
         @private
     **/
     _touchmove: function(event) {
-        if (game.Input.preventDefault) event.preventDefault();
+        this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
             this._mousemove(event.changedTouches[i]);
         }
@@ -79,7 +79,7 @@ game.createClass('Input', {
         @private
     **/
     _touchend: function(event) {
-        if (game.Input.preventDefault) event.preventDefault();
+        this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
             this._mouseup(event.changedTouches[i]);
         }
