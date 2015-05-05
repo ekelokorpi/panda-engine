@@ -1,8 +1,8 @@
 /**
-    @module renderer.geometry
+    @module geometry
 **/
 game.module(
-	'engine.renderer.geometry'
+	'engine.geometry'
 )
 .body(function() {
 'use strict';

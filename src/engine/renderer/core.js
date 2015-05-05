@@ -7,7 +7,6 @@ game.module(
 .require(
     'engine.renderer.animation',
     'engine.renderer.container',
-    'engine.renderer.geometry',
     'engine.renderer.graphics',
     'engine.renderer.sprite',
     'engine.renderer.spritesheet',
