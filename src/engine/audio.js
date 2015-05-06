@@ -486,7 +486,7 @@ game.createClass('Audio', {
         @private
     **/
     _load: function(path, callback) {
-        var ext = path.split('.').pop();
+        var ext = path.split('?').shift().split('.').pop();
         if (this.formats.indexOf(ext) === -1) ext = this.formats[0];
         
         var realPath = path.replace(/[^\.]+$/, ext + game._nocache);
