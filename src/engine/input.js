@@ -97,7 +97,7 @@ game.createClass('Input', {
         this._mouseDownItem = this._processEvent('mousedown', event);
         this._mouseDownTime = game.Timer.time;
 
-        if (game.scene._mousedown) {
+        if (game.scene._mousedown && !this._mouseDownItem) {
             game.scene._mousedown(event.canvasX, event.canvasY, event.identifier, event);
         }
     },
@@ -117,7 +117,7 @@ game.createClass('Input', {
         }
         this._mouseMoveItem = _mouseMoveItem;
 
-        if (game.scene._mousemove) {
+        if (game.scene._mousemove && !this._mouseMoveItem) {
             game.scene._mousemove(event.canvasX, event.canvasY, event.identifier, event);
         }
     },
@@ -139,7 +139,7 @@ game.createClass('Input', {
             }
         }
 
-        if (game.scene._mouseup) {
+        if (game.scene._mouseup && !this._mouseUpItem) {
             game.scene._mouseup(event.canvasX, event.canvasY, event.identifier, event);
         }
     },

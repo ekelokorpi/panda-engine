@@ -614,6 +614,7 @@ game.createClass('Audio', {
         @param {Number} time
         @param {Number} audioId
         @private
+        @return {Number} audioId
     **/
     _play: function(name, loop, volume, callback, rate, time, audioId) {
         if (!game.Audio.enabled) return false;
@@ -634,22 +635,23 @@ game.createClass('Audio', {
             audio.connect(gainNode);
             audio.gainNode = gainNode;
 
-            var startTime = time || 0;
-            if (audio.start) audio.start(0, startTime);
-            else audio.noteOn(0, startTime);
-            audio.startTime = this.context.currentTime - startTime;
+            var method = audio.start ? 'start' : 'noteOn';
+            if (time) audio[method](0, time);
+            else audio[method](0);
+
+            audio.startTime = this.context.currentTime - (time || 0);
         }
         // HTML5 Audio
         else {
-            if (this._sources[name].audio.playing) return false;
-            this._sources[name].audio.volume = typeof volume === 'number' ? volume : 1;
-            this._sources[name].audio.loop = loop;
-            this._sources[name].audio.playing = true;
-            this._sources[name].audio.callback = callback;
-            this._sources[name].audio.onended = this._onended.bind(this, audioId);
-            if (!game.device.ie) this._sources[name].audio.currentTime = 0;
-            this._sources[name].audio.play();
             var audio = this._sources[name].audio;
+            if (audio.playing) return false;
+            audio.volume = typeof volume === 'number' ? volume : 1;
+            audio.loop = loop;
+            audio.playing = true;
+            audio.callback = callback;
+            audio.onended = this._onended.bind(this, audioId);
+            if (!game.device.ie) audio.currentTime = 0;
+            audio.play();
         }
 
         audio.name = name;
@@ -724,7 +726,7 @@ game.createClass('Audio', {
         if (this.context) {
             if (audio.pauseTime >= 0) {
                 var audioName = this._getNameForAudio(audio);
-                this._play(audioName, audio.loop, audio.gainNode.gain.value, audio.callback, audio.playbackRate, audio.pauseTime, id);
+                this._play(audioName, audio.loop, audio.gainNode.gain.value, audio.callback, audio.playbackRate.value, audio.pauseTime, id);
             }
             else return false;
         }

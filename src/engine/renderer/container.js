@@ -211,7 +211,9 @@ game.createClass('Container', {
         @param {MouseEvent|TouchEvent} event
         @return {Boolean} return true, to skip to next object.
     **/
-    mousedown: function() {},
+    mousedown: function() {
+        return true;
+    },
 
     /**
         @method mousemove
@@ -221,7 +223,9 @@ game.createClass('Container', {
         @param {MouseEvent|TouchEvent} event
         @return {Boolean} return true, to skip to next object.
     **/
-    mousemove: function() {},
+    mousemove: function() {
+        return true;
+    },
 
     /**
         @method mouseout
@@ -230,7 +234,9 @@ game.createClass('Container', {
         @param {Number} id
         @param {MouseEvent|TouchEvent} event
     **/
-    mouseout: function() {},
+    mouseout: function() {
+        return true;
+    },
 
     /**
         @method mouseup
@@ -240,7 +246,9 @@ game.createClass('Container', {
         @param {MouseEvent|TouchEvent} event
         @return {Boolean} return true, to skip to next object.
     **/
-    mouseup: function() {},
+    mouseup: function() {
+        return true;
+    },
 
     /**
         Remove this from it's parent.
@@ -530,6 +538,10 @@ game.defineProperties('Container', {
     height: {
         get: function() {
             return this.scale.y * this._getBounds().height;
+        },
+
+        set: function(value) {
+            // TODO
         }
     },
 
@@ -555,6 +567,10 @@ game.defineProperties('Container', {
     width: {
         get: function() {
             return this.scale.x * this._getBounds().width;
+        },
+
+        set: function(value) {
+            // TODO
         }
     },
 

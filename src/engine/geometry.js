@@ -173,7 +173,7 @@ game.createClass('Vector', {
     /**
         Add to vector values.
         @method add
-        @param {Number|game.Vector} x
+        @param {Number|Vector} x
         @param {Number} [y]
         @chainable
     **/
@@ -186,7 +186,7 @@ game.createClass('Vector', {
     /**
         Subtract from vector values.
         @method subtract
-        @param {Number|game.Vector} x
+        @param {Number|Vector} x
         @param {Number} [y]
         @chainable
     **/
@@ -199,7 +199,7 @@ game.createClass('Vector', {
     /**
         Multiply vector values.
         @method multiply
-        @param {Number|game.Vector} x
+        @param {Number|Vector} x
         @param {Number} [y]
         @chainable
     **/
@@ -212,7 +212,7 @@ game.createClass('Vector', {
     /**
         Multiply and add vector values.
         @method multiplyAdd
-        @param {Number|game.Vector} x
+        @param {Number|Vector} x
         @param {Number} [y]
         @chainable
     **/
@@ -225,7 +225,7 @@ game.createClass('Vector', {
     /**
         Divide vector values.
         @method divide
-        @param {Number|game.Vector} x
+        @param {Number|Vector} x
         @param {Number} [y]
         @chainable
     **/
