@@ -94,8 +94,8 @@ game.createClass('System', {
     _running: false,
 
     init: function() {
-        this.width = this.originalWidth = game.System.width;
-        this.height = this.originalHeight = game.System.height;
+        game.width = this.width = this.originalWidth = game.System.width;
+        game.height = this.height = this.originalHeight = game.System.height;
 
         for (var i = 1; i <= game.System.hires; i++) {
             var ratio = game.System.hiresRatio * i;
@@ -147,8 +147,8 @@ game.createClass('System', {
     **/
     resize: function(width, height) {
         if (this.width === width && this.height === height) return;
-        this.width = width / game.scale;
-        this.height = height / game.scale;
+        game.width = this.width = width / game.scale;
+        game.height = this.height = height / game.scale;
         game.renderer._resize(width, height);
         if (game.scene && game.scene.onResize) game.scene.onResize();
     },
@@ -364,7 +364,7 @@ game.createClass('System', {
         if (this.paused || this._pausedOnHide) return;
 
         game.Timer.update();
-        this.delta = game.Timer.delta / 1000;
+        game.delta = this.delta = game.Timer.delta / 1000;
 
         game.input._update();
         game.scene._update();

@@ -58,6 +58,11 @@ var game = {
         'engine.tween'
     ],
     /**
+        Current delta time in seconds.
+        @property {Number} delta
+    **/
+    delta: 0,
+    /**
         Scale multiplier for Retina and HiRes mode.
         @property {Number} scale
         @default 1
@@ -140,6 +145,16 @@ var game = {
         @property {Object} modules
     **/
     modules: {},
+    /**
+        Width of game.
+        @property {Number} width
+    **/
+    width: 0,
+    /**
+        Height of game.
+        @property {Number} height
+    **/
+    height: 0,
     /**
         @property {String} _nocache
         @private
