@@ -331,9 +331,8 @@ game.createClass('Container', {
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
-        if (this._cacheAsBitmap) return;
-
-        this.updateChildTransform();
+        if (this._cachedSprite) this._cachedSprite._worldAlpha = this._worldAlpha;
+        else this.updateChildTransform();
     },
 
     /**
