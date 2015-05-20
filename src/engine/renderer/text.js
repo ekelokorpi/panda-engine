@@ -8,7 +8,6 @@ game.module(
     'engine.renderer.sprite'
 )
 .body(function() {
-'use strict';
 
 /**
     @class Text

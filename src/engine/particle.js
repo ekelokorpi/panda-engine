@@ -5,7 +5,6 @@ game.module(
     'engine.particle'
 )
 .body(function() {
-'use strict';
 
 /**
     Particle emitter.

@@ -5,7 +5,6 @@ game.module(
     'engine.loader'
 )
 .body(function() {
-'use strict';
 
 /**
     Dynamic loader for assets and audio files.

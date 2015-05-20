@@ -5,7 +5,6 @@ game.module(
     'engine.camera'
 )
 .body(function() {
-'use strict';
 
 /**
     @class Camera

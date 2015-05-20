@@ -5,7 +5,6 @@ game.module(
     'engine.input'
 )
 .body(function() {
-'use strict';
 
 /**
     @class Input

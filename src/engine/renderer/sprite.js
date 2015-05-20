@@ -8,7 +8,6 @@ game.module(
     'engine.renderer.container'
 )
 .body(function() {
-'use strict';
 
 /**
     @class Sprite

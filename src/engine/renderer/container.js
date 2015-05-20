@@ -8,7 +8,6 @@ game.module(
     'engine.geometry'
 )
 .body(function() {
-'use strict';
 
 /**
     @class Container

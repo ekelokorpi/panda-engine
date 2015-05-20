@@ -1,21 +1,26 @@
+/**
+    @module renderer.webgl.spritebatch
+**/
 game.module(
     'engine.renderer.webgl.spritebatch'
 )
 .body(function() {
-'use strict';
 
 /**
     @class WebGLAbstractFilter
 **/
 game.createClass('WebGLAbstractFilter', {
-    shaders: [],
     dirty: true,
+    fragmentSrc: [],
     padding: 0,
-
+    passes: [],
+    shaders: [],
+    uniforms: {},
+    
     init: function(fragmentSrc, uniforms) {
-        this.passes = [this];
-        this.uniforms = uniforms || {};
-        this.fragmentSrc = fragmentSrc || [];
+        this.passes.push(this);
+        this.uniforms = uniforms || this.uniforms;
+        this.fragmentSrc = fragmentSrc || this.fragmentSrc;
     },
 
     syncUniforms: function() {
@@ -29,17 +34,17 @@ game.createClass('WebGLAbstractFilter', {
     @class WebGLSpriteBatch
 **/
 game.createClass('WebGLSpriteBatch', {
-    vertSize: 5,
-    size: 2000,
-    lastIndexCount: 0,
-    drawing: false,
+    blendModes: [],
     currentBatchSize: 0,
     currentBaseTexture: null,
     dirty: true,
-    textures: [],
-    blendModes: [],
+    drawing: false,
+    lastIndexCount: 0,
+    size: 2000,
     shaders: [],
     sprites: [],
+    textures: [],
+    vertSize: 5,
 
     init: function() {
         var numVerts = this.size * 4 * 4 * this.vertSize;

@@ -5,7 +5,6 @@ game.module(
     'engine.scene'
 )
 .body(function() {
-'use strict';
 
 /**
     Game scene.

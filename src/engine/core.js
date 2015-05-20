@@ -8,7 +8,6 @@
 /**
     @module game
 **/
-'use strict';
 
 /**
     @class Core

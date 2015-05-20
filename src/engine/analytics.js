@@ -5,7 +5,6 @@ game.module(
     'engine.analytics'
 )
 .body(function() {
-'use strict';
 
 /**
     Google Analytics tracking.

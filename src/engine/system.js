@@ -5,7 +5,6 @@ game.module(
     'engine.system'
 )
 .body(function() {
-'use strict';
 
 /**
     @class System

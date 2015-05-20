@@ -5,7 +5,6 @@ game.module(
     'engine.renderer.spritesheet'
 )
 .body(function() {
-'use strict';
 
 /**
     @class SpriteSheet

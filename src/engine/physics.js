@@ -5,7 +5,6 @@ game.module(
     'engine.physics'
 )
 .body(function() {
-'use strict';
 
 /**
     Physics world.

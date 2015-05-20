@@ -5,7 +5,6 @@ game.module(
     'engine.audio'
 )
 .body(function() {
-'use strict';
 
 /**
     Audio manager.

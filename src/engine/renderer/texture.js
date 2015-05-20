@@ -5,7 +5,6 @@ game.module(
     'engine.renderer.texture'
 )
 .body(function() {
-'use strict';
 
 /**
     @class Texture

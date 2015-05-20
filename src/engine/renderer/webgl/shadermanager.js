@@ -1,19 +1,21 @@
+/**
+    @module renderer.webgl.shadermanager
+**/
 game.module(
     'engine.renderer.webgl.shadermanager'
 )
 .body(function() {
-'use strict';
 
 /**
     @class WebGLShaderManager
 **/
 game.createClass('WebGLShaderManager', {
-    maxAttibs: 10,
     attribState: [],
-    tempAttribState: [],
-    stack: [],
     context: null,
     defaultShader: null,
+    maxAttibs: 10,
+    stack: [],
+    tempAttribState: [],
 
     init: function() {
         for (var i = 0; i < this.maxAttibs; i++) {
@@ -21,10 +23,11 @@ game.createClass('WebGLShaderManager', {
         }
     },
 
-    setContext: function(context) {
-        this.context = context;
-        this.defaultShader = new game.WebGLShader(context);
-        this.setShader(this.defaultShader);
+    destroy: function() {
+        this.attribState = null;
+        this.tempAttribState = null;
+        this.defaultShader.destroy();
+        this.context = null;
     },
 
     setAttribs: function(attribs) {
@@ -53,6 +56,12 @@ game.createClass('WebGLShaderManager', {
         }
     },
 
+    setContext: function(context) {
+        this.context = context;
+        this.defaultShader = new game.WebGLShader(context);
+        this.setShader(this.defaultShader);
+    },
+
     setShader: function(shader) {
         if (this._currentId === shader._UID) return false;
 
@@ -62,13 +71,6 @@ game.createClass('WebGLShaderManager', {
         this.setAttribs(shader.attributes);
 
         return true;
-    },
-
-    destroy: function() {
-        this.attribState = null;
-        this.tempAttribState = null;
-        this.defaultShader.destroy();
-        this.context = null;
     }
 });
 

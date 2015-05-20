@@ -18,7 +18,6 @@ game.module(
     'engine.renderer.webgl.spritebatch'
 )
 .body(function() {
-'use strict';
 
 /**
     @class Renderer

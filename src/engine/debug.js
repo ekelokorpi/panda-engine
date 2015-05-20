@@ -5,7 +5,6 @@ game.module(
     'engine.debug'
 )
 .body(function() {
-'use strict';
 
 /**
     @class Debug

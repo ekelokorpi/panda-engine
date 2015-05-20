@@ -5,7 +5,6 @@ game.module(
     'engine.tween'
 )
 .body(function() {
-'use strict';
 
 /**
     @class TweenEngine

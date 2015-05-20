@@ -5,7 +5,6 @@ game.module(
     'engine.pool'
 )
 .body(function() {
-'use strict';
 
 /**
     Object pool.

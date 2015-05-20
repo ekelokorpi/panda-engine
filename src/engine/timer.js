@@ -5,7 +5,6 @@ game.module(
     'engine.timer'
 )
 .body(function() {
-'use strict';
 
 /**
     @class Timer

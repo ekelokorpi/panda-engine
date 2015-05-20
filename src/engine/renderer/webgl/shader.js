@@ -1,8 +1,10 @@
+/**
+    @module renderer.webgl.shader
+**/
 game.module(
     'engine.renderer.webgl.shader'
 )
 .body(function() {
-'use strict';
     
 /**
     @class WebGLShader
@@ -10,21 +12,21 @@ game.module(
     @param {WebGLRenderingContext} context
 **/
 game.createClass('WebGLShader', {
-    attributes: [],
-    program: null,
-    textureCount: 0,
-    firstRun: true,
-    dirty: true,
-    uSampler: null,
-    projectionVector: null,
-    offsetVector: null,
-    dimensions: null,
     aVertexPosition: null,
+    attributes: [],
     colorAttribute: null,
     context: null,
-    _UID: null,
+    dimensions: null,
+    dirty: true,
+    firstRun: true,
+    offsetVector: null,
+    program: null,
+    projectionVector: null,
+    textureCount: 0,
+    uSampler: null,
     uniforms: null,
-
+    _UID: null,
+    
     staticInit: function(context) {
         this._UID = game.WebGLShader._UID++;
         this.context = context;
@@ -32,7 +34,7 @@ game.createClass('WebGLShader', {
 
     init: function() {
         var gl = this.context;
-        this.program = game.WebGLShader.compileProgram(gl, this.vertexSrc || game.WebGLShader.vertexSrc, game.WebGLShader.fragmentSrc);
+        this.program = this.compileProgram(gl, this.vertexSrc || game.WebGLShader.vertexSrc, game.WebGLShader.fragmentSrc);
 
         gl.useProgram(this.program);
 
@@ -100,6 +102,52 @@ game.createClass('WebGLShader', {
         }
     },
 
+    compileProgram: function(gl, vertexSrc, fragmentSrc) {
+        var fragmentShader = this.compileFragmentShader(gl, fragmentSrc);
+        var vertexShader = this.compileVertexShader(gl, vertexSrc);
+        var shaderProgram = gl.createProgram();
+
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            console.log('Could not initialise shaders');
+        }
+
+        return shaderProgram;
+    },
+
+    compileFragmentShader: function(gl, shaderSrc) {
+        return this.compileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
+    },
+
+    compileVertexShader: function(gl, shaderSrc) {
+        return this.compileShader(gl, shaderSrc, gl.VERTEX_SHADER);
+    },
+
+    compileShader: function(gl, shaderSrc, shaderType) {
+        var src = shaderSrc.join('\n');
+        var shader = gl.createShader(shaderType);
+
+        gl.shaderSource(shader, src);
+        gl.compileShader(shader);
+
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.log(gl.getShaderInfoLog(shader));
+            return null;
+        }
+
+        return shader;
+    },
+
+    destroy: function() {
+        this.context.deleteProgram(this.program);
+        this.uniforms = null;
+        this.context = null;
+        this.attributes.length = 0;
+    },
+
     syncUniforms: function() {
         this.textureCount = 1;
         var uniform;
@@ -141,71 +189,21 @@ game.createClass('WebGLShader', {
                 }
             }
         }
-    },
-
-    destroy: function() {
-        this.context.deleteProgram(this.program);
-        this.uniforms = null;
-        this.context = null;
-        this.attributes.length = 0;
     }
 });
 
 game.addAttributes('WebGLShader', {
     _UID: 0,
 
-    compileProgram: function(gl, vertexSrc, fragmentSrc) {
-        var fragmentShader = this.compileFragmentShader(gl, fragmentSrc);
-        var vertexShader = this.compileVertexShader(gl, vertexSrc);
-        var shaderProgram = gl.createProgram();
-
-        gl.attachShader(shaderProgram, vertexShader);
-        gl.attachShader(shaderProgram, fragmentShader);
-        gl.linkProgram(shaderProgram);
-
-        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-            console.log('Could not initialise shaders');
-        }
-
-        return shaderProgram;
-    },
-
-    compileFragmentShader: function(gl, shaderSrc) {
-        return this.compileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
-    },
-
-    compileVertexShader: function(gl, shaderSrc) {
-        return this.compileShader(gl, shaderSrc, gl.VERTEX_SHADER);
-    },
-
-    compileShader: function(gl, shaderSrc, shaderType) {
-        var src = shaderSrc.join('\n');
-        var shader = gl.createShader(shaderType);
-
-        gl.shaderSource(shader, src);
-        gl.compileShader(shader);
-
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            console.log(gl.getShaderInfoLog(shader));
-            return null;
-        }
-
-        return shader;
-    },
-
     vertexSrc: [
         'attribute vec2 aVertexPosition;',
         'attribute vec2 aTextureCoord;',
         'attribute vec4 aColor;',
-
         'uniform vec2 projectionVector;',
         'uniform vec2 offsetVector;',
-
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
-
         'const vec2 center = vec2(-1.0, 1.0);',
-
         'void main(void) {',
         '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
         '   vTextureCoord = aTextureCoord;',
