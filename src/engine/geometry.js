@@ -178,7 +178,7 @@ game.createClass('Vector', {
     **/
     add: function(x, y) {
         this.x += x instanceof game.Vector ? x.x : x;
-        this.y += x instanceof game.Vector ? x.y : y || x;
+        this.y += x instanceof game.Vector ? x.y : (Number.isFinite(y) ? y : x);
         return this;
     },
 
@@ -191,7 +191,7 @@ game.createClass('Vector', {
     **/
     subtract: function(x, y) {
         this.x -= x instanceof game.Vector ? x.x : x;
-        this.y -= x instanceof game.Vector ? x.y : y || x;
+        this.y -= x instanceof game.Vector ? x.y : (Number.isFinite(y) ? y : x);
         return this;
     },
 
@@ -204,7 +204,7 @@ game.createClass('Vector', {
     **/
     multiply: function(x, y) {
         this.x *= x instanceof game.Vector ? x.x : x;
-        this.y *= x instanceof game.Vector ? x.y : y || x;
+        this.y *= x instanceof game.Vector ? x.y : (Number.isFinite(y) ? y : x);
         return this;
     },
 
@@ -230,7 +230,7 @@ game.createClass('Vector', {
     **/
     divide: function(x, y) {
         this.x /= x instanceof game.Vector ? x.x : x;
-        this.y /= x instanceof game.Vector ? x.y : y || x;
+        this.y /= x instanceof game.Vector ? x.y : (Number.isFinite(y) ? y : x);
         return this;
     },
 
