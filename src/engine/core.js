@@ -1,11 +1,11 @@
-// Panda Engine
-
-// Made by Eemeli Kelokorpi
-// Renderer based on Pixi.js by Mat Groves, Goodboy Digital
-// Financed by Yleisradio
-// Released under the MIT license
-
 /**
+    Panda Engine
+
+    - Made by Eemeli Kelokorpi
+    - Renderer based on Pixi.js by Mat Groves, Goodboy Digital
+    - Financed by Yleisradio
+    - Released under the MIT license
+
     @module game
 **/
 
@@ -23,28 +23,6 @@ var game = {
         @property {Object} config
     **/
     config: typeof pandaConfig !== 'undefined' ? pandaConfig : {},
-    /**
-        @property {Array} _coreModules
-        @private
-    **/
-    _coreModules: [
-        'engine.analytics',
-        'engine.audio',
-        'engine.camera',
-        'engine.debug',
-        'engine.geometry',
-        'engine.input',
-        'engine.loader',
-        'engine.particle',
-        'engine.physics',
-        'engine.pool',
-        'engine.renderer.core',
-        'engine.scene',
-        'engine.storage',
-        'engine.system',
-        'engine.timer',
-        'engine.tween'
-    ],
     /**
         Current delta time in seconds.
         @property {Number} delta
@@ -84,6 +62,10 @@ var game = {
         @property {TweenEngine} tween
     **/
     tween: null,
+    /**
+        @property {Input} input
+    **/
+    input: null,
     /**
         @property {Keyboard} keyboard
     **/
@@ -143,6 +125,28 @@ var game = {
         @property {Number} height
     **/
     height: 0,
+    /**
+        @property {Array} _coreModules
+        @private
+    **/
+    _coreModules: [
+        'engine.analytics',
+        'engine.audio',
+        'engine.camera',
+        'engine.debug',
+        'engine.geometry',
+        'engine.input',
+        'engine.loader',
+        'engine.particle',
+        'engine.physics',
+        'engine.pool',
+        'engine.renderer.core',
+        'engine.scene',
+        'engine.storage',
+        'engine.system',
+        'engine.timer',
+        'engine.tween'
+    ],
     /**
         @property {String} _nocache
         @private
