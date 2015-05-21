@@ -17,21 +17,21 @@ game.module(
 **/
 game.createClass('Texture', {
     /**
-        @property {Number} width
+        @property {BaseTexture} baseTexture
     **/
-    width: 0,
+    baseTexture: null,
     /**
         @property {Number} height
     **/
     height: 0,
     /**
-        @property {BaseTexture} baseTexture
-    **/
-    baseTexture: null,
-    /**
         @property {Vector} position
     **/
     position: null,
+    /**
+        @property {Number} width
+    **/
+    width: 0,
     /**
         @property {Array} _uvs
         @private
@@ -70,11 +70,22 @@ game.addAttributes('Texture', {
         @attribute {Object} cache
     **/
     cache: {},
+
+    /**
+        @method clearCache
+        @static
+    **/
+    clearCache: function() {
+        for (var i in this.cache) {
+            delete this.cache[i];
+        }
+    },
     
     /**
         @method fromImage
         @static
         @param {String} path
+        @return {Texture}
     **/
     fromImage: function(path) {
         var texture = this.cache[path];
@@ -91,6 +102,7 @@ game.addAttributes('Texture', {
         @method fromAsset
         @static
         @param {String} id
+        @return {Texture}
     **/
     fromAsset: function(id) {
         var path = game.paths[id] || id;
@@ -107,6 +119,7 @@ game.addAttributes('Texture', {
         @method fromCanvas
         @static
         @param {HTMLCanvasElement} canvas
+        @return {Texture}
     **/
     fromCanvas: function(canvas) {
         var texture = this.cache[canvas._id];
@@ -118,16 +131,6 @@ game.addAttributes('Texture', {
         }
         
         return texture;
-    },
-
-    /**
-        @method clearCache
-        @static
-    **/
-    clearCache: function() {
-        for (var i in this.cache) {
-            delete this.cache[i];
-        }
     }
 });
 
@@ -139,47 +142,61 @@ game.addAttributes('Texture', {
 **/
 game.createClass('BaseTexture', {
     /**
-        @property {Number} width
-    **/
-    width: 0,
-    /**
         @property {Number} height
     **/
     height: 0,
+    /**
+        @property {Boolean} loaded
+        @default false
+    **/
+    loaded: false,
     /**
         @property {HTMLImageElement|HTMLCanvasElement} source
     **/
     source: null,
     /**
-        @property {Boolean} loaded
+        @property {Number} width
     **/
-    loaded: false,
+    width: 0,
+    /**
+        @property {Array} _dirty
+        @private
+    **/
+    _dirty: [true, true, true, true],
+    /**
+        @property {Array} _glTextures
+        @private
+    **/
+    _glTextures: [],
+    /**
+        @property {Number|String} _id
+        @private
+    **/
+    _id: null,
     /**
         @property {Function} _loadCallback
         @private
     **/
     _loadCallback: null,
     /**
-        @property {Number|String} _id
+        @property {Boolean} _powerOf2
+        @default false
         @private
     **/
-    _id: null,
-    // TODO WebGL stuff, check these
-    _dirty: [true, true, true, true],
-    _glTextures: [],
-    _premultipliedAlpha: true,
     _powerOf2: false,
-    
+    /**
+        @property {Boolean} _premultipliedAlpha
+        @default true
+        @private
+    **/
+    _premultipliedAlpha: true,
+
     init: function(source, loadCallback) {
         this.source = source;
         this._loadCallback = loadCallback;
 
-        if (source.getContext) {
-            this._onload();
-        }
-        else {
-            source.onload = this._onload.bind(this);
-        }
+        if (source.getContext) this._onload();
+        else source.onload = this._onload.bind(this);
     },
 
     /**

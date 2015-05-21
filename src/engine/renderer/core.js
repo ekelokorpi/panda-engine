@@ -13,9 +13,7 @@ game.module(
     'engine.renderer.text',
     'engine.renderer.texture',
     'engine.renderer.tilingsprite',
-    'engine.renderer.webgl.shader',
-    'engine.renderer.webgl.shadermanager',
-    'engine.renderer.webgl.spritebatch'
+    'engine.renderer.webgl'
 )
 .body(function() {
 
