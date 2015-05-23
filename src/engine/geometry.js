@@ -178,7 +178,7 @@ game.createClass('Vector', {
     **/
     add: function(x, y) {
         this.x += x instanceof game.Vector ? x.x : x;
-        this.y += x instanceof game.Vector ? x.y : (Number.isFinite(y) ? y : x);
+        this.y += x instanceof game.Vector ? x.y : (y || ((y !== 0) ? this.x : 0));
         return this;
     },
 
@@ -191,7 +191,7 @@ game.createClass('Vector', {
     **/
     subtract: function(x, y) {
         this.x -= x instanceof game.Vector ? x.x : x;
-        this.y -= x instanceof game.Vector ? x.y : (Number.isFinite(y) ? y : x);
+        this.y -= x instanceof game.Vector ? x.y : (y || ((y !== 0) ? this.x : 0));
         return this;
     },
 
@@ -204,7 +204,7 @@ game.createClass('Vector', {
     **/
     multiply: function(x, y) {
         this.x *= x instanceof game.Vector ? x.x : x;
-        this.y *= x instanceof game.Vector ? x.y : (Number.isFinite(y) ? y : x);
+        this.y *= x instanceof game.Vector ? x.y : (y || ((y !== 0) ? this.x : 0));
         return this;
     },
 
@@ -230,7 +230,7 @@ game.createClass('Vector', {
     **/
     divide: function(x, y) {
         this.x /= x instanceof game.Vector ? x.x : x;
-        this.y /= x instanceof game.Vector ? x.y : (Number.isFinite(y) ? y : x);
+        this.y /= x instanceof game.Vector ? x.y : (y || ((y !== 0) ? this.x : 0));
         return this;
     },
 
@@ -327,13 +327,18 @@ game.createClass('Vector', {
     },
 
     /**
-        Get angle between two vectors.
+        Get angle vector angle or angle between two vectors.
         @method angle
-        @param {Vector} vector
+        @param {Vector} [vector]
         @return {Number}
     **/
     angle: function(vector) {
-        return Math.atan2(vector.y - this.y, vector.x - this.x);
+        if (vector) {
+            return Math.atan2(vector.y - this.y, vector.x - this.x);
+        }
+        else {
+            return Math.atan2(this.y, this.x);
+        }
     },
 
     /**
