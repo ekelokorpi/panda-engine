@@ -18,6 +18,11 @@ game.createClass('Input', {
     **/
     items: [],
     /**
+        List of current touches.
+        @property {Array} touches
+    **/
+    touches: [],
+    /**
         @property {Boolean} _needUpdate
         @default false
         @private
@@ -43,6 +48,7 @@ game.createClass('Input', {
         canvas.addEventListener('touchstart', this._touchstart.bind(this));
         canvas.addEventListener('touchmove', this._touchmove.bind(this));
         canvas.addEventListener('touchend', this._touchend.bind(this));
+        canvas.addEventListener('touchcancel', this._touchend.bind(this));
         canvas.addEventListener('mousedown', this._mousedown.bind(this));
         canvas.addEventListener('mousemove', this._mousemove.bind(this));
         window.addEventListener('mouseup', this._mouseup.bind(this));
@@ -56,7 +62,9 @@ game.createClass('Input', {
     _touchstart: function(event) {
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
-            this._mousedown(event.changedTouches[i]);
+            var touch = event.changedTouches[i];
+            this.touches.push(touch);
+            this._mousedown(touch);
         }
     },
 
@@ -80,7 +88,9 @@ game.createClass('Input', {
     _touchend: function(event) {
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
-            this._mouseup(event.changedTouches[i]);
+            var touch = event.changedTouches[i];
+            this.touches.erase(touch);
+            this._mouseup(touch);
         }
     },
 

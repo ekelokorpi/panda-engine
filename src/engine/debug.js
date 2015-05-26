@@ -385,7 +385,7 @@ if (href.match(/\?debugdraw/)) {
 }
 
 game.onStart = function() {
-    if (!this.Debug || !this.Debug.enabled) return;
+    if (!this.Debug.enabled) return;
 
     console.log('Panda Engine ' + this.version);
     var renderer = game.renderer.webGL ? 'WebGL' : 'Canvas';

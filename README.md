@@ -55,15 +55,12 @@ Make games written in JavaScript and play them on any major browser, or wrap the
 - Tween
 	- Tween any property with easing, looping and grouping	
 
-## Documentation
-
-- [API Documentation](http://www.pandajs.net/engine/docs)
-- [Playground](http://www.pandajs.net/engine/playground)
-
 ## Support
 
+- [API Documentation](http://www.pandajs.net/engine/docs)
+- [Panda Engine chat](https://gitter.im/ekelokorpi/panda-engine)
+- [Panda.js website](http://www.pandajs.net)
 - [Panda.js forum](http://www.html5gamedevs.com/forum/19-pandajs/)
-- [Panda Engine chat](https://gitter.im/ekelokorpi/panda.js-engine)
 
 ## Credits
 
