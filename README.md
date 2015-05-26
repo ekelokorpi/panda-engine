@@ -2,6 +2,8 @@
 
 ## Panda.js HTML5 game engine
 
+[![Join the chat at https://gitter.im/ekelokorpi/panda-engine](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ekelokorpi/panda-engine?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Free HTML5 game engine for mobile and desktop with Canvas and WebGL rendering.
 
 http://www.pandajs.net
