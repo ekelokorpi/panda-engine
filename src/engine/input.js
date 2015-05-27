@@ -45,12 +45,13 @@ game.createClass('Input', {
     _mouseUpItem: null,
 
     init: function(canvas) {
-        canvas.addEventListener('touchstart', this._touchstart.bind(this));
-        canvas.addEventListener('touchmove', this._touchmove.bind(this));
-        canvas.addEventListener('touchend', this._touchend.bind(this));
-        canvas.addEventListener('touchcancel', this._touchend.bind(this));
-        canvas.addEventListener('mousedown', this._mousedown.bind(this));
-        canvas.addEventListener('mousemove', this._mousemove.bind(this));
+        var target = game.device.cocoonCanvasPlus ? window : canvas;
+        target.addEventListener('touchstart', this._touchstart.bind(this));
+        target.addEventListener('touchmove', this._touchmove.bind(this));
+        target.addEventListener('touchend', this._touchend.bind(this));
+        target.addEventListener('touchcancel', this._touchend.bind(this));
+        target.addEventListener('mousedown', this._mousedown.bind(this));
+        target.addEventListener('mousemove', this._mousemove.bind(this));
         window.addEventListener('mouseup', this._mouseup.bind(this));
     },
 
@@ -89,7 +90,12 @@ game.createClass('Input', {
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
-            this.touches.erase(touch);
+            for (var o = this.touches.length - 1; o >= 0; o--) {
+                if (this.touches[o].identifier === touch.identifier) {
+                    this.touches.splice(o, 1);
+                    break;
+                }
+            }
             this._mouseup(touch);
         }
     },
@@ -206,8 +212,8 @@ game.createClass('Input', {
         var hitArea = container.hitArea;
         if (hitArea) {
             var bounds = container._getBounds();
-            var ax = container.anchor.x * container.scale.x / container.width;
-            var ay = container.anchor.y * container.scale.y / container.height;
+            var ax = (container.anchor.x * container.scale.x / container.width) || 0;
+            var ay = (container.anchor.y * container.scale.y / container.height) || 0;
             var hx = bounds.x + bounds.width / 2 - container.width / 2 + hitArea.x;
             var hy = bounds.y + bounds.height / 2 - container.height / 2 + hitArea.y;
             var hw = hitArea.width * container.scale.x;

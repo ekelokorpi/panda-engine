@@ -862,6 +862,7 @@ var game = {
         this.device.opera = /Opera/i.test(navigator.userAgent) || /OPR/i.test(navigator.userAgent);
         this.device.crosswalk = /Crosswalk/i.test(navigator.userAgent);
         this.device.cocoonJS = !!navigator.isCocoonJS;
+        this.device.cocoonCanvasPlus = /CocoonJS/i.test(navigator.browser);
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
         this.device.facebook = /FB/i.test(navigator.userAgent);
         this.device.wiiu = /Nintendo WiiU/i.test(navigator.userAgent);
