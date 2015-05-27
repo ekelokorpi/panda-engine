@@ -635,9 +635,8 @@ game.createClass('Audio', {
         }
         else {
             var audio = this._sources[name].audio;
-            if (audio.playing) return false;
             audio.volume = typeof volume === 'number' ? volume : 1;
-            audio.loop = loop;
+            audio.loop = !!loop;
             audio.playing = true;
             audio.callback = callback;
             audio.onended = this._onended.bind(this, audioId);
