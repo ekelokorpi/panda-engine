@@ -343,6 +343,15 @@ game.createClass('Container', {
     },
 
     /**
+        @method _destroyCachedSprite
+        @private
+    **/
+    _destroyCachedSprite: function() {
+        if (this._cachedSprite) this._cachedSprite.texture.remove();
+        this._cachedSprite = null;
+    },
+
+    /**
         @method _generateCachedSprite
         @private
     **/
@@ -375,8 +384,8 @@ game.createClass('Container', {
         if (this._cachedSprite) {
             this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
             this._worldBounds.y = this._worldTransform.ty + this._cachedSprite.position.y;
-            this._worldBounds.width = this._cachedSprite.texture.width * this.scale.x / game.scale;
-            this._worldBounds.height = this._cachedSprite.texture.height * this.scale.y / game.scale;
+            this._worldBounds.width = this._cachedSprite.texture.width * this._worldTransform.a / game.scale;
+            this._worldBounds.height = this._cachedSprite.texture.height * this._worldTransform.d / game.scale;
             return this._worldBounds;
         }
 
@@ -535,7 +544,7 @@ game.defineProperties('Container', {
     **/
     height: {
         get: function() {
-            return this.scale.y * this._getBounds().height;
+            return this._getBounds().height;
         },
 
         set: function(value) {
@@ -564,7 +573,7 @@ game.defineProperties('Container', {
     **/
     width: {
         get: function() {
-            return this.scale.x * this._getBounds().width;
+            return this._getBounds().width;
         },
 
         set: function(value) {

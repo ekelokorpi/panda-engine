@@ -268,25 +268,27 @@ game.createClass('Scene', {
         @method _mousedown
         @param {Number} x
         @param {Number} y
+        @param {Number} id
         @param {MouseEvent|TouchEvent} event
         @private
     **/
-    _mousedown: function(x, y, event) {
+    _mousedown: function(x, y, id, event) {
         this._mouseDownTime = game.Timer.time;
         this._mouseDownX = x;
         this._mouseDownY = y;
-        this.mousedown(x, y, event);
+        this.mousedown(x, y, id, event);
     },
 
     /**
         @method _mousemove
         @param {Number} x
         @param {Number} y
+        @param {Number} id
         @param {MouseEvent|TouchEvent} event
         @private
     **/
-    _mousemove: function(x, y, event) {
-        this.mousemove(x, y, event);
+    _mousemove: function(x, y, id, event) {
+        this.mousemove(x, y, id, event);
         if (!this._mouseDownTime) return;
         if (x - this._mouseDownX >= this.swipeDist) this._swipe('right');
         else if (x - this._mouseDownX <= -this.swipeDist) this._swipe('left');
@@ -298,12 +300,13 @@ game.createClass('Scene', {
         @method _mouseup
         @param {Number} x
         @param {Number} y
+        @param {Number} id
         @param {MouseEvent|TouchEvent} event
         @private
     **/
-    _mouseup: function(x, y, event) {
+    _mouseup: function(x, y, id, event) {
         this._mouseDownTime = null;
-        this.mouseup(x, y, event);
+        this.mouseup(x, y, id, event);
     },
 
     /**

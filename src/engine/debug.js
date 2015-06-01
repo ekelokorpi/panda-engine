@@ -168,7 +168,7 @@ game.createClass('Debug', {
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = game.Debug.boundAlpha;
         context.beginPath();
-        context.lineWidth = 2;
+        context.lineWidth = 1;
         context.strokeStyle = game.Debug.boundColor;
         context.rect(x, y, width, height);
         context.stroke();
@@ -188,34 +188,37 @@ game.createClass('Debug', {
         // TODO
         if (game.renderer.webGL) return;
 
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        context.globalAlpha = game.Debug.hitAreaAlpha;
-        context.fillStyle = game.Debug.hitAreaColor;
-
+        var wt = container._worldTransform;
         var hitArea = container.hitArea;
         var bounds = container._getBounds();
 
-        if (hitArea) {
-            var ax = container.anchor.x * container.scale.x / container.width;
-            var ay = container.anchor.y * container.scale.y / container.height;
-            var x = bounds.x + bounds.width / 2 - container.width / 2 + hitArea.x;
-            var y = bounds.y + bounds.height / 2 - container.height / 2 + hitArea.y;
-            var hw = hitArea.width * container.scale.x;
-            var hh = hitArea.height * container.scale.y;
-            x += container.anchor.x * container.scale.x - hw * ax;
-            y += container.anchor.y * container.scale.y - hh * ay;
-            x *= game.scale;
-            y *= game.scale;
+        var x = (bounds.x || wt.tx) * game.scale;
+        var y = (bounds.y || wt.ty) * game.scale;
 
-            var width = hitArea.width * container.scale.x * game.scale;
-            var height = hitArea.height * container.scale.y * game.scale;
+        context.setTransform(1, 0, 0, 1, x, y);
+        context.globalAlpha = game.Debug.hitAreaAlpha;
+        context.fillStyle = game.Debug.hitAreaColor;
+
+        if (hitArea) {
+            var scaleX = wt.a / (container._cosCache || 1);
+            var scaleY = wt.d / (container._cosCache || 1);
+
+            x = hitArea.x * scaleX;
+            y = hitArea.y * scaleY;
+            var ax = (container.anchor.x * scaleX / container.width) || 0;
+            var ay = (container.anchor.y * scaleY / container.height) || 0;
+            var hw = hitArea.width * scaleX;
+            var hh = hitArea.height * scaleY;
+            x += container.anchor.x * scaleX - hw * ax;
+            y += container.anchor.y * scaleY - hh * ay;
+            var width = hitArea.width * scaleX * game.scale;
+            var height = hitArea.height * scaleY * game.scale;
         }
         else {
-            hitArea = bounds;
-            var x = hitArea.x * game.scale;
-            var y = hitArea.y * game.scale;
-            var width = hitArea.width * game.scale;
-            var height = hitArea.height * game.scale;
+            x = 0;
+            y = 0;
+            var width = bounds.width * game.scale;
+            var height = bounds.height * game.scale;
         }
 
         context.fillRect(x, y, width, height);

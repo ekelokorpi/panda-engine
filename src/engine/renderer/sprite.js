@@ -49,8 +49,6 @@ game.createClass('Sprite', 'Container', {
         var maxY = ty;
 
         if (b === 0 && c === 0) {
-            if (a < 0) a *= -1;
-            if (d < 0) d *= -1;
             maxX = a * width + tx;
             maxY = d * height + ty;
         }

@@ -48,6 +48,19 @@ game.createClass('Texture', {
     },
 
     /**
+        Remove texture from cache.
+        @method remove
+    **/
+    remove: function() {
+        for (var name in game.Texture.cache) {
+            if (game.Texture.cache[name] === this) {
+                delete game.Texture.cache[name];
+                return;
+            }
+        }
+    },
+
+    /**
         @method _updateUvs
         @private
     **/

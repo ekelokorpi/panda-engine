@@ -211,13 +211,14 @@ game.createClass('Input', {
     _hitTest: function(container, x, y) {
         var hitArea = container.hitArea;
         if (hitArea) {
+            var wt = container._worldTransform;
             var bounds = container._getBounds();
             var ax = (container.anchor.x * container.scale.x / container.width) || 0;
             var ay = (container.anchor.y * container.scale.y / container.height) || 0;
-            var hx = bounds.x + bounds.width / 2 - container.width / 2 + hitArea.x;
-            var hy = bounds.y + bounds.height / 2 - container.height / 2 + hitArea.y;
-            var hw = hitArea.width * container.scale.x;
-            var hh = hitArea.height * container.scale.y;
+            var hx = wt.tx + hitArea.x;
+            var hy = wt.ty + hitArea.y;
+            var hw = hitArea.width * wt.a;
+            var hh = hitArea.height * wt.d;
             hx += container.anchor.x * container.scale.x - hw * ax;
             hy += container.anchor.y * container.scale.y - hh * ay;
         }
