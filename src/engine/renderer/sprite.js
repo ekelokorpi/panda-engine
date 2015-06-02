@@ -155,12 +155,20 @@ game.defineProperties('Sprite', {
     width: {
         get: function() {
             return this.scale.x * this.texture.width / game.scale;
+        },
+
+        set: function(value) {
+            this.scale.x = value / this.texture.width;
         }
     },
 
     height: {
         get: function() {
             return this.scale.y * this.texture.height / game.scale;
+        },
+
+        set: function(value) {
+            this.scale.y = value / this.texture.height;
         }
     }
 });

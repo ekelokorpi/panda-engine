@@ -578,7 +578,7 @@ game.defineProperties('Container', {
         },
 
         set: function(value) {
-            // TODO
+            this.scale.y = value / this.height;
         }
     },
 
@@ -607,7 +607,7 @@ game.defineProperties('Container', {
         },
 
         set: function(value) {
-            // TODO
+            this.scale.x = value / this.width;
         }
     },
 

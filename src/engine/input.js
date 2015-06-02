@@ -213,14 +213,20 @@ game.createClass('Input', {
         if (hitArea) {
             var wt = container._worldTransform;
             var bounds = container._getBounds();
-            var ax = (container.anchor.x * container.scale.x / container.width) || 0;
-            var ay = (container.anchor.y * container.scale.y / container.height) || 0;
-            var hx = wt.tx + hitArea.x;
-            var hy = wt.ty + hitArea.y;
-            var hw = hitArea.width * wt.a;
-            var hh = hitArea.height * wt.d;
-            hx += container.anchor.x * container.scale.x - hw * ax;
-            hy += container.anchor.y * container.scale.y - hh * ay;
+            var tx = (bounds.x || wt.tx) * game.scale;
+            var ty = (bounds.y || wt.ty) * game.scale;
+            var scaleX = wt.a / (container._cosCache || 1);
+            var scaleY = wt.d / (container._cosCache || 1);
+            var hx = tx + hitArea.x * scaleX;
+            var hy = ty + hitArea.y * scaleY;
+            var ax = (container.anchor.x * scaleX / container.width) || 0;
+            var ay = (container.anchor.y * scaleY / container.height) || 0;
+            var hw = hitArea.width * scaleX;
+            var hh = hitArea.height * scaleY;
+            hx += container.anchor.x * scaleX - hw * ax;
+            hy += container.anchor.y * scaleY - hh * ay;
+            hw = hitArea.width * scaleX * game.scale;
+            hh = hitArea.height * scaleY * game.scale;
         }
         else {
             hitArea = container._getBounds();
