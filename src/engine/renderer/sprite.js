@@ -16,6 +16,11 @@ game.module(
     @param {Texture|String} texture
 **/
 game.createClass('Sprite', 'Container', {
+    /**
+        @property {Texture} texture
+    **/
+    texture: null,
+
     staticInit: function(texture) {
         this.super();
         this.setTexture(this.texture || texture);
@@ -32,7 +37,7 @@ game.createClass('Sprite', 'Container', {
     },
 
     _getBounds: function() {
-        if (this._worldTransform.tx === null) this.updateParentTransform();
+        if (this._worldTransform.tx === null) this._updateParentTransform();
 
         var width = this.texture.width / game.scale;
         var height = this.texture.height / game.scale;
@@ -113,16 +118,18 @@ game.createClass('Sprite', 'Container', {
     /**
         @method _renderCanvas
         @param {CanvasRenderingContext2D} context
+        @param {Matrix} [transform]
         @param {Rectangle} [rect]
+        @param {Rectangle} [offset]
         @private
     **/
-    _renderCanvas: function(context, rect) {
+    _renderCanvas: function(context, transform, rect, offset) {
         if (!this.texture.baseTexture.loaded) return;
 
         context.globalAlpha = this._worldAlpha;
 
         var t = this.texture;
-        var wt = this._worldTransform;
+        var wt = transform || this._worldTransform;
         var tx = wt.tx;
         var ty = wt.ty;
         
@@ -144,6 +151,11 @@ game.createClass('Sprite', 'Container', {
             y = rect.y;
             width = rect.width;
             height = rect.height;
+        }
+
+        if (offset) {
+            tx += offset.x;
+            ty += offset.y;
         }
 
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);

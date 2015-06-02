@@ -317,9 +317,10 @@ game.createClass('Container', {
     },
 
     /**
-        @method updateChildTransform
+        @method _updateChildTransform
+        @private
     **/
-    updateChildTransform: function() {
+    _updateChildTransform: function() {
         for (var i = this.children.length - 1; i >= 0; i--) {
             var child = this.children[i];
             if (!child.visible || child.alpha <= 0) continue;
@@ -331,7 +332,7 @@ game.createClass('Container', {
         @method updateTransform
     **/
     updateTransform: function() {
-        if (!this.parent) return this.updateChildTransform();
+        if (!this.parent) return this._updateChildTransform();
         
         var pt = this.parent._worldTransform;
         var wt = this._worldTransform;
@@ -361,14 +362,15 @@ game.createClass('Container', {
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
         if (this._cachedSprite) this._cachedSprite._worldAlpha = this._worldAlpha;
-        else this.updateChildTransform();
+        else this._updateChildTransform();
     },
 
     /**
-        @method updateParentTransform
+        @method _updateParentTransform
+        @private
     **/
-    updateParentTransform: function() {
-        if (this.parent) this.parent.updateParentTransform();
+    _updateParentTransform: function() {
+        if (this.parent) this.parent._updateParentTransform();
         else this.updateTransform();
     },
 
@@ -393,7 +395,7 @@ game.createClass('Container', {
         canvas.height = this.height * game.scale;
 
         this._worldTransform.reset();
-        this.updateChildTransform();
+        this._updateChildTransform();
 
         this._renderChildren(context);
 
@@ -408,8 +410,8 @@ game.createClass('Container', {
         @private
     **/
     _getBounds: function() {
-        if (!this.children.length) return game.Container.emptyBounds;
-        if (this._worldTransform.tx === null) this.updateParentTransform();
+        if (!this.children.length) return game.Container._emptyBounds;
+        if (this._worldTransform.tx === null) this._updateParentTransform();
 
         if (this._cachedSprite) {
             this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
@@ -544,9 +546,10 @@ game.createClass('Container', {
 
 game.addAttributes('Container', {
     /**
-        @attribute {Rectangle} emptyBounds
+        @attribute {Rectangle} _emptyBounds
+        @private
     **/
-    emptyBounds: new game.Rectangle()
+    _emptyBounds: new game.Rectangle()
 });
 
 game.defineProperties('Container', {
