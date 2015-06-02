@@ -287,6 +287,36 @@ game.createClass('Container', {
     },
 
     /**
+        Swap container position with this container.
+        @method swap
+        @param {Container} container
+        @chainable
+    **/
+    swap: function(container) {
+        if (!this.parent) return;
+        this.parent.swapChildren(this, container);
+        return this;
+    },
+
+    /**
+        Swap position of two childrens.
+        @method swapChildren
+        @param {Container} child
+        @param {Container} child2
+    **/
+    swapChildren: function(child, child2) {
+        if (child === child2) return;
+
+        var index1 = this.children.indexOf(child);
+        var index2 = this.children.indexOf(child2);
+
+        if (index1 < 0 || index2 < 0) return;
+
+        this.children[index1] = child2;
+        this.children[index2] = child;
+    },
+
+    /**
         @method updateChildTransform
     **/
     updateChildTransform: function() {

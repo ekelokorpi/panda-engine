@@ -47,35 +47,29 @@ game.createClass('Sprite', 'Container', {
         var maxX = tx;
         var minY = ty;
         var maxY = ty;
+        
+        var x2 = a * width + tx;
+        var y2 = b * width + ty;
+        var x3 = a * width + c * height + tx;
+        var y3 = d * height + b * width + ty;
+        var x4 = c * height + tx;
+        var y4 = d * height + ty;
 
-        if (b === 0 && c === 0) {
-            maxX = a * width + tx;
-            maxY = d * height + ty;
-        }
-        else {
-            var x2 = a * width + tx;
-            var y2 = b * width + ty;
-            var x3 = a * width + c * height + tx;
-            var y3 = d * height + b * width + ty;
-            var x4 = c * height + tx;
-            var y4 = d * height + ty;
+        minX = x2 < minX ? x2 : minX;
+        minX = x3 < minX ? x3 : minX;
+        minX = x4 < minX ? x4 : minX;
 
-            minX = x2 < minX ? x2 : minX;
-            minX = x3 < minX ? x3 : minX;
-            minX = x4 < minX ? x4 : minX;
+        minY = y2 < minY ? y2 : minY;
+        minY = y3 < minY ? y3 : minY;
+        minY = y4 < minY ? y4 : minY;
 
-            minY = y2 < minY ? y2 : minY;
-            minY = y3 < minY ? y3 : minY;
-            minY = y4 < minY ? y4 : minY;
+        maxX = x2 > maxX ? x2 : maxX;
+        maxX = x3 > maxX ? x3 : maxX;
+        maxX = x4 > maxX ? x4 : maxX;
 
-            maxX = x2 > maxX ? x2 : maxX;
-            maxX = x3 > maxX ? x3 : maxX;
-            maxX = x4 > maxX ? x4 : maxX;
-
-            maxY = y2 > maxY ? y2 : maxY;
-            maxY = y3 > maxY ? y3 : maxY;
-            maxY = y4 > maxY ? y4 : maxY;
-        }
+        maxY = y2 > maxY ? y2 : maxY;
+        maxY = y3 > maxY ? y3 : maxY;
+        maxY = y4 > maxY ? y4 : maxY;
 
         for (var i = 0; i < this.children.length; i++) {
             var childBounds = this.children[i]._getBounds();
