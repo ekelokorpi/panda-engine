@@ -282,9 +282,6 @@ game.createClass('System', {
         this._rotateScreenVisible = false;
         game.renderer._show();
         document.body.className = '';
-
-        // Start main loader, if it's not started yet
-        if (game._loader && !game._loader.started) game._loader.start();
     },
 
     /**
@@ -320,6 +317,9 @@ game.createClass('System', {
         if (game.System.scale || game.System.resize || this.retina) {
             game.renderer._size(this.canvasWidth, this.canvasHeight);
         }
+
+        // Start main loader, if it's not started yet
+        if (game._loader && !game._loader.started) game._loader.start();
     },
 
     /**
