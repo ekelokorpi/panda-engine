@@ -291,16 +291,8 @@ game.createClass('System', {
     _onWindowResize: function() {
         if (this._toggleRotateScreen()) return;
 
-        // TODO
-        // Fix: window.innerWidth/Height is wrong on Android Chrome (only on startup)
-        if (game.device.android && game.device.chrome) {
-            var width = screen.width;
-            var height = screen.height;
-        }
-        else {
-            var width = window.innerWidth;
-            var height = window.innerHeight;
-        }
+        var width = window.innerWidth;
+        var height = window.innerHeight;
 
         if (this.retina) {
             this.canvasWidth /= 2;
@@ -318,7 +310,6 @@ game.createClass('System', {
             game.renderer._size(this.canvasWidth, this.canvasHeight);
         }
 
-        // Start main loader, if it's not started yet
         if (game._loader && !game._loader.started) game._loader.start();
     },
 

@@ -26,6 +26,11 @@ game.createClass('Debug', {
     **/
     sprites: 0,
     /**
+        Debug panel text.
+        @property {String} text
+    **/
+    text: '',
+    /**
         @property {Array} _bodies
         @private
     **/
@@ -65,6 +70,13 @@ game.createClass('Debug', {
             }
         });
 
+        game.Container.inject({
+            _render: function(context) {
+                this.super(context);
+                if (this._cacheAsBitmap) game.debug.sprites++;
+            }
+        });
+
         game.Scene.inject({
             staticInit: function() {
                 this.super();
@@ -80,6 +92,13 @@ game.createClass('Debug', {
             _updateRenderer: function() {
                 this.super();
                 if (game.Debug.showBodies) game.debug._drawBodies();
+                if (game.Debug.showHitAreas) game.debug._drawHitAreas();
+                if (game.Debug.showBounds) {
+                    for (var i = 0; i < this.stage.children.length; i++) {
+                        var child = this.stage.children[i];
+                        game.debug._drawBounds(child);
+                    }
+                }
             }
         });
 
@@ -92,15 +111,6 @@ game.createClass('Debug', {
             removeBody: function(body) {
                 this.super(body);
                 game.debug._bodies.erase(body);
-            }
-        });
-
-        game.Container.inject({
-            _render: function(context) {
-                this.super(context);
-                if (this._cacheAsBitmap) game.debug.sprites++;
-                if (game.Debug.showBounds) game.debug._drawBounds(context, this);
-                if (game.Debug.showHitAreas) game.debug._drawHitArea(context, this);
             }
         });
     },
@@ -121,10 +131,10 @@ game.createClass('Debug', {
         @private
     **/
     _drawBody: function(body) {
-        if (!body.world || !body.shape) return;
-
         // TODO
         if (game.renderer.webGL) return;
+
+        if (!body.world || !body.shape) return;
 
         var context = game.renderer.context;
         var shape = body.shape;
@@ -149,16 +159,15 @@ game.createClass('Debug', {
     /**
         @method _drawBounds
         @private
-        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
         @param {Container} container
     **/
-    _drawBounds: function(context, container) {
-        if (!container.parent) return;
-        if (context !== game.renderer.context) return;
-
+    _drawBounds: function(container) {
         // TODO
         if (game.renderer.webGL) return;
 
+        if (!container.parent) return;
+
+        var context = game.renderer.context;
         var bounds = container._getBounds();
         var x = bounds.x * game.scale;
         var y = bounds.y * game.scale;
@@ -167,27 +176,30 @@ game.createClass('Debug', {
         
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = game.Debug.boundAlpha;
-        context.beginPath();
-        context.lineWidth = 1;
+        context.lineWidth = game.Debug.boundWidth;
         context.strokeStyle = game.Debug.boundColor;
+        context.beginPath();
         context.rect(x, y, width, height);
         context.stroke();
+
+        if (container._cacheAsBitmap) return;
+
+        for (var i = 0; i < container.children.length; i++) {
+            var child = container.children[i];
+            this._drawBounds(child);
+        }
     },
 
     /**
         @method _drawHitArea
         @private
-        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
         @param {Container} container
     **/
-    _drawHitArea: function(context, container) {
-        if (!container.interactive) return;
-        if (!container.parent) return;
-        if (context !== game.renderer.context) return;
-
+    _drawHitArea: function(container) {
         // TODO
         if (game.renderer.webGL) return;
 
+        var context = game.renderer.context;
         var wt = container._worldTransform;
         var hitArea = container.hitArea;
         var bounds = container._getBounds();
@@ -225,6 +237,17 @@ game.createClass('Debug', {
     },
 
     /**
+        @method _drawHitAreas
+        @private
+    **/
+    _drawHitAreas: function() {
+        for (var i = 0; i < game.input.items.length; i++) {
+            var item = game.input.items[i];
+            this._drawHitArea(item);
+        }
+    },
+
+    /**
         @method _reset
         @private
     **/
@@ -246,27 +269,37 @@ game.createClass('Debug', {
             this._frames = 0;
         }
 
-        var text = 'FPS: ' + this.fps;
-        if (game.scene.objects) text += ' OBJECTS: ' + game.scene.objects.length;
-        text += ' SPRITES: ' + this.sprites;
-        if (game.tween) text += ' TWEENS: ' + game.tween.tweens.length;
-        if (game.scene.timers) text += ' TIMERS: ' + game.scene.timers.length;
-        if (game.scene.emitters) text += ' EMITTERS: ' + game.scene.emitters.length;
-        if (game.scene.world) text += ' BODIES:' + game.scene.world.bodies.length;
-        text += ' INPUTS: ' + game.input.items.length;
-        text += ' WEBGL: ' + !!game.renderer.webGL;
-        text += ' HIRES: ' + game.scale;
+        this.text = '';
+        this._addText('FPS', this.fps);
+        this._addText('OBJECTS', game.scene.objects.length);
+        this._addText('SPRITES', this.sprites);
+        if (game.tween) this._addText('TWEENS', game.tween.tweens.length);
+        if (game.scene.timers) this._addText('TIMERS', game.scene.timers.length);
+        if (game.scene.emitters) this._addText('EMITTERS', game.scene.emitters.length);
+        if (game.scene.world) this._addText('BODIES', game.scene.world.bodies.length);
+        this._addText('INPUTS', game.input.items.length);
+        this._addText('WEBGL', !!game.renderer.webGL);
+        this._addText('HIRES', game.scale);
 
-        this._setText(text);
+        this._updateText();
     },
 
     /**
-        @method _setText
-        @param {String} text
+        @method _addText
+        @private
+        @param {String} name
+        @param {Number|Boolean|String} value
+    **/
+    _addText: function(name, value) {
+        this.text += name + ': ' + value + ' ';
+    },
+
+    /**
+        @method _updateText
         @private
     **/
-    _setText: function(text) {
-        this.debugDiv.innerHTML = text;
+    _updateText: function() {
+        this.debugDiv.innerHTML = this.text;
     }
 });
 
@@ -337,6 +370,12 @@ game.addAttributes('Debug', {
         @default 0.5
     **/
     boundAlpha: 0.5,
+    /**
+        Width of bounds.
+        @attribute {Number} boundWidth
+        @default 1
+    **/
+    boundWidth: 1,
     /**
         Color of bodies.
         @attribute {Number} bodyColor
