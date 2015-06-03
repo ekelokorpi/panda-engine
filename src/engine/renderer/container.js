@@ -408,6 +408,7 @@ game.createClass('Container', {
     /**
         @method _getBounds
         @private
+        @return {Rectangle} _worldBounds
     **/
     _getBounds: function() {
         if (!this.children.length) return game.Container._emptyBounds;
@@ -460,8 +461,8 @@ game.createClass('Container', {
 
     /**
         @method _render
-        @private
         @param {CanvasRenderingContext2D|WebGLRenderingContext} context
+        @private
     **/
     _render: function(context) {
         if (this._cachedSprite) return this._renderCachedSprite(context);

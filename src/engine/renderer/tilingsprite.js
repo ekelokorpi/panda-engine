@@ -43,6 +43,10 @@ game.createClass('TilingSprite', 'Container', {
         this._rect = new game.Rectangle();
     },
 
+    _generateTexture: function() {
+        // TODO make one big texture, and use 4 of them (faster)
+    },
+
     _renderChildren: function(context) {
         var x = -(this.tilePosition.x % this.sprite.texture.width);
         var y = -(this.tilePosition.y % this.sprite.texture.height);
