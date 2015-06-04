@@ -13,7 +13,7 @@ game.module(
 **/
 game.createClass('Input', {
     /**
-        List of interactive objects.
+        List of interactive items.
         @property {Array} items
     **/
     items: [],
@@ -23,26 +23,26 @@ game.createClass('Input', {
     **/
     touches: [],
     /**
-        @property {Boolean} _needUpdate
-        @default false
+        @property {Container} _mouseDownItem
         @private
     **/
-    _needUpdate: false,
+    _mouseDownItem: null,
     /**
         @property {Number} _mouseDownTime
         @private
     **/
     _mouseDownTime: null,
     /**
-        @property {Container} _mouseDownItem
-        @private
-    **/
-    _mouseDownItem: null,
-    /**
         @property {Container} _mouseUpItem
         @private
     **/
     _mouseUpItem: null,
+    /**
+        @property {Boolean} _needUpdate
+        @default false
+        @private
+    **/
+    _needUpdate: false,
 
     init: function(canvas) {
         var target = game.device.cocoonCanvasPlus ? window : canvas;
@@ -56,48 +56,55 @@ game.createClass('Input', {
     },
 
     /**
-        @method _touchstart
-        @param {TouchEvent} event
+        @method _calculateXY
+        @param {MouseEvent|TouchEvent} event
         @private
     **/
-    _touchstart: function(event) {
-        this._preventDefault(event);
-        for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            this.touches.push(touch);
-            this._mousedown(touch);
-        }
+    _calculateXY: function(event) {
+        var rect = game.renderer.canvas.getBoundingClientRect();
+        var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
+        var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
+        event.canvasX = x / game.scale;
+        event.canvasY = y / game.scale;
     },
 
     /**
-        @method _touchmove
-        @param {TouchEvent} event
+        @method _hitTest
+        @param {Container} container
+        @param {Number} x
+        @param {Number} y
+        @return {Boolean}
         @private
     **/
-    _touchmove: function(event) {
-        this._preventDefault(event);
-        for (var i = 0; i < event.changedTouches.length; i++) {
-            this._mousemove(event.changedTouches[i]);
+    _hitTest: function(container, x, y) {
+        var hitArea = container.hitArea;
+        if (hitArea) {
+            var wt = container._worldTransform;
+            var bounds = container._getBounds();
+            var tx = (bounds.x || wt.tx) * game.scale;
+            var ty = (bounds.y || wt.ty) * game.scale;
+            var scaleX = wt.a / (container._cosCache || 1);
+            var scaleY = wt.d / (container._cosCache || 1);
+            var hx = tx + hitArea.x * scaleX;
+            var hy = ty + hitArea.y * scaleY;
+            var ax = (container.anchor.x * scaleX / container.width) || 0;
+            var ay = (container.anchor.y * scaleY / container.height) || 0;
+            var hw = hitArea.width * scaleX;
+            var hh = hitArea.height * scaleY;
+            hx += container.anchor.x * scaleX - hw * ax;
+            hy += container.anchor.y * scaleY - hh * ay;
+            hw = hitArea.width * scaleX * game.scale;
+            hh = hitArea.height * scaleY * game.scale;
         }
-    },
+        else {
+            hitArea = container._getBounds();
+            var hx = hitArea.x;
+            var hy = hitArea.y;
+            var hw = hitArea.width;
+            var hh = hitArea.height;
+        }
 
-    /**
-        @method _touchend
-        @param {TouchEvent} event
-        @private
-    **/
-    _touchend: function(event) {
-        this._preventDefault(event);
-        for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            for (var o = this.touches.length - 1; o >= 0; o--) {
-                if (this.touches[o].identifier === touch.identifier) {
-                    this.touches.splice(o, 1);
-                    break;
-                }
-            }
-            this._mouseup(touch);
-        }
+        return (x >= hx && y >= hy && x <= hx + hw && y <= hy + hh);
     },
 
     /**
@@ -188,55 +195,60 @@ game.createClass('Input', {
     },
 
     /**
-        @method _calculateXY
-        @param {MouseEvent|TouchEvent} event
+        @method _touchend
+        @param {TouchEvent} event
         @private
     **/
-    _calculateXY: function(event) {
-        var rect = game.renderer.canvas.getBoundingClientRect();
-        var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
-        var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
-        event.canvasX = x / game.scale;
-        event.canvasY = y / game.scale;
+    _touchend: function(event) {
+        this._preventDefault(event);
+        for (var i = 0; i < event.changedTouches.length; i++) {
+            var touch = event.changedTouches[i];
+            for (var o = this.touches.length - 1; o >= 0; o--) {
+                if (this.touches[o].identifier === touch.identifier) {
+                    this.touches.splice(o, 1);
+                    break;
+                }
+            }
+            this._mouseup(touch);
+        }
     },
 
     /**
-        @method _hitTest
-        @param {Container} container
-        @param {Number} x
-        @param {Number} y
-        @return {Boolean}
+        @method _touchmove
+        @param {TouchEvent} event
         @private
     **/
-    _hitTest: function(container, x, y) {
-        var hitArea = container.hitArea;
-        if (hitArea) {
-            var wt = container._worldTransform;
-            var bounds = container._getBounds();
-            var tx = (bounds.x || wt.tx) * game.scale;
-            var ty = (bounds.y || wt.ty) * game.scale;
-            var scaleX = wt.a / (container._cosCache || 1);
-            var scaleY = wt.d / (container._cosCache || 1);
-            var hx = tx + hitArea.x * scaleX;
-            var hy = ty + hitArea.y * scaleY;
-            var ax = (container.anchor.x * scaleX / container.width) || 0;
-            var ay = (container.anchor.y * scaleY / container.height) || 0;
-            var hw = hitArea.width * scaleX;
-            var hh = hitArea.height * scaleY;
-            hx += container.anchor.x * scaleX - hw * ax;
-            hy += container.anchor.y * scaleY - hh * ay;
-            hw = hitArea.width * scaleX * game.scale;
-            hh = hitArea.height * scaleY * game.scale;
+    _touchmove: function(event) {
+        this._preventDefault(event);
+        for (var i = 0; i < event.changedTouches.length; i++) {
+            this._mousemove(event.changedTouches[i]);
         }
-        else {
-            hitArea = container._getBounds();
-            var hx = hitArea.x;
-            var hy = hitArea.y;
-            var hw = hitArea.width;
-            var hh = hitArea.height;
-        }
+    },
 
-        return (x >= hx && y >= hy && x <= hx + hw && y <= hy + hh);
+    /**
+        @method _touchstart
+        @param {TouchEvent} event
+        @private
+    **/
+    _touchstart: function(event) {
+        this._preventDefault(event);
+        for (var i = 0; i < event.changedTouches.length; i++) {
+            var touch = event.changedTouches[i];
+            this.touches.push(touch);
+            this._mousedown(touch);
+        }
+    },
+
+    /**
+        @method _update
+        @private
+    **/
+    _update: function() {
+        if (!this._needUpdate) return;
+
+        this.items.length = 0;
+        this._updateItems(game.scene.stage);
+        this._needUpdate = false;
     },
 
     /**
@@ -250,18 +262,6 @@ game.createClass('Input', {
             if (child._interactive) this.items.push(child);
             if (child.children.length > 0) this._updateItems(child);
         }
-    },
-
-    /**
-        @method _update
-        @private
-    **/
-    _update: function() {
-        if (!this._needUpdate) return;
-        
-        this.items.length = 0;
-        this._updateItems(game.scene.stage);
-        this._needUpdate = false;
     }
 });
 
@@ -307,16 +307,6 @@ game.createClass('Keyboard', {
     },
 
     /**
-        @method _resetKeys
-        @private
-    **/
-    _resetKeys: function() {
-        for (var key in this._keysDown) {
-            this._keysDown[key] = false;
-        }
-    },
-
-    /**
         @method _keydown
         @param {KeyboardEvent} event
         @private
@@ -343,6 +333,16 @@ game.createClass('Keyboard', {
         this._keysDown[game.Keyboard.keys[event.keyCode]] = false;
         if (game.scene && game.scene.keyup) {
             game.scene.keyup(game.Keyboard.keys[event.keyCode]);
+        }
+    },
+
+    /**
+        @method _resetKeys
+        @private
+    **/
+    _resetKeys: function() {
+        for (var key in this._keysDown) {
+            this._keysDown[key] = false;
         }
     }
 });
