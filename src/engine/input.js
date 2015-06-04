@@ -258,9 +258,10 @@ game.createClass('Input', {
     **/
     _update: function() {
         if (!this._needUpdate) return;
-
+        
         this.items.length = 0;
         this._updateItems(game.scene.stage);
+        this._needUpdate = false;
     }
 });
 
