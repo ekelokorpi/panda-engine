@@ -154,18 +154,29 @@ game.createClass('Vector', {
         @return {Vector}
     **/
     clone: function() {
-        return new game.Vector(this.x, this.y);
+        return new this.constructor(this.x, this.y);
+    },
+
+    /**
+        Is values same with another vector.
+        @method compare
+        @param {Vector} vector
+        @return {Boolean}
+    **/
+    compare: function(vector) {
+        if (this.x === vector.x && this.y === vector.y) return true;
+        return false;
     },
 
     /**
         Copy values from another vector.
         @method copy
-        @param {Vector} v
+        @param {Vector} vector
         @chainable
     **/
-    copy: function(v) {
-        this.x = v.x;
-        this.y = v.y;
+    copy: function(vector) {
+        this.x = vector.x;
+        this.y = vector.y;
         return this;
     },
 
@@ -327,13 +338,13 @@ game.createClass('Vector', {
     },
 
     /**
-        Get angle vector angle or angle between two vectors.
+        Get vector angle or angle between two vectors.
         @method angle
         @param {Vector} [vector]
         @return {Number}
     **/
     angle: function(vector) {
-        if (vector) {
+        if (vector instanceof game.Vector) {
             return Math.atan2(vector.y - this.y, vector.x - this.x);
         }
         else {
@@ -354,11 +365,12 @@ game.createClass('Vector', {
     /**
         Round vector values.
         @method round
+        @param {Number} [precision]
         @chainable
     **/
-    round: function() {
-        this.x = Math.round(this.x);
-        this.y = Math.round(this.y);
+    round: function(precision) {
+        this.x = this.x.round(precision);
+        this.y = this.y.round(precision);
         return this;
     }
 });
