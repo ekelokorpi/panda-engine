@@ -20,7 +20,7 @@ game.createClass('Circle', {
     radius: 0,
 
     init: function(radius) {
-        this.radius = radius;
+        this.radius = radius || this.radius;
     }
 });
 
@@ -83,6 +83,16 @@ game.createClass('Matrix', {
 **/
 game.createClass('Rectangle', {
     /**
+        @property {Number} height
+        @default 0
+    **/
+    height: 0,
+    /**
+        @property {Number} width
+        @default 0
+    **/
+    width: 0,
+    /**
         @property {Number} x
         @default 0
     **/
@@ -92,18 +102,6 @@ game.createClass('Rectangle', {
         @default 0
     **/
     y: 0,
-    /**
-        Width of rectangle.
-        @property {Number} width
-        @default 0
-    **/
-    width: 0,
-    /**
-        Height of rectangle.
-        @property {Number} height
-        @default 0
-    **/
-    height: 0,
 
     init: function(width, height, x, y) {
         this.width = width || this.width;
@@ -136,16 +134,41 @@ game.createClass('Vector', {
     },
 
     /**
-        Set vector values.
-        @method set
-        @param {Number} x
+        Add to vector values.
+        @method add
+        @param {Number|Vector} x
         @param {Number} [y]
         @chainable
     **/
-    set: function(x, y) {
-        this.x = typeof x === 'number' ? x : this.x;
-        this.y = typeof y === 'number' ? y : this.x;
+    add: function(x, y) {
+        this.x += x instanceof game.Vector ? x.x : x;
+        this.y += x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
         return this;
+    },
+
+    /**
+        Get vector angle or angle between two vectors.
+        @method angle
+        @param {Vector} [vector]
+        @return {Number}
+    **/
+    angle: function(vector) {
+        if (vector instanceof game.Vector) {
+            return Math.atan2(vector.y - this.y, vector.x - this.x);
+        }
+        else {
+            return Math.atan2(this.y, this.x);
+        }
+    },
+
+    /**
+        Get angle between two vectors from origin.
+        @method angleFromOrigin
+        @param {Vector} vector
+        @return {Number}
+    **/
+    angleFromOrigin: function(vector) {
+        return Math.atan2(vector.y, vector.x) - Math.atan2(this.y, this.x);
     },
 
     /**
@@ -181,55 +204,15 @@ game.createClass('Vector', {
     },
 
     /**
-        Add to vector values.
-        @method add
-        @param {Number|Vector} x
-        @param {Number} [y]
+        Get distance of two vectors.
+        @method distance
+        @param {Vector} vector
         @chainable
     **/
-    add: function(x, y) {
-        this.x += x instanceof game.Vector ? x.x : x;
-        this.y += x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
-        return this;
-    },
-
-    /**
-        Subtract from vector values.
-        @method subtract
-        @param {Number|Vector} x
-        @param {Number} [y]
-        @chainable
-    **/
-    subtract: function(x, y) {
-        this.x -= x instanceof game.Vector ? x.x : x;
-        this.y -= x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
-        return this;
-    },
-
-    /**
-        Multiply vector values.
-        @method multiply
-        @param {Number|Vector} x
-        @param {Number} [y]
-        @chainable
-    **/
-    multiply: function(x, y) {
-        this.x *= x instanceof game.Vector ? x.x : x;
-        this.y *= x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
-        return this;
-    },
-
-    /**
-        Multiply and add vector values.
-        @method multiplyAdd
-        @param {Number|Vector} x
-        @param {Number} [y]
-        @chainable
-    **/
-    multiplyAdd: function(x, y) {
-        this.x += x instanceof game.Vector ? x.x * y : x * y;
-        this.y += x instanceof game.Vector ? x.y * y : x * y;
-        return this;
+    distance: function(vector) {
+        var x = vector.x - this.x;
+        var y = vector.y - this.y;
+        return Math.sqrt(x * x + y * y);
     },
 
     /**
@@ -243,27 +226,6 @@ game.createClass('Vector', {
         this.x /= x instanceof game.Vector ? x.x : x;
         this.y /= x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
         return this;
-    },
-
-    /**
-        Get distance of two vectors.
-        @method distance
-        @param {Vector} vector
-        @chainable
-    **/
-    distance: function(vector) {
-        var x = vector.x - this.x;
-        var y = vector.y - this.y;
-        return Math.sqrt(x * x + y * y);
-    },
-
-    /**
-        Get length of vector.
-        @method length
-        @return {Number}
-    **/
-    length: function() {
-        return Math.sqrt(this.dot());
     },
 
     /**
@@ -298,18 +260,49 @@ game.createClass('Vector', {
     },
 
     /**
-        Rotate vector in radians.
-        @method rotate
-        @param {Number} angle
+        Get length of vector.
+        @method length
+        @return {Number}
+    **/
+    length: function() {
+        return Math.sqrt(this.dot());
+    },
+
+    /**
+        Limit vector values.
+        @method limit
+        @param {Vector} vector
         @chainable
     **/
-    rotate: function(angle) {
-        var c = Math.cos(angle);
-        var s = Math.sin(angle);
-        var x = this.x * c - this.y * s;
-        var y = this.y * c + this.x * s;
-        this.x = x;
-        this.y = y;
+    limit: function(vector) {
+        this.x = this.x.limit(-vector.x, vector.x);
+        this.y = this.y.limit(-vector.y, vector.y);
+        return this;
+    },
+
+    /**
+        Multiply vector values.
+        @method multiply
+        @param {Number|Vector} x
+        @param {Number} [y]
+        @chainable
+    **/
+    multiply: function(x, y) {
+        this.x *= x instanceof game.Vector ? x.x : x;
+        this.y *= x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
+        return this;
+    },
+
+    /**
+        Multiply and add vector values.
+        @method multiplyAdd
+        @param {Number|Vector} x
+        @param {Number} [y]
+        @chainable
+    **/
+    multiplyAdd: function(x, y) {
+        this.x += x instanceof game.Vector ? x.x * y : x * y;
+        this.y += x instanceof game.Vector ? x.y * y : x * y;
         return this;
     },
 
@@ -326,40 +319,19 @@ game.createClass('Vector', {
     },
 
     /**
-        Limit vector values.
-        @method limit
-        @param {Vector} vector
+        Rotate vector in radians.
+        @method rotate
+        @param {Number} angle
         @chainable
     **/
-    limit: function(vector) {
-        this.x = this.x.limit(-vector.x, vector.x);
-        this.y = this.y.limit(-vector.y, vector.y);
+    rotate: function(angle) {
+        var c = Math.cos(angle);
+        var s = Math.sin(angle);
+        var x = this.x * c - this.y * s;
+        var y = this.y * c + this.x * s;
+        this.x = x;
+        this.y = y;
         return this;
-    },
-
-    /**
-        Get vector angle or angle between two vectors.
-        @method angle
-        @param {Vector} [vector]
-        @return {Number}
-    **/
-    angle: function(vector) {
-        if (vector instanceof game.Vector) {
-            return Math.atan2(vector.y - this.y, vector.x - this.x);
-        }
-        else {
-            return Math.atan2(this.y, this.x);
-        }
-    },
-
-    /**
-        Get angle between two vectors from origin.
-        @method angleFromOrigin
-        @param {Vector} vector
-        @return {Number}
-    **/
-    angleFromOrigin: function(vector) {
-        return Math.atan2(vector.y, vector.x) - Math.atan2(this.y, this.x);
     },
 
     /**
@@ -371,6 +343,32 @@ game.createClass('Vector', {
     round: function(precision) {
         this.x = this.x.round(precision);
         this.y = this.y.round(precision);
+        return this;
+    },
+
+    /**
+        Set vector values.
+        @method set
+        @param {Number} x
+        @param {Number} [y]
+        @chainable
+    **/
+    set: function(x, y) {
+        this.x = typeof x === 'number' ? x : this.x;
+        this.y = typeof y === 'number' ? y : this.x;
+        return this;
+    },
+
+    /**
+        Subtract from vector values.
+        @method subtract
+        @param {Number|Vector} x
+        @param {Number} [y]
+        @chainable
+    **/
+    subtract: function(x, y) {
+        this.x -= x instanceof game.Vector ? x.x : x;
+        this.y -= x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
         return this;
     }
 });
