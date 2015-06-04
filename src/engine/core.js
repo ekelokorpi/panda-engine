@@ -726,7 +726,10 @@ var game = {
         if (this.config.noCanvasURL) {
             var canvas = document.createElement('canvas');
             var canvasSupported = !!(canvas.getContext && canvas.getContext('2d'));
-            if (!canvasSupported) window.location = this.config.noCanvasURL;
+            if (!canvasSupported) {
+                window.location = this.config.noCanvasURL;
+                return;
+            }
         }
 
         delete window.pandaConfig;
