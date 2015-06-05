@@ -215,9 +215,9 @@ var game = {
         @method clearCache
     **/
     clearCache: function() {
-        game.Texture.clearCache();
-        game.BaseTexture.clearCache();
-        game.Font.clearCache();
+        this.Texture.clearCache();
+        this.BaseTexture.clearCache();
+        this.Font.clearCache();
         this.json = {};
         this.paths = {};
     },
@@ -300,18 +300,18 @@ var game = {
         @param {Object} content
     **/
     createClass: function(name, extend, content) {
-        if (typeof name === 'object') return game.Class.extend(name);
+        if (typeof name === 'object') return this.Class.extend(name);
 
-        if (game[name]) throw 'class ' + name + ' already created';
+        if (this[name]) throw 'class ' + name + ' already created';
 
         if (typeof extend === 'object') {
             content = extend;
             extend = 'Class';
         }
 
-        game[name] = game[extend].extend(content);
+        this[name] = this[extend].extend(content);
         this._currentModule.classes.push(name);
-        return game[name];
+        return this[name];
     },
 
     /**
@@ -519,7 +519,7 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        var loaderClass = game.Loader.className;
+        var loaderClass = this.Loader.className;
         this._loader = new this[loaderClass](this.System.startScene);
         if (!this.system._rotateScreenVisible) this._loader.start();
 
@@ -691,7 +691,7 @@ var game = {
         @private
     **/
     _setGameLoop: function(callback) {
-        if (game.System.frameRate) return window.setInterval(callback, 1000 / game.System.frameRate);
+        if (this.System.frameRate) return window.setInterval(callback, 1000 / this.System.frameRate);
         if (window.requestAnimationFrame) {
             var id = this._gameLoopId++;
             this._gameLoops[id] = true;
