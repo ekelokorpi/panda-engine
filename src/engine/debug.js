@@ -152,7 +152,15 @@ game.createClass('Debug', {
             );
         }
         else if (shape.radius) {
-            // TODO
+            context.beginPath();
+            context.arc(
+                body.position.x * game.scale,
+                body.position.y * game.scale,
+                shape.radius * game.scale,
+                0,
+                Math.PI * 2
+            );
+            context.fill();
         }
     },
 
