@@ -21,6 +21,11 @@ game.createClass('Debug', {
     **/
     last: 0,
     /**
+        Debug panel.
+        @property {HTMLDivElement} panel
+    **/
+    panel: null,
+    /**
         Sprites count.
         @property {Number} sprites
     **/
@@ -42,41 +47,6 @@ game.createClass('Debug', {
     _frames: 0,
 
     init: function() {
-        this.debugDiv = document.createElement('div');
-        this.debugDiv.id = 'pandaDebug';
-        this.debugDiv.style.position = 'fixed';
-        this.debugDiv.style.left = '0px';
-        this.debugDiv.style[game.Debug.position] = '0px';
-        this.debugDiv.style.zIndex = 9999;
-        this.debugDiv.style.backgroundColor = game.Debug.backgroundColor;
-        this.debugDiv.style.color = game.Debug.textColor;
-        this.debugDiv.style.fontFamily = 'Arial';
-        this.debugDiv.style.fontSize = '14px';
-        this.debugDiv.style.width = '100%';
-        this.debugDiv.style.pointerEvents = 'none';
-        document.body.appendChild(this.debugDiv);
-
-        game.Sprite.inject({
-            _render: function(context) {
-                this.super(context);
-                game.debug.sprites++;
-            }
-        });
-
-        game.Graphics.inject({
-            _render: function(context) {
-                this.super(context);
-                game.debug.sprites++;
-            }
-        });
-
-        game.Container.inject({
-            _render: function(context) {
-                this.super(context);
-                if (this._cacheAsBitmap) game.debug.sprites++;
-            }
-        });
-
         game.Scene.inject({
             staticInit: function() {
                 this.super();
@@ -102,6 +72,29 @@ game.createClass('Debug', {
             }
         });
 
+        if (game.device.cocoonCanvasPlus) return;
+
+        game.Sprite.inject({
+            _render: function(context) {
+                this.super(context);
+                game.debug.sprites++;
+            }
+        });
+
+        game.Graphics.inject({
+            _render: function(context) {
+                this.super(context);
+                game.debug.sprites++;
+            }
+        });
+
+        game.Container.inject({
+            _render: function(context) {
+                this.super(context);
+                if (this._cacheAsBitmap) game.debug.sprites++;
+            }
+        });
+
         game.World.inject({
             addBody: function(body) {
                 this.super(body);
@@ -113,6 +106,24 @@ game.createClass('Debug', {
                 game.debug._bodies.erase(body);
             }
         });
+
+        this._addPanel();
+    },
+
+    _addPanel: function() {
+        this.panel = document.createElement('div');
+        this.panel.id = 'pandaDebug';
+        this.panel.style.position = 'fixed';
+        this.panel.style.left = '0px';
+        this.panel.style[game.Debug.position] = '0px';
+        this.panel.style.zIndex = 9999;
+        this.panel.style.backgroundColor = game.Debug.backgroundColor;
+        this.panel.style.color = game.Debug.textColor;
+        this.panel.style.fontFamily = 'Arial';
+        this.panel.style.fontSize = '14px';
+        this.panel.style.width = '100%';
+        this.panel.style.pointerEvents = 'none';
+        document.body.appendChild(this.panel);
     },
 
     /**
@@ -267,6 +278,8 @@ game.createClass('Debug', {
         @private
     **/
     _update: function() {
+        if (!this.panel) return;
+
         this._frames++;
 
         var now = Date.now();
@@ -306,7 +319,7 @@ game.createClass('Debug', {
         @private
     **/
     _updateText: function() {
-        this.debugDiv.innerHTML = this.text;
+        this.panel.innerHTML = this.text;
     }
 });
 
@@ -365,6 +378,12 @@ game.addAttributes('Debug', {
         @default false
     **/
     showHitAreas: false,
+    /**
+        Show info on console.
+        @attribute {Boolean} showInfo
+        @default true
+    **/
+    showInfo: true,
     /**
         Color of bounds.
         @attribute {Number} boundColor
@@ -434,7 +453,7 @@ if (href.match(/\?debugdraw/)) {
 }
 
 game.onStart = function() {
-    if (!this.Debug.enabled) return;
+    if (!this.Debug.enabled || !this.Debug.showInfo) return;
 
     console.log('Panda Engine ' + this.version);
     var renderer = game.renderer.webGL ? 'WebGL' : 'Canvas';

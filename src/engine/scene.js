@@ -76,6 +76,8 @@ game.createClass('Scene', {
     _mouseDownY: null,
     
     staticInit: function() {
+        this.backgroundColor = this.backgroundColor || game.Scene.backgroundColor;
+
         if (game.audio && game.Audio.stopOnSceneChange && game.scene) {
             game.audio.stopMusic();
             game.audio.stopSound(false, true);
@@ -421,7 +423,13 @@ game.addAttributes('Scene', {
         'emitters',
         'objects',
         'renderer'
-    ]
+    ],
+    /**
+        Default background color.
+        @attribute {String} backgroundColor
+        @default null
+    **/
+    backgroundColor: null
 });
 
 });
