@@ -2,7 +2,7 @@
 
 ### 2D HTML5 game engine for mobile and desktop
 
-Make games written in JavaScript and play them on any major browser, or wrap them into mobile applications.
+Make games written in JavaScript and play them on browser or wrap into mobile app.
 
 ## Install
 
@@ -59,7 +59,6 @@ Make games written in JavaScript and play them on any major browser, or wrap the
 
 - [API Documentation](http://www.pandajs.net/engine/docs)
 - [Panda Engine chat](https://gitter.im/ekelokorpi/panda-engine)
-- [Panda.js website](http://www.pandajs.net)
 - [Panda.js forum](http://www.html5gamedevs.com/forum/19-pandajs/)
 
 ## Credits
@@ -70,4 +69,4 @@ Make games written in JavaScript and play them on any major browser, or wrap the
 
 ## License
 
-Released under the [MIT License](http://opensource.org/licenses/MIT).
+- Released under the [MIT License](http://opensource.org/licenses/MIT).
