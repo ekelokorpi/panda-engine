@@ -58,7 +58,8 @@ Make games written in JavaScript and play them on browser or wrap into mobile ap
 ## Support
 
 - [API Documentation](http://www.pandajs.net/engine/docs)
-- [Panda Engine chat](https://gitter.im/ekelokorpi/panda-engine)
+- [Panda Engine playground](http://www.pandajs.net/engine/playground)
+- [Panda Engine chat](https://gitter.im/ekelokorpi/panda.js-engine)
 - [Panda.js forum](http://www.html5gamedevs.com/forum/19-pandajs/)
 
 ## Credits
