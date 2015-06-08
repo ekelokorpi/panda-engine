@@ -270,21 +270,21 @@ game.createClass('Body', {
     /**
         Body's maximum velocity.
         @property {Vector} velocityLimit
-        @default 0,0
+        @default 980,980
     **/
     velocityLimit: null,
     /**
         Body's mass.
         @property {Number} mass
-        @default 0
+        @default 1
     **/
-    mass: 0,
+    mass: 1,
     /**
         Body's collision group.
         @property {Number} collisionGroup
-        @default null
+        @default 0
     **/
-    collisionGroup: null,
+    collisionGroup: 0,
     /**
         Group numbers that body collides against.
         @property {Array} collideAgainst
@@ -318,7 +318,7 @@ game.createClass('Body', {
         this.force = new game.Vector();
         this.position = new game.Vector();
         this.velocity = new game.Vector();
-        this.velocityLimit = new game.Vector();
+        this.velocityLimit = new game.Vector(980, 980);
         this._last = new game.Vector();
         game.merge(this, properties);
     },

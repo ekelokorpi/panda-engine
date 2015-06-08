@@ -336,9 +336,9 @@ game.addAttributes('Debug', {
     /**
         Draw physics bodies.
         @attribute {Boolean} showBodies
-        @default false
+        @default true
     **/
-    showBodies: false,
+    showBodies: true,
     /**
         Draw container bounds.
         @attribute {Boolean} showBounds
