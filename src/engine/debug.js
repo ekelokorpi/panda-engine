@@ -61,7 +61,6 @@ game.createClass('Debug', {
 
             _updateRenderer: function() {
                 this.super();
-                if (game.Debug.showBodies) game.debug._drawBodies();
                 if (game.Debug.showHitAreas) game.debug._drawHitAreas();
                 if (game.Debug.showBounds) {
                     for (var i = 0; i < this.stage.children.length; i++) {
@@ -69,6 +68,19 @@ game.createClass('Debug', {
                         game.debug._drawBounds(child);
                     }
                 }
+                if (game.Debug.showBodies) game.debug._drawBodies();
+            }
+        });
+
+        game.World.inject({
+            addBody: function(body) {
+                this.super(body);
+                game.debug._bodies.push(body);
+            },
+
+            removeBody: function(body) {
+                this.super(body);
+                game.debug._bodies.erase(body);
             }
         });
 
@@ -92,18 +104,6 @@ game.createClass('Debug', {
             _render: function(context) {
                 this.super(context);
                 if (this._cacheAsBitmap) game.debug.sprites++;
-            }
-        });
-
-        game.World.inject({
-            addBody: function(body) {
-                this.super(body);
-                game.debug._bodies.push(body);
-            },
-
-            removeBody: function(body) {
-                this.super(body);
-                game.debug._bodies.erase(body);
             }
         });
 
@@ -153,14 +153,18 @@ game.createClass('Debug', {
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = game.Debug.bodyAlpha;
         context.fillStyle = game.Debug.bodyColor;
+        context.strokeStyle = game.Debug.bodyLineColor;
 
         if (shape.width && shape.height) {
-            context.fillRect(
+            context.beginPath();
+            context.rect(
                 (body.position.x - shape.width / 2) * game.scale,
                 (body.position.y - shape.height / 2) * game.scale,
                 shape.width * game.scale,
                 shape.height * game.scale
             );
+            context.fill();
+            context.stroke();
         }
         else if (shape.radius) {
             context.beginPath();
@@ -172,6 +176,7 @@ game.createClass('Debug', {
                 Math.PI * 2
             );
             context.fill();
+            context.stroke();
         }
     },
 
@@ -403,15 +408,15 @@ game.addAttributes('Debug', {
     /**
         Color of bodies.
         @attribute {Number} bodyColor
-        @default #0000ff
+        @default #00ff00
     **/
-    bodyColor: '#0000ff',
+    bodyColor: '#00ff00',
     /**
         Stroke color of bodies.
         @attribute {Number} bodyLineColor
-        @default #ff0000
+        @default #ffff00
     **/
-    bodyLineColor: '#ff0000',
+    bodyLineColor: '#ffff00',
     /**
         Alpha of bodies.
         @attribute {Number} bodyAlpha
