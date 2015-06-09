@@ -422,8 +422,14 @@ game.createClass('Body', {
         this.velocity.multiplyAdd(this.force, game.system.delta);
         if (this.damping > 0 && this.damping < 1) this.velocity.multiply(Math.pow(1 - this.damping, game.system.delta));
 
-        if (this.velocityLimit.x > 0) this.velocity.x = this.velocity.x.limit(-this.velocityLimit.x, this.velocityLimit.x);
-        if (this.velocityLimit.y > 0) this.velocity.y = this.velocity.y.limit(-this.velocityLimit.y, this.velocityLimit.y);
+        if (this.velocityLimit.x > 0) {
+            if (this.velocity.x > this.velocityLimit.x) this.velocity.x = this.velocityLimit.x;
+            if (this.velocity.x < -this.velocityLimit.x) this.velocity.x = -this.velocityLimit.x;
+        }
+        if (this.velocityLimit.y > 0) {
+            if (this.velocity.y > this.velocityLimit.y) this.velocity.y = this.velocityLimit.y;
+            if (this.velocity.y < -this.velocityLimit.y) this.velocity.y = -this.velocityLimit.y;
+        }
 
         this.position.multiplyAdd(this.velocity, game.system.delta);
     }

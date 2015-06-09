@@ -77,6 +77,9 @@ game.createClass('Scene', {
     
     staticInit: function() {
         this.backgroundColor = this.backgroundColor || game.Scene.backgroundColor;
+        if (!this.backgroundColor && game.device.cocoonCanvasPlus) {
+            this.backgroundColor = '#000';
+        }
 
         if (game.audio && game.Audio.stopOnSceneChange && game.scene) {
             game.audio.stopMusic();
