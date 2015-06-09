@@ -411,7 +411,13 @@ game.createClass('Container', {
         @return {Rectangle} _worldBounds
     **/
     _getBounds: function() {
-        if (!this.children.length) return game.Container._emptyBounds;
+        if (!this.children.length) {
+            this._worldBounds.x = this._worldTransform.tx;
+            this._worldBounds.y = this._worldTransform.ty;
+            this._worldBounds.width = 0;
+            this._worldBounds.height = 0;
+            return this._worldBounds;
+        }
         if (this._worldTransform.tx === null) this._updateParentTransform();
 
         if (this._cachedSprite) {
@@ -543,14 +549,6 @@ game.createClass('Container', {
             child._setStageReference(stage);
         }
     }
-});
-
-game.addAttributes('Container', {
-    /**
-        @attribute {Rectangle} _emptyBounds
-        @private
-    **/
-    _emptyBounds: new game.Rectangle()
 });
 
 game.defineProperties('Container', {

@@ -233,14 +233,12 @@ game.createClass('Debug', {
         if (hitArea) {
             var scaleX = wt.a / container._cosCache;
             var scaleY = wt.d / container._cosCache;
-            x = hitArea.x * scaleX;
-            y = hitArea.y * scaleY;
-            var ax = (container.anchor.x * scaleX / container.width) || 0;
-            var ay = (container.anchor.y * scaleY / container.height) || 0;
-            var hw = hitArea.width * scaleX;
-            var hh = hitArea.height * scaleY;
-            x += container.anchor.x * scaleX - hw * ax;
-            y += container.anchor.y * scaleY - hh * ay;
+            var aPercX = (container.anchor.x / container.width) || 0;
+            var aPercY = (container.anchor.y / container.height) || 0;
+            x = hitArea.x * game.scale * scaleX;
+            y = hitArea.y * game.scale * scaleY;
+            x += bounds.width * scaleX * aPercX * game.scale;
+            y += bounds.height * scaleY * aPercY * game.scale;
             var width = hitArea.width * scaleX * game.scale;
             var height = hitArea.height * scaleY * game.scale;
         }
