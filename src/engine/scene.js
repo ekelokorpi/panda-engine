@@ -18,20 +18,15 @@ game.createClass('Scene', {
     **/
     backgroundColor: null,
     /**
-        List of objects in scene.
-        @property {Array} objects
-    **/
-    objects: [],
-    /**
-        List of timers in scene.
-        @property {Array} timers
-    **/
-    timers: [],
-    /**
         List of emitters in scene.
         @property {Array} emitters
     **/
     emitters: [],
+    /**
+        List of objects in scene.
+        @property {Array} objects
+    **/
+    objects: [],
     /**
         Main container for scene.
         @property {Container} stage
@@ -50,15 +45,15 @@ game.createClass('Scene', {
     **/
     swipeTime: 500,
     /**
+        List of timers in scene.
+        @property {Array} timers
+    **/
+    timers: [],
+    /**
         @property {Object} _backgroundColorRgb
         @private
     **/
     _backgroundColorRgb: null,
-    /**
-        @property {Array} _updateOrder
-        @private
-    **/
-    _updateOrder: [],
     /**
         @property {Number} _mouseDownTime
         @private
@@ -74,6 +69,11 @@ game.createClass('Scene', {
         @private
     **/
     _mouseDownY: null,
+    /**
+        @property {Array} _updateOrder
+        @private
+    **/
+    _updateOrder: [],
     
     staticInit: function() {
         this.backgroundColor = this.backgroundColor || game.Scene.backgroundColor;
@@ -94,28 +94,7 @@ game.createClass('Scene', {
             this._updateOrder.push(game.Scene.updateOrder[i].ucfirst());
         }
     },
-    
-    /**
-        Add object to scene, so it's `update()` function get's called every frame.
-        @method addObject
-        @param {Object} object
-    **/
-    addObject: function(object) {
-        if (this.objects.indexOf(object) === -1) {
-            object._remove = false;
-            this.objects.push(object);
-        }
-    },
-    
-    /**
-        Remove object from scene.
-        @method removeObject
-        @param {Object} object
-    **/
-    removeObject: function(object) {
-        object._remove = true;
-    },
-    
+
     /**
         Add emitter to scene.
         @method addEmitter
@@ -128,14 +107,17 @@ game.createClass('Scene', {
     },
     
     /**
-        Remove emitter from scene.
-        @method removeEmitter
-        @param {Emitter} emitter
+        Add object to scene, so it's `update()` function get's called every frame.
+        @method addObject
+        @param {Object} object
     **/
-    removeEmitter: function(emitter) {
-        if (emitter) emitter.remove();
+    addObject: function(object) {
+        if (this.objects.indexOf(object) === -1) {
+            object._remove = false;
+            this.objects.push(object);
+        }
     },
-    
+
     /**
         Add timer to scene.
         @method addTimer
@@ -151,31 +133,7 @@ game.createClass('Scene', {
         this.timers.push(timer);
         return timer;
     },
-    
-    /**
-        Remove timer from scene.
-        @method removeTimer
-        @param {Timer} timer
-        @param {Boolean} [doCallback]
-    **/
-    removeTimer: function(timer, doCallback) {
-        if (!timer) return;
-        if (!doCallback) timer.callback = null;
-        timer.repeat = false;
-        timer.set(0);
-    },
 
-    /**
-        Remove all timers from scene.
-        @method removeTimers
-        @param {Boolean} [doCallback]
-    **/
-    removeTimers: function(doCallback) {
-        for (var i = this.timers.length - 1; i >= 0; i--) {
-            this.removeTimer(this.timers[i], doCallback);
-        }
-    },
-    
     /**
         Shorthand for adding tween.
         @method addTween
@@ -193,7 +151,30 @@ game.createClass('Scene', {
         }
         return tween;
     },
+
+    /**
+        Called, before scene is changed.
+        @method exit
+    **/
+    exit: function() {},
+
+    /**
+        Called, when key is pressed.
+        @method keydown
+        @param {String} key
+        @param {Boolean} shift
+        @param {Boolean} ctrl
+        @param {Boolean} alt
+    **/
+    keydown: function() {},
     
+    /**
+        Called, when key is released.
+        @method keyup
+        @param {String} key
+    **/
+    keyup: function() {},
+
     /**
         Called, when mouse or touch is down.
         @method mousedown
@@ -223,42 +204,61 @@ game.createClass('Scene', {
         @param {MouseEvent|TouchEvent} event
     **/
     mouseup: function() {},
-        
+
     /**
-        Called, when key is pressed.
-        @method keydown
-        @param {String} key
-        @param {Boolean} shift
-        @param {Boolean} ctrl
-        @param {Boolean} alt
+        Called, when system is resized.
+        @method onResize
     **/
-    keydown: function() {},
+    onResize: function() {},
+
+    /**
+        Remove emitter from scene.
+        @method removeEmitter
+        @param {Emitter} emitter
+    **/
+    removeEmitter: function(emitter) {
+        if (emitter) emitter.remove();
+    },
     
     /**
-        Called, when key is released.
-        @method keyup
-        @param {String} key
+        Remove object from scene.
+        @method removeObject
+        @param {Object} object
     **/
-    keyup: function() {},
+    removeObject: function(object) {
+        object._remove = true;
+    },
     
+    /**
+        Remove timer from scene.
+        @method removeTimer
+        @param {Timer} timer
+        @param {Boolean} [doCallback]
+    **/
+    removeTimer: function(timer, doCallback) {
+        if (!timer) return;
+        if (!doCallback) timer.callback = null;
+        timer.repeat = false;
+        timer.set(0);
+    },
+
+    /**
+        Remove all timers from scene.
+        @method removeTimers
+        @param {Boolean} [doCallback]
+    **/
+    removeTimers: function(doCallback) {
+        for (var i = this.timers.length - 1; i >= 0; i--) {
+            this.removeTimer(this.timers[i], doCallback);
+        }
+    },
+
     /**
         Callback for swipe.
         @method swipe
         @param {String} direction
     **/
     swipe: function() {},
-    
-    /**
-        Called, when system is resized.
-        @method onResize
-    **/
-    onResize: function() {},
-    
-    /**
-        Called, before scene is changed.
-        @method exit
-    **/
-    exit: function() {},
     
     /**
         This is called every frame.
@@ -312,6 +312,22 @@ game.createClass('Scene', {
     },
 
     /**
+        @method _pause
+        @private
+    **/
+    _pause: function() {
+        if (game.audio) game.audio._systemPause();
+    },
+    
+    /**
+        @method _resume
+        @private
+    **/
+    _resume: function() {
+        if (game.audio) game.audio._systemResume();
+    },
+
+    /**
         @method _swipe
         @param {String} dir
         @private
@@ -332,13 +348,27 @@ game.createClass('Scene', {
             this['_update' + this._updateOrder[i]]();
         }
     },
-    
+
     /**
-        @method _updateTweens
+        @method _updateEmitters
         @private
     **/
-    _updateTweens: function() {
-        if (game.tween) game.tween._update();
+    _updateEmitters: function() {
+        for (var i = this.emitters.length - 1; i >= 0; i--) {
+            this.emitters[i]._update();
+            if (this.emitters[i]._remove) this.emitters.splice(i, 1);
+        }
+    },
+
+    /**
+        @method _updateObjects
+        @private
+    **/
+    _updateObjects: function() {
+        for (var i = this.objects.length - 1; i >= 0; i--) {
+            if (typeof this.objects[i].update === 'function' && !this.objects[i]._remove) this.objects[i].update();
+            if (this.objects[i]._remove) this.objects.splice(i, 1);
+        }
     },
     
     /**
@@ -348,7 +378,15 @@ game.createClass('Scene', {
     _updatePhysics: function() {
         if (this.world) this.world._update();
     },
-    
+
+    /**
+        @method _updateRenderer
+        @private
+    **/
+    _updateRenderer: function() {
+        game.renderer._render(this.stage);
+    },
+
     /**
         @method _updateTimers
         @private
@@ -364,49 +402,11 @@ game.createClass('Scene', {
     },
     
     /**
-        @method _updateEmitters
+        @method _updateTweens
         @private
     **/
-    _updateEmitters: function() {
-        for (var i = this.emitters.length - 1; i >= 0; i--) {
-            this.emitters[i]._update();
-            if (this.emitters[i]._remove) this.emitters.splice(i, 1);
-        }
-    },
-    
-    /**
-        @method _updateObjects
-        @private
-    **/
-    _updateObjects: function() {
-        for (var i = this.objects.length - 1; i >= 0; i--) {
-            if (typeof this.objects[i].update === 'function' && !this.objects[i]._remove) this.objects[i].update();
-            if (this.objects[i]._remove) this.objects.splice(i, 1);
-        }
-    },
-    
-    /**
-        @method _updateRenderer
-        @private
-    **/
-    _updateRenderer: function() {
-        game.renderer._render(this.stage);
-    },
-    
-    /**
-        @method _pause
-        @private
-    **/
-    _pause: function() {
-        if (game.audio) game.audio._systemPause();
-    },
-    
-    /**
-        @method _resume
-        @private
-    **/
-    _resume: function() {
-        if (game.audio) game.audio._systemResume();
+    _updateTweens: function() {
+        if (game.tween) game.tween._update();
     }
 });
 
@@ -414,7 +414,7 @@ game.addAttributes('Scene', {
     /**
         Update order for scene.
         @attribute {Array} updateOrder
-        @default tweens,physics,timers,emitters,objects
+        @default tweens,physics,timers,emitters,objects,renderer
     **/
     updateOrder: [
         'tweens',
