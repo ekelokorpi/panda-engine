@@ -97,38 +97,6 @@ game.createClass('Emitter', {
     **/
     endScaleVar: 0,
     /**
-        List of particles.
-        @property {Array} particles
-    **/
-    particles: [],
-    /**
-        List of texture paths.
-        @property {Array} textures
-    **/
-    textures: [],
-    /**
-        Emitter position.
-        @property {Vector} position
-    **/
-    position: null,
-    /**
-        Emitter position variance.
-        @property {Vector} positionVar
-    **/
-    positionVar: null,
-    /**
-        Particle's initial speed.
-        @property {Number} speed
-        @default 100
-    **/
-    speed: 100,
-    /**
-        Variance for particle's initial speed.
-        @property {Number} speedVar
-        @default 0
-    **/
-    speedVar: 0,
-    /**
         Particle's life in ms (0 is forever).
         @property {Number} life
         @default 2000
@@ -141,28 +109,31 @@ game.createClass('Emitter', {
     **/
     lifeVar: 0,
     /**
-        How often to emit new particles in ms.
-        @property {Number} rate
-        @default 10
+        List of particles.
+        @property {Array} particles
     **/
-    rate: 10,
+    particles: [],
+    /**
+        Emitter position.
+        @property {Vector} position
+    **/
+    position: null,
+    /**
+        Emitter position variance.
+        @property {Vector} positionVar
+    **/
+    positionVar: null,
+    /**
+        How often to emit new particles (ms).
+        @property {Number} rate
+        @default 100
+    **/
+    rate: 100,
     /**
         @property {Number} rateTimer
         @default 0
     **/
     rateTimer: 0,
-    /**
-        Particle's velocity rotation speed.
-        @property {Number} velRotate
-        @default 0
-    **/
-    velRotate: 0,
-    /**
-        Variance for particle's velocity rotation speed.
-        @property {Number} velRotateVar
-        @default 0
-    **/
-    velRotateVar: 0,
     /**
         Particle's sprite rotation speed.
         @property {Number} rotate
@@ -175,6 +146,18 @@ game.createClass('Emitter', {
         @default 0
     **/
     rotateVar: 0,
+    /**
+        Particle's initial speed.
+        @property {Number} speed
+        @default 100
+    **/
+    speed: 100,
+    /**
+        Variance for particle's initial speed.
+        @property {Number} speedVar
+        @default 0
+    **/
+    speedVar: 0,
     /**
         Starting alpha for particle.
         @property {Number} startAlpha
@@ -204,17 +187,27 @@ game.createClass('Emitter', {
     **/
     targetForce: 0,
     /**
-        Settings to apply on particle sprite.
-        @property {Object} spriteSettings
+        List of textures.
+        @property {Array} textures
     **/
-    spriteSettings: {
-        anchor: { x: 0.5, y: 0.5 }
-    },
+    textures: [],
     /**
         @property {Vector} velocityLimit
         @default 0,0
     **/
     velocityLimit: null,
+    /**
+        Particle's velocity rotation speed.
+        @property {Number} velRotate
+        @default 0
+    **/
+    velRotate: 0,
+    /**
+        Variance for particle's velocity rotation speed.
+        @property {Number} velRotateVar
+        @default 0
+    **/
+    velRotateVar: 0,
 
     staticInit: function() {
         game.pool.create(game.Emitter.poolName);
@@ -237,6 +230,7 @@ game.createClass('Emitter', {
         particle.alpha = this.startAlpha;
         particle.position.x = this.position.x + this.getVariance(this.positionVar.x);
         particle.position.y = this.position.y + this.getVariance(this.positionVar.y);
+        particle.anchorCenter();
 
         var angleVar = this.getVariance(this.angleVar);
         var angle = this.angle + angleVar;
@@ -251,7 +245,7 @@ game.createClass('Emitter', {
         particle.setAccel(angle, speed);
 
         particle.life = this.life + this.getVariance(this.lifeVar);
-        particle.rotate = this.rotate + this.getVariance(this.rotateVar);
+        particle.rotateAmount = this.rotate + this.getVariance(this.rotateVar);
         particle.velRotate = this.velRotate + this.getVariance(this.velRotateVar);
 
         if (this.startAlpha !== this.endAlpha) {
@@ -287,10 +281,10 @@ game.createClass('Emitter', {
     /**
         Emit particles to emitter.
         @method emit
-        @param {Number} count
+        @param {Number} [count]
     **/
     emit: function(count) {
-        count = count || 1;
+        count = count || this.count;
         for (var i = 0; i < count; i++) {
             this.addParticle();
         }
@@ -387,7 +381,6 @@ game.createClass('Emitter', {
             var s = Math.sin(particle.velRotate * game.delta);
             var x = particle.velocity.x * c - particle.velocity.y * s;
             var y = particle.velocity.y * c + particle.velocity.x * s;
-            
             particle.velocity.set(x, y);
         }
         
@@ -397,7 +390,7 @@ game.createClass('Emitter', {
         if (particle.deltaAlpha) particle.alpha = Math.max(0, particle.alpha + particle.deltaAlpha * game.delta);
         if (particle.deltaScale) particle.scale.add(particle.deltaScale * game.delta);
 
-        particle.rotation += particle.rotate * game.delta;
+        particle.rotation += particle.rotateAmount * game.delta;
     },
 
     /**
@@ -425,7 +418,7 @@ game.createClass('Emitter', {
             this.rateTimer += game.delta * 1000;
             if (this.rateTimer >= this.rate) {
                 this.rateTimer = 0;
-                this.emit(this.count);
+                this.emit();
             }
         }
 
@@ -452,11 +445,35 @@ game.createClass('Particle', 'Sprite', {
         @property {Vector} accel
     **/
     accel: null,
+    /**
+        @property {Number} deltaScale
+        @default 0
+    **/
+    deltaScale: 0,
+    /**
+        @property {Number} deltaAlpha
+        @default 0
+    **/
+    deltaAlpha: 0,
+    /**
+        @property {Number} life
+        @default 0
+    **/
     life: 0,
+    /**
+        @property {Number} rotateAmount
+        @default 0
+    **/
+    rotateAmount: 0,
     /**
         @property {Vector} velocity
     **/
     velocity: null,
+    /**
+        @property {Number} velRotate
+        @default 0
+    **/
+    velRotate: 0,
 
     staticInit: function(texture) {
         this.super(texture);

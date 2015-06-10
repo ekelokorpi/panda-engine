@@ -367,7 +367,7 @@ game.createClass('Container', {
         wt.c += this.skew.x * wt.a;
         wt.d += this.skew.x * wt.b;
         wt.a += this.skew.y * wt.c;
-        wt.b += this.skew.y * wt.d;        
+        wt.b += this.skew.y * wt.d;
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
