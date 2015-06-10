@@ -58,6 +58,10 @@ game.createClass('Container', {
     **/
     scale: null,
     /**
+        @property {Vector} skew
+    **/
+    skew: null,
+    /**
         @property {Container} stage
     **/
     stage: null,
@@ -119,11 +123,12 @@ game.createClass('Container', {
     _worldTransform: null,
 
     staticInit: function() {
+        this.anchor = new game.Vector();
         this.position = new game.Vector();
         this.scale = new game.Vector(1, 1);
-        this.anchor = new game.Vector();
-        this._worldTransform = new game.Matrix();
+        this.skew = new game.Vector();
         this._worldBounds = new game.Rectangle();
+        this._worldTransform = new game.Matrix();
     },
 
     /**
@@ -358,6 +363,11 @@ game.createClass('Container', {
         wt.d = c * pt.b + d * pt.d;
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+
+        wt.c += this.skew.x * wt.a;
+        wt.d += this.skew.x * wt.b;
+        wt.a += this.skew.y * wt.c;
+        wt.b += this.skew.y * wt.d;        
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
