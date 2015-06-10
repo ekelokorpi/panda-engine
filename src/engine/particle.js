@@ -14,6 +14,7 @@ game.module(
 **/
 game.createClass('Emitter', {
     /**
+        List of particles.
         @property {Array} particles
     **/
     particles: [],
@@ -28,10 +29,12 @@ game.createClass('Emitter', {
     **/
     container: null,
     /**
+        Emitter position.
         @property {Vector} position
     **/
     position: null,
     /**
+        Emitter position variance.
         @property {Vector} positionVar
     **/
     positionVar: null,
@@ -85,9 +88,9 @@ game.createClass('Emitter', {
     /**
         How often to emit new particles in ms.
         @property {Number} rate
-        @default 100
+        @default 10
     **/
-    rate: 100,
+    rate: 10,
     /**
         @property {Number} rateTimer
         @default 0
@@ -96,9 +99,9 @@ game.createClass('Emitter', {
     /**
         Emit count of particles.
         @property {Number} count
-        @default 10
+        @default 1
     **/
-    count: 10,
+    count: 1,
     /**
         Is emitter active.
         @property {Boolean} active
@@ -212,13 +215,12 @@ game.createClass('Emitter', {
     **/
     callback: null,
 
-    init: function(settings) {
+    staticInit: function() {
         game.pool.create(game.Emitter.poolName);
         this.position = new game.Vector();
         this.positionVar = new game.Vector();
         this.velocityLimit = new game.Vector();
         this.target = new game.Vector();
-        game.merge(this, settings);
     },
 
     /**
