@@ -110,6 +110,10 @@ game.createClass('Debug', {
         this._addPanel();
     },
 
+    /**
+        @method _addPanel
+        @private
+    **/
     _addPanel: function() {
         this.panel = document.createElement('div');
         this.panel.id = 'pandaDebug';
@@ -120,10 +124,20 @@ game.createClass('Debug', {
         this.panel.style.backgroundColor = game.Debug.backgroundColor;
         this.panel.style.color = game.Debug.textColor;
         this.panel.style.fontFamily = 'Arial';
-        this.panel.style.fontSize = '14px';
+        this.panel.style.fontSize = game.Debug.fontSize + 'px';
         this.panel.style.width = '100%';
         this.panel.style.pointerEvents = 'none';
         document.body.appendChild(this.panel);
+    },
+
+    /**
+        @method _addText
+        @private
+        @param {String} name
+        @param {Number|Boolean|String} value
+    **/
+    _addText: function(name, value) {
+        this.text += name + ': ' + value + ' ';
     },
 
     /**
@@ -154,6 +168,7 @@ game.createClass('Debug', {
         context.globalAlpha = game.Debug.bodyAlpha;
         context.fillStyle = game.Debug.bodyColor;
         context.strokeStyle = game.Debug.bodyLineColor;
+        context.lineWidth = game.Debug.bodyLineWidth;
 
         if (shape.width && shape.height) {
             context.beginPath();
@@ -200,7 +215,7 @@ game.createClass('Debug', {
         
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = game.Debug.boundAlpha;
-        context.lineWidth = game.Debug.boundWidth;
+        context.lineWidth = game.Debug.boundLineWidth;
         context.strokeStyle = game.Debug.boundColor;
         context.beginPath();
         context.rect(x, y, width, height);
@@ -308,16 +323,6 @@ game.createClass('Debug', {
     },
 
     /**
-        @method _addText
-        @private
-        @param {String} name
-        @param {Number|Boolean|String} value
-    **/
-    _addText: function(name, value) {
-        this.text += name + ': ' + value + ' ';
-    },
-
-    /**
         @method _updateText
         @private
     **/
@@ -328,11 +333,77 @@ game.createClass('Debug', {
 
 game.addAttributes('Debug', {
     /**
-        Is debug bar enabled.
+        Background color of debug bar.
+        @attribute {String} backgroundColor
+        @default rgba(0, 0, 0, 0.7)
+    **/
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    /**
+        Alpha of bodies.
+        @attribute {Number} bodyAlpha
+        @default 0.5
+    **/
+    bodyAlpha: 0.5,
+    /**
+        Color of bodies.
+        @attribute {Number} bodyColor
+        @default #00ff00
+    **/
+    bodyColor: '#00ff00',
+    /**
+        Stroke color of bodies.
+        @attribute {Number} bodyLineColor
+        @default #ffff00
+    **/
+    bodyLineColor: '#ffff00',
+    /**
+        Body line width.
+        @attribute {Number} bodyLineWidth
+        @default 1
+    **/
+    bodyLineWidth: 1,
+    /**
+        Alpha of bounds.
+        @attribute {Number} boundAlpha
+        @default 0.5
+    **/
+    boundAlpha: 0.5,
+    /**
+        Color of bounds.
+        @attribute {Number} boundColor
+        @default #ff0000
+    **/
+    boundColor: '#ff0000',
+    /**
+        Bounds line width.
+        @attribute {Number} boundLineWidth
+        @default 1
+    **/
+    boundLineWidth: 1,
+    /**
+        Alpha of camera.
+        @attribute {Number} cameraAlpha
+        @default 0.2
+    **/
+    cameraAlpha: 0.2,
+    /**
+        Color of camera.
+        @attribute {String} cameraColor
+        @default #ff00ff
+    **/
+    cameraColor: '#ff00ff',
+    /**
+        Enable debugging (can also be enabled with ?debug on url).
         @attribute {Boolean} enabled
         @default false
     **/
     enabled: false,
+    /**
+        Debug panel font size.
+        @attribute {Number} fontSize
+        @default 14
+    **/
+    fontSize: 14,
     /**
         How often to update fps (ms).
         @attribute {Number} frequency
@@ -340,17 +411,15 @@ game.addAttributes('Debug', {
     **/
     frequency: 500,
     /**
-        Text color of debug bar.
-        @attribute {String} textColor
-        @default #ff0000
+        @attribute {String} hitAreaColor
+        @default #0000ff
     **/
-    textColor: '#ff0000',
+    hitAreaColor: '#0000ff',
     /**
-        Background color of debug bar.
-        @attribute {String} backgroundColor
-        @default rgba(0, 0, 0, 0.7)
+        @attribute {Number} hitAreaAlpha
+        @default 0.5
     **/
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    hitAreaAlpha: 0.5,
     /**
         Vertical position of debug bar (top or bottom).
         @attribute {String} position
@@ -360,9 +429,9 @@ game.addAttributes('Debug', {
     /**
         Draw physics bodies.
         @attribute {Boolean} showBodies
-        @default true
+        @default false
     **/
-    showBodies: true,
+    showBodies: false,
     /**
         Draw container bounds.
         @attribute {Boolean} showBounds
@@ -388,63 +457,11 @@ game.addAttributes('Debug', {
     **/
     showInfo: true,
     /**
-        Color of bounds.
-        @attribute {Number} boundColor
+        Text color of debug bar.
+        @attribute {String} textColor
         @default #ff0000
     **/
-    boundColor: '#ff0000',
-    /**
-        Alpha of bounds.
-        @attribute {Number} boundAlpha
-        @default 0.5
-    **/
-    boundAlpha: 0.5,
-    /**
-        Width of bounds.
-        @attribute {Number} boundWidth
-        @default 1
-    **/
-    boundWidth: 1,
-    /**
-        Color of bodies.
-        @attribute {Number} bodyColor
-        @default #00ff00
-    **/
-    bodyColor: '#00ff00',
-    /**
-        Stroke color of bodies.
-        @attribute {Number} bodyLineColor
-        @default #ffff00
-    **/
-    bodyLineColor: '#ffff00',
-    /**
-        Alpha of bodies.
-        @attribute {Number} bodyAlpha
-        @default 0.5
-    **/
-    bodyAlpha: 0.5,
-    /**
-        Color of camera.
-        @attribute {String} cameraColor
-        @default #ff00ff
-    **/
-    cameraColor: '#ff00ff',
-    /**
-        Alpha of camera.
-        @attribute {Number} cameraAlpha
-        @default 0.2
-    **/
-    cameraAlpha: 0.2,
-    /**
-        @attribute {String} hitAreaColor
-        @default #0000ff
-    **/
-    hitAreaColor: '#0000ff',
-    /**
-        @attribute {Number} hitAreaAlpha
-        @default 0.5
-    **/
-    hitAreaAlpha: 0.5
+    textColor: '#ff0000'
 });
 
 var href = document.location.href.toLowerCase();
@@ -452,6 +469,7 @@ if (href.match(/\?debug/)) game.Debug.enabled = true;
 if (href.match(/\?debugdraw/)) {
     game.Debug.showBodies = true;
     game.Debug.showBounds = true;
+    game.Debug.showCamera = true;
     game.Debug.showHitAreas = true;
 }
 
