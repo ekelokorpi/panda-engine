@@ -418,9 +418,9 @@ game.createClass('Body', {
     _update: function() {
         this._last.copy(this.position);
 
-        if (this.mass !== 0) this.velocity.multiplyAdd(this.world.gravity, this.mass * game.system.delta);
-        this.velocity.multiplyAdd(this.force, game.system.delta);
-        if (this.damping > 0 && this.damping < 1) this.velocity.multiply(Math.pow(1 - this.damping, game.system.delta));
+        if (this.mass !== 0) this.velocity.multiplyAdd(this.world.gravity, this.mass * game.delta);
+        this.velocity.multiplyAdd(this.force, game.delta);
+        if (this.damping > 0 && this.damping < 1) this.velocity.multiply(Math.pow(1 - this.damping, game.delta));
 
         if (this.velocityLimit.x > 0) {
             if (this.velocity.x > this.velocityLimit.x) this.velocity.x = this.velocityLimit.x;
@@ -431,7 +431,7 @@ game.createClass('Body', {
             if (this.velocity.y < -this.velocityLimit.y) this.velocity.y = -this.velocityLimit.y;
         }
 
-        this.position.multiplyAdd(this.velocity, game.system.delta);
+        this.position.multiplyAdd(this.velocity, game.delta);
     }
 });
 

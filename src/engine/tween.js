@@ -439,7 +439,7 @@ game.createClass('Tween', {
         if (this._shouldRemove) return false;
         if (this.paused) return true;
 
-        this.currentTime += game.system.delta * 1000;
+        this.currentTime += game.delta * 1000;
 
         if (this.currentTime < this._startTime) return true;
         
