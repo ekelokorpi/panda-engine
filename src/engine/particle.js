@@ -329,19 +329,12 @@ game.createClass('Emitter', {
     },
 
     /**
-        Reset emitter values to defaults.
+        Reset emitter timer.
         @method reset
-        @param {Boolean} resetVec Reset vector values.
     **/
-    reset: function(resetVec) {
-        for (var name in this) {
-            if (typeof this[name] === 'number') {
-                this[name] = game.Emitter.prototype[name];
-            }
-            if (this[name] instanceof game.Vector && resetVec) {
-                this[name].set(0, 0);
-            }
-        }
+    reset: function() {
+        this.durationTimer = 0;
+        this.active = true;
     },
 
     /**
