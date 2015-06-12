@@ -31,9 +31,7 @@ game.createClass('Sprite', 'Container', {
         @param {Texture|String} texture
     **/
     setTexture: function(texture) {
-        if (!texture) return;
         this.texture = texture instanceof game.Texture ? texture : game.Texture.fromAsset(texture);
-        return this;
     },
 
     _getBounds: function() {
@@ -48,31 +46,12 @@ game.createClass('Sprite', 'Container', {
         var d = wt.d;
         var tx = wt.tx;
         var ty = wt.ty;
-        
         var x2 = a * width + tx;
         var y2 = b * width + ty;
         var x3 = a * width + c * height + tx;
         var y3 = d * height + b * width + ty;
         var x4 = c * height + tx;
         var y4 = d * height + ty;
-
-        // Is this faster?
-        // var minX = tx;
-        // var maxX = tx;
-        // var minY = ty;
-        // var maxY = ty;
-        // minX = x2 < minX ? x2 : minX;
-        // minX = x3 < minX ? x3 : minX;
-        // minX = x4 < minX ? x4 : minX;
-        // minY = y2 < minY ? y2 : minY;
-        // minY = y3 < minY ? y3 : minY;
-        // minY = y4 < minY ? y4 : minY;
-        // maxX = x2 > maxX ? x2 : maxX;
-        // maxX = x3 > maxX ? x3 : maxX;
-        // maxX = x4 > maxX ? x4 : maxX;
-        // maxY = y2 > maxY ? y2 : maxY;
-        // maxY = y3 > maxY ? y3 : maxY;
-        // maxY = y4 > maxY ? y4 : maxY;
 
         var minX = Math.min(tx, x2, x3, x4);
         var minY = Math.min(ty, y2, y3, y4);
@@ -85,11 +64,6 @@ game.createClass('Sprite', 'Container', {
             var childMaxX = childMinX + childBounds.width;
             var childMinY = childBounds.y;
             var childMaxY = childMinY + childBounds.height;
-
-            // minX = (minX < childMinX) ? minX : childMinX;
-            // minY = (minY < childMinY) ? minY : childMinY;
-            // maxX = (maxX > childMaxX) ? maxX : childMaxX;
-            // maxY = (maxY > childMaxY) ? maxY : childMaxY;
             minX = Math.min(minX, childMinX);
             minY = Math.min(minY, childMinY);
             maxX = Math.max(maxX, childMaxX);
