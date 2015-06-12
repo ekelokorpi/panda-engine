@@ -279,7 +279,7 @@ game.createClass('Emitter', {
     },
 
     /**
-        Emit particles to emitter.
+        Emit particles.
         @method emit
         @param {Number} [count]
     **/

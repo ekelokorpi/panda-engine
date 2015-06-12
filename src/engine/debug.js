@@ -311,7 +311,7 @@ game.createClass('Debug', {
         this._addText('FPS', this.fps);
         this._addText('OBJECTS', game.scene.objects.length);
         this._addText('SPRITES', this.sprites);
-        if (game.tween) this._addText('TWEENS', game.tween.tweens.length);
+        if (game.scene.tweens) this._addText('TWEENS', game.scene.tweens.length);
         if (game.scene.timers) this._addText('TIMERS', game.scene.timers.length);
         if (game.scene.emitters) this._addText('EMITTERS', game.scene.emitters.length);
         if (game.scene.world) this._addText('BODIES', game.scene.world.bodies.length);

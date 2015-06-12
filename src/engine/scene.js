@@ -50,6 +50,11 @@ game.createClass('Scene', {
     **/
     timers: [],
     /**
+        List of tweens in scene.
+        @property {Array} tweens
+    **/
+    tweens: [],
+    /**
         @property {Object} _backgroundColorRgb
         @private
     **/
@@ -257,6 +262,16 @@ game.createClass('Scene', {
     },
 
     /**
+        Remove all tweens from scene.
+        @method removeTweens
+    **/
+    removeTweens: function() {
+        for (var i = 0; i < this.tweens.length; i++) {
+            this.tweens[i]._shouldRemove = true;
+        }
+    },
+
+    /**
         Callback for swipe.
         @method swipe
         @param {String} direction
@@ -409,7 +424,9 @@ game.createClass('Scene', {
         @private
     **/
     _updateTweens: function() {
-        if (game.tween) game.tween._update();
+        for (var i = this.tweens.length - 1; i >= 0; i--) {
+            if (!this.tweens[i]._update()) this.tweens.splice(i, 1);
+        }
     }
 });
 

@@ -256,10 +256,9 @@ game.createClass('System', {
             this._showRotateScreen();
             return true;
         }
-        else {
-            this._hideRotateScreen();
-            return false;
-        }
+        
+        this._hideRotateScreen();
+        return false;
     },
 
     /**
@@ -321,7 +320,6 @@ game.createClass('System', {
     _setSceneNow: function(sceneClass) {
         if (this.paused) this.paused = false;
         if (game.scene && game.scene.exit) game.scene.exit();
-        if (game.tween) game.tween.removeAll();
         game.scene = new (sceneClass)();
         this._newSceneClass = null;
         this._startRunLoop();

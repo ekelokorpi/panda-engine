@@ -59,10 +59,6 @@ var game = {
     **/
     storage: null,
     /**
-        @property {TweenEngine} tween
-    **/
-    tween: null,
-    /**
         @property {Input} input
     **/
     input: null,
@@ -521,7 +517,6 @@ var game = {
         if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
         if (this.Storage && this.Storage.id) this.storage = new this.Storage();
         if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
-        if (this.TweenEngine) this.tween = new this.TweenEngine();
 
         // Load plugins
         for (var name in this.plugins) {
