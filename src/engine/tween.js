@@ -13,41 +13,21 @@ game.module(
 **/
 game.createClass('Tween', {
     /**
-        Is tween playing.
-        @property {Boolean} playing
+        List of chainged tweens.
+        @property {Array} chainedTweens
     **/
-    playing: false,
+    chainedTweens: [],
     /**
-        Is tween paused.
-        @property {Boolean} paused
+        Current time of tween.
+        @property {Number} currentTime
     **/
-    paused: false,
+    currentTime: 0,
     /**
-        Tween's target object.
-        @property {Object} object
+        Is delay repeating.
+        @property {Boolean} delayRepeat
+        @default false
     **/
-    object: null,
-    /**
-        Tween duration.
-        @property {Number} duration
-        @default 1000
-    **/
-    duration: 1000,
-    /**
-        Tween's repeat count.
-        @property {Number} repeatCount
-    **/
-    repeatCount: 0,
-    /**
-        Is yoyo enabled.
-        @property {Boolean} yoyoEnabled
-    **/
-    yoyoEnabled: false,
-    /**
-        Is tween currently reversed.
-        @property {Boolean} reversed
-    **/
-    reversed: false,
+    delayRepeat: false,
     /**
         Tween's delay time.
         @property {Number} delayTime
@@ -55,11 +35,11 @@ game.createClass('Tween', {
     **/
     delayTime: 0,
     /**
-        Is delay repeating.
-        @property {Boolean} delayRepeat
-        @default false
+        Tween duration.
+        @property {Number} duration
+        @default 1000
     **/
-    delayRepeat: false,
+    duration: 1000,
     /**
         Tween's easing function.
         @property {Function} easingFunction
@@ -71,20 +51,10 @@ game.createClass('Tween', {
     **/
     interpolationFunction: null,
     /**
-        List of chainged tweens.
-        @property {Array} chainedTweens
+        Tween's target object.
+        @property {Object} object
     **/
-    chainedTweens: [],
-    /**
-        Tween's start callback.
-        @property {Function} onStartCallback
-    **/
-    onStartCallback: null,
-    /**
-        Tween's update callback.
-        @property {Function} onUpdateCallback
-    **/
-    onUpdateCallback: null,
+    object: null,
     /**
         Tween's complete callback.
         @property {Function} onCompleteCallback
@@ -96,50 +66,80 @@ game.createClass('Tween', {
     **/
     onRepeatCallback: null,
     /**
-        Current time of tween.
-        @property {Number} currentTime
+        Tween's start callback.
+        @property {Function} onStartCallback
     **/
-    currentTime: 0,
+    onStartCallback: null,
     /**
-        @property {Boolean} _shouldRemove
-        @private
+        Tween's update callback.
+        @property {Function} onUpdateCallback
     **/
-    _shouldRemove: false,
+    onUpdateCallback: null,
+    /**
+        Is tween paused.
+        @property {Boolean} paused
+    **/
+    paused: false,
+    /**
+        Is tween playing.
+        @property {Boolean} playing
+    **/
+    playing: false,
+    /**
+        Tween's repeat count.
+        @property {Number} repeatCount
+    **/
+    repeatCount: 0,
+    /**
+        Is tween currently reversed.
+        @property {Boolean} reversed
+    **/
+    reversed: false,
+    /**
+        Is yoyo enabled.
+        @property {Boolean} yoyoEnabled
+    **/
+    yoyoEnabled: false,
     /**
         @property {Boolean} _onStartCallbackFired
         @private
     **/
     _onStartCallbackFired: false,
     /**
-        @property {Object} _valuesStart
+        @property {Number} _originalStartTime
         @private
     **/
-    _valuesStart: {},
-    /**
-        @property {Object} _valuesEnd
-        @private
-    **/
-    _valuesEnd: null,
-    /**
-        @property {Object} _valuesStartRepeat
-        @private
-    **/
-    _valuesStartRepeat: {},
+    _originalStartTime: null,
     /**
         @property {Number} _repeats
         @private
     **/
     _repeats: 0,
     /**
+        @property {Boolean} _shouldRemove
+        @private
+    **/
+    _shouldRemove: false,
+    /**
         @property {Number} _startTime
         @private
     **/
     _startTime: null,
     /**
-        @property {Number} _originalStartTime
+        @property {Object} _valuesEnd
         @private
     **/
-    _originalStartTime: null,
+    _valuesEnd: null,
+    /**
+        @property {Object} _valuesStart
+        @private
+    **/
+    _valuesStart: {},
+    /**
+        @property {Object} _valuesStartRepeat
+        @private
+    **/
+    _valuesStartRepeat: {},
 
     staticInit: function(object) {
         if (typeof object !== 'object') throw 'Tween parameter must be object';
@@ -154,16 +154,127 @@ game.createClass('Tween', {
     },
 
     /**
-        Set tween properties
-        @method to
-        @param {Object} properties
-        @param {Number} duration
+        Chain tween.
+        @method chain
+        @param {Tween} tween
         @chainable
     **/
-    to: function(properties, duration) {
-        this.duration = duration || this.duration;
-        this._valuesEnd = properties;
+    chain: function() {
+        this.chainedTweens = arguments;
         return this;
+    },
+
+    /**
+        Set delay for tween.
+        @method delay
+        @param {Number} time
+        @param {Boolean} repeat
+        @chainable
+    **/
+    delay: function(time, repeat) {
+        this.delayTime = time;
+        this.delayRepeat = !!repeat;
+        return this;
+    },
+
+    /**
+        Set easing for tween.
+        @method easing
+        @param {String} easing
+        @chainable
+    **/
+    easing: function(easing) {
+        if (typeof easing === 'string') {
+            easing = easing.split('.');
+            this.easingFunction = game.Tween.Easing[easing[0]][easing[1]];
+        }
+        else {
+            this.easingFunction = easing;
+        }
+        return this;
+    },
+
+    /**
+        Set interpolation for tween.
+        @method interpolation
+        @param {Function} interpolation
+        @chainable
+    **/
+    interpolation: function(interpolation) {
+        this.interpolationFunction = interpolation;
+        return this;
+    },
+
+    /**
+        Set onComplete callback for tween.
+        @method onComplete
+        @param {Function} callback
+        @chainable
+    **/
+    onComplete: function(callback) {
+        this.onCompleteCallback = callback;
+        return this;
+    },
+    
+    /**
+        Set onRepeat callback for tween.
+        @method onRepeat
+        @param {Function} callback
+        @chainable
+    **/
+    onRepeat: function(callback) {
+        this.onRepeatCallback = callback;
+        return this;
+    },
+
+    /**
+        Set onStart callback for tween.
+        @method onStart
+        @param {Function} callback
+        @chainable
+    **/
+    onStart: function(callback) {
+        this.onStartCallback = callback;
+        return this;
+    },
+
+    /**
+        Set onUpdate callback for tween.
+        @method onUpdate
+        @param {Function} callback
+        @chainable
+    **/
+    onUpdate: function(callback) {
+        this.onUpdateCallback = callback;
+        return this;
+    },
+
+    /**
+        Pause tween.
+        @method pause
+    **/
+    pause: function() {
+        this.paused = true;
+    },
+
+    /**
+        Set repeat for tween.
+        @method repeat
+        @param {Number} times
+        @chainable
+    **/
+    repeat: function(times) {
+        if (typeof times === 'undefined') times = Infinity;
+        this.repeatCount = times;
+        return this;
+    },
+
+    /**
+        Resume tween.
+        @method resume
+    **/
+    resume: function() {
+        this.paused = false;
     },
 
     /**
@@ -210,43 +321,15 @@ game.createClass('Tween', {
     },
 
     /**
-        Pause tween.
-        @method pause
-    **/
-    pause: function() {
-        this.paused = true;
-    },
-
-    /**
-        Resume tween.
-        @method resume
-    **/
-    resume: function() {
-        this.paused = false;
-    },
-
-    /**
-        Set delay for tween.
-        @method delay
-        @param {Number} time
-        @param {Boolean} repeat
+        Set tween properties
+        @method to
+        @param {Object} properties
+        @param {Number} duration
         @chainable
     **/
-    delay: function(time, repeat) {
-        this.delayTime = time;
-        this.delayRepeat = !!repeat;
-        return this;
-    },
-
-    /**
-        Set repeat for tween.
-        @method repeat
-        @param {Number} times
-        @chainable
-    **/
-    repeat: function(times) {
-        if (typeof times === 'undefined') times = Infinity;
-        this.repeatCount = times;
+    to: function(properties, duration) {
+        this.duration = duration || this.duration;
+        this._valuesEnd = properties;
         return this;
     },
 
@@ -259,89 +342,6 @@ game.createClass('Tween', {
     yoyo: function(enabled) {
         if (typeof enabled === 'undefined') enabled = true;
         this.yoyoEnabled = enabled;
-        return this;
-    },
-
-    /**
-        Set easing for tween.
-        @method easing
-        @param {String} easing
-        @chainable
-    **/
-    easing: function(easing) {
-        if (typeof easing === 'string') {
-            easing = easing.split('.');
-            this.easingFunction = game.Tween.Easing[easing[0]][easing[1]];
-        }
-        else {
-            this.easingFunction = easing;
-        }
-        return this;
-    },
-
-    /**
-        Set interpolation for tween.
-        @method interpolation
-        @param {Function} interpolation
-        @chainable
-    **/
-    interpolation: function(interpolation) {
-        this.interpolationFunction = interpolation;
-        return this;
-    },
-
-    /**
-        Chain tween.
-        @method chain
-        @param {Tween} tween
-        @chainable
-    **/
-    chain: function() {
-        this.chainedTweens = arguments;
-        return this;
-    },
-
-    /**
-        Set onStart callback for tween.
-        @method onStart
-        @param {Function} callback
-        @chainable
-    **/
-    onStart: function(callback) {
-        this.onStartCallback = callback;
-        return this;
-    },
-
-    /**
-        Set onUpdate callback for tween.
-        @method onUpdate
-        @param {Function} callback
-        @chainable
-    **/
-    onUpdate: function(callback) {
-        this.onUpdateCallback = callback;
-        return this;
-    },
-
-    /**
-        Set onComplete callback for tween.
-        @method onComplete
-        @param {Function} callback
-        @chainable
-    **/
-    onComplete: function(callback) {
-        this.onCompleteCallback = callback;
-        return this;
-    },
-    
-    /**
-        Set onRepeat callback for tween.
-        @method onRepeat
-        @param {Function} callback
-        @chainable
-    **/
-    onRepeat: function(callback) {
-        this.onRepeatCallback = callback;
         return this;
     },
 
