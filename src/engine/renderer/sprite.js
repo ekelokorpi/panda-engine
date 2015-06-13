@@ -124,8 +124,8 @@ game.createClass('Sprite', 'Container', {
 
         var x = t.position.x;
         var y = t.position.y;
-        var width = t.width;
-        var height = t.height;
+        var width = t.width * game.scale;
+        var height = t.height * game.scale;
 
         if (rect) {
             x = rect.x;
@@ -148,7 +148,7 @@ game.defineProperties('Sprite', {
     width: {
         get: function() {
             var scaleX = this._worldTransform.a / this._cosCache;
-            return scaleX * this.texture.width / game.scale;
+            return scaleX * this.texture.width;
         },
 
         set: function(value) {
@@ -159,7 +159,7 @@ game.defineProperties('Sprite', {
     height: {
         get: function() {
             var scaleY = this._worldTransform.d / this._cosCache;
-            return scaleY * this.texture.height / game.scale;
+            return scaleY * this.texture.height;
         },
 
         set: function(value) {

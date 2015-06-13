@@ -218,8 +218,8 @@ game.createClass('BaseTexture', {
     **/
     _onload: function() {
         this.loaded = true;
-        this.width = this.source.width;
-        this.height = this.source.height;
+        this.width = this.source.width / game.scale;
+        this.height = this.source.height / game.scale;
         if (this._loadCallback) this._loadCallback();
     }
 });

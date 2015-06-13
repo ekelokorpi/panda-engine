@@ -315,6 +315,8 @@ game.createClass('Keyboard', {
             game.Keyboard.keys[event.keyCode] = event.keyCode;
         }
 
+        if (this._keysDown[game.Keyboard.keys[event.keyCode]]) return;
+        
         this._keysDown[game.Keyboard.keys[event.keyCode]] = true;
         if (game.scene && game.scene.keydown) {
             var prevent = game.scene.keydown(game.Keyboard.keys[event.keyCode], this.down('SHIFT'), this.down('CTRL'), this.down('ALT'));
