@@ -47,6 +47,7 @@ game.createClass('Text', 'Container', {
         this.super();
         this.text = this.text || text.toString();
         game.merge(this, props);
+        this.font = this.font || game.Text.defaultFont;
         if (this.font) this.setFont(this.font);
     },
 
@@ -71,7 +72,7 @@ game.createClass('Text', 'Container', {
         @chainable
     **/
     setText: function(text) {
-        this.text = text;
+        this.text = text.toString();
         this.updateText();
         return this;
     },
@@ -232,6 +233,14 @@ game.createClass('Text', 'Container', {
             x += charObj.xadvance + charObj.xoffset;
         }
     }
+});
+
+game.addAttributes('Text', {
+    /**
+        Default font for text.
+        @attribute {String} defaultFont
+    **/
+    defaultFont: null
 });
 
 /**

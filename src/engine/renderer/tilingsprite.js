@@ -129,12 +129,12 @@ game.createClass('TilingSprite', 'Container', {
     _renderCanvas: function(context) {
         var scaleX = this._worldTransform.a / this._cosCache;
         var scaleY = this._worldTransform.d / this._cosCache;
-        var tw = this.tw;
-        var th = this.th;
+        var tw = this.tw / game.scale;
+        var th = this.th / game.scale;
         var width = this.width / scaleX;
         var height = this.height / scaleY;
-        var tileX = this.tilePosition.x;
-        var tileY = this.tilePosition.y;
+        var tileX = this.tilePosition.x * game.scale;
+        var tileY = this.tilePosition.y * game.scale;
 
         var x = tileX % tw;
         var y = tileY % th;
