@@ -94,16 +94,16 @@ game.createClass('Debug', {
         });
 
         game.Graphics.inject({
-            _render: function(context) {
+            _renderCanvas: function(context) {
                 this.super(context);
-                game.debug.sprites++;
+                game.debug.sprites += this.shapes.length;
             }
         });
 
         game.Container.inject({
-            _render: function(context) {
+            _renderCachedSprite: function(context) {
                 this.super(context);
-                if (this._cacheAsBitmap) game.debug.sprites++;
+                game.debug.sprites++;
             }
         });
 
@@ -156,9 +156,6 @@ game.createClass('Debug', {
         @private
     **/
     _drawBody: function(body) {
-        // TODO
-        if (game.renderer.webGL) return;
-
         if (!body.world || !body.shape) return;
 
         var context = game.renderer.context;
@@ -201,9 +198,6 @@ game.createClass('Debug', {
         @param {Container} container
     **/
     _drawBounds: function(container) {
-        // TODO
-        if (game.renderer.webGL) return;
-
         if (!container.parent) return;
 
         var context = game.renderer.context;
@@ -235,9 +229,6 @@ game.createClass('Debug', {
         @param {Container} container
     **/
     _drawHitArea: function(container) {
-        // TODO
-        if (game.renderer.webGL) return;
-
         var context = game.renderer.context;
         var wt = container._worldTransform;
         var hitArea = container.hitArea;
@@ -316,7 +307,6 @@ game.createClass('Debug', {
         if (game.scene.emitters) this._addText('EMITTERS', game.scene.emitters.length);
         if (game.scene.world) this._addText('BODIES', game.scene.world.bodies.length);
         this._addText('INPUTS', game.input.items.length);
-        this._addText('WEBGL', !!game.renderer.webGL);
         this._addText('HIRES', game.scale);
 
         this._updateText();
@@ -477,8 +467,7 @@ game.onStart = function() {
     if (!this.Debug.enabled || !this.Debug.showInfo) return;
 
     console.log('Panda Engine ' + this.version);
-    var renderer = game.renderer.webGL ? 'WebGL' : 'Canvas';
-    console.log(renderer + ' ' + this.system.width + 'x' + this.system.height);
+    console.log('Canvas ' + this.system.width + 'x' + this.system.height);
 
     if (this.Audio && this.Audio.enabled) {
         console.log((this.audio.context ? 'Web' : 'HTML5') + ' Audio engine');

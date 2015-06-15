@@ -18,9 +18,21 @@ game.createClass('Circle', {
         @default 0
     **/
     radius: 0,
+    /**
+        @property {Number} x
+        @default 0
+    **/
+    x: 0,
+    /**
+        @property {Number} y
+        @default 0
+    **/
+    y: 0,
 
-    init: function(radius) {
+    init: function(radius, x, y) {
         this.radius = radius || this.radius;
+        this.x = x || this.x;
+        this.y = y || this.y;
     }
 });
 

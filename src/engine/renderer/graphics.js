@@ -66,7 +66,10 @@ game.createClass('Graphics', 'Container', {
     },
 
     drawCircle: function(x, y, radius) {
-        // TODO
+        radius *= game.scale;
+        var shape = new game.Circle(radius, x, y);
+        this._drawShape(shape);
+        return this;
     },
 
     /**
@@ -78,6 +81,7 @@ game.createClass('Graphics', 'Container', {
         @chainable
     **/
     drawRect: function(x, y, width, height) {
+        height = height || width;
         width *= game.scale;
         height *= game.scale;
         var shape = new game.Rectangle(width, height, x, y);
@@ -110,7 +114,7 @@ game.createClass('Graphics', 'Container', {
     },
 
     _getBounds: function() {
-        if (this._worldTransform.tx === null) this.updateParentTransform();
+        if (this._worldTransform.tx === null) this._updateParentTransform();
 
         var minX = this._worldTransform.tx;
         var minY = this._worldTransform.ty;
@@ -123,7 +127,13 @@ game.createClass('Graphics', 'Container', {
             var x = this._worldTransform.tx + data.shape.x;
             var y = this._worldTransform.ty + data.shape.y;
 
-            if (data.shape instanceof game.Rectangle) {
+            if (data.shape instanceof game.Circle) {
+                x -= data.shape.radius;
+                y -= data.shape.radius;
+                var width = x + data.shape.radius * 2;
+                var height = y + data.shape.radius * 2;
+            }
+            else if (data.shape instanceof game.Rectangle) {
                 var width = x + data.shape.width;
                 var height = y + data.shape.height;
             }
@@ -199,6 +209,11 @@ game.createClass('GraphicsData', {
         context.fillStyle = this.fillColor;
         if (this.shape instanceof game.Rectangle) {
             context.fillRect(this.shape.x, this.shape.y, this.shape.width, this.shape.height);
+        }
+        else if (this.shape instanceof game.Circle) {
+            context.beginPath();
+            context.arc(this.shape.x, this.shape.y, this.shape.radius, 0, Math.PI * 2);
+            context.fill();
         }
     }
 });
