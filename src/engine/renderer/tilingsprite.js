@@ -52,18 +52,15 @@ game.createClass('TilingSprite', 'Container', {
         this.texture = this.texture || texture;
         this.texture = this.texture instanceof game.Texture ? this.texture : game.Texture.fromAsset(this.texture);
 
-        this._width = width || this.texture.width;
-        this._height = height || this.texture.height;
+        this._width = this._width ||width || this.texture.width;
+        this._height = this._height || height || this.texture.height;
         
         this._generateSprites();
     },
 
     updateTransform: function() {
         this.super();
-        if (this._updateSprites) {
-            this._generateSprites();
-            this._updateSprites = false;
-        }
+        if (this._updateSprites) this._generateSprites();
     },
 
     _generateSprites: function() {
@@ -84,8 +81,8 @@ game.createClass('TilingSprite', 'Container', {
         var sprite = new game.Sprite(this.texture);
         for (var y = 0; y < ty; y++) {
             for (var x = 0; x < tx; x++) {
-                this._pos.x = x * sprite.width;
-                this._pos.y = y * sprite.height;
+                this._pos.x = x * sprite.width * game.scale;
+                this._pos.y = y * sprite.height * game.scale;
                 sprite._renderCanvas(context, null, null, this._pos);
             }
         }
@@ -100,6 +97,8 @@ game.createClass('TilingSprite', 'Container', {
             sprite.parent = this;
             this._sprites.push(sprite);
         }
+
+        this._updateSprites = false;
     },
 
     _getBounds: function() {

@@ -87,8 +87,8 @@ game.createClass('Debug', {
         if (game.device.cocoonCanvasPlus) return;
 
         game.Sprite.inject({
-            _render: function(context) {
-                this.super(context);
+            _renderCanvas: function(context, transform, rect, offset) {
+                this.super(context, transform, rect, offset);
                 game.debug.sprites++;
             }
         });
