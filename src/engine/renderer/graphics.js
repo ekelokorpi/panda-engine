@@ -123,33 +123,45 @@ game.createClass('Graphics', 'Container', {
     _getBounds: function() {
         if (this._worldTransform.tx === null) this._updateParentTransform();
 
-        var minX = this._worldTransform.tx;
-        var minY = this._worldTransform.ty;
-        var maxX = this._worldTransform.tx;
-        var maxY = this._worldTransform.ty;
+        var wt = this._worldTransform;
+        var a = wt.a;
+        var b = wt.b;
+        var c = wt.c;
+        var d = wt.d;
+        var tx = wt.tx;
+        var ty = wt.ty;
+        var width = 0;
+        var height = 0;
 
         for (var i = 0; i < this.shapes.length; i++) {
             var data = this.shapes[i];
-
-            var x = this._worldTransform.tx + data.shape.x;
-            var y = this._worldTransform.ty + data.shape.y;
+            var maxX = data.shape.x;
+            var maxY = data.shape.y;
 
             if (data.shape.radius) {
-                x -= data.shape.radius;
-                y -= data.shape.radius;
-                var width = x + data.shape.radius * 2;
-                var height = y + data.shape.radius * 2;
+                maxX += data.shape.radius / game.scale;
+                maxY += data.shape.radius / game.scale;
             }
             else {
-                var width = x + data.shape.width;
-                var height = y + data.shape.height;
+                maxX += data.shape.width / game.scale;
+                maxY += data.shape.height / game.scale;
             }
 
-            if (x < minX) minX = x;
-            if (y < minY) minY = y;
-            if (width > maxX) maxX = width;
-            if (height > maxY) maxY = height;
+            width = Math.max(width, maxX);
+            height = Math.max(height, maxY);
         }
+
+        var x2 = a * width + tx;
+        var y2 = b * width + ty;
+        var x3 = a * width + c * height + tx;
+        var y3 = d * height + b * width + ty;
+        var x4 = c * height + tx;
+        var y4 = d * height + ty;
+
+        var minX = Math.min(tx, x2, x3, x4);
+        var minY = Math.min(ty, y2, y3, y4);
+        var maxX = Math.max(tx, x2, x3, x4);
+        var maxY = Math.max(ty, y2, y3, y4);
 
         this._worldBounds.x = minX;
         this._worldBounds.y = minY;
@@ -167,20 +179,6 @@ game.createClass('Graphics', 'Container', {
 
         for (var i = 0; i < this.shapes.length; i++) {
             this.shapes[i]._render(context, this._worldAlpha);
-        }
-    }
-});
-
-game.defineProperties('Graphics', {
-    width: {
-        get: function() {
-            return this.scale.x * this._getBounds().width / game.scale;
-        }
-    },
-
-    height: {
-        get: function() {
-            return this.scale.y * this._getBounds().height / game.scale;
         }
     }
 });
@@ -240,14 +238,17 @@ game.createClass('GraphicsData', {
         context.globalAlpha = this.fillAlpha * alpha;
         context.fillStyle = this.fillColor;
         context.strokeStyle = this.lineColor;
-        context.lineWidth = this.lineWidth;
+        context.lineWidth = this.lineWidth * game.scale;
         context.beginPath();
 
+        var x = this.shape.x * game.scale;
+        var y = this.shape.y * game.scale;
+
         if (this.shape.width) {
-            context.rect(this.shape.x, this.shape.y, this.shape.width, this.shape.height);
+            context.rect(x, y, this.shape.width, this.shape.height);
         }
         else if (this.shape.radius) {
-            context.arc(this.shape.x, this.shape.y, this.shape.radius, 0, Math.PI * 2);
+            context.arc(x, y, this.shape.radius, 0, Math.PI * 2);
         }
 
         if (this.fillColor && this.fillAlpha) context.fill();
