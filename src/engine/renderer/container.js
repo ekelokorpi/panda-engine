@@ -385,7 +385,8 @@ game.createClass('Container', {
 
         this._worldTransform.reset();
         this._updateChildTransform();
-
+        
+        this._renderCanvas(context);
         this._renderChildren(context);
 
         var texture = game.Texture.fromCanvas(canvas);
