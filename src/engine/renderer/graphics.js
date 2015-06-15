@@ -239,14 +239,19 @@ game.createClass('GraphicsData', {
     _render: function(context, alpha) {
         context.globalAlpha = this.fillAlpha * alpha;
         context.fillStyle = this.fillColor;
+        context.strokeStyle = this.lineColor;
+        context.lineWidth = this.lineWidth;
+        context.beginPath();
+
         if (this.shape.width) {
-            context.fillRect(this.shape.x, this.shape.y, this.shape.width, this.shape.height);
+            context.rect(this.shape.x, this.shape.y, this.shape.width, this.shape.height);
         }
         else if (this.shape.radius) {
-            context.beginPath();
             context.arc(this.shape.x, this.shape.y, this.shape.radius, 0, Math.PI * 2);
-            context.fill();
         }
+
+        if (this.fillColor && this.fillAlpha) context.fill();
+        if (this.lineWidth) context.stroke();
     }
 });
 
