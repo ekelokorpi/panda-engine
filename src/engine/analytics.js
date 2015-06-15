@@ -29,7 +29,7 @@ game.createClass('Analytics', {
 
         if (!navigator.onLine) return;
 
-        if (game.device.cocoonJS) {
+        if (game.device.cocoonCanvasPlus) {
             this._clientId = Date.now();
             var request = new XMLHttpRequest();
             var params = 'v=1&tid=' + this.trackId + '&cid=' + this._clientId + '&t=pageview&dp=%2F';
@@ -66,7 +66,7 @@ game.createClass('Analytics', {
     send: function(category, action, label, value) {
         if (!navigator.onLine) return;
 
-        if (game.device.cocoonJS) {
+        if (game.device.cocoonCanvasPlus) {
             var request = new XMLHttpRequest();
             var params = 'v=1&tid=' + this.trackId + '&cid=' + this._clientId + '&t=event&ec=' + category + '&ea=' + action;
             if (typeof label !== 'undefined') params += '&el=' + label;

@@ -8,14 +8,11 @@ game.module(
 
 /**
     @class Camera
+    @constructor
+    @param {Number} [x]
+    @param {Number} [y]
 **/
 game.createClass('Camera', {
-    /**
-        Camera maximum move speed.
-        @property {Number} maxSpeed
-        @default 200
-    **/
-    maxSpeed: 200,
     /**
         Camera acceleration speed.
         @property {Number} acceleration
@@ -23,26 +20,44 @@ game.createClass('Camera', {
     **/
     acceleration: 3,
     /**
-        Camera offset.
-        @property {Vector} offset
-        @default game.system.width / 2, game.system.height / 2
-    **/
-    offset: null,
-    /**
-        Sprite, that camera follows.
-        @property {Sprite} target
-    **/
-    target: null,
-    /**
         Container, that the camera is moving.
         @property {Container} container
     **/
     container: null,
     /**
-        Current speed of camera.
-        @property {Vector} speed
+        Camera offset.
+        @property {Vector} offset
+        @default game.width / 2, game.height / 2
     **/
-    speed: null,
+    offset: null,
+    /**
+        Camera maximum move speed.
+        @property {Number} maxSpeed
+        @default 200
+    **/
+    maxSpeed: 200,
+    /**
+        @property {Number} maxX
+    **/
+    maxX: null,
+    /**
+        @property {Number} maxY
+    **/
+    maxY: null,
+    /**
+        @property {Number} minX
+    **/
+    minX: null,
+    /**
+        @property {Number} minY
+    **/
+    minY: null,
+    /**
+        Use rounding on container position.
+        @property {Boolean} rounding
+        @default false
+    **/
+    rounding: false,
     /**
         Scale value of camera.
         @property {Number} scale
@@ -50,37 +65,47 @@ game.createClass('Camera', {
     **/
     scale: 1,
     /**
-        Use rounding on container position.
-        @property {Boolean} rounding
-        @default false
+        @property {Number} sensorHeight
     **/
-    rounding: false,
-
-    sensorPosition: null,
-    sensorWidth: 0,
     sensorHeight: 0,
+    /**
+        @property {Vector} sensorPosition
+    **/
+    sensorPosition: null,
+    /**
+        @property {Number} sensorWidth
+    **/
+    sensorWidth: 0,
+    /**
+        Current speed of camera.
+        @property {Vector} speed
+    **/
+    speed: null,
+    /**
+        Container, that camera follows.
+        @property {Container} target
+    **/
+    target: null,
+    /**
+        @property {Number} threshold
+    **/
     threshold: 1,
-    minX: null,
-    maxX: null,
-    minY: null,
-    maxY: null,
     
-    init: function(x, y) {
+    staticInit: function(x, y) {
         this.position = new game.Vector();
         this.speed = new game.Vector();
-        this.offset = new game.Vector(game.system.width / 2, game.system.height / 2);
+        this.offset = new game.Vector(game.width / 2, game.height / 2);
         this.sensorPosition = new game.Vector(this.offset.x, this.offset.y);
         this.sensorWidth = 200 * game.scale;
         this.sensorHeight = 200 * game.scale;
         if (typeof x === 'number' && typeof y === 'number') this.setPosition(x, y);
-
-        game.scene.addObject(this);
     },
 
     /**
         Add camera to container.
         @method addTo
         @param {Container} container
+        @chainable
     **/
     addTo: function(container) {
         this.container = container;
@@ -91,13 +116,18 @@ game.createClass('Camera', {
     /**
         Set target for camera.
         @method setTarget
-        @param {Sprite} target
+        @param {Container} target
     **/
     setTarget: function(target) {
         this.target = target;
         this.sensorPosition.set(this.target.position.x * this.scale, this.target.position.y * this.scale);
     },
 
+    /**
+        @method setPosition
+        @param {Number} x
+        @param {Number} y
+    **/
     setPosition: function(x, y) {
         this.position.set(x - this.offset.x, y - this.offset.y);
 
@@ -124,16 +154,56 @@ game.createClass('Camera', {
         }
     },
 
+    /**
+        @method setSensor
+        @param {Number} width
+        @param {Number} height
+    **/
     setSensor: function(width, height) {
         this.sensorWidth = width;
         this.sensorHeight = height;
     },
 
-    moveSensor: function() {
+    /**
+        @method update
+    **/
+    update: function() {
+        this._moveSensor();
+        this._moveCamera();
+    },
+
+    /**
+        @method _moveCamera
+        @private
+    **/
+    _moveCamera: function() {
+        this.speed.x = (this.position.x - this.sensorPosition.x + this.offset.x).limit(-this.maxSpeed, this.maxSpeed);
+        this.speed.y = (this.position.y - this.sensorPosition.y + this.offset.y).limit(-this.maxSpeed, this.maxSpeed);
+
+        if (this.speed.x > this.threshold ||
+            this.speed.x < -this.threshold ||
+            this.speed.y > this.threshold ||
+            this.speed.y < -this.threshold
+        ) {
+            this.setPosition(
+                this.position.x + this.offset.x - this.speed.x * this.acceleration * game.delta,
+                this.position.y + this.offset.y - this.speed.y * this.acceleration * game.delta
+            );
+        }
+        else {
+            this.speed.set(0, 0);
+        }
+    },
+
+    /**
+        @method _moveSensor
+        @private
+    **/
+    _moveSensor: function() {
         if (!this.target) return;
 
-        var targetWidth = Math.abs(this.target.width) * this.scale;
-        var targetHeight = Math.abs(this.target.height) * this.scale;
+        var targetWidth = this.target.width * this.scale;
+        var targetHeight = this.target.height * this.scale;
         var targetPosX = (this.target.position.x + this.target.width / 2) * this.scale;
         var targetPosY = (this.target.position.y + this.target.height / 2) * this.scale;
         
@@ -152,30 +222,6 @@ game.createClass('Camera', {
         else if (targetPosY + (this.sensorHeight / 2 + targetHeight / 2) > this.sensorPosition.y + this.sensorHeight) {
             this.sensorPosition.y = targetPosY + (this.sensorHeight / 2 + targetHeight / 2) - this.sensorHeight;
         }
-    },
-
-    moveCamera: function() {
-        this.speed.x = (this.position.x - this.sensorPosition.x + this.offset.x).limit(-this.maxSpeed, this.maxSpeed);
-        this.speed.y = (this.position.y - this.sensorPosition.y + this.offset.y).limit(-this.maxSpeed, this.maxSpeed);
-
-        if (this.speed.x > this.threshold ||
-            this.speed.x < -this.threshold ||
-            this.speed.y > this.threshold ||
-            this.speed.y < -this.threshold
-        ) {
-            this.setPosition(
-                this.position.x + this.offset.x - this.speed.x * this.acceleration * game.system.delta,
-                this.position.y + this.offset.y - this.speed.y * this.acceleration * game.system.delta
-            );
-        }
-        else {
-            this.speed.set(0, 0);
-        }
-    },
-
-    update: function() {
-        this.moveSensor();
-        this.moveCamera();
     }
 });
 
