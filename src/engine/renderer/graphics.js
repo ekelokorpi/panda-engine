@@ -65,6 +65,13 @@ game.createClass('Graphics', 'Container', {
         return this;
     },
 
+    /**
+        @method drawCircle
+        @param {Number} x
+        @param {Number} y
+        @param {Number} radius
+        @chainable
+    **/
     drawCircle: function(x, y, radius) {
         radius *= game.scale;
         var shape = new game.Circle(radius, x, y);
@@ -127,13 +134,13 @@ game.createClass('Graphics', 'Container', {
             var x = this._worldTransform.tx + data.shape.x;
             var y = this._worldTransform.ty + data.shape.y;
 
-            if (data.shape instanceof game.Circle) {
+            if (data.shape.radius) {
                 x -= data.shape.radius;
                 y -= data.shape.radius;
                 var width = x + data.shape.radius * 2;
                 var height = y + data.shape.radius * 2;
             }
-            else if (data.shape instanceof game.Rectangle) {
+            else {
                 var width = x + data.shape.width;
                 var height = y + data.shape.height;
             }
@@ -189,6 +196,31 @@ game.defineProperties('Graphics', {
     @param {Rectangle|Circle} shape
 **/
 game.createClass('GraphicsData', {
+    /**
+        @property {Number} fillAlpha
+    **/
+    fillAlpha: 1,
+    /**
+        @property {String} fillColor
+    **/
+    fillColor: '',
+    /**
+        @property {Number} lineAlpha
+    **/
+    lineAlpha: 0,
+    /**
+        @property {String} lineColor
+    **/
+    lineColor: '',
+    /**
+        @property {Number} lineWidth
+    **/
+    lineWidth: 0,
+    /**
+        @property {Rectangle|Circle} shape
+    **/
+    shape: null,
+
     staticInit: function(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, shape) {
         this.lineWidth = lineWidth;
         this.lineColor = lineColor;
@@ -207,10 +239,10 @@ game.createClass('GraphicsData', {
     _render: function(context, alpha) {
         context.globalAlpha = this.fillAlpha * alpha;
         context.fillStyle = this.fillColor;
-        if (this.shape instanceof game.Rectangle) {
+        if (this.shape.width) {
             context.fillRect(this.shape.x, this.shape.y, this.shape.width, this.shape.height);
         }
-        else if (this.shape instanceof game.Circle) {
+        else if (this.shape.radius) {
             context.beginPath();
             context.arc(this.shape.x, this.shape.y, this.shape.radius, 0, Math.PI * 2);
             context.fill();
