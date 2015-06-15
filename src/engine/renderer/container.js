@@ -413,8 +413,8 @@ game.createClass('Container', {
         if (this._cachedSprite) {
             this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
             this._worldBounds.y = this._worldTransform.ty + this._cachedSprite.position.y;
-            this._worldBounds.width = this._cachedSprite.texture.width * this._worldTransform.a / game.scale;
-            this._worldBounds.height = this._cachedSprite.texture.height * this._worldTransform.d / game.scale;
+            this._worldBounds.width = this._cachedSprite.texture.width * this._worldTransform.a;
+            this._worldBounds.height = this._cachedSprite.texture.height * this._worldTransform.d;
             return this._worldBounds;
         }
 
@@ -481,6 +481,8 @@ game.createClass('Container', {
         var wt = this._worldTransform;
         var tx = wt.tx * game.scale;
         var ty = wt.ty * game.scale;
+        var width = t.width * game.scale;
+        var height = t.height * game.scale;
         
         if (game.Renderer.roundPixels) {
             tx = tx | 0;
@@ -488,7 +490,7 @@ game.createClass('Container', {
         }
 
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
-        context.drawImage(t.baseTexture.source, t.position.x, t.position.y, t.width, t.height, 0, 0, t.width, t.height);
+        context.drawImage(t.baseTexture.source, t.position.x, t.position.y, width, height, 0, 0, width, height);
     },
 
     /**

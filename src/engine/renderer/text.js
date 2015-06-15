@@ -277,18 +277,18 @@ game.createClass('Font', {
         this.lineHeight = parseInt(common.getAttribute('lineHeight'));
         
         for (var i = 0; i < chars.length; i++) {
-            var xadvance = parseInt(chars[i].getAttribute('xadvance')) * game.scale;
+            var xadvance = parseInt(chars[i].getAttribute('xadvance'));
             var id = parseInt(chars[i].getAttribute('id'));
             if (id === 32) {
                 this.spaceWidth = xadvance;
                 continue;
             }
-            var xoffset = parseInt(chars[i].getAttribute('xoffset')) * game.scale;
-            var yoffset = parseInt(chars[i].getAttribute('yoffset')) * game.scale;
-            var x = parseInt(chars[i].getAttribute('x')) * game.scale;
-            var y = parseInt(chars[i].getAttribute('y')) * game.scale;
-            var width = parseInt(chars[i].getAttribute('width'));
-            var height = parseInt(chars[i].getAttribute('height'));
+            var xoffset = parseInt(chars[i].getAttribute('xoffset'));
+            var yoffset = parseInt(chars[i].getAttribute('yoffset'));
+            var x = parseInt(chars[i].getAttribute('x')) / game.scale;
+            var y = parseInt(chars[i].getAttribute('y')) / game.scale;
+            var width = parseInt(chars[i].getAttribute('width')) / game.scale;
+            var height = parseInt(chars[i].getAttribute('height')) / game.scale;
             var texture = new game.Texture(this.baseTexture, x, y, width, height);
             
             this.chars[id] = {
