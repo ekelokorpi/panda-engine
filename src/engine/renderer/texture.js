@@ -32,19 +32,12 @@ game.createClass('Texture', {
         @property {Number} width
     **/
     width: 0,
-    /**
-        @property {Array} _uvs
-        @private
-    **/
-    _uvs: [0, 0, 0, 0, 0, 0, 0, 0],
 
-    init: function(baseTexture, x, y, width, height) {
+    staticInit: function(baseTexture, x, y, width, height) {
         this.baseTexture = baseTexture instanceof game.BaseTexture ? baseTexture : game.BaseTexture.fromAsset(baseTexture);
         this.position = new game.Vector(x, y);
         this.width = width || this.baseTexture.width;
         this.height = height || this.baseTexture.height;
-
-        if (game.renderer.webGL) this._updateUvs();
     },
 
     /**
@@ -58,23 +51,6 @@ game.createClass('Texture', {
                 return;
             }
         }
-    },
-
-    /**
-        @method _updateUvs
-        @private
-    **/
-    _updateUvs: function() {
-        var tw = this.baseTexture.width;
-        var th = this.baseTexture.height;
-        this._uvs[0] = this.position.x / tw;
-        this._uvs[1] = this.position.y / th;
-        this._uvs[2] = (this.position.x + this.width) / tw;
-        this._uvs[3] = this.position.y / th;
-        this._uvs[4] = (this.position.x + this.width) / tw;
-        this._uvs[5] = (this.position.y + this.height) / th;
-        this._uvs[6] = this.position.x / tw;
-        this._uvs[7] = (this.position.y + this.height) / th;
     }
 });
 
@@ -172,16 +148,6 @@ game.createClass('BaseTexture', {
     **/
     width: 0,
     /**
-        @property {Array} _dirty
-        @private
-    **/
-    _dirty: [true, true, true, true],
-    /**
-        @property {Array} _glTextures
-        @private
-    **/
-    _glTextures: [],
-    /**
         @property {Number|String} _id
         @private
     **/
@@ -191,20 +157,8 @@ game.createClass('BaseTexture', {
         @private
     **/
     _loadCallback: null,
-    /**
-        @property {Boolean} _powerOf2
-        @default false
-        @private
-    **/
-    _powerOf2: false,
-    /**
-        @property {Boolean} _premultipliedAlpha
-        @default true
-        @private
-    **/
-    _premultipliedAlpha: true,
 
-    init: function(source, loadCallback) {
+    staticInit: function(source, loadCallback) {
         this.source = source;
         this._loadCallback = loadCallback;
 
@@ -235,24 +189,13 @@ game.addAttributes('BaseTexture', {
     _id: 1,
 
     /**
-        @method fromImage
+        @method clearCache
         @static
-        @param {String} path
-        @param {Function} loadCallback
-        @return {BaseTexture}
     **/
-    fromImage: function(path, loadCallback) {
-        var baseTexture = this.cache[path];
-
-        if (!baseTexture) {
-            var source = document.createElement('img');
-            source.src = path;
-            baseTexture = new game.BaseTexture(source, loadCallback);
-            baseTexture._id = path;
-            this.cache[path] = baseTexture;
+    clearCache: function() {
+        for (var i in this.cache) {
+            delete this.cache[i];
         }
-
-        return baseTexture;
     },
 
     /**
@@ -291,13 +234,24 @@ game.addAttributes('BaseTexture', {
     },
 
     /**
-        @method clearCache
+        @method fromImage
         @static
+        @param {String} path
+        @param {Function} loadCallback
+        @return {BaseTexture}
     **/
-    clearCache: function() {
-        for (var i in this.cache) {
-            delete this.cache[i];
+    fromImage: function(path, loadCallback) {
+        var baseTexture = this.cache[path];
+
+        if (!baseTexture) {
+            var source = document.createElement('img');
+            source.src = path;
+            baseTexture = new game.BaseTexture(source, loadCallback);
+            baseTexture._id = path;
+            this.cache[path] = baseTexture;
         }
+
+        return baseTexture;
     }
 });
 

@@ -15,20 +15,10 @@ game.module(
 **/
 game.createClass('SpriteSheet', {
     /**
-        List of textures.
-        @property {Array} textures
-    **/
-    textures: [],
-    /**
         Number of frames.
         @property {Number} frames
     **/
     frames: 0,
-    /**
-        Width of frame.
-        @property {Number} width
-    **/
-    width: 0,
     /**
         Height of frame.
         @property {Number} height
@@ -39,6 +29,16 @@ game.createClass('SpriteSheet', {
         @property {String} texture
     **/
     texture: null,
+    /**
+        List of textures.
+        @property {Array} textures
+    **/
+    textures: [],
+    /**
+        Width of frame.
+        @property {Number} width
+    **/
+    width: 0,
     /**
         @property {Number} _sx
         @private

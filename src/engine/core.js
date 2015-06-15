@@ -145,7 +145,6 @@ var game = {
         'engine.renderer.text',
         'engine.renderer.texture',
         'engine.renderer.tilingsprite',
-        'engine.renderer.webgl',
         'engine.scene',
         'engine.storage',
         'engine.system',

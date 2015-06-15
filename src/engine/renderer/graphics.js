@@ -65,6 +65,10 @@ game.createClass('Graphics', 'Container', {
         return this;
     },
 
+    drawCircle: function(x, y, radius) {
+        // TODO
+    },
+
     /**
         @method drawRect
         @param {Number} x
@@ -137,27 +141,16 @@ game.createClass('Graphics', 'Container', {
         return this._worldBounds;
     },
 
-    _renderWebGL: function() {
-        // TODO
-    },
-
     _renderCanvas: function(context) {
-        var tx = this._worldTransform.tx * game.scale;
-        var ty = this._worldTransform.ty * game.scale;
+        var wt = this._worldTransform;
+        var tx = wt.tx * game.scale;
+        var ty = wt.ty * game.scale;
 
-        context.setTransform(
-            this._worldTransform.a,
-            this._worldTransform.b,
-            this._worldTransform.c,
-            this._worldTransform.d,
-            tx,
-            ty);
+        context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
 
         for (var i = 0; i < this.shapes.length; i++) {
             this.shapes[i]._render(context, this._worldAlpha);
         }
-        
-        this.super(context);
     }
 });
 
@@ -183,10 +176,10 @@ game.defineProperties('Graphics', {
     @param {Number} lineAlpha
     @param {String} fillColor
     @param {Number} fillAlpha
-    @param {Rectangle} shape
+    @param {Rectangle|Circle} shape
 **/
 game.createClass('GraphicsData', {
-    init: function(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, shape) {
+    staticInit: function(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, shape) {
         this.lineWidth = lineWidth;
         this.lineColor = lineColor;
         this.lineAlpha = lineAlpha;
@@ -197,37 +190,16 @@ game.createClass('GraphicsData', {
 
     /**
         @method _render
-        @param {CanvasRenderingContext2D|WebGLRenderingContext} context
-        @param {Number} alpha
-        @private
-    **/
-    _render: function(context, alpha) {
-        if (game.renderer.webGL) this._renderWebGL(context, alpha);
-        else this._renderCanvas(context, alpha);
-    },
-
-    /**
-        @method _renderCanvas
         @param {CanvasRenderingContext2D} context
         @param {Number} alpha
         @private
     **/
-    _renderCanvas: function(context, alpha) {
+    _render: function(context, alpha) {
         context.globalAlpha = this.fillAlpha * alpha;
         context.fillStyle = this.fillColor;
         if (this.shape instanceof game.Rectangle) {
             context.fillRect(this.shape.x, this.shape.y, this.shape.width, this.shape.height);
         }
-    },
-
-    /**
-        @method _renderWebGL
-        @param {WebGLRenderingContext} context
-        @param {Number} alpha
-        @private
-    **/
-    _renderWebGL: function(context, alpha) {
-        // TODO
     }
 });
 

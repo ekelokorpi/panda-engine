@@ -223,9 +223,12 @@ game.createClass('Emitter', {
     **/
     addParticle: function() {
         var particle = game.pool.get(game.Emitter.poolName);
-        if (!particle) particle = new game.Particle();
+        var texture = this.textures.random();
+        if (!texture) return;
 
-        particle.setTexture(this.textures.random());
+        if (!particle) particle = new game.Particle(texture);
+        else particle.setTexture(texture);
+
         particle.rotation = 0;
         particle.alpha = this.startAlpha;
         particle.position.x = this.position.x + this.getVariance(this.positionVar.x);

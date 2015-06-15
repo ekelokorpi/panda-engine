@@ -77,25 +77,6 @@ game.createClass('Sprite', 'Container', {
         return this._worldBounds;
     },
 
-    _render: function(context) {
-        if (!this.texture) return;
-        if (!this.texture.width && this.texture.baseTexture.width) {
-            this.texture.width = this.texture.baseTexture.width;
-        }
-        if (!this.texture.height && this.texture.baseTexture.height) {
-            this.texture.height = this.texture.baseTexture.height;
-        }
-        if (!this.texture.width || !this.texture.height) {
-            return this._renderChildren(context);
-        }
-
-        this.super(context);
-    },
-
-    _renderWebGL: function() {
-        game.renderer._spriteBatch.render(this);
-    },
-
     /**
         @method _renderCanvas
         @param {CanvasRenderingContext2D} context
@@ -105,8 +86,18 @@ game.createClass('Sprite', 'Container', {
         @private
     **/
     _renderCanvas: function(context, transform, rect, offset) {
+        if (!this.texture) return;
         if (!this.texture.baseTexture.loaded) return;
 
+        if (!this.texture.width && this.texture.baseTexture.width) {
+            this.texture.width = this.texture.baseTexture.width;
+        }
+        if (!this.texture.height && this.texture.baseTexture.height) {
+            this.texture.height = this.texture.baseTexture.height;
+        }
+        
+        if (!this.texture.width || !this.texture.height) return;
+        
         context.globalAlpha = this._worldAlpha;
 
         var t = this.texture;

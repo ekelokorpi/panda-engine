@@ -96,11 +96,11 @@ game.createClass('System', {
         game.width = this.width = this.originalWidth = game.System.width;
         game.height = this.height = this.originalHeight = game.System.height;
 
-        for (var i = 1; i <= game.System.hires; i++) {
-            var ratio = game.System.hiresRatio * i;
+        for (var i = 2; i <= game.System.hires; i += 2) {
+            var ratio = game.System.hiresRatio * (i / 2);
             if (window.innerWidth >= this.originalWidth * ratio && window.innerHeight >= this.originalHeight * ratio) {
                 this.hires = true;
-                game.scale = i * 2;
+                game.scale = i;
             }
         }
 

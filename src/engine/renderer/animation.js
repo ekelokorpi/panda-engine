@@ -83,14 +83,30 @@ game.createClass('Animation', 'Sprite', {
         @chainable
     **/
     addAnim: function(name, frames, props) {
+        if (!name) return;
         if (!frames) {
-            var frames = [];
+            frames = [];
             for (var i = 0; i < this.textures.length; i++) {
                 frames.push(i);
             }
         }
         var anim = new game.AnimationData(frames, props);
         this.anims[name] = anim;
+        return this;
+    },
+
+    /**
+        Jump to specific frame.
+        @method gotoFrame
+        @param {Number} frame
+        @chainable
+    **/
+    gotoFrame: function(frame) {
+        var anim = this.anims[this.currentAnim];
+        if (!anim) return;
+        this.currentFrame = frame;
+        this._frameTime = 0;
+        this.setTexture(this.textures[anim.frames[frame]]);
         return this;
     },
 
@@ -127,27 +143,12 @@ game.createClass('Animation', 'Sprite', {
     },
 
     /**
-        Jump to specific frame.
-        @method gotoFrame
-        @param {Number} frame
-        @chainable
-    **/
-    gotoFrame: function(frame) {
-        var anim = this.anims[this.currentAnim];
-        if (!anim) return;
-        this.currentFrame = frame;
-        this._frameTime = 0;
-        this.setTexture(this.textures[anim.frames[frame]]);
-        return this;
-    },
-
-    /**
         @method updateAnimation
     **/
     updateAnimation: function() {
         var anim = this.anims[this.currentAnim];
 
-        if (this.playing) this._frameTime += anim.speed * game.system.delta;
+        if (this.playing) this._frameTime += anim.speed * game.delta;
 
         if (this._frameTime >= 1) {
             this._frameTime = 0;
@@ -223,6 +224,11 @@ game.addAttributes('Animation', {
 **/
 game.createClass('AnimationData', {
     /**
+        Animation frame order.
+        @property {Array} frames
+    **/
+    frames: null,
+    /**
         Is animation looping.
         @property {Boolean} loop
         @default true
@@ -248,14 +254,9 @@ game.createClass('AnimationData', {
     /**
         Speed of animation (frames per second).
         @property {Number} speed
-        @default 10
+        @default 5
     **/
-    speed: 10,
-    /**
-        Animation frame order.
-        @property {Array} frames
-    **/
-    frames: null,
+    speed: 5,
 
     staticInit: function(frames, props) {
         this.frames = frames;

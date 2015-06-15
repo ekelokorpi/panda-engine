@@ -18,6 +18,10 @@ game.module(
 **/
 game.createClass('Text', 'Container', {
     /**
+        @property {String} align
+    **/
+    align: 'left',
+    /**
         @property {String} font
     **/
     font: null,
@@ -33,10 +37,6 @@ game.createClass('Text', 'Container', {
         @property {Number} wrap
     **/
     wrap: 0,
-    /**
-        @property {String} align
-    **/
-    align: 'left',
     /**
         @property {Object} _lines
         @private
@@ -266,7 +266,7 @@ game.createClass('Font', {
     **/
     spaceWidth: 0,
 
-    init: function(data) {
+    staticInit: function(data) {
         var image = data.getElementsByTagName('page')[0].getAttribute('file');
         var info = data.getElementsByTagName('info')[0];
         var common = data.getElementsByTagName('common')[0];
