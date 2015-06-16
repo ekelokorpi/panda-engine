@@ -32,8 +32,8 @@ game.createClass('SpriteBatch', 'Container', {
         var texture = child.texture;
         var tx = texture.position.x;
         var ty = texture.position.y;
-        var tw = texture.width;
-        var th = texture.height;
+        var tw = texture.width * game.scale;
+        var th = texture.height * game.scale;
 
         if (child.rotation % (Math.PI * 2) === 0) {
             if (this._isRotated) {
@@ -41,8 +41,8 @@ game.createClass('SpriteBatch', 'Container', {
                 this._isRotated = false;
             }
 
-            var x = child.position.x - child.anchor.x;
-            var y = child.position.y - child.anchor.y;
+            var x = (child.position.x - child.anchor.x * child.scale.x) * game.scale;
+            var y = (child.position.y - child.anchor.y * child.scale.y) * game.scale;
 
             context.drawImage(texture.baseTexture.source, tx, ty, tw, th, x, y, tw * child.scale.x, th * child.scale.y);
         }
@@ -51,8 +51,8 @@ game.createClass('SpriteBatch', 'Container', {
 
             child.updateTransform();
             var cwt = child._worldTransform;
-            var x = cwt.tx;
-            var y = cwt.ty;
+            var x = cwt.tx * game.scale;
+            var y = cwt.ty * game.scale;
 
             if (game.Renderer.roundPixels) {
                 x = x | 0;
