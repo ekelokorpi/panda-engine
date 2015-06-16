@@ -213,6 +213,8 @@ game.createClass('Debug', {
         var y = bounds.y * game.scale;
         var width = bounds.width * game.scale;
         var height = bounds.height * game.scale;
+
+        if (!width && !height) return;
         
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = game.Debug.boundAlpha;

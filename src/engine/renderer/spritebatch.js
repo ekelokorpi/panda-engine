@@ -19,6 +19,14 @@ game.createClass('SpriteBatch', 'Container', {
     **/
     _isRotated: true,
 
+    _getBounds: function() {
+        this._worldBounds.x = 0;
+        this._worldBounds.y = 0;
+        this._worldBounds.width = 0;
+        this._worldBounds.height = 0;
+        return this._worldBounds;
+    },
+
     /**
         @method _renderBatch
         @param {Sprite} child
