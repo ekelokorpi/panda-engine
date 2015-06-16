@@ -317,7 +317,11 @@ game.createClass('Loader', {
 
         for (var name in frames) {
             var frame = frames[name].frame || frames[name];
-            var texture = new game.Texture(baseTexture, frame.x, frame.y, frame.w, frame.h);
+            var x = frame.x / game.scale;
+            var y = frame.y / game.scale;
+            var w = frame.w / game.scale;
+            var h = frame.h / game.scale;
+            var texture = new game.Texture(baseTexture, x, y, w, h);
             game.Texture.cache[name] = texture;
         }
 
@@ -347,6 +351,12 @@ game.createClass('Loader', {
                 if (i.indexOf('@' + game.scale + 'x') !== -1) {
                     game.BaseTexture.cache[i.replace('@' + game.scale + 'x', '')] = game.BaseTexture.cache[i];
                     delete game.BaseTexture.cache[i];
+                }
+            }
+            for (var i in game.Texture.cache) {
+                if (i.indexOf('@' + game.scale + 'x') !== -1) {
+                    game.Texture.cache[i.replace('@' + game.scale + 'x', '')] = game.Texture.cache[i];
+                    delete game.Texture.cache[i];
                 }
             }
         }
