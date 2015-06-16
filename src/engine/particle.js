@@ -199,6 +199,10 @@ game.createClass('Emitter', 'SpriteBatch', {
     **/
     textures: [],
     /**
+        @property {Boolean} updateTarget
+    **/
+    updateTarget: true,
+    /**
         @property {Vector} velocityLimit
         @default 0,0
     **/
@@ -219,11 +223,11 @@ game.createClass('Emitter', 'SpriteBatch', {
     staticInit: function() {
         this.super();
         this.poolName = game.Emitter.poolName;
-        game.pool.create(this.poolName);
         this.startPos = new game.Vector();
         this.startPosVar = new game.Vector();
-        this.velocityLimit = new game.Vector();
         this.target = new game.Vector();
+        this.velocityLimit = new game.Vector();
+        game.pool.create(this.poolName);
     },
 
     /**
@@ -275,6 +279,8 @@ game.createClass('Emitter', 'SpriteBatch', {
         }
         else particle.deltaScale = 0;
         particle.scale.set(startScale);
+
+        particle.target.copy(this.target);
 
         this.addChild(particle);
     },
@@ -334,7 +340,8 @@ game.createClass('Emitter', 'SpriteBatch', {
         }
 
         if (this.targetForce > 0) {
-            particle.accel.set(this.target.x - particle.position.x, this.target.y - particle.position.y);
+            var target = this.updateTarget ? this.target : particle.target;
+            particle.accel.set(target.x - particle.position.x, target.y - particle.position.y);
             var len = Math.sqrt(particle.accel.x * particle.accel.x + particle.accel.y * particle.accel.y);
             particle.accel.x /= len || 1;
             particle.accel.y /= len || 1;
@@ -444,6 +451,10 @@ game.createClass('Particle', 'Sprite', {
     **/
     rotateAmount: 0,
     /**
+        @property {Vector} target
+    **/
+    target: null,
+    /**
         @property {Vector} velocity
     **/
     velocity: null,
@@ -455,8 +466,9 @@ game.createClass('Particle', 'Sprite', {
 
     staticInit: function(texture) {
         this.super(texture);
-        this.velocity = new game.Vector();
         this.accel = new game.Vector();
+        this.target = new game.Vector();
+        this.velocity = new game.Vector();
     },
 
     /**
