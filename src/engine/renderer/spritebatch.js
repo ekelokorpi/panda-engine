@@ -1,0 +1,83 @@
+/**
+    @module renderer.spritebatch
+**/
+game.module(
+    'engine.renderer.spritebatch'
+)
+.require(
+    'engine.renderer.container'
+)
+.body(function() {
+
+/**
+    @class SpriteBatch
+    @extends Container
+**/
+game.createClass('SpriteBatch', 'Container', {
+    /**
+        @property {Boolean} _isRotated
+    **/
+    _isRotated: true,
+
+    /**
+        @method _renderBatch
+        @param {Sprite} child
+        @param {CanvasRenderingContext2D} context
+        @private
+    **/
+    _renderBatch: function(child, context) {
+        context.globalAlpha = this._worldAlpha * child.alpha;
+
+        var wt = this._worldTransform;
+        var texture = child.texture;
+        var tx = texture.position.x;
+        var ty = texture.position.y;
+        var tw = texture.width;
+        var th = texture.height;
+
+        if (child.rotation % (Math.PI * 2) === 0) {
+            if (this._isRotated) {
+                context.setTransform(wt.a, wt.b, wt.c, wt.d, wt.tx, wt.ty);
+                this._isRotated = false;
+            }
+
+            var x = child.position.x - child.anchor.x;
+            var y = child.position.y - child.anchor.y;
+
+            context.drawImage(texture.baseTexture.source, tx, ty, tw, th, x, y, tw * child.scale.x, th * child.scale.y);
+        }
+        else {
+            this._isRotated = true;
+
+            child.updateTransform();
+            var cwt = child._worldTransform;
+            var x = cwt.tx;
+            var y = cwt.ty;
+
+            if (game.Renderer.roundPixels) {
+                x = x | 0;
+                y = y | 0;
+            }
+
+            context.setTransform(cwt.a, cwt.b, cwt.c, cwt.d, x, y);
+            context.drawImage(texture.baseTexture.source, tx, ty, tw, th, 0, 0, tw, th);
+        }
+    },
+
+    _renderChildren: function(context) {
+        this._isRotated = true;
+
+        for (var i = 0; i < this.children.length; i++) {
+            var child = this.children[i];
+            var texture = child.texture;
+            if (!child.visible || child.alpha <= 0 || !child.renderable || !texture) continue;
+
+            this._renderBatch(child, context);
+        }
+    },
+
+    _updateChildTransform: function() {
+    }
+});
+
+});

@@ -141,6 +141,7 @@ var game = {
         'engine.renderer.core',
         'engine.renderer.graphics',
         'engine.renderer.sprite',
+        'engine.renderer.spritebatch',
         'engine.renderer.spritesheet',
         'engine.renderer.text',
         'engine.renderer.texture',

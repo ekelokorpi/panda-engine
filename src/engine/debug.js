@@ -86,9 +86,9 @@ game.createClass('Debug', {
 
         if (game.device.cocoonCanvasPlus) return;
 
-        game.Sprite.inject({
-            _renderCanvas: function(context, transform, rect, offset) {
-                this.super(context, transform, rect, offset);
+        game.Container.inject({
+            _renderCachedSprite: function(context) {
+                this.super(context);
                 game.debug.sprites++;
             }
         });
@@ -100,9 +100,16 @@ game.createClass('Debug', {
             }
         });
 
-        game.Container.inject({
-            _renderCachedSprite: function(context) {
-                this.super(context);
+        game.Sprite.inject({
+            _renderCanvas: function(context, transform, rect, offset) {
+                this.super(context, transform, rect, offset);
+                game.debug.sprites++;
+            }
+        });
+        
+        game.SpriteBatch.inject({
+            _renderBatch: function(child, context) {
+                this.super(child, context);
                 game.debug.sprites++;
             }
         });

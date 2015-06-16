@@ -9,6 +9,7 @@ game.module(
     'engine.renderer.container',
     'engine.renderer.graphics',
     'engine.renderer.sprite',
+    'engine.renderer.spritebatch',
     'engine.renderer.spritesheet',
     'engine.renderer.text',
     'engine.renderer.texture',
