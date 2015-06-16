@@ -29,7 +29,7 @@ game.createClass('Circle', {
     **/
     y: 0,
 
-    init: function(radius, x, y) {
+    staticInit: function(radius, x, y) {
         this.radius = radius || this.radius;
         this.x = x || this.x;
         this.y = y || this.y;
@@ -115,7 +115,7 @@ game.createClass('Rectangle', {
     **/
     y: 0,
 
-    init: function(width, height, x, y) {
+    staticInit: function(width, height, x, y) {
         this.width = width || this.width;
         this.height = typeof height === 'number' ? height : this.width;
         this.x = x || this.x;
@@ -141,7 +141,7 @@ game.createClass('Vector', {
     **/
     y: 0,
 
-    init: function(x, y) {
+    staticInit: function(x, y) {
         this.set(x, y);
     },
 
