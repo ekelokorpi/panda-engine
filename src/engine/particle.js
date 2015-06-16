@@ -12,8 +12,9 @@ game.module(
 /**
     Particle emitter.
     @class Emitter
+    @extends Container
 **/
-game.createClass('Emitter', {
+game.createClass('Emitter', 'Container', {
     /**
         Acceleration angle in radians.
         @property {Number} accelAngle
@@ -58,11 +59,6 @@ game.createClass('Emitter', {
         @property {Function} callback
     **/
     callback: null,
-    /**
-        Container for particle sprites.
-        @property {Container} container
-    **/
-    container: null,
     /**
         How many particles to emit.
         @property {Number} count
@@ -114,15 +110,15 @@ game.createClass('Emitter', {
     **/
     particles: [],
     /**
-        Emitter position.
-        @property {Vector} position
+        Particle start position.
+        @property {Vector} startPos
     **/
-    position: null,
+    startPos: null,
     /**
-        Emitter position variance.
-        @property {Vector} positionVar
+        Particle start position variance.
+        @property {Vector} startPosVar
     **/
-    positionVar: null,
+    startPosVar: null,
     /**
         How often to emit new particles (ms).
         @property {Number} rate
@@ -210,9 +206,10 @@ game.createClass('Emitter', {
     velRotateVar: 0,
 
     staticInit: function() {
+        this.super();
         game.pool.create(game.Emitter.poolName);
-        this.position = new game.Vector();
-        this.positionVar = new game.Vector();
+        this.startPos = new game.Vector();
+        this.startPosVar = new game.Vector();
         this.velocityLimit = new game.Vector();
         this.target = new game.Vector();
     },
@@ -231,8 +228,8 @@ game.createClass('Emitter', {
 
         particle.rotation = 0;
         particle.alpha = this.startAlpha;
-        particle.position.x = this.position.x + this.getVariance(this.positionVar.x);
-        particle.position.y = this.position.y + this.getVariance(this.positionVar.y);
+        particle.position.x = this.startPos.x + this.getVariance(this.startPosVar.x);
+        particle.position.y = this.startPos.y + this.getVariance(this.startPosVar.y);
         particle.anchorCenter();
 
         var angleVar = this.getVariance(this.angleVar);
@@ -265,20 +262,7 @@ game.createClass('Emitter', {
         else particle.deltaScale = 0;
         particle.scale.set(startScale);
 
-        if (this.container) this.container.addChild(particle);
-
-        this.particles.push(particle);
-    },
-
-    /**
-        Add emitter to container.
-        @method addTo
-        @param {Container} container
-        @chainable
-    **/
-    addTo: function(container) {
-        this.container = container;
-        return this;
+        this.addChild(particle);
     },
 
     /**
@@ -313,14 +297,6 @@ game.createClass('Emitter', {
     },
 
     /**
-        Remove emitter from scene.
-        @method remove
-    **/
-    remove: function() {
-        this._remove = true;
-    },
-
-    /**
         Remove particle from emitter.
         @method removeParticle
         @param {Particle} particle
@@ -328,7 +304,6 @@ game.createClass('Emitter', {
     removeParticle: function(particle) {
         particle.remove();
         game.pool.put(game.Emitter.poolName, particle);
-        this.particles.erase(particle);
     },
 
     /**
@@ -395,8 +370,8 @@ game.createClass('Emitter', {
     **/
     _update: function() {
         if (this._remove) {
-            for (var i = this.particles.length - 1; i >= 0; i--) {
-                this.removeParticle(this.particles[i]);
+            for (var i = this.children.length - 1; i >= 0; i--) {
+                this.removeParticle(this.children[i]);
             }
             return;
         }
@@ -404,7 +379,7 @@ game.createClass('Emitter', {
         this.durationTimer += game.delta * 1000;
         if (this.duration > 0) {
             this.active = this.durationTimer < this.duration;
-            if (!this.active && this.particles.length === 0 && typeof this.callback === 'function') {
+            if (!this.active && this.children.length === 0 && typeof this.callback === 'function') {
                 this.callback();
                 this.callback = null;
             }
@@ -418,8 +393,8 @@ game.createClass('Emitter', {
             }
         }
 
-        for (var i = this.particles.length - 1; i >= 0; i--) {
-            this.updateParticle(this.particles[i]);
+        for (var i = this.children.length - 1; i >= 0; i--) {
+            this.updateParticle(this.children[i]);
         }
     }
 });
@@ -434,7 +409,7 @@ game.addAttributes('Emitter', {
 
 /**
     @class Particle
-    @extend Sprite
+    @extends Sprite
 **/
 game.createClass('Particle', 'Sprite', {
     /**
