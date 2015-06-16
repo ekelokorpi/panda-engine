@@ -140,7 +140,16 @@ game.createClass('System', {
                 game.accelerometer = event.accelerationIncludingGravity;
             });
         }
+
+        game.renderer = new game.Renderer(this.canvasWidth, this.canvasHeight);
+
+        if (this.retina) {
+            this.canvasWidth /= 2;
+            this.canvasHeight /= 2;
+        }
+
         window.addEventListener('resize', this._onWindowResize.bind(this));
+        this._onWindowResize();
     },
 
     /**
@@ -297,11 +306,6 @@ game.createClass('System', {
 
         var width = window.innerWidth;
         var height = window.innerHeight;
-
-        if (this.retina) {
-            this.canvasWidth /= 2;
-            this.canvasHeight /= 2;
-        }
 
         this._scale(width, height);
         this._resize(width, height);

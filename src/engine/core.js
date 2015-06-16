@@ -505,8 +505,6 @@ var game = {
 
         // Required classes
         this.system = new this.System();
-        this.renderer = new this.Renderer();
-        this.system._onWindowResize();
         this.input = new this.Input(this.renderer.canvas);
 
         // Optional classes
