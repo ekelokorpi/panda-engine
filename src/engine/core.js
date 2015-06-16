@@ -231,9 +231,14 @@ var game = {
         Define new module.
         @method module
         @param {String} name
+        @chainable
     **/
     module: function(name) {
         if (this._current) throw 'module ' + this._current.name + ' has no body';
+
+        name = name.toLowerCase();
+        if (name.indexOf('.') === -1) name = 'game.' + name;
+
         if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
 
         this._current = { name: name, requires: [], loaded: false, classes: [] };
@@ -262,6 +267,7 @@ var game = {
         Require module.
         @method require
         @param {Array} modules
+        @chainable
     **/
     require: function(modules) {
         var i, modules = Array.prototype.slice.call(arguments);
