@@ -5,16 +5,17 @@ game.module(
     'engine.particle'
 )
 .require(
-    'engine.renderer.sprite'
+    'engine.renderer.sprite',
+    'engine.renderer.spritebatch'
 )
 .body(function() {
 
 /**
     Particle emitter.
     @class Emitter
-    @extends Container
+    @extends SpriteBatch
 **/
-game.createClass('Emitter', 'Container', {
+game.createClass('Emitter', 'SpriteBatch', {
     /**
         Acceleration angle in radians.
         @property {Number} accelAngle
@@ -55,10 +56,6 @@ game.createClass('Emitter', 'Container', {
         @default 0
     **/
     angleVar: 0,
-    /**
-        @property {Function} callback
-    **/
-    callback: null,
     /**
         How many particles to emit.
         @property {Number} count
@@ -105,10 +102,24 @@ game.createClass('Emitter', 'Container', {
     **/
     lifeVar: 0,
     /**
+        @property {Function} onComplete
+    **/
+    onComplete: null,
+    /**
+        @property {Boolean} onCompleteCalled
+        @default false
+    **/
+    onCompleteCalled: false,
+    /**
         List of particles.
         @property {Array} particles
     **/
     particles: [],
+    /**
+        Pool name for particles.
+        @property {String} poolName
+    **/
+    poolName: null,
     /**
         Particle start position.
         @property {Vector} startPos
@@ -207,7 +218,8 @@ game.createClass('Emitter', 'Container', {
 
     staticInit: function() {
         this.super();
-        game.pool.create(game.Emitter.poolName);
+        this.poolName = game.Emitter.poolName;
+        game.pool.create(this.poolName);
         this.startPos = new game.Vector();
         this.startPosVar = new game.Vector();
         this.velocityLimit = new game.Vector();
@@ -219,9 +231,10 @@ game.createClass('Emitter', 'Container', {
         @method addParticle
     **/
     addParticle: function() {
-        var particle = game.pool.get(game.Emitter.poolName);
         var texture = this.textures.random();
         if (!texture) return;
+
+        var particle = game.pool.get(this.poolName);
 
         if (!particle) particle = new game.Particle(texture);
         else particle.setTexture(texture);
@@ -230,7 +243,8 @@ game.createClass('Emitter', 'Container', {
         particle.alpha = this.startAlpha;
         particle.position.x = this.startPos.x + this.getVariance(this.startPosVar.x);
         particle.position.y = this.startPos.y + this.getVariance(this.startPosVar.y);
-        particle.anchorCenter();
+        particle.anchor.x = particle.texture.width / 2;
+        particle.anchor.y = particle.texture.height / 2;
 
         var angleVar = this.getVariance(this.angleVar);
         var angle = this.angle + angleVar;
@@ -289,21 +303,13 @@ game.createClass('Emitter', 'Container', {
     },
 
     /**
-        @method onComplete
-        @param {Function} callback
-    **/
-    onComplete: function(callback) {
-        this.callback = callback;
-    },
-
-    /**
         Remove particle from emitter.
         @method removeParticle
         @param {Particle} particle
     **/
     removeParticle: function(particle) {
         particle.remove();
-        game.pool.put(game.Emitter.poolName, particle);
+        game.pool.put(this.poolName, particle);
     },
 
     /**
@@ -313,6 +319,7 @@ game.createClass('Emitter', 'Container', {
     reset: function() {
         this.durationTimer = 0;
         this.active = true;
+        this.onCompleteCalled = false;
     },
 
     /**
@@ -379,9 +386,9 @@ game.createClass('Emitter', 'Container', {
         this.durationTimer += game.delta * 1000;
         if (this.duration > 0) {
             this.active = this.durationTimer < this.duration;
-            if (!this.active && this.children.length === 0 && typeof this.callback === 'function') {
-                this.callback();
-                this.callback = null;
+            if (!this.active && this.children.length === 0 && typeof this.onComplete === 'function' && !this.onCompleteCalled) {
+                this.onComplete();
+                this.onCompleteCalled = true;
             }
         }
 
@@ -402,9 +409,9 @@ game.createClass('Emitter', 'Container', {
 game.addAttributes('Emitter', {
     /**
         @attribute {String} poolName
-        @default emitter
+        @default particle
     **/
-    poolName: 'emitter'
+    poolName: 'particle'
 });
 
 /**
