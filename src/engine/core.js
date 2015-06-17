@@ -126,16 +126,7 @@ var game = {
         'engine.particle',
         'engine.physics',
         'engine.pool',
-        'engine.renderer.animation',
-        'engine.renderer.container',
         'engine.renderer.core',
-        'engine.renderer.graphics',
-        'engine.renderer.sprite',
-        'engine.renderer.spritebatch',
-        'engine.renderer.spritesheet',
-        'engine.renderer.text',
-        'engine.renderer.texture',
-        'engine.renderer.tilingsprite',
         'engine.scene',
         'engine.storage',
         'engine.system',
@@ -227,7 +218,7 @@ var game = {
         @param {Object} attributes
     **/
     addAttributes: function(className, attributes) {
-        if (!this[className]) throw 'class ' + className + ' not found';
+        if (!this[className]) throw 'Class ' + className + ' not found';
 
         for (var name in attributes) {
             this[className][name] = attributes[name];
@@ -323,12 +314,14 @@ var game = {
     createClass: function(name, extend, content) {
         if (typeof name === 'object') return this.Class.extend(name);
 
-        if (this[name]) throw 'class ' + name + ' already created';
+        if (this[name]) throw 'Class ' + name + ' already created';
 
         if (typeof extend === 'object') {
             content = extend;
             extend = 'Class';
         }
+
+        if (!this[extend]) throw 'Class ' + extend + ' not found';
 
         this[name] = this[extend].extend(content);
         this._currentModule.classes.push(name);
@@ -353,7 +346,7 @@ var game = {
         @param {Object} properties
     **/
     defineProperties: function(className, properties) {
-        if (!this[className]) throw 'class ' + className + ' not found';
+        if (!this[className]) throw 'Class ' + className + ' not found';
 
         for (var name in properties) {
             Object.defineProperty(this[className].prototype, name, {
@@ -431,12 +424,12 @@ var game = {
         @chainable
     **/
     module: function(name) {
-        if (this._current) throw 'module ' + this._current.name + ' has no body';
+        if (this._current) throw 'Module ' + this._current.name + ' has no body';
 
         name = name.toLowerCase();
         if (name.indexOf('.') === -1) name = 'game.' + name;
 
-        if (this.modules[name] && this.modules[name].body) throw 'module ' + name + ' is already defined';
+        if (this.modules[name] && this.modules[name].body) throw 'Module ' + name + ' is already defined';
 
         this._current = { name: name, requires: [], loaded: false, classes: [] };
         
@@ -481,7 +474,10 @@ var game = {
     require: function(modules) {
         var i, modules = Array.prototype.slice.call(arguments);
         for (i = 0; i < modules.length; i++) {
-            if (modules[i] && this._current.requires.indexOf(modules[i]) === -1) this._current.requires.push(modules[i]);
+            var name = modules[i];
+            name = name.toLowerCase();
+            if (name.indexOf('.') === -1) name = 'game.' + name;
+            if (name && this._current.requires.indexOf(name) === -1) this._current.requires.push(name);
         }
         return this;
     },
@@ -741,7 +737,7 @@ var game = {
                 }
                 unresolved.push(this._moduleQueue[i].name + ' (requires: ' + unloaded.join(', ') + ')');
             }
-            throw 'unresolved modules:\n' + unresolved.join('\n');
+            throw 'Unresolved modules:\n' + unresolved.join('\n');
         }
         else {
             this._loadFinished = true;

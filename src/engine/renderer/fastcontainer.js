@@ -1,8 +1,8 @@
 /**
-    @module renderer.spritebatch
+    @module renderer.fastcontainer
 **/
 game.module(
-    'engine.renderer.spritebatch'
+    'engine.renderer.fastcontainer'
 )
 .require(
     'engine.renderer.container'
@@ -10,12 +10,13 @@ game.module(
 .body(function() {
 
 /**
-    @class SpriteBatch
+    @class FastContainer
     @extends Container
 **/
-game.createClass('SpriteBatch', 'Container', {
+game.createClass('FastContainer', 'Container', {
     /**
         @property {Boolean} _isRotated
+        @private
     **/
     _isRotated: true,
 

@@ -6,16 +6,16 @@ game.module(
 )
 .require(
     'engine.renderer.sprite',
-    'engine.renderer.spritebatch'
+    'engine.renderer.fastcontainer'
 )
 .body(function() {
 
 /**
     Particle emitter.
     @class Emitter
-    @extends SpriteBatch
+    @extends FastContainer
 **/
-game.createClass('Emitter', 'SpriteBatch', {
+game.createClass('Emitter', 'FastContainer', {
     /**
         Acceleration angle in radians.
         @property {Number} accelAngle
