@@ -51,6 +51,8 @@ game.createClass('Renderer', {
             if (!game.System.center) document.body.style.margin = 0;
         }
 
+        game._normalizeVendorAttribute(this.canvas, 'requestFullScreen');
+
         this.context = this.canvas.getContext('2d');
 
         if ('imageSmoothingEnabled' in this.context) this._smoothProperty = 'imageSmoothingEnabled';

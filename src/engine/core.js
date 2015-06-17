@@ -361,24 +361,6 @@ var game = {
     },
 
     /**
-        Request fullscreen mode.
-        @method fullscreen
-    **/
-    fullscreen: function() {
-        if (this.system.canvas.requestFullscreen) this.system.canvas.requestFullscreen();
-        else if (this.system.canvas.requestFullScreen) this.system.canvas.requestFullScreen();
-    },
-
-    /**
-        Test fullscreen support.
-        @method fullscreenSupport
-        @return {Boolean} Return true, if browser supports fullscreen mode.
-    **/
-    fullscreenSupport: function() {
-        return !!(this.system.canvas.requestFullscreen || this.system.canvas.requestFullScreen);
-    },
-
-    /**
         Get JSON data.
         @method getJSON
         @param {String} id

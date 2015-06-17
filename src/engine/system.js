@@ -153,6 +153,24 @@ game.createClass('System', {
     },
 
     /**
+        Request fullscreen mode.
+        @method fullscreen
+    **/
+    fullscreen: function() {
+        if (game.renderer.canvas.requestFullscreen) game.renderer.canvas.requestFullscreen();
+        else if (game.renderer.canvas.requestFullScreen) game.renderer.canvas.requestFullScreen();
+    },
+
+    /**
+        Test fullscreen support.
+        @method fullscreenSupport
+        @return {Boolean} Return true, if browser supports fullscreen mode.
+    **/
+    fullscreenSupport: function() {
+        return !!(game.renderer.canvas.requestFullscreen || game.renderer.canvas.requestFullScreen);
+    },
+
+    /**
         Resize system.
         @method resize
         @param {Number} width
