@@ -1,16 +1,13 @@
-pandaConfig = {
-    name: 'panda.js-engine',
-    version: '2.0.0',
-
+game.config({
     system: {
         width: 480,
         height: 360,
         center: true,
         scale: true,
-        resize: false
+        hires: 2
     },
-    
-    renderer: {
-        webGL: false
+
+    scene: {
+        backgroundColor: '#333'
     }
-};
+});

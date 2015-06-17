@@ -1,13 +1,15 @@
 game.module(
-    'game.main'
+	'main'
 )
 .body(function() {
 
+game.addAsset('panda.png');
+
 game.createScene('Main', {
-	backgroundColor: '#000',
-	
-    init: function() {
-    }
+	init: function() {
+		var sprite = new game.Sprite('panda.png');
+		sprite.addTo(this.stage);
+	}
 });
 
 });
