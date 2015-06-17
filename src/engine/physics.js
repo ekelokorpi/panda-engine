@@ -435,4 +435,19 @@ game.createClass('Body', {
     }
 });
 
+game.addAttributes('Body', {
+    /**
+        @method fromSprite
+        @static
+        @param {Sprite} sprite
+        @return {Sprite}
+    **/
+    fromSprite: function(sprite) {
+        var body = new game.Body();
+        var shape = new game.Rectangle(sprite.width, sprite.height);
+        body.addShape(shape);
+        return body;
+    }
+});
+
 });
