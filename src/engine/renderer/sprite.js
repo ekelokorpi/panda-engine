@@ -17,6 +17,10 @@ game.module(
 **/
 game.createClass('Sprite', 'Container', {
     /**
+        @property {String} blendMode
+    **/
+    blendMode: 'source-over',
+    /**
         @property {Texture} texture
     **/
     texture: null,
@@ -98,6 +102,7 @@ game.createClass('Sprite', 'Container', {
         
         if (!this.texture.width || !this.texture.height) return;
         
+        context.globalCompositeOperation = this.blendMode;
         context.globalAlpha = this._worldAlpha;
 
         var t = this.texture;

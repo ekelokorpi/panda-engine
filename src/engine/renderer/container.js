@@ -169,22 +169,23 @@ game.createClass('Container', {
     },
 
     /**
-        Center this position to container.
+        Position container to center of target.
         @method center
-        @param {Container} container
+        @param {Container} target
         @param {Number} [offsetX]
         @param {Number} [offsetY]
         @chainable
     **/
-    center: function(container, offsetX, offsetY) {
-        if (!container) return;
+    center: function(target, offsetX, offsetY) {
+        if (!target) target = this.parent;
+        if (!target) return;
 
-        if (container === this.stage) {
+        if (target === game.scene.stage) {
             var x = game.width / 2;
             var y = game.height / 2;
         }
         else {
-            var bounds = container._getBounds();
+            var bounds = target._getBounds();
             var x = bounds.x + bounds.width / 2;
             var y = bounds.y + bounds.height / 2;
         }
@@ -463,10 +464,15 @@ game.createClass('Container', {
     _render: function(context) {
         this.updateTransform();
 
-        if (this._cachedSprite) return this._renderCachedSprite(context);
-        else this._renderCanvas(context);
+        if (this.mask) this._renderMask(context);
 
-        this._renderChildren(context);
+        if (this._cachedSprite) this._renderCachedSprite(context);
+        else {
+            this._renderCanvas(context);
+            this._renderChildren(context);
+        }
+
+        if (this.mask) context.restore();
     },
 
     /**
@@ -512,6 +518,17 @@ game.createClass('Container', {
             if (!child.visible || child.alpha <= 0 || !child.renderable) continue;
             child._render(context);
         }
+    },
+
+    /**
+        @method _renderMask
+        @param {CanvasRenderingContext2D} context
+        @private
+    **/
+    _renderMask: function(context) {
+        context.save();
+        context.rect(this.mask.x, this.mask.y, this.mask.width, this.mask.height);
+        context.clip();
     },
 
     /**

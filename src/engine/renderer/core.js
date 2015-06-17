@@ -110,6 +110,7 @@ game.createClass('Renderer', {
     _render: function(container) {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.globalAlpha = 1;
+        this.context.globalCompositeOperation = 'source-over';
         if (game.Renderer.clearBeforeRender) this._clear();
         container._render(this.context);
     },
