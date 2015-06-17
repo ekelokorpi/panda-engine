@@ -1,5 +1,5 @@
 game.module(
-	'main'
+	'game.main'
 )
 .body(function() {
 

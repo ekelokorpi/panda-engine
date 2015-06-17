@@ -430,9 +430,6 @@ var game = {
     module: function(name) {
         if (this._current) throw 'Module ' + this._current.name + ' has no body';
 
-        name = name.toLowerCase();
-        if (name.indexOf('.') === -1) name = 'game.' + name;
-
         if (this.modules[name] && this.modules[name].body) throw 'Module ' + name + ' is already defined';
 
         this._current = { name: name, requires: [], loaded: false, classes: [] };
@@ -479,8 +476,6 @@ var game = {
         var i, modules = Array.prototype.slice.call(arguments);
         for (i = 0; i < modules.length; i++) {
             var name = modules[i];
-            name = name.toLowerCase();
-            if (name.indexOf('.') === -1) name = 'game.' + name;
             if (name && this._current.requires.indexOf(name) === -1) this._current.requires.push(name);
         }
         return this;
