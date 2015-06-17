@@ -259,16 +259,6 @@ var game = {
     },
 
     /**
-        Configure and start engine.
-        @method config
-        @param {Object} config
-    **/
-    config: function(config) {
-        this.config = config;
-        this._boot();
-    },
-
-    /**
         Clear engine cache.
         @method clearCache
     **/
@@ -281,9 +271,20 @@ var game = {
     },
 
     /**
+        Configure and start engine.
+        @method config
+        @param {Object} config
+    **/
+    config: function(config) {
+        this.config = config;
+        this._boot();
+    },
+
+    /**
         Copy object.
         @method copy
         @param {Object} object
+        @return {Object}
     **/
     copy: function(object) {
         var l, c, i;
@@ -317,6 +318,7 @@ var game = {
         @param {String} name
         @param {String} [extend]
         @param {Object} content
+        @return {Class}
     **/
     createClass: function(name, extend, content) {
         if (typeof name === 'object') return this.Class.extend(name);
@@ -338,6 +340,7 @@ var game = {
         @method createScene
         @param {String} name
         @param {Object} content
+        @return {Scene}
     **/
     createScene: function(name, content) {
         return this.createClass(name, 'Scene', content);
@@ -375,6 +378,7 @@ var game = {
         @method ksort
         @param {Object} obj
         @param {Function} [compare]
+        @return {Object}
     **/
     ksort: function(obj, compare) {
         if (!obj || typeof obj !== 'object') return false;
@@ -397,6 +401,7 @@ var game = {
         @method merge
         @param {Object} to
         @param {Object} from
+        @return {Object}
     **/
     merge: function(to, from) {
         for (var key in from) {
@@ -482,20 +487,12 @@ var game = {
     },
 
     /**
-        Vibrate device.
-        @method vibrate
-        @param {Number} [time] Time to vibrate (ms).
-    **/
-    vibrate: function(time) {
-        if (navigator.vibrate) navigator.vibrate(time || 500);
-    },
-
-    /**
         @method _addFileToQueue
         @param {String} path
         @param {String} id
         @param {String} queue
         @private
+        @return {String}
     **/
     _addFileToQueue: function(path, id, queue) {
         if (id && this.paths[id]) return;
@@ -600,6 +597,7 @@ var game = {
         @method _getFilePath
         @param {String} file
         @private
+        @return {String}
     **/
     _getFilePath: function(file) {
         if (file.indexOf('://') !== -1) return file;
@@ -898,6 +896,7 @@ var game = {
     /**
         @method _setGameLoop
         @private
+        @return {Number}
     **/
     _setGameLoop: function(callback) {
         if (this.System.frameRate) return window.setInterval(callback, 1000 / this.System.frameRate);
