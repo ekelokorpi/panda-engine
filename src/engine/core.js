@@ -28,6 +28,11 @@ var game = {
     **/
     assetQueue: [],
     /**
+        Engine config.
+        @property {Object} config
+    **/
+    config: {},
+    /**
         @property {Debug} debug
     **/
     debug: null,
@@ -111,6 +116,11 @@ var game = {
         @property {Number} width
     **/
     width: 0,
+    /**
+        @property {Boolean} _booted
+        @private
+    **/
+    _booted: false,
     /**
         @property {Array} _coreModules
         @private
@@ -242,6 +252,10 @@ var game = {
     **/
     body: function(body) {
         this._current.body = body;
+        if (!this._booted && this._current.name.indexOf('engine.') !== 0) {
+            this._current = null;
+            return this._boot();
+        }
         this._current = null;
         if (this._loadFinished) this._loadModules();
         if (this._gameModuleDefined && this._DOMLoaded && !this._loadFinished) {
@@ -259,16 +273,6 @@ var game = {
         this.Font.clearCache();
         this.json = {};
         this.paths = {};
-    },
-
-    /**
-        Configure and start engine.
-        @method config
-        @param {Object} config
-    **/
-    config: function(config) {
-        this.config = config;
-        this._boot();
     },
 
     /**
@@ -505,6 +509,7 @@ var game = {
         @private
     **/
     _boot: function() {
+        this._booted = true;
         this._loadNativeExtensions();
         this._loadDeviceInformation();
 

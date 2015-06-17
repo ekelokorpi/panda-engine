@@ -93,6 +93,13 @@ game.createClass('Debug', {
             }
         });
 
+        game.FastContainer.inject({
+            _renderBatch: function(child, context) {
+                this.super(child, context);
+                game.debug.sprites++;
+            }
+        });
+
         game.Graphics.inject({
             _renderCanvas: function(context) {
                 this.super(context);
@@ -103,13 +110,6 @@ game.createClass('Debug', {
         game.Sprite.inject({
             _renderCanvas: function(context, transform, rect, offset) {
                 this.super(context, transform, rect, offset);
-                game.debug.sprites++;
-            }
-        });
-        
-        game.SpriteBatch.inject({
-            _renderBatch: function(child, context) {
-                this.super(child, context);
                 game.debug.sprites++;
             }
         });
