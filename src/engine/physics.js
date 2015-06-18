@@ -335,6 +335,18 @@ game.createClass('Body', {
     },
 
     /**
+        Apply impulse to body.
+        @method applyImpulse
+        @param {Number|Vector} x
+        @param {Number} [y]
+        @chainable
+    **/
+    applyImpulse: function(x, y) {
+        this.velocity.add(x, y);
+        return this;
+    },
+
+    /**
         This is called, when body collides with another body.
         @method collide
         @param {Body} body body that it collided with.
