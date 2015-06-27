@@ -550,11 +550,6 @@ var game = {
                 viewport.content = content;
                 document.getElementsByTagName('head')[0].appendChild(viewport);
             }
-
-            // Init device motion
-            window.addEventListener('devicemotion', function(event) {
-                game.devicemotion = event.accelerationIncludingGravity;
-            });
         }
 
         this.module('engine.core');

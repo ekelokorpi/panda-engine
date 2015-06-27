@@ -162,6 +162,7 @@ game.createClass('Loader', {
             if (game.tween) game.tween.removeAll();
             if (game.system.stage) game.system.stage.removeAll();
             this.stage = new game.Container();
+            this.stage.stage = this.stage;
             game.scene = this;
             if (!game.system._running) game.system._startRunLoop();
         }
