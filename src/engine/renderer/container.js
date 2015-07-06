@@ -462,8 +462,6 @@ game.createClass('Container', {
         @private
     **/
     _render: function(context) {
-        this.updateTransform();
-
         if (this.mask) this._renderMask(context);
 
         if (this._cachedSprite) this._renderCachedSprite(context);
