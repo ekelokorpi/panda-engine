@@ -205,7 +205,7 @@ game.createClass('Debug', {
         @param {Container} container
     **/
     _drawBounds: function(container) {
-        if (!container.parent) return;
+        if (!container.parent || !container.visible || container.alpha <= 0 || !container.renderable) return;
 
         var context = game.renderer.context;
         var bounds = container._getBounds();
@@ -238,6 +238,8 @@ game.createClass('Debug', {
         @param {Container} container
     **/
     _drawHitArea: function(container) {
+        if (!container.visible || container.alpha <= 0 || !container.renderable) return;
+
         var context = game.renderer.context;
         var wt = container._worldTransform;
         var hitArea = container.hitArea;
