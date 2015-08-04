@@ -252,7 +252,7 @@ game.createClass('GraphicsData', {
         }
 
         if (this.fillColor && this.fillAlpha) context.fill();
-        if (this.lineWidth) context.stroke();
+        if (this.lineWidth) context.globalAlpha = this.lineAlpha * alpha; context.stroke();
     }
 });
 
