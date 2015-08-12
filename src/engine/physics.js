@@ -466,7 +466,7 @@ game.defineProperties('Body', {
     @extends Sprite
     @constructor
     @param {Texture|String} texture
-    @param {Number} [width]
+    @param {Number} [width|radius]
     @param {Number} [height]
 **/
 game.createClass('PhysicsSprite', 'Sprite', {
@@ -474,12 +474,17 @@ game.createClass('PhysicsSprite', 'Sprite', {
         @property {Body} body
     **/
     body: null,
+    /**
+        @property {String} shape
+        @default Rectangle
+    **/
+    shape: 'Rectangle',
 
     init: function(texture, width, height) {
         this.anchorCenter();
         width = width || this.width;
         height = height || this.height;
-        var shape = new game.Rectangle(width, height);
+        var shape = new game[this.shape](width, height);
         this.body = new game.Body();
         this.body.addShape(shape);
         this.position = this.body.position;
