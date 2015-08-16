@@ -462,7 +462,7 @@ game.createClass('Container', {
         @private
     **/
     _render: function(context) {
-        if (this.mask) this._renderMask(context);
+        if (this.mask) this.mask._renderMask(context);
 
         if (this._cachedSprite) this._renderCachedSprite(context);
         else {
@@ -516,17 +516,6 @@ game.createClass('Container', {
             if (!child.visible || child.alpha <= 0 || !child.renderable) continue;
             child._render(context);
         }
-    },
-
-    /**
-        @method _renderMask
-        @param {CanvasRenderingContext2D} context
-        @private
-    **/
-    _renderMask: function(context) {
-        context.save();
-        context.rect(this.mask.x, this.mask.y, this.mask.width, this.mask.height);
-        context.clip();
     },
 
     /**

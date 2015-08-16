@@ -180,6 +180,25 @@ game.createClass('Graphics', 'Container', {
         for (var i = 0; i < this.shapes.length; i++) {
             this.shapes[i]._render(context, this._worldAlpha);
         }
+    },
+
+    /**
+        @method _renderMask
+        @param {CanvasRenderingContext2D} context
+        @private
+    **/
+    _renderMask: function(context) {
+        var wt = this._worldTransform;
+        var tx = wt.tx * game.scale;
+        var ty = wt.ty * game.scale;
+
+        context.save();
+        context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
+
+        context.beginPath();
+        context.arc(this.x, this.y, 100, 0, Math.PI * 2);
+        context.closePath();
+        context.clip();
     }
 });
 
