@@ -18,6 +18,11 @@ game.createClass('Input', {
     **/
     items: [],
     /**
+        Mouse position.
+        @property {Vector} mouse
+    **/
+    mouse: null,
+    /**
         List of current touches.
         @property {Array} touches
     **/
@@ -45,6 +50,7 @@ game.createClass('Input', {
     _needUpdate: false,
 
     init: function(canvas) {
+        this.mouse = new game.Vector();
         var target = game.device.cocoonCanvasPlus ? window : canvas;
         target.addEventListener('touchstart', this._touchstart.bind(this));
         target.addEventListener('touchmove', this._touchmove.bind(this));
@@ -64,8 +70,8 @@ game.createClass('Input', {
         var rect = game.renderer.canvas.getBoundingClientRect();
         var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
         var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
-        event.canvasX = x / game.scale;
-        event.canvasY = y / game.scale;
+        this.mouse.x = event.canvasX = x / game.scale;
+        this.mouse.y = event.canvasY = y / game.scale;
     },
 
     /**
