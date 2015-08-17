@@ -311,6 +311,11 @@ game.createClass('Emitter', 'FastContainer', {
         return (Math.random() * value) * (Math.random() > 0.5 ? -1 : 1);
     },
 
+    remove: function() {
+        this.parent();
+        this._remove = true;
+    },
+
     /**
         Remove particle from emitter.
         @method removeParticle
