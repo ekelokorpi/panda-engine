@@ -94,6 +94,11 @@ game.createClass('Container', {
     **/
     _interactive: false,
     /**
+        @property {Graphics} _mask
+        @private
+    **/
+    _mask: null,
+    /**
         @property {Number} _rotationCache
         @default 0
         @private
@@ -360,6 +365,8 @@ game.createClass('Container', {
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
+        if (this._mask) this._mask.updateTransform();
+
         if (this._cachedSprite) this._cachedSprite._worldAlpha = this._worldAlpha;
         else this._updateChildTransform();
     },
@@ -462,7 +469,7 @@ game.createClass('Container', {
         @private
     **/
     _render: function(context) {
-        if (this.mask) this.mask._renderMask(context);
+        if (this._mask) this._mask._renderMask(context);
 
         if (this._cachedSprite) this._renderCachedSprite(context);
         else {
@@ -470,7 +477,7 @@ game.createClass('Container', {
             this._renderChildren(context);
         }
 
-        if (this.mask) context.restore();
+        if (this._mask) context.restore();
     },
 
     /**
@@ -602,6 +609,21 @@ game.defineProperties('Container', {
             if (this._interactive === value) return;
             this._interactive = value;
             if (this.stage) game.input._needUpdate = true;
+        }
+    },
+
+    /**
+        @property {Graphics} mask
+    **/
+    mask: {
+        get: function() {
+            return this._mask;
+        },
+
+        set: function(value) {
+            if (this._mask === value) return;
+            this._mask = value;
+            if (value) this._mask.parent = this;
         }
     },
 

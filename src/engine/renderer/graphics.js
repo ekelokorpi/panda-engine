@@ -194,9 +194,10 @@ game.createClass('Graphics', 'Container', {
 
         context.save();
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
-
         context.beginPath();
-        context.arc(this.x, this.y, 100, 0, Math.PI * 2);
+        for (var i = 0; i < this.shapes.length; i++) {
+            this.shapes[i]._renderMask(context);
+        }
         context.closePath();
         context.clip();
     }
@@ -274,6 +275,23 @@ game.createClass('GraphicsData', {
         if (this.lineWidth) {
             context.globalAlpha = this.lineAlpha * alpha;
             context.stroke();
+        }
+    },
+
+    /**
+        @method _renderMask
+        @param {CanvasRenderingContext2D} context
+        @private
+    **/
+    _renderMask: function(context) {
+        var x = this.shape.x * game.scale;
+        var y = this.shape.y * game.scale;
+
+        if (this.shape.width) {
+            context.rect(x, y, this.shape.width, this.shape.height);
+        }
+        else if (this.shape.radius) {
+            context.arc(x, y, this.shape.radius, 0, Math.PI * 2);
         }
     }
 });
