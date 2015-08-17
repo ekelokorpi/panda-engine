@@ -221,9 +221,7 @@ game.createClass('Container', {
         @param {MouseEvent|TouchEvent} event
         @return {Boolean} return true, to skip to next object.
     **/
-    mousedown: function() {
-        return true;
-    },
+    mousedown: function() {},
 
     /**
         @method mousemove
@@ -233,9 +231,7 @@ game.createClass('Container', {
         @param {MouseEvent|TouchEvent} event
         @return {Boolean} return true, to skip to next object.
     **/
-    mousemove: function() {
-        return true;
-    },
+    mousemove: function() {},
 
     /**
         @method mouseout
@@ -244,9 +240,7 @@ game.createClass('Container', {
         @param {Number} id
         @param {MouseEvent|TouchEvent} event
     **/
-    mouseout: function() {
-        return true;
-    },
+    mouseout: function() {},
 
     /**
         @method mouseup
@@ -256,9 +250,7 @@ game.createClass('Container', {
         @param {MouseEvent|TouchEvent} event
         @return {Boolean} return true, to skip to next object.
     **/
-    mouseup: function() {
-        return true;
-    },
+    mouseup: function() {},
 
     /**
         Remove this from it's parent.
