@@ -312,7 +312,7 @@ game.createClass('Emitter', 'FastContainer', {
     },
 
     remove: function() {
-        this.parent();
+        this.super();
         this._remove = true;
     },
 
