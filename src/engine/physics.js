@@ -487,12 +487,24 @@ game.createClass('PhysicsSprite', 'Sprite', {
         var shape = new game[this.shape](width, height);
         this.body = new game.Body();
         this.body.addShape(shape);
+        this.body.collide = this.collide.bind(this);
         this.position = this.body.position;
     },
 
     addTo: function(container) {
         this.body.addTo(game.scene.world);
         return this.super(container);
+    },
+
+    /**
+        This is called, when body collides with another body.
+        @method collide
+        @param {Body} body body that it collided with.
+        @param {String} dir direction of collision.
+        @return {Boolean} Return true, to apply hit response.
+    **/
+    collide: function() {
+        return true;
     },
 
     remove: function() {
