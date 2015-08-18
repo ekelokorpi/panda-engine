@@ -167,6 +167,10 @@ game.createClass('Input', {
             }
         }
 
+        if (this._mouseDownItem && this._mouseDownItem !== this._mouseUpItem) {
+            this._mouseDownItem.mouseupoutside(event.canvasX, event.canvasY, event.identifier, event);
+        }
+
         if (game.scene._mouseup) {
             game.scene._mouseup(event.canvasX, event.canvasY, event.identifier, event);
         }

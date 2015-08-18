@@ -253,6 +253,15 @@ game.createClass('Container', {
     mouseup: function() {},
 
     /**
+        @method mouseupoutside
+        @param {Number} x
+        @param {Number} y
+        @param {Number} id
+        @param {MouseEvent|TouchEvent} event
+    **/
+    mouseupoutside: function() {},
+
+    /**
         Remove this from it's parent.
         @method remove
         @chainable
