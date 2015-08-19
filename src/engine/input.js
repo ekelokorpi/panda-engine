@@ -70,8 +70,8 @@ game.createClass('Input', {
         var rect = game.renderer.canvas.getBoundingClientRect();
         var x = (event.clientX - rect.left) * (game.renderer.canvas.width / rect.width);
         var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
-        this.mouse.x = event.canvasX = x / game.scale;
-        this.mouse.y = event.canvasY = y / game.scale;
+        event.canvasX = x / game.scale;
+        event.canvasY = y / game.scale;
     },
 
     /**
@@ -119,6 +119,7 @@ game.createClass('Input', {
     _mousedown: function(event) {
         this._preventDefault(event);
         this._calculateXY(event);
+        this.mouse.set(event.canvasX, event.canvasY);
         
         this._mouseDownItem = this._processEvent('mousedown', event);
         this._mouseDownTime = game.Timer.time;
@@ -136,7 +137,8 @@ game.createClass('Input', {
     _mousemove: function(event) {
         this._preventDefault(event);
         this._calculateXY(event);
-        
+        this.mouse.set(event.canvasX, event.canvasY);
+
         var _mouseMoveItem = this._processEvent('mousemove', event);
         if (this._mouseMoveItem && this._mouseMoveItem !== _mouseMoveItem) {
             this._mouseMoveItem.mouseout(event.canvasX, event.canvasY, event.identifier, event);
@@ -158,6 +160,7 @@ game.createClass('Input', {
         this._calculateXY(event);
         if (event.canvasX < 0 || event.canvasX > game.width) return;
         if (event.canvasY < 0 || event.canvasY > game.height) return;
+        this.mouse.set(event.canvasX, event.canvasY);
 
         this._mouseUpItem = this._processEvent('mouseup', event);
         if (this._mouseDownItem && this._mouseDownItem === this._mouseUpItem) {
