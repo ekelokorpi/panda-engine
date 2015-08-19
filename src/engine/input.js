@@ -325,16 +325,14 @@ game.createClass('Keyboard', {
         @private
     **/
     _keydown: function(event) {
-        if (!game.Keyboard.keys[event.keyCode]) {
-            // Unknown key
-            game.Keyboard.keys[event.keyCode] = event.keyCode;
-        }
+        var key = game.Keyboard.keys[event.keyCode];
 
-        if (this._keysDown[game.Keyboard.keys[event.keyCode]]) return;
+        if (!key) key = event.keyCode;
+        if (this._keysDown[key]) return;
         
-        this._keysDown[game.Keyboard.keys[event.keyCode]] = true;
+        this._keysDown[key] = true;
         if (game.scene && game.scene.keydown) {
-            var prevent = game.scene.keydown(game.Keyboard.keys[event.keyCode], this.down('SHIFT'), this.down('CTRL'), this.down('ALT'));
+            var prevent = game.scene.keydown(key, this.down('SHIFT'), this.down('CTRL'), this.down('ALT'));
             if (prevent) event.preventDefault();
         }
     },
@@ -345,10 +343,10 @@ game.createClass('Keyboard', {
         @private
     **/
     _keyup: function(event) {
-        this._keysDown[game.Keyboard.keys[event.keyCode]] = false;
-        if (game.scene && game.scene.keyup) {
-            game.scene.keyup(game.Keyboard.keys[event.keyCode]);
-        }
+        var key = game.Keyboard.keys[event.keyCode];
+        if (!key) key = event.keyCode;
+        this._keysDown[key] = false;
+        if (game.scene && game.scene.keyup) game.scene.keyup(key);
     },
 
     /**
