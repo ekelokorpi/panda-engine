@@ -199,8 +199,7 @@ game.createClass('Vector', {
         @return {Boolean}
     **/
     compare: function(vector) {
-        if (this.x === vector.x && this.y === vector.y) return true;
-        return false;
+        return (this.x === vector.x && this.y === vector.y);
     },
 
     /**
