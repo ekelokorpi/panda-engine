@@ -320,6 +320,7 @@ game.addAttributes('Font', {
         if (!font) {
             font = new game.Font(data);
             game.Font.cache[face] = font;
+            if (!game.Text.defaultFont) game.Text.defaultFont = face;
         }
 
         return font;
