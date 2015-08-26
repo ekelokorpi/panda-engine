@@ -807,7 +807,7 @@ game.addAttributes('Audio', {
     **/
     enabled: true,
     /**
-        List of available audio formats.
+        List of supported audio formats.
         @attribute {Array} formats
     **/
     formats: [

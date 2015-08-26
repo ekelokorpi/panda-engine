@@ -14,11 +14,16 @@ game.module(
 **/
 game.createClass('Loader', {
     /**
-        Background color of loader.
-        @property {String} backgroundColor
-        @default #000
+        Background color.
+        @attribute {String} backgroundColor
     **/
-    backgroundColor: '#000',
+    backgroundColor: null,
+    /**
+        Is loader in dynamic mode.
+        @property {Boolean} dynamic
+        @default true
+    **/
+    dynamic: true,
     /**
         Number of files loaded.
         @property {Number} loaded
@@ -29,6 +34,11 @@ game.createClass('Loader', {
         @property {Number} percent
     **/
     percent: 0,
+    /**
+        Main container for loader.
+        @property {Container} stage
+    **/
+    stage: null,
     /**
         Is loader started.
         @property {Boolean} started
@@ -53,33 +63,10 @@ game.createClass('Loader', {
     **/
     _audioQueue: [],
     /**
-        Callback for loader.
-        @property {Function|String} _callback
-        @private
-    **/
-    _callback: null,
-    /**
-        Is loader in dynamic mode.
-        @property {Boolean} _dynamic
-        @private
-    **/
-    _dynamic: true,
-    /**
         @property {Number} _loadCount
         @private
     **/
     _loadCount: 0,
-    /**
-        @property {Object} _loaders
-        @private
-    **/
-    _loaders: {
-        png: 'Image',
-        jpg: 'Image',
-        jpeg: 'Image',
-        json: 'JSON',
-        fnt: 'Font'
-    },
     /**
         @property {Number} _readyTime
         @private
@@ -93,6 +80,8 @@ game.createClass('Loader', {
 
     init: function(callback) {
         this.onComplete = callback;
+
+        if (!this.backgroundColor) this.backgroundColor = game.Loader.backgroundColor;
 
         for (var i = 0; i < game.assetQueue.length; i++) {
             this._assetQueue.push(this._getFilePath(game.assetQueue[i]));
@@ -111,11 +100,53 @@ game.createClass('Loader', {
     },
 
     /**
+        @method loadImage
+        @param {String} filePath
+        @param {Function} callback
+    **/
+    loadImage: function(filePath, callback) {
+        game.BaseTexture.fromImage(filePath, callback);
+    },
+
+    /**
+        @method loadFont
+        @param {String} filePath
+        @param {Function} callback
+    **/
+    loadFont: function(filePath, callback) {
+        this._loadFile(filePath, this._parseXML.bind(this, filePath), callback);
+    },
+
+    /**
+        @method loadJSON
+        @param {String} filePath
+        @param {Function} callback
+    **/
+    loadJSON: function(filePath, callback) {
+        this._loadFile(filePath, this._parseJSON.bind(this, filePath), callback);
+    },
+
+    /**
+        Called, when loader is completed.
+        @method onComplete
+    **/
+    onComplete: function() {
+    },
+
+    /**
+        Called, when file is loaded.
+        @method onProgress
+    **/
+    onProgress: function() {
+        if (this.barFg) this.barFg.scale.x = this.percent / 100;
+    },
+
+    /**
         Called, when loader is started.
         @method onStart
     **/
     onStart: function() {
-        if (this._dynamic) return;
+        if (this.dynamic) return;
 
         var barWidth = game.Loader.barWidth;
         var barHeight = game.Loader.barHeight;
@@ -131,22 +162,8 @@ game.createClass('Loader', {
         this.barFg.drawRect(0, 0, barWidth, barHeight);
         this.barFg.position.set(game.system.width / 2 - barWidth / 2, game.system.height / 2 - barHeight / 2);
         this.barFg.addTo(this.stage);
+
         this.onProgress();
-    },
-
-    /**
-        Called, when file is loaded.
-        @method onProgress
-    **/
-    onProgress: function() {
-        if (this.barFg) this.barFg.scale.x = this.percent / 100;
-    },
-
-    /**
-        Called, when loader is completed.
-        @method onComplete
-    **/
-    onComplete: function() {
     },
 
     /**
@@ -155,12 +172,10 @@ game.createClass('Loader', {
     **/
     start: function() {
         this.started = true;
-        if (typeof this.onComplete === 'string') this._dynamic = false;
+        if (typeof this.onComplete === 'string') this.dynamic = false;
 
-        if (!this._dynamic) {
+        if (!this.dynamic) {
             this._startTime = game.Timer.time;
-            if (game.tween) game.tween.removeAll();
-            if (game.system.stage) game.system.stage.removeAll();
             this.stage = new game.Container();
             this.stage.stage = this.stage;
             game.scene = this;
@@ -174,59 +189,12 @@ game.createClass('Loader', {
     },
 
     /**
-        @method _startLoading
+        @method _getFilePath
         @private
+        @return {String}
     **/
-    _startLoading: function() {
-        for (var i = this._assetQueue.length - 1; i >= 0; i--) {
-            var filePath = this._assetQueue[i];
-            if (!filePath) continue;
-            var fileType = filePath.split('?').shift().split('.').pop().toLowerCase();
-            if (!this._loaders[fileType]) throw 'Unsupported file type ' + fileType;
-            this._loadCount++;
-            this._assetQueue.splice(i, 1);
-            this['_load' + this._loaders[fileType]](filePath, this._progress.bind(this));
-            if (this._loadCount === game.Loader.maxFiles) return;
-        }
-
-        for (var i = this._audioQueue.length - 1; i >= 0; i--) {
-            var audio = this._audioQueue[i];
-            if (!audio) continue;
-            this._loadCount++;
-            this._audioQueue.splice(i, 1);
-            game.audio._load(audio, this._progress.bind(this));
-            if (this._loadCount === game.Loader.maxFiles) return;
-        }
-    },
-
-    /**
-        @method _loadImage
-        @param {String} filePath
-        @param {Function} callback
-        @private
-    **/
-    _loadImage: function(filePath, callback) {
-        game.BaseTexture.fromImage(filePath, callback);
-    },
-
-    /**
-        @method _loadFont
-        @param {String} filePath
-        @param {Function} callback
-        @private
-    **/
-    _loadFont: function(filePath, callback) {
-        this._loadFile(filePath, this._parseXML.bind(this, filePath), callback);
-    },
-
-    /**
-        @method _loadJSON
-        @param {String} filePath
-        @param {Function} callback
-        @private
-    **/
-    _loadJSON: function(filePath, callback) {
-        this._loadFile(filePath, this._parseJSON.bind(this, filePath), callback);
+    _getFilePath: function(path) {
+        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
     },
 
     /**
@@ -241,35 +209,6 @@ game.createClass('Loader', {
         request.onload = callback.bind(this, request, loadCallback);
         request.open('GET', filePath, true);
         request.send();
-    },
-
-    /**
-        @method _parseXML
-        @param {String} filePath
-        @param {XMLHttpRequest} request
-        @param {Function} callback
-        @private
-    **/
-    _parseXML: function(filePath, request, callback) {
-        if (!request.responseText || request.status === 404) throw 'Error loading XML ' + filePath;
-
-        var responseXML = request.responseXML;
-        if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
-            if (typeof window.DOMParser === 'function') {
-                var domparser = new DOMParser();
-                responseXML = domparser.parseFromString(request.responseText, 'text/xml');
-            }
-            else {
-                var div = document.createElement('div');
-                div.innerHTML = request.responseText;
-                responseXML = div;
-            }
-        }
-
-        var font = responseXML.getElementsByTagName('page')[0].getAttribute('file');
-        var image = game._getFilePath(font);
-
-        this._loadImage(image, this._parseFont.bind(this, responseXML, callback));
     },
 
     /**
@@ -291,14 +230,14 @@ game.createClass('Loader', {
         @private
     **/
     _parseJSON: function(filePath, request, callback) {
-        if (!request.responseText || request.status === 404) throw 'Error loading JSON ' + filePath;
+        if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
 
         var json = JSON.parse(request.responseText);
         game.json[filePath] = json;
         if (json.frames) {
             // Sprite sheet
             var image = game._getFilePath(json.meta.image);
-            this._loadImage(image, this._parseSpriteSheet.bind(this, json, callback));
+            this.loadImage(image, this._parseSpriteSheet.bind(this, json, callback));
         }
         else {
             callback();
@@ -330,10 +269,41 @@ game.createClass('Loader', {
     },
 
     /**
-        @method _progress
+        @method _parseXML
+        @param {String} filePath
+        @param {XMLHttpRequest} request
+        @param {Function} callback
         @private
     **/
-    _progress: function() {
+    _parseXML: function(filePath, request, callback) {
+        if (!request.responseText || request.status === 404) callback('Error loading XML ' + filePath);
+
+        var responseXML = request.responseXML;
+        if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
+            if (typeof window.DOMParser === 'function') {
+                var domparser = new DOMParser();
+                responseXML = domparser.parseFromString(request.responseText, 'text/xml');
+            }
+            else {
+                var div = document.createElement('div');
+                div.innerHTML = request.responseText;
+                responseXML = div;
+            }
+        }
+
+        var font = responseXML.getElementsByTagName('page')[0].getAttribute('file');
+        var image = game._getFilePath(font);
+
+        this.loadImage(image, this._parseFont.bind(this, responseXML, callback));
+    },
+
+    /**
+        @method _progress
+        @param {String} error
+        @private
+    **/
+    _progress: function(error) {
+        if (error) throw error;
         this._loadCount--;
         this.loaded++;
         this.percent = Math.round(this.loaded / this.totalFiles * 100);
@@ -362,7 +332,7 @@ game.createClass('Loader', {
             }
         }
 
-        if (this._dynamic) {
+        if (this.dynamic) {
             this.onComplete();
         }
         else {
@@ -375,39 +345,52 @@ game.createClass('Loader', {
     },
 
     /**
+        @method _startLoading
+        @private
+    **/
+    _startLoading: function() {
+        for (var i = this._assetQueue.length - 1; i >= 0; i--) {
+            var filePath = this._assetQueue[i];
+            if (!filePath) continue;
+            var fileType = filePath.split('?').shift().split('.').pop().toLowerCase();
+            var loadFunc = game.Loader.formats[fileType];
+            if (!this[loadFunc]) throw 'Unsupported file format ' + fileType;
+            this._loadCount++;
+            this._assetQueue.splice(i, 1);
+            this[loadFunc](filePath, this._progress.bind(this));
+            if (this._loadCount === game.Loader.maxFiles) return;
+        }
+
+        for (var i = this._audioQueue.length - 1; i >= 0; i--) {
+            var audio = this._audioQueue[i];
+            if (!audio) continue;
+            this._loadCount++;
+            this._audioQueue.splice(i, 1);
+            game.audio._load(audio, this._progress.bind(this));
+            if (this._loadCount === game.Loader.maxFiles) return;
+        }
+    },
+
+    /**
         @method _update
         @private
     **/
     _update: function() {
-        if (this._dynamic) return;
+        if (this.dynamic) return;
         if (this.percent === 100 && game.Timer.time >= this._readyTime) {
             game.system.setScene(this.onComplete);
         }
         game.renderer._render(this.stage);
-    },
-
-    /**
-        @method _getFilePath
-        @private
-    **/
-    _getFilePath: function(path) {
-        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
     }
 });
 
 game.addAttributes('Loader', {
     /**
-        Minimum time to show loader (ms). Not used in dynamic mode.
-        @attribute {Number} time
-        @default 200
+        Default background color.
+        @attribute {String} backgroundColor
+        @default #000
     **/
-    time: 200,
-    /**
-        Loading bar color.
-        @attribute {String} barColor
-        @default #e6e7e8
-    **/
-    barColor: '#e6e7e8',
+    backgroundColor: '#000',
     /**
         Loading bar background color.
         @attribute {String} barBg
@@ -415,11 +398,11 @@ game.addAttributes('Loader', {
     **/
     barBgColor: '#515e73',
     /**
-        Width of the loading bar.
-        @attribute {Number} barWidth
-        @default 200
+        Loading bar color.
+        @attribute {String} barColor
+        @default #e6e7e8
     **/
-    barWidth: 200,
+    barColor: '#e6e7e8',
     /**
         Height of the loading bar.
         @attribute {Number} barHeight
@@ -427,17 +410,35 @@ game.addAttributes('Loader', {
     **/
     barHeight: 20,
     /**
+        Width of the loading bar.
+        @attribute {Number} barWidth
+        @default 200
+    **/
+    barWidth: 200,
+    /**
+        List of supported file formats and load functions.
+        @attribute {Object} formats
+        @private
+    **/
+    formats: {
+        png: 'loadImage',
+        jpg: 'loadImage',
+        jpeg: 'loadImage',
+        json: 'loadJSON',
+        fnt: 'loadFont'
+    },
+    /**
         How many files to load at same time.
         @attribute {Number} maxFiles
         @default 4
     **/
     maxFiles: 4,
     /**
-        Default loader class name.
-        @attribute {String} className
-        @default Loader
+        Minimum time to show loader (ms). Not used in dynamic mode.
+        @attribute {Number} time
+        @default 200
     **/
-    className: 'Loader'
+    time: 200
 });
 
 });
