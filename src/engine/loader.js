@@ -100,6 +100,28 @@ game.createClass('Loader', {
     },
 
     /**
+        Load file with XMLHttpRequest.
+        @method loadFile
+        @param {String} filePath
+        @param {Function} callback
+    **/
+    loadFile: function(filePath, callback) {
+        var request = new XMLHttpRequest();
+        request.onload = callback.bind(this, request);
+        request.open('GET', filePath, true);
+        request.send();
+    },
+
+    /**
+        @method loadFont
+        @param {String} filePath
+        @param {Function} callback
+    **/
+    loadFont: function(filePath, callback) {
+        this.loadFile(filePath, this.parseXML.bind(this, filePath, callback));
+    },
+
+    /**
         @method loadImage
         @param {String} filePath
         @param {Function} callback
@@ -109,21 +131,12 @@ game.createClass('Loader', {
     },
 
     /**
-        @method loadFont
-        @param {String} filePath
-        @param {Function} callback
-    **/
-    loadFont: function(filePath, callback) {
-        this._loadFile(filePath, this._parseXML.bind(this, filePath), callback);
-    },
-
-    /**
         @method loadJSON
         @param {String} filePath
         @param {Function} callback
     **/
     loadJSON: function(filePath, callback) {
-        this._loadFile(filePath, this._parseJSON.bind(this, filePath), callback);
+        this.loadFile(filePath, this.parseJSON.bind(this, filePath, callback));
     },
 
     /**
@@ -167,6 +180,88 @@ game.createClass('Loader', {
     },
 
     /**
+        @method parseFont
+        @param {XML} data
+        @param {Function} callback
+    **/
+    parseFont: function(data, callback) {
+        game.Font.fromData(data);
+        callback();
+    },
+
+    /**
+        @method parseJSON
+        @param {String} filePath
+        @param {Function} callback
+        @param {XMLHttpRequest} request
+    **/
+    parseJSON: function(filePath, callback, request) {
+        if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
+
+        var json = JSON.parse(request.responseText);
+        game.json[filePath] = json;
+        if (json.frames) {
+            // Sprite sheet
+            var image = game._getFilePath(json.meta.image);
+            this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
+        }
+        else {
+            callback();
+        }
+    },
+
+    /**
+        @method parseSpriteSheet
+        @param {Object} json
+        @param {Function} callback
+    **/
+    parseSpriteSheet: function(json, callback) {
+        var image = game._getFilePath(json.meta.image);
+        var baseTexture = game.BaseTexture.fromImage(image);
+        var frames = json.frames;
+
+        for (var name in frames) {
+            var frame = frames[name].frame || frames[name];
+            var x = frame.x / game.scale;
+            var y = frame.y / game.scale;
+            var w = frame.w / game.scale;
+            var h = frame.h / game.scale;
+            var texture = new game.Texture(baseTexture, x, y, w, h);
+            game.Texture.cache[name] = texture;
+        }
+
+        callback();
+    },
+
+    /**
+        @method parseXML
+        @param {String} filePath
+        @param {Function} callback
+        @param {XMLHttpRequest} request
+    **/
+    parseXML: function(filePath, callback, request) {
+        if (!request.responseText || request.status === 404) callback('Error loading XML ' + filePath);
+
+        var responseXML = request.responseXML;
+        if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
+            if (typeof window.DOMParser === 'function') {
+                var domparser = new DOMParser();
+                responseXML = domparser.parseFromString(request.responseText, 'text/xml');
+            }
+            else {
+                var div = document.createElement('div');
+                div.innerHTML = request.responseText;
+                responseXML = div;
+            }
+        }
+
+        var font = responseXML.getElementsByTagName('page')[0].getAttribute('file');
+        var image = game._getFilePath(font);
+
+        this.loadImage(image, this.parseFont.bind(this, responseXML, callback));
+    },
+
+    /**
         Start loader.
         @method start
     **/
@@ -195,106 +290,6 @@ game.createClass('Loader', {
     **/
     _getFilePath: function(path) {
         return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
-    },
-
-    /**
-        @method _loadFile
-        @param {String} filePath
-        @param {Function} callback
-        @param {Function} loadCallback
-        @private
-    **/
-    _loadFile: function(filePath, callback, loadCallback) {
-        var request = new XMLHttpRequest();
-        request.onload = callback.bind(this, request, loadCallback);
-        request.open('GET', filePath, true);
-        request.send();
-    },
-
-    /**
-        @method _parseFont
-        @param {XML} data
-        @param {Function} callback
-        @private
-    **/
-    _parseFont: function(data, callback) {
-        game.Font.fromData(data);
-        callback();
-    },
-
-    /**
-        @method _parseJSON
-        @param {String} filePath
-        @param {XMLHttpRequest} request
-        @param {Function} callback
-        @private
-    **/
-    _parseJSON: function(filePath, request, callback) {
-        if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
-
-        var json = JSON.parse(request.responseText);
-        game.json[filePath] = json;
-        if (json.frames) {
-            // Sprite sheet
-            var image = game._getFilePath(json.meta.image);
-            this.loadImage(image, this._parseSpriteSheet.bind(this, json, callback));
-        }
-        else {
-            callback();
-        }
-    },
-
-    /**
-        @method _parseSpriteSheet
-        @param {Object} json
-        @param {Function} callback
-        @private
-    **/
-    _parseSpriteSheet: function(json, callback) {
-        var image = game._getFilePath(json.meta.image);
-        var baseTexture = game.BaseTexture.fromImage(image);
-        var frames = json.frames;
-
-        for (var name in frames) {
-            var frame = frames[name].frame || frames[name];
-            var x = frame.x / game.scale;
-            var y = frame.y / game.scale;
-            var w = frame.w / game.scale;
-            var h = frame.h / game.scale;
-            var texture = new game.Texture(baseTexture, x, y, w, h);
-            game.Texture.cache[name] = texture;
-        }
-
-        callback();
-    },
-
-    /**
-        @method _parseXML
-        @param {String} filePath
-        @param {XMLHttpRequest} request
-        @param {Function} callback
-        @private
-    **/
-    _parseXML: function(filePath, request, callback) {
-        if (!request.responseText || request.status === 404) callback('Error loading XML ' + filePath);
-
-        var responseXML = request.responseXML;
-        if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
-            if (typeof window.DOMParser === 'function') {
-                var domparser = new DOMParser();
-                responseXML = domparser.parseFromString(request.responseText, 'text/xml');
-            }
-            else {
-                var div = document.createElement('div');
-                div.innerHTML = request.responseText;
-                responseXML = div;
-            }
-        }
-
-        var font = responseXML.getElementsByTagName('page')[0].getAttribute('file');
-        var image = game._getFilePath(font);
-
-        this.loadImage(image, this._parseFont.bind(this, responseXML, callback));
     },
 
     /**
