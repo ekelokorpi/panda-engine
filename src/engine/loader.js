@@ -107,7 +107,7 @@ game.createClass('Loader', {
     **/
     loadFile: function(filePath, callback) {
         var request = new XMLHttpRequest();
-        request.onload = callback.bind(this, request);
+        request.onreadystatechange = callback.bind(this, request);
         request.open('GET', filePath, true);
         request.send();
     },
@@ -196,6 +196,7 @@ game.createClass('Loader', {
         @param {XMLHttpRequest} request
     **/
     parseJSON: function(filePath, callback, request) {
+        if (request.readyState !== 4) return;
         if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
 
         var json = JSON.parse(request.responseText);
@@ -240,6 +241,7 @@ game.createClass('Loader', {
         @param {XMLHttpRequest} request
     **/
     parseXML: function(filePath, callback, request) {
+        if (request.readyState !== 4) return;
         if (!request.responseText || request.status === 404) callback('Error loading XML ' + filePath);
 
         var responseXML = request.responseXML;
@@ -255,10 +257,12 @@ game.createClass('Loader', {
             }
         }
 
-        var font = responseXML.getElementsByTagName('page')[0].getAttribute('file');
-        var image = game._getFilePath(font);
-
-        this.loadImage(image, this.parseFont.bind(this, responseXML, callback));
+        var pages = responseXML.getElementsByTagName('page');
+        if (pages.length) {
+            var font = pages[0].getAttribute('file');
+            var image = game._getFilePath(font);
+            this.loadImage(image, this.parseFont.bind(this, responseXML, callback));
+        }
     },
 
     /**

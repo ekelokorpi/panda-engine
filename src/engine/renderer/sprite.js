@@ -90,8 +90,8 @@ game.createClass('Sprite', 'Container', {
         @private
     **/
     _renderCanvas: function(context, transform, rect, offset) {
-        if (!this.texture) return;
-        if (!this.texture.baseTexture.loaded) return;
+        if (!this.texture) return true;
+        if (!this.texture.baseTexture.loaded) return true;
 
         if (!this.texture.width && this.texture.baseTexture.width) {
             this.texture.width = this.texture.baseTexture.width;
@@ -100,7 +100,7 @@ game.createClass('Sprite', 'Container', {
             this.texture.height = this.texture.baseTexture.height;
         }
         
-        if (!this.texture.width || !this.texture.height) return;
+        if (!this.texture.width || !this.texture.height) return true;
         
         context.globalCompositeOperation = this.blendMode;
         context.globalAlpha = this._worldAlpha;
