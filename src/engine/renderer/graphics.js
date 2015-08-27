@@ -40,6 +40,11 @@ game.createClass('Graphics', 'Container', {
     **/
     lineWidth: 0,
     /**
+        @property {String} blendMode
+        @default source-over
+    **/
+    blendMode: 'source-over',
+    /**
         @property {Array} shapes
     **/
     shapes: [],
@@ -75,6 +80,23 @@ game.createClass('Graphics', 'Container', {
     drawCircle: function(x, y, radius) {
         radius *= game.scale;
         var shape = new game.Circle(radius, x, y);
+        this._drawShape(shape);
+        return this;
+    },
+
+    /**
+        @method drawArc
+        @param {Number} x
+        @param {Number} y
+        @param {Number} radius
+        @param {Number} startAngle
+        @param {Number} endAngle
+        @param {Boolean} counterClock
+        @chainable
+    **/
+    drawArc:  function(x, y, radius, startAngle, endAngle, counterClock, closePath) {
+        radius *= game.scale;
+        var shape = new game.Arc(radius, x, y, startAngle, endAngle, counterClock, closePath);
         this._drawShape(shape);
         return this;
     },
@@ -175,6 +197,8 @@ game.createClass('Graphics', 'Container', {
         var tx = wt.tx * game.scale;
         var ty = wt.ty * game.scale;
 
+        context.globalCompositeOperation = this.blendMode;
+
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
 
         for (var i = 0; i < this.shapes.length; i++) {
@@ -268,7 +292,15 @@ game.createClass('GraphicsData', {
             context.rect(x, y, this.shape.width, this.shape.height);
         }
         else if (this.shape.radius) {
-            context.arc(x, y, this.shape.radius, 0, Math.PI * 2);
+            if(this.shape.startAngle && this.shape.endAngle) {
+                context.arc(x, y, this.shape.radius, this.shape.startAngle, this.shape.endAngle, this.shape.counterClock);
+                if(this.shape.closePath){
+                    context.lineTo(x, y);
+                    context.closePath();
+                }
+            }else{
+                context.arc(x, y, this.shape.radius, 0, Math.PI * 2);
+            }
         }
 
         if (this.fillColor && this.fillAlpha) context.fill();
@@ -291,7 +323,15 @@ game.createClass('GraphicsData', {
             context.rect(x, y, this.shape.width, this.shape.height);
         }
         else if (this.shape.radius) {
-            context.arc(x, y, this.shape.radius, 0, Math.PI * 2);
+            if(this.shape.startAngle && this.shape.endAngle) {
+                context.arc(x, y, this.shape.radius, this.shape.startAngle, this.shape.endAngle, this.shape.counterClock);
+                if(this.shape.closePath){
+                    context.lineTo(x, y);
+                    context.closePath();
+                }
+            }else{
+                context.arc(x, y, this.shape.radius, 0, Math.PI * 2);
+            }
         }
     }
 });
