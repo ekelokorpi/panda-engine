@@ -107,7 +107,7 @@ game.createClass('Loader', {
     **/
     loadFile: function(filePath, callback) {
         var request = new XMLHttpRequest();
-        request.onreadystatechange = callback.bind(this, request);
+        request.onload = callback.bind(this, request);
         request.open('GET', filePath, true);
         request.send();
     },
@@ -144,6 +144,15 @@ game.createClass('Loader', {
         @method onComplete
     **/
     onComplete: function() {
+    },
+
+    /**
+        Called, when loader got error.
+        @method onError
+        @param {String} error
+    **/
+    onError: function(error) {
+        throw error;
     },
 
     /**
@@ -194,9 +203,9 @@ game.createClass('Loader', {
         @param {String} filePath
         @param {Function} callback
         @param {XMLHttpRequest} request
+        @return {JSON} json
     **/
     parseJSON: function(filePath, callback, request) {
-        if (request.readyState !== 4) return;
         if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
 
         var json = JSON.parse(request.responseText);
@@ -205,10 +214,10 @@ game.createClass('Loader', {
             // Sprite sheet
             var image = game._getFilePath(json.meta.image);
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
+            return;
         }
-        else {
-            callback();
-        }
+
+        return json;
     },
 
     /**
@@ -241,7 +250,6 @@ game.createClass('Loader', {
         @param {XMLHttpRequest} request
     **/
     parseXML: function(filePath, callback, request) {
-        if (request.readyState !== 4) return;
         if (!request.responseText || request.status === 404) callback('Error loading XML ' + filePath);
 
         var responseXML = request.responseXML;
@@ -302,7 +310,7 @@ game.createClass('Loader', {
         @private
     **/
     _progress: function(error) {
-        if (error) throw error;
+        if (error) this.onError(error);
         this._loadCount--;
         this.loaded++;
         this.percent = Math.round(this.loaded / this.totalFiles * 100);
