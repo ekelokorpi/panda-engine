@@ -112,7 +112,7 @@ game.createClass('Renderer', {
         this.context.globalAlpha = 1;
         this.context.globalCompositeOperation = 'source-over';
         if (game.Renderer.clearBeforeRender) this._clear();
-        container.updateTransform();
+        container._updateChildTransform();
         container._render(this.context);
     },
 

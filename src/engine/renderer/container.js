@@ -331,9 +331,7 @@ game.createClass('Container', {
     /**
         @method updateTransform
     **/
-    updateTransform: function() {
-        if (!this.parent) return this._updateChildTransform();
-        
+    updateTransform: function() {        
         var pt = this.parent._worldTransform;
         var wt = this._worldTransform;
         
