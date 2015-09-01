@@ -51,6 +51,10 @@ game.createClass('Loader', {
     **/
     totalFiles: 0,
     /**
+        @property {Array} tweens
+    **/
+    tweens: [],
+    /**
         List of assets to load.
         @property {Array} assetQueue
         @private
@@ -168,8 +172,6 @@ game.createClass('Loader', {
         @method onStart
     **/
     onStart: function() {
-        if (this.dynamic) return;
-
         var barWidth = game.Loader.barWidth;
         var barHeight = game.Loader.barHeight;
 
@@ -287,9 +289,8 @@ game.createClass('Loader', {
             this.stage.stage = this.stage;
             game.scene = this;
             if (!game.system._running) game.system._startRunLoop();
+            this.onStart();
         }
-
-        this.onStart();
 
         if (this.percent === 100) this._ready();
         else this._startLoading();
@@ -384,6 +385,11 @@ game.createClass('Loader', {
     **/
     _update: function() {
         if (this.dynamic) return;
+
+        for (var i = this.tweens.length - 1; i >= 0; i--) {
+            if (!this.tweens[i]._update()) this.tweens.splice(i, 1);
+        }
+
         if (this.percent === 100 && game.Timer.time >= this._readyTime) {
             game.system.setScene(this.onComplete);
         }
