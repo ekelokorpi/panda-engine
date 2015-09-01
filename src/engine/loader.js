@@ -15,9 +15,14 @@ game.module(
 game.createClass('Loader', {
     /**
         Background color.
-        @attribute {String} backgroundColor
+        @property {String} backgroundColor
     **/
     backgroundColor: null,
+    /**
+        Callback function or scene name
+        @property {Function|String} callback
+    **/
+    callback: null,
     /**
         Is loader in dynamic mode.
         @property {Boolean} dynamic
@@ -72,6 +77,11 @@ game.createClass('Loader', {
     **/
     _loadCount: 0,
     /**
+        @property {Boolean} _onCompleteCalled
+        @private
+    **/
+    _onCompleteCalled: false,
+    /**
         @property {Number} _readyTime
         @private
     **/
@@ -83,7 +93,7 @@ game.createClass('Loader', {
     _startTime: 0,
 
     init: function(callback) {
-        this.onComplete = callback;
+        this.callback = callback;
 
         if (!this.backgroundColor) this.backgroundColor = game.Loader.backgroundColor;
 
@@ -148,6 +158,7 @@ game.createClass('Loader', {
         @method onComplete
     **/
     onComplete: function() {
+        if (!this.dynamic) game.system.setScene(this.callback);
     },
 
     /**
@@ -281,7 +292,7 @@ game.createClass('Loader', {
     **/
     start: function() {
         this.started = true;
-        if (typeof this.onComplete === 'string') this.dynamic = false;
+        if (typeof this.callback === 'string') this.dynamic = false;
 
         if (!this.dynamic) {
             this._startTime = game.Timer.time;
@@ -390,9 +401,11 @@ game.createClass('Loader', {
             if (!this.tweens[i]._update()) this.tweens.splice(i, 1);
         }
 
-        if (this.percent === 100 && game.Timer.time >= this._readyTime) {
-            game.system.setScene(this.onComplete);
+        if (this.percent === 100 && game.Timer.time >= this._readyTime && !this._onCompleteCalled) {
+            this.onComplete();
+            this._onCompleteCalled = true;
         }
+
         game.renderer._render(this.stage);
     }
 });
