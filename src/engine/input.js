@@ -245,6 +245,7 @@ game.createClass('Input', {
     **/
     _touchstart: function(event) {
         this._preventDefault(event);
+        if (this.touches.length === 1 && !game.Input.multitouch) return;
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
             this.touches.push(touch);
@@ -285,6 +286,12 @@ game.addAttributes('Input', {
         @default 500
     **/
     clickTimeout: 500,
+    /**
+        Enable multitouch.
+        @attribute {Boolean} multitouch
+        @default true
+    **/
+    multitouch: true,
     /**
         Should events prevent default action.
         @attribute {Boolean} preventDefault
