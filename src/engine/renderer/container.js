@@ -487,6 +487,7 @@ game.createClass('Container', {
         @private
     **/
     _renderCachedSprite: function(context) {
+        context.globalCompositeOperation = 'source-over';
         context.globalAlpha = this._worldAlpha;
 
         var t = this._cachedSprite.texture;
