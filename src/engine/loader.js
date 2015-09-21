@@ -228,7 +228,8 @@ game.createClass('Loader', {
             var image = game._getFilePath(json.meta.image);
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
             return;
-        }else{
+        }
+        else {
             callback();
         }
 
