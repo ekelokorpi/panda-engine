@@ -250,6 +250,7 @@ game.addAttributes('BaseTexture', {
             baseTexture._id = path;
             this.cache[path] = baseTexture;
         }
+        else if (loadCallback) loadCallback();
 
         return baseTexture;
     }

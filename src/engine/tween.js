@@ -426,7 +426,7 @@ game.createClass('Tween', {
             }
             else {
                 this.playing = false;
-                if (this.onCompleteCallback !== null) {
+                if (typeof this.onCompleteCallback === 'function') {
                     this.onCompleteCallback.call(this.object);
                 }
                 for (var i = 0, numChainedTweens = this.chainedTweens.length; i < numChainedTweens; i++) {

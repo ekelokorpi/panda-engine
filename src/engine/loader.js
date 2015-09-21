@@ -15,9 +15,14 @@ game.module(
 game.createClass('Loader', {
     /**
         Background color.
-        @attribute {String} backgroundColor
+        @property {String} backgroundColor
     **/
     backgroundColor: null,
+    /**
+        Callback function or scene name
+        @property {Function|String} callback
+    **/
+    callback: null,
     /**
         Is loader in dynamic mode.
         @property {Boolean} dynamic
@@ -51,6 +56,10 @@ game.createClass('Loader', {
     **/
     totalFiles: 0,
     /**
+        @property {Array} tweens
+    **/
+    tweens: [],
+    /**
         List of assets to load.
         @property {Array} assetQueue
         @private
@@ -68,6 +77,11 @@ game.createClass('Loader', {
     **/
     _loadCount: 0,
     /**
+        @property {Boolean} _onCompleteCalled
+        @private
+    **/
+    _onCompleteCalled: false,
+    /**
         @property {Number} _readyTime
         @private
     **/
@@ -79,7 +93,7 @@ game.createClass('Loader', {
     _startTime: 0,
 
     init: function(callback) {
-        this.onComplete = callback;
+        this.callback = callback;
 
         if (!this.backgroundColor) this.backgroundColor = game.Loader.backgroundColor;
 
@@ -144,6 +158,16 @@ game.createClass('Loader', {
         @method onComplete
     **/
     onComplete: function() {
+        if (!this.dynamic) game.system.setScene(this.callback);
+    },
+
+    /**
+        Called, when loader got error.
+        @method onError
+        @param {String} error
+    **/
+    onError: function(error) {
+        throw error;
     },
 
     /**
@@ -159,8 +183,6 @@ game.createClass('Loader', {
         @method onStart
     **/
     onStart: function() {
-        if (this.dynamic) return;
-
         var barWidth = game.Loader.barWidth;
         var barHeight = game.Loader.barHeight;
 
@@ -194,6 +216,7 @@ game.createClass('Loader', {
         @param {String} filePath
         @param {Function} callback
         @param {XMLHttpRequest} request
+        @return {JSON} json
     **/
     parseJSON: function(filePath, callback, request) {
         if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
@@ -204,10 +227,12 @@ game.createClass('Loader', {
             // Sprite sheet
             var image = game._getFilePath(json.meta.image);
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
-        }
-        else {
+            return;
+        }else{
             callback();
         }
+
+        return json;
     },
 
     /**
@@ -255,10 +280,12 @@ game.createClass('Loader', {
             }
         }
 
-        var font = responseXML.getElementsByTagName('page')[0].getAttribute('file');
-        var image = game._getFilePath(font);
-
-        this.loadImage(image, this.parseFont.bind(this, responseXML, callback));
+        var pages = responseXML.getElementsByTagName('page');
+        if (pages.length) {
+            var font = pages[0].getAttribute('file');
+            var image = game._getFilePath(font);
+            this.loadImage(image, this.parseFont.bind(this, responseXML, callback));
+        }
     },
 
     /**
@@ -267,7 +294,7 @@ game.createClass('Loader', {
     **/
     start: function() {
         this.started = true;
-        if (typeof this.onComplete === 'string') this.dynamic = false;
+        if (typeof this.callback === 'string') this.dynamic = false;
 
         if (!this.dynamic) {
             this._startTime = game.Timer.time;
@@ -275,9 +302,8 @@ game.createClass('Loader', {
             this.stage.stage = this.stage;
             game.scene = this;
             if (!game.system._running) game.system._startRunLoop();
+            this.onStart();
         }
-
-        this.onStart();
 
         if (this.percent === 100) this._ready();
         else this._startLoading();
@@ -298,7 +324,7 @@ game.createClass('Loader', {
         @private
     **/
     _progress: function(error) {
-        if (error) throw error;
+        if (error) this.onError(error);
         this._loadCount--;
         this.loaded++;
         this.percent = Math.round(this.loaded / this.totalFiles * 100);
@@ -372,9 +398,16 @@ game.createClass('Loader', {
     **/
     _update: function() {
         if (this.dynamic) return;
-        if (this.percent === 100 && game.Timer.time >= this._readyTime) {
-            game.system.setScene(this.onComplete);
+
+        for (var i = this.tweens.length - 1; i >= 0; i--) {
+            if (!this.tweens[i]._update()) this.tweens.splice(i, 1);
         }
+
+        if (this.percent === 100 && game.Timer.time >= this._readyTime && !this._onCompleteCalled) {
+            this.onComplete();
+            this._onCompleteCalled = true;
+        }
+
         game.renderer._render(this.stage);
     }
 });

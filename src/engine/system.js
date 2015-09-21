@@ -348,6 +348,7 @@ game.createClass('System', {
         if (this.paused) this.paused = false;
         if (game.scene && game.scene.exit) game.scene.exit();
         game.scene = new (sceneClass)();
+        game.input._needUpdate = true;
         this._newSceneClass = null;
         this._startRunLoop();
     },
