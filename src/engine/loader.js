@@ -229,6 +229,12 @@ game.createClass('Loader', {
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
             return;
         }
+<<<<<<< HEAD
+=======
+        else {
+            callback();
+        }
+>>>>>>> develop
 
         return json;
     },
