@@ -322,12 +322,12 @@ game.createClass('Loader', {
         @private
     **/
     _progress: function(error) {
-        if (error) this.onError(error);
+        if (error) return this.onError(error);
         this._loadCount--;
         this.loaded++;
         this.percent = Math.round(this.loaded / this.totalFiles * 100);
         this.onProgress();
-        if (this.percent === 100) this._ready();
+        if (this.loaded === this.totalFiles) this._ready();
         else this._startLoading();
     },
 
@@ -401,7 +401,7 @@ game.createClass('Loader', {
             if (!this.tweens[i]._update()) this.tweens.splice(i, 1);
         }
 
-        if (this.percent === 100 && game.Timer.time >= this._readyTime && !this._onCompleteCalled) {
+        if (this.loaded === this.totalFiles && game.Timer.time >= this._readyTime && !this._onCompleteCalled) {
             this.onComplete();
             this._onCompleteCalled = true;
         }
