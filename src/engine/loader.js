@@ -230,7 +230,7 @@ game.createClass('Loader', {
             return;
         }
 
-        return json;
+        callback();
     },
 
     /**
