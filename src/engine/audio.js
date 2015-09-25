@@ -516,7 +516,7 @@ game.createClass('Audio', {
         @private
     **/
     _error: function(path, callback) {
-        callback('Error loading audio' + path);
+        callback('Error loading audio ' + path);
     },
 
     /**
