@@ -328,6 +328,7 @@ var game = {
         if (!this[extend]) throw 'Class ' + extend + ' not found';
 
         this[name] = this[extend].extend(content);
+        this[name].prototype.name = name;
         this._currentModule.classes.push(name);
         return this[name];
     },
@@ -958,6 +959,9 @@ game.Core = game;
     @class Class
 **/
 game.Class = function() {};
+/**
+    @property {String} name
+**/
 /**
     Extend class.
     @method extend

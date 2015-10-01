@@ -216,13 +216,10 @@ game.createClass('Input', {
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
-            for (var o = this.touches.length - 1; o >= 0; o--) {
-                if (this.touches[o].identifier === touch.identifier) {
-                    this.touches.splice(o, 1);
-                    break;
-                }
+            if (this.touches.indexOf(touch) !== -1) {
+                this._mouseup(touch);
+                this.touches.erase(touch);
             }
-            this._mouseup(touch);
         }
     },
 
@@ -234,7 +231,8 @@ game.createClass('Input', {
     _touchmove: function(event) {
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
-            this._mousemove(event.changedTouches[i]);
+            var touch = event.changedTouches[i];
+            if (this.touches.indexOf(touch) !== -1) this._mousemove(touch);
         }
     },
 
