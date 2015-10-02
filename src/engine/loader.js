@@ -229,6 +229,9 @@ game.createClass('Loader', {
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
             return;
         }
+        else {
+            callback();
+        }
 
         return json;
     },
