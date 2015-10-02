@@ -71,6 +71,24 @@ game.createClass('Graphics', 'Container', {
     },
 
     /**
+        @method drawArc
+        @param {Number} x
+        @param {Number} y
+        @param {Number} radius
+        @param {Number} startAngle
+        @param {Number} endAngle
+        @param {Boolean} counterClock
+        @param {Boolean} closePath
+        @chainable
+    **/
+    drawArc: function(x, y, radius, startAngle, endAngle, counterClock, closePath) {
+        radius *= game.scale;
+        var shape = new game.Arc(radius, x, y, startAngle, endAngle, counterClock, closePath);
+        this._drawShape(shape);
+        return this;
+    },
+
+    /**
         @method drawCircle
         @param {Number} x
         @param {Number} y
@@ -80,23 +98,6 @@ game.createClass('Graphics', 'Container', {
     drawCircle: function(x, y, radius) {
         radius *= game.scale;
         var shape = new game.Circle(radius, x, y);
-        this._drawShape(shape);
-        return this;
-    },
-
-    /**
-        @method drawArc
-        @param {Number} x
-        @param {Number} y
-        @param {Number} radius
-        @param {Number} startAngle
-        @param {Number} endAngle
-        @param {Boolean} counterClock
-        @chainable
-    **/
-    drawArc:  function(x, y, radius, startAngle, endAngle, counterClock, closePath) {
-        radius *= game.scale;
-        var shape = new game.Arc(radius, x, y, startAngle, endAngle, counterClock, closePath);
         this._drawShape(shape);
         return this;
     },
@@ -220,7 +221,7 @@ game.createClass('Graphics', 'Container', {
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
         context.beginPath();
         for (var i = 0; i < this.shapes.length; i++) {
-            this.shapes[i]._renderMask(context);
+            this.shapes[i]._renderShape(context);
         }
         context.closePath();
         context.clip();
@@ -285,23 +286,7 @@ game.createClass('GraphicsData', {
         context.lineWidth = this.lineWidth * game.scale;
         context.beginPath();
 
-        var x = this.shape.x * game.scale;
-        var y = this.shape.y * game.scale;
-
-        if (this.shape.width) {
-            context.rect(x, y, this.shape.width, this.shape.height);
-        }
-        else if (this.shape.radius) {
-            if(this.shape.startAngle && this.shape.endAngle) {
-                context.arc(x, y, this.shape.radius, this.shape.startAngle, this.shape.endAngle, this.shape.counterClock);
-                if(this.shape.closePath){
-                    context.lineTo(x, y);
-                    context.closePath();
-                }
-            }else{
-                context.arc(x, y, this.shape.radius, 0, Math.PI * 2);
-            }
-        }
+        this._renderShape(context);
 
         if (this.fillColor && this.fillAlpha) context.fill();
         if (this.lineWidth) {
@@ -311,26 +296,28 @@ game.createClass('GraphicsData', {
     },
 
     /**
-        @method _renderMask
+        @method _renderShape
         @param {CanvasRenderingContext2D} context
         @private
     **/
-    _renderMask: function(context) {
-        var x = this.shape.x * game.scale;
-        var y = this.shape.y * game.scale;
+    _renderShape: function(context) {
+        var shape = this.shape;
+        var x = shape.x * game.scale;
+        var y = shape.y * game.scale;
 
-        if (this.shape.width) {
-            context.rect(x, y, this.shape.width, this.shape.height);
+        if (shape.width) {
+            context.rect(x, y, shape.width, shape.height);
         }
-        else if (this.shape.radius) {
-            if(this.shape.startAngle && this.shape.endAngle) {
-                context.arc(x, y, this.shape.radius, this.shape.startAngle, this.shape.endAngle, this.shape.counterClock);
-                if(this.shape.closePath){
+        else if (shape.radius) {
+            if (shape.startAngle && shape.endAngle) {
+                context.arc(x, y, shape.radius, shape.startAngle, shape.endAngle, shape.counterClock);
+                if (shape.closePath) {
                     context.lineTo(x, y);
                     context.closePath();
                 }
-            }else{
-                context.arc(x, y, this.shape.radius, 0, Math.PI * 2);
+            }
+            else {
+                context.arc(x, y, shape.radius, 0, Math.PI * 2);
             }
         }
     }

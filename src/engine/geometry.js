@@ -2,9 +2,69 @@
     @module geometry
 **/
 game.module(
-	'engine.geometry'
+    'engine.geometry'
 )
 .body(function() {
+
+/**
+    @class Arc
+    @constructor
+    @param {Number} radius
+    @param {Number} x
+    @param {Number} y
+    @param {Number} startAngle
+    @param {Number} endAngle
+    @param {Boolean} counterClock
+    @param {Boolean} closePath
+**/
+game.createClass('Arc', {
+    /**
+        Radius of arc.
+        @property {Number} radius
+        @default 0
+    **/
+    radius: 0,
+    /**
+        @property {Number} x
+        @default 0
+    **/
+    x: 0,
+    /**
+        @property {Number} y
+        @default 0
+    **/
+    y: 0,
+    /**
+        @property {Number} startAngle
+        @default 0
+    **/
+    startAngle: 0,
+    /**
+        @property {Number} endAngle
+        @default 0
+    **/
+    endAngle: 0,
+    /**
+        @property {Boolean} counterClock
+        @default false
+    **/
+    counterClock: false,
+    /**
+        @property {Boolean} closePath
+        @default false
+    **/
+    closePath: false,
+
+    staticInit: function(radius, x, y, startAngle, endAngle, counterClock, closePath) {
+        this.radius = radius || this.radius;
+        this.x = x || this.x;
+        this.y = y || this.y;
+        this.startAngle = startAngle || this.startAngle;
+        this.endAngle = endAngle || this.endAngle;
+        this.counterClock = counterClock || this.counterClock;
+        this.closePath = closePath || this.closePath;
+    }
+});
 
 /**
     @class Circle
@@ -34,56 +94,6 @@ game.createClass('Circle', {
         this.x = x || this.x;
         this.y = y || this.y;
     }
-});
-
-game.createClass('Arc', {
-	/**
-		Radius of arc.
-		@property {Number} radius
-		@default 0
-	**/
-	radius: 0,
-	/**
-		@property {Number} x
-		@default 0
-	**/
-	x: 0,
-	/**
-		@property {Number} y
-		@default 0
-	**/
-	y: 0,
-	/**
-		@property {Number} startAngle
-		@default 0
-	**/
-	startAngle: 0,
-	/**
-		@property {Number} endAngle
-		@default 0
-	**/
-	endAngle: 0,
-	/**
-		@property {Boolean} counterClock
-		@default false
-	**/
-	counterClock: false,
-	/**
-		@property {Boolean} closePath
-		@default false
-	**/
-	closePath: false,
-
-
-	staticInit: function(radius, x, y, startAngle, endAngle, counterClock, closePath) {
-		this.radius = radius || this.radius;
-		this.x = x || this.x;
-		this.y = y || this.y;
-		this.startAngle = startAngle || this.startAngle;
-		this.endAngle = endAngle || this.endAngle;
-		this.counterClock = counterClock || this.counterClock;
-		this.closePath = closePath || this.closePath;
-	}
 });
 
 /**
