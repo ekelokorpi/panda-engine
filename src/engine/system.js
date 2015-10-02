@@ -325,7 +325,8 @@ game.createClass('System', {
         var width = window.innerWidth;
         var height = window.innerHeight;
 
-        this._scale(width, height);
+        var scalePercent = game.System.scalePercent / 100;
+        this._scale(width * scalePercent, height * scalePercent);
         this._resize(width, height);
 
         if (game.System.center) {
@@ -456,6 +457,11 @@ game.addAttributes('System', {
         @default false
     **/
     scale: false,
+    /**
+        @attribute {Number} scalePercent
+        @default 100
+    **/
+    scalePercent: 100,
     /**
         Name of start scene.
         @attribute {String} startScene
