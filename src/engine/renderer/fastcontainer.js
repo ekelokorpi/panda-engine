@@ -39,6 +39,7 @@ game.createClass('FastContainer', 'Container', {
 
         var wt = this._worldTransform;
         var texture = child.texture;
+        if (child._cachedSprite) texture = child._cachedSprite.texture;
         var tx = texture.position.x;
         var ty = texture.position.y;
         var tw = texture.width * game.scale;
@@ -78,14 +79,19 @@ game.createClass('FastContainer', 'Container', {
 
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
-            var texture = child.texture;
-            if (!child.visible || child.alpha <= 0 || !child.renderable || !texture) continue;
+            var hasTexture = child.texture || child._cachedSprite;
+            if (!child.visible || child.alpha <= 0 || !child.renderable || !hasTexture) continue;
 
             this._renderBatch(child, context);
         }
     },
 
     _updateChildTransform: function() {
+        for (var i = this.children.length - 1; i >= 0; i--) {
+            var child = this.children[i];
+            if (!child.visible || child.alpha <= 0) continue;
+            if (child.updateAnimation) child.updateAnimation();
+        }
     }
 });
 
