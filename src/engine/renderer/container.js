@@ -149,6 +149,10 @@ game.createClass('Container', {
         this.children.push(child);
         child.parent = this;
         if (this.stage) child._setStageReference(this.stage);
+        if (this.cacheAsBitmap) {
+            this._destroyCachedSprite();
+            this._generateCachedSprite();
+        }
         return this;
     },
 
@@ -295,6 +299,10 @@ game.createClass('Container', {
         this.children.splice(index, 1);
         child.parent = null;
         if (this.stage) child._removeStageReference();
+        if (this.cacheAsBitmap) {
+            this._destroyCachedSprite();
+            this._generateCachedSprite();
+        }
         return this;
     },
 
