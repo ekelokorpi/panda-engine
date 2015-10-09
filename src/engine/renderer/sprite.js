@@ -17,9 +17,10 @@ game.module(
 **/
 game.createClass('Sprite', 'Container', {
     /**
-        @property {String} blendMode
+        @property {Number} blendMode
+        @default 0
     **/
-    blendMode: 'source-over',
+    blendMode: 0,
     /**
         @property {Texture} texture
     **/
@@ -102,7 +103,7 @@ game.createClass('Sprite', 'Container', {
         
         if (!this.texture.width || !this.texture.height) return true;
         
-        context.globalCompositeOperation = this.blendMode;
+        context.globalCompositeOperation = game.Sprite.blendModes[this.blendMode];
         context.globalAlpha = this._worldAlpha;
 
         var t = this.texture;
@@ -139,6 +140,41 @@ game.createClass('Sprite', 'Container', {
         context.drawImage(t.baseTexture.source, x, y, width, height, 0, 0, width, height);
     }
 });
+
+game.addAttributes('Sprite', {
+    /**
+        List of supported blend modes.
+        @attribute {Array} blendModes
+    **/
+    blendModes: [
+        'source-over',
+        'source-in',
+        'source-out',
+        'source-atop',
+        'destination-over',
+        'destination-in',
+        'destination-out',
+        'destination-atop',
+        'lighter',
+        'copy',
+        'xor',
+        'multiply',
+        'screen',
+        'overlay',
+        'darken',
+        'lighten',
+        'color-dodge',
+        'color-burn',
+        'hard-light',
+        'soft-light',
+        'difference',
+        'exclusion',
+        'hue',
+        'saturation',
+        'color',
+        'luminosity'
+    ]
+})
 
 game.defineProperties('Sprite', {
     width: {
