@@ -351,8 +351,8 @@ game.createClass('Container', {
             this._cosCache = Math.cos(this.rotation);
         }
 
-        var ax = this.anchor.x;
-        var ay = this.anchor.y;
+        var ax = Math.round(this.anchor.x);
+        var ay = Math.round(this.anchor.y);
         var a = this._cosCache * this.scale.x;
         var b = this._sinCache * this.scale.x;
         var c = -this._sinCache * this.scale.y;
