@@ -240,6 +240,13 @@ game.createClass('System', {
             this.canvasWidth = ~~(height * (this.originalWidth / this.originalHeight));
             this.canvasHeight = height;
         }
+
+        if (game.System.scaleMax > 0) {
+            var maxWidth = this.originalWidth * (game.System.scaleMax / 100);
+            var maxHeight = this.originalHeight * (game.System.scaleMax / 100);
+            if (this.canvasWidth > maxWidth) this.canvasWidth = maxWidth;
+            if (this.canvasHeight > maxHeight) this.canvasHeight = maxHeight;
+        }
     },
 
     /**
@@ -457,6 +464,12 @@ game.addAttributes('System', {
         @default false
     **/
     scale: false,
+    /**
+        Maximum percent of scaling (0 = disabled).
+        @attribute {Number} scaleMax
+        @default 0
+    **/
+    scaleMax: 0,
     /**
         @attribute {Number} scalePercent
         @default 100

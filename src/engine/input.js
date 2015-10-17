@@ -23,7 +23,7 @@ game.createClass('Input', {
     **/
     mouse: null,
     /**
-        List of current touches.
+        List of current touch identifiers.
         @property {Array} touches
     **/
     touches: [],
@@ -216,9 +216,9 @@ game.createClass('Input', {
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
-            if (this.touches.indexOf(touch) !== -1) {
+            if (this.touches.indexOf(touch.identifier) !== -1) {
                 this._mouseup(touch);
-                this.touches.erase(touch);
+                this.touches.erase(touch.identifier);
             }
         }
     },
@@ -232,7 +232,7 @@ game.createClass('Input', {
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
-            if (this.touches.indexOf(touch) !== -1) this._mousemove(touch);
+            if (this.touches.indexOf(touch.identifier) !== -1) this._mousemove(touch);
         }
     },
 
@@ -246,7 +246,7 @@ game.createClass('Input', {
         for (var i = 0; i < event.changedTouches.length; i++) {
             if (this.touches.length === 1 && !game.Input.multitouch) return;
             var touch = event.changedTouches[i];
-            this.touches.push(touch);
+            this.touches.push(touch.identifier);
             this._mousedown(touch);
         }
     },

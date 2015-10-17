@@ -480,38 +480,15 @@ game.createClass('Container', {
     _render: function(context) {
         if (this._mask) this._mask._renderMask(context);
 
-        if (this._cachedSprite) this._renderCachedSprite(context);
+        if (this._cachedSprite) {
+            this._cachedSprite._renderCanvas(context, this._worldTransform);
+        }
         else {
             this._renderCanvas(context);
             this._renderChildren(context);
         }
 
         if (this._mask) context.restore();
-    },
-
-    /**
-        @method _renderCachedSprite
-        @param {CanvasRenderingContext2D} context
-        @private
-    **/
-    _renderCachedSprite: function(context) {
-        context.globalCompositeOperation = 'source-over';
-        context.globalAlpha = this._worldAlpha;
-
-        var t = this._cachedSprite.texture;
-        var wt = this._worldTransform;
-        var tx = wt.tx * game.scale;
-        var ty = wt.ty * game.scale;
-        var width = t.width * game.scale;
-        var height = t.height * game.scale;
-        
-        if (game.Renderer.roundPixels) {
-            tx = tx | 0;
-            ty = ty | 0;
-        }
-
-        context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
-        context.drawImage(t.baseTexture.source, t.position.x, t.position.y, width, height, 0, 0, width, height);
     },
 
     /**
