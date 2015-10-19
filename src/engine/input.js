@@ -333,7 +333,6 @@ game.createClass('Keyboard', {
         var key = game.Keyboard.keys[event.keyCode];
 
         if (!key) key = event.keyCode;
-        if (this._keysDown[key]) return;
         
         this._keysDown[key] = true;
         if (game.scene && game.scene.keydown) {
