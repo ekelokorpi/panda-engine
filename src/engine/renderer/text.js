@@ -231,7 +231,7 @@ game.createClass('Text', 'Container', {
             sprite.position.y = (y + charObj.yoffset) / game.scale;
             this.addChild(sprite);
 
-            x += charObj.xadvance + charObj.xoffset;
+            x += sprite.width + charObj.xoffset;
         }
     }
 });
