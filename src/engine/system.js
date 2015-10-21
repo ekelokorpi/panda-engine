@@ -141,7 +141,7 @@ game.createClass('System', {
             });
         }
 
-        game.renderer = new game.Renderer(this.canvasWidth, this.canvasHeight);
+        this._initRenderer();
 
         if (this.retina) {
             this.canvasWidth /= 2;
@@ -224,29 +224,47 @@ game.createClass('System', {
     },
 
     /**
-        @method _scale
-        @param {Number} width
-        @param {Number} height
+        @method _hideRotateScreen
         @private
     **/
-    _scale: function(width, height) {
-        if (!game.System.scale) return;
-        
-        if (width / this.originalWidth < height / this.originalHeight) {
-            this.canvasWidth = width;
-            this.canvasHeight = ~~(width * (this.originalHeight / this.originalWidth));
-        }
-        else {
-            this.canvasWidth = ~~(height * (this.originalWidth / this.originalHeight));
-            this.canvasHeight = height;
+    _hideRotateScreen: function() {
+        if (!this._rotateScreenVisible) return;
+        this._rotateScreenVisible = false;
+        game.renderer._show();
+        document.body.className = '';
+    },
+
+    /**
+        @method _initRenderer
+        @private
+    **/
+    _initRenderer: function() {
+        game.renderer = new game.Renderer(this.canvasWidth, this.canvasHeight);
+    },
+
+    /**
+        @method _onWindowResize
+        @private
+    **/
+    _onWindowResize: function() {
+        if (this._toggleRotateScreen()) return;
+
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
+        var scalePercent = game.System.scalePercent / 100;
+        this._scale(width * scalePercent, height * scalePercent);
+        this._resize(width, height);
+
+        if (game.System.center) {
+            game.renderer._position((width - this.canvasWidth) / 2, (height - this.canvasHeight) / 2);
         }
 
-        if (game.System.scaleMax > 0) {
-            var maxWidth = this.originalWidth * (game.System.scaleMax / 100);
-            var maxHeight = this.originalHeight * (game.System.scaleMax / 100);
-            if (this.canvasWidth > maxWidth) this.canvasWidth = maxWidth;
-            if (this.canvasHeight > maxHeight) this.canvasHeight = maxHeight;
+        if (game.System.scale || game.System.resize || this.retina) {
+            game.renderer._size(this.canvasWidth, this.canvasHeight);
         }
+
+        if (game._loader && !game._loader.started) game._loader.start();
     },
 
     /**
@@ -284,67 +302,45 @@ game.createClass('System', {
     },
 
     /**
-        @method _toggleRotateScreen
+        @method _run
         @private
     **/
-    _toggleRotateScreen: function() {
-        if (!game.device.mobile || !game.System.rotateScreen) return false;
+    _run: function() {
+        if (this.paused || this._pausedOnHide) return;
 
-        if (this.originalWidth > this.originalHeight && window.innerWidth < window.innerHeight ||
-            this.originalHeight > this.originalWidth && window.innerHeight < window.innerWidth) {
-            this._showRotateScreen();
-            return true;
-        }
+        game.Timer.update();
+        game.delta = this.delta = game.Timer.delta / 1000;
+
+        game.input._update();
+        game.scene._update();
+
+        if (this._newSceneClass) this._setSceneNow(this._newSceneClass, this._removeAssets);
+    },
+
+    /**
+        @method _scale
+        @param {Number} width
+        @param {Number} height
+        @private
+    **/
+    _scale: function(width, height) {
+        if (!game.System.scale) return;
         
-        this._hideRotateScreen();
-        return false;
-    },
-
-    /**
-        @method _showRotateScreen
-        @private
-    **/
-    _showRotateScreen: function() {
-        if (this._rotateScreenVisible) return;
-        this._rotateScreenVisible = true;
-        game.renderer._hide();
-        document.body.className = game.System.rotateScreenClass;
-    },
-
-    /**
-        @method _hideRotateScreen
-        @private
-    **/
-    _hideRotateScreen: function() {
-        if (!this._rotateScreenVisible) return;
-        this._rotateScreenVisible = false;
-        game.renderer._show();
-        document.body.className = '';
-    },
-
-    /**
-        @method _onWindowResize
-        @private
-    **/
-    _onWindowResize: function() {
-        if (this._toggleRotateScreen()) return;
-
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-
-        var scalePercent = game.System.scalePercent / 100;
-        this._scale(width * scalePercent, height * scalePercent);
-        this._resize(width, height);
-
-        if (game.System.center) {
-            game.renderer._position((width - this.canvasWidth) / 2, (height - this.canvasHeight) / 2);
+        if (width / this.originalWidth < height / this.originalHeight) {
+            this.canvasWidth = width;
+            this.canvasHeight = ~~(width * (this.originalHeight / this.originalWidth));
+        }
+        else {
+            this.canvasWidth = ~~(height * (this.originalWidth / this.originalHeight));
+            this.canvasHeight = height;
         }
 
-        if (game.System.scale || game.System.resize || this.retina) {
-            game.renderer._size(this.canvasWidth, this.canvasHeight);
+        if (game.System.scaleMax > 0) {
+            var maxWidth = this.originalWidth * (game.System.scaleMax / 100);
+            var maxHeight = this.originalHeight * (game.System.scaleMax / 100);
+            if (this.canvasWidth > maxWidth) this.canvasWidth = maxWidth;
+            if (this.canvasHeight > maxHeight) this.canvasHeight = maxHeight;
         }
-
-        if (game._loader && !game._loader.started) game._loader.start();
     },
 
     /**
@@ -359,6 +355,17 @@ game.createClass('System', {
         game.input._needUpdate = true;
         this._newSceneClass = null;
         this._startRunLoop();
+    },
+
+    /**
+        @method _showRotateScreen
+        @private
+    **/
+    _showRotateScreen: function() {
+        if (this._rotateScreenVisible) return;
+        this._rotateScreenVisible = true;
+        game.renderer._hide();
+        document.body.className = game.System.rotateScreenClass;
     },
 
     /**
@@ -381,19 +388,20 @@ game.createClass('System', {
     },
 
     /**
-        @method _run
+        @method _toggleRotateScreen
         @private
     **/
-    _run: function() {
-        if (this.paused || this._pausedOnHide) return;
+    _toggleRotateScreen: function() {
+        if (!game.device.mobile || !game.System.rotateScreen) return false;
 
-        game.Timer.update();
-        game.delta = this.delta = game.Timer.delta / 1000;
-
-        game.input._update();
-        game.scene._update();
-
-        if (this._newSceneClass) this._setSceneNow(this._newSceneClass, this._removeAssets);
+        if (this.originalWidth > this.originalHeight && window.innerWidth < window.innerHeight ||
+            this.originalHeight > this.originalWidth && window.innerHeight < window.innerWidth) {
+            this._showRotateScreen();
+            return true;
+        }
+        
+        this._hideRotateScreen();
+        return false;
     }
 });
 

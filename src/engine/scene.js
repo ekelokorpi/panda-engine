@@ -132,13 +132,15 @@ game.createClass('Scene', {
         @param {Number} time Time (ms).
         @param {Function} callback Callback function to run, when timer ends.
         @param {Boolean} [repeat]
+        @param {Boolean} [instant]
         @return {Timer}
     **/
-    addTimer: function(time, callback, repeat) {
+    addTimer: function(time, callback, repeat, instant) {
         var timer = new game.Timer(time);
         timer.repeat = !!repeat;
         timer.callback = callback;
         this.timers.push(timer);
+        if (instant) callback();
         return timer;
     },
 

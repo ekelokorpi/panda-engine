@@ -53,7 +53,7 @@ game.createClass('Renderer', {
 
         game._normalizeVendorAttribute(this.canvas, 'requestFullScreen');
 
-        this.context = this.canvas.getContext('2d');
+        this._initContext();
 
         if ('imageSmoothingEnabled' in this.context) this._smoothProperty = 'imageSmoothingEnabled';
         else if ('webkitImageSmoothingEnabled' in this.context) this._smoothProperty = 'webkitImageSmoothingEnabled';
@@ -86,6 +86,14 @@ game.createClass('Renderer', {
     **/
     _hide: function() {
         this.canvas.style.display = 'none';
+    },
+
+    /**
+        @method _initContext
+        @private
+    **/
+    _initContext: function() {
+        this.context = this.canvas.getContext('2d');
     },
 
     /**
