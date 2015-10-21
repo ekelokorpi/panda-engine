@@ -204,6 +204,13 @@ game.createClass('Scene', {
         @param {MouseEvent|TouchEvent} event
     **/
     mousemove: function() {},
+
+    /**
+        Called, when mouse goes out of canvas.
+        @method mouseout
+        @param {MouseEvent} event
+    **/
+    mouseout: function() {},
     
     /**
         Called, when mouse or touch is released.

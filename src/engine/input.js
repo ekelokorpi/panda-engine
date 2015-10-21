@@ -58,6 +58,7 @@ game.createClass('Input', {
         target.addEventListener('touchcancel', this._touchend.bind(this));
         target.addEventListener('mousedown', this._mousedown.bind(this));
         target.addEventListener('mousemove', this._mousemove.bind(this));
+        target.addEventListener('mouseout', this._mouseout.bind(this));
         window.addEventListener('mouseup', this._mouseup.bind(this));
     },
 
@@ -148,6 +149,15 @@ game.createClass('Input', {
         if (game.scene._mousemove) {
             game.scene._mousemove(event.canvasX, event.canvasY, event.identifier, event);
         }
+    },
+
+    /**
+        @method _mouseout
+        @param {MouseEvent|TouchEvent} event
+        @private
+    **/
+    _mouseout: function(event) {
+        if (game.scene.mouseout) game.scene.mouseout(event);
     },
 
     /**
