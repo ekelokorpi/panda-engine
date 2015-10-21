@@ -272,7 +272,7 @@ game.createClass('Input', {
         for (var i = 0; i < container.children.length; i++) {
             var child = container.children[i];
             if (child._interactive) this.items.push(child);
-            if (child.children.length > 0) this._updateItems(child);
+            if (child.children.length) this._updateItems(child);
         }
     }
 });
