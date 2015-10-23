@@ -118,6 +118,8 @@ game.createClass('Input', {
         @private
     **/
     _mousedown: function(event) {
+        if (!game.scene) return;
+
         this._preventDefault(event);
         this._calculateXY(event);
         this.mouse.set(event.canvasX, event.canvasY);
@@ -125,9 +127,7 @@ game.createClass('Input', {
         this._mouseDownItem = this._processEvent('mousedown', event);
         this._mouseDownTime = game.Timer.time;
 
-        if (game.scene._mousedown) {
-            game.scene._mousedown(event.canvasX, event.canvasY, event.identifier, event);
-        }
+        game.scene._mousedown(event.canvasX, event.canvasY, event.identifier, event);
     },
 
     /**
@@ -136,6 +136,8 @@ game.createClass('Input', {
         @private
     **/
     _mousemove: function(event) {
+        if (!game.scene) return;
+
         this._preventDefault(event);
         this._calculateXY(event);
         this.mouse.set(event.canvasX, event.canvasY);
@@ -146,9 +148,7 @@ game.createClass('Input', {
         }
         this._mouseMoveItem = _mouseMoveItem;
 
-        if (game.scene._mousemove) {
-            game.scene._mousemove(event.canvasX, event.canvasY, event.identifier, event);
-        }
+        game.scene._mousemove(event.canvasX, event.canvasY, event.identifier, event);
     },
 
     /**
@@ -157,7 +157,9 @@ game.createClass('Input', {
         @private
     **/
     _mouseout: function(event) {
-        if (game.scene.mouseout) game.scene.mouseout(event);
+        if (!game.scene) return;
+
+        game.scene.mouseout(event);
     },
 
     /**
@@ -166,6 +168,8 @@ game.createClass('Input', {
         @private
     **/
     _mouseup: function(event) {
+        if (!game.scene) return;
+
         this._preventDefault(event);
         this._calculateXY(event);
         if (event.canvasX < 0 || event.canvasX > game.width) return;
@@ -184,9 +188,7 @@ game.createClass('Input', {
             this._mouseDownItem.mouseupoutside(event.canvasX, event.canvasY, event.identifier, event);
         }
 
-        if (game.scene._mouseup) {
-            game.scene._mouseup(event.canvasX, event.canvasY, event.identifier, event);
-        }
+        game.scene._mouseup(event.canvasX, event.canvasY, event.identifier, event);
     },
 
     /**

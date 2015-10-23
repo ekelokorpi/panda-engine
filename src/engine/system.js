@@ -217,7 +217,7 @@ game.createClass('System', {
     **/
     setScene: function(sceneName) {
         var sceneClass = game[sceneName];
-        if (!sceneClass) return;
+        if (!sceneClass) throw 'Scene ' + sceneName + ' not found';
         this.sceneName = sceneName;
         if (this._running && !this.paused) this._newSceneClass = sceneClass;
         else this._setSceneNow(sceneClass);

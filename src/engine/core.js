@@ -947,7 +947,8 @@ var game = {
             this.plugins[name] = new (this.plugins[name])();
         }
 
-        this._loader = new game.Loader(this.System.startScene);
+        this._loader = new game.Loader();
+        this._loader.onComplete = this.System.startScene;
         if (!this.system._rotateScreenVisible) this._loader.start();
 
         this.onStart();

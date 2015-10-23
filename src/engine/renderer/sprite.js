@@ -42,6 +42,14 @@ game.createClass('Sprite', 'Container', {
     _getBounds: function() {
         if (this._worldTransform.tx === null) this._updateParentTransform();
 
+        if (this._cachedSprite) {
+            this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
+            this._worldBounds.y = this._worldTransform.ty + this._cachedSprite.position.y;
+            this._worldBounds.width = this._cachedSprite.texture.width * this._worldTransform.a;
+            this._worldBounds.height = this._cachedSprite.texture.height * this._worldTransform.d;
+            return this._worldBounds;
+        }
+
         var width = this.texture.width;
         var height = this.texture.height;
         var wt = this._worldTransform;
@@ -179,8 +187,7 @@ game.addAttributes('Sprite', {
 game.defineProperties('Sprite', {
     width: {
         get: function() {
-            var scaleX = this._worldTransform.a / this._cosCache;
-            return scaleX * this.texture.width;
+            return this.scale.x * this.texture.width;
         },
 
         set: function(value) {
@@ -190,8 +197,7 @@ game.defineProperties('Sprite', {
 
     height: {
         get: function() {
-            var scaleY = this._worldTransform.d / this._cosCache;
-            return scaleY * this.texture.height;
+            return this.scale.y * this.texture.height;
         },
 
         set: function(value) {
