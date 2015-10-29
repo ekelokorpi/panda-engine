@@ -512,6 +512,12 @@ game.addAttributes('Debug', {
     **/
     fakeTouchMoveInterval: 50,
     /**
+        Percent of fake touches, that will move.
+        @attribute {Number} fakeTouchMovePercent
+        @default 50
+    **/
+    fakeTouchMovePercent: 50,
+    /**
         Sprite radius of fake touches.
         @attribute {Number} fakeTouchSize
         @default 20
@@ -603,9 +609,9 @@ game.createClass('DebugTouch', {
         this.life = Math.random(game.Debug.fakeTouchMinLife, game.Debug.fakeTouchMaxLife);
         this.speed = Math.random(game.Debug.fakeTouchMinSpeed, game.Debug.fakeTouchMaxSpeed);
 
-        this.fixed = Math.random() > 0.5;
+        this.moving = Math.random() <= game.Debug.fakeTouchMovePercent / 100;
 
-        if (!this.fixed) {
+        if (this.moving) {
             this.dir = new game.Vector(this.speed, 0);
             this.dir.rotate(Math.random(0, Math.PI * 2));
         }
@@ -619,10 +625,12 @@ game.createClass('DebugTouch', {
     move: function() {
         this.touch.canvasX += this.dir.x;
         this.touch.canvasY += this.dir.y;
-        if (this.touch.canvasX < 0) this.touch.canvasX = 0;
-        if (this.touch.canvasX > game.width) this.touch.canvasX = game.width;
-        if (this.touch.canvasY < 0) this.touch.canvasY = 0;
-        if (this.touch.canvasY > game.height) this.touch.canvasY = game.height;
+        if (this.touch.canvasX < 0 ||
+            this.touch.canvasY < 0 ||
+            this.touch.canvasX > game.width ||
+            this.touch.canvasY > game.height) {
+            return true;
+        }
     },
 
     _update: function() {
@@ -632,13 +640,13 @@ game.createClass('DebugTouch', {
             return;
         }
 
-        if (this.fixed) return;
+        if (!this.moving) return;
 
         this.moveTimer += game.delta * 1000;
         if (this.moveTimer >= game.Debug.fakeTouchMoveInterval) {
             this.moveTimer = 0;
-            this.move();
-            game.input._touchmove(this.event);
+            if (!this.move()) game.input._touchmove(this.event);
+            else this.remove();
         }
     }
 });
