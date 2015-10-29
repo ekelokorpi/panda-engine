@@ -21,12 +21,12 @@ game.createClass('System', {
     **/
     canvasWidth: 0,
     /**
-        Current delta time in seconds.
+        Current delta time in seconds (game.delta).
         @property {Number} delta
     **/
     delta: 0,
     /**
-        Height of the game screen.
+        Height of the game canvas (game.height).
         @property {Number} height
     **/
     height: 0,
@@ -56,12 +56,12 @@ game.createClass('System', {
     **/
     retina: false,
     /**
-        Name of current scene.
-        @property {String} sceneName
+        Current scene (game.scene).
+        @property {Scene} scene
     **/
-    sceneName: null,
+    scene: null,
     /**
-        Width of the game screen.
+        Width of the game canvas (game.width).
         @property {Number} width
     **/
     width: 0,
@@ -181,7 +181,7 @@ game.createClass('System', {
         game.width = this.width = width / game.scale;
         game.height = this.height = height / game.scale;
         game.renderer._resize(width, height);
-        if (game.scene && game.scene.onResize) game.scene.onResize();
+        if (this.scene && this.scene.onResize) this.scene.onResize();
     },
 
     /**
@@ -193,7 +193,7 @@ game.createClass('System', {
         if (this.paused) return;
         if (onHide) this._pausedOnHide = true;
         else this.paused = true;
-        if (game.scene && game.scene._pause) game.scene._pause();
+        if (this.scene && this.scene._pause) this.scene._pause();
     },
 
     /**
@@ -207,7 +207,7 @@ game.createClass('System', {
         if (onHide) this._pausedOnHide = false;
         else this.paused = false;
         game.Timer.last = Date.now();
-        if (game.scene && game.scene._resume) game.scene._resume();
+        if (this.scene && this.scene._resume) this.scene._resume();
     },
 
     /**
@@ -218,7 +218,6 @@ game.createClass('System', {
     setScene: function(sceneName) {
         var sceneClass = game[sceneName];
         if (!sceneClass) throw 'Scene ' + sceneName + ' not found';
-        this.sceneName = sceneName;
         if (this._running && !this.paused) this._newSceneClass = sceneClass;
         else this._setSceneNow(sceneClass);
     },
@@ -312,7 +311,7 @@ game.createClass('System', {
         game.delta = this.delta = game.Timer.delta / 1000;
 
         game.input._update();
-        game.scene._update();
+        this.scene._update();
 
         if (this._newSceneClass) this._setSceneNow(this._newSceneClass, this._removeAssets);
     },
@@ -350,9 +349,8 @@ game.createClass('System', {
     **/
     _setSceneNow: function(sceneClass) {
         if (this.paused) this.paused = false;
-        if (game.scene && game.scene.exit) game.scene.exit();
-        game.scene = new (sceneClass)();
-        game.input._needUpdate = true;
+        if (this.scene && this.scene.exit) this.scene.exit();
+        this.scene = new (sceneClass)();
         this._newSceneClass = null;
         this._startRunLoop();
     },

@@ -1,15 +1,14 @@
 /**
     Panda Engine
 
-    - Made by Eemeli Kelokorpi
-    - Renderer based on Pixi.js by Mat Groves, Goodboy Digital
-    - Financed by Yleisradio
-    - Released under the MIT license
-
-    @module game
+    Made by Eemeli Kelokorpi
+    Renderer based on Pixi.js by Mat Groves, Goodboy Digital
+    Financed by Yleisradio
+    Released under the MIT license
 **/
 
 /**
+    @module game
     @class Core
 **/
 var game = {
@@ -37,11 +36,6 @@ var game = {
     **/
     debug: null,
     /**
-        Current delta time in seconds.
-        @property {Number} delta
-    **/
-    delta: 0,
-    /**
         Device information.
         @property {Object} device
     **/
@@ -51,11 +45,6 @@ var game = {
         @property {DeviceAcceleration} devicemotion
     **/
     devicemotion: null,
-    /**
-        Height of game.
-        @property {Number} height
-    **/
-    height: 0,
     /**
         @property {Input} input
     **/
@@ -95,10 +84,6 @@ var game = {
     **/
     scale: 1,
     /**
-        @property {Scene} scene
-    **/
-    scene: null,
-    /**
         @property {Storage} storage
     **/
     storage: null,
@@ -111,11 +96,6 @@ var game = {
         @property {String} version
     **/
     version: '2.0.0',
-    /**
-        Width of game.
-        @property {Number} width
-    **/
-    width: 0,
     /**
         @property {Boolean} _booted
         @private
@@ -955,13 +935,12 @@ var game = {
     }
 };
 
-game.Core = game;
-
 /**
     @class Class
 **/
 game.Class = function() {};
 /**
+    Name of class.
     @property {String} name
 **/
 /**
@@ -1011,7 +990,6 @@ game.Class.extend = function(prop) {
         /**
             Called before init.
             @method staticInit
-            @static
             @param {Array} arguments
             @return {Boolean} return true, to skip init function.
         **/
@@ -1020,7 +998,6 @@ game.Class.extend = function(prop) {
         /**
             Called, when creating new instance of class.
             @method init
-            @static
             @param {Array} arguments
         **/
         if (this.init && !skipInit) this.init.apply(this, arguments);

@@ -93,6 +93,8 @@ game.createClass('Scene', {
             game.audio.playingSounds.length = 0;
         }
         
+        game.input.items.length = 0;
+
         game.scene = this;
         
         this.stage = new game.Container();
@@ -115,7 +117,7 @@ game.createClass('Scene', {
     },
     
     /**
-        Add object to scene, so it's `update()` function get's called every frame.
+        Add object to scene, so it's update function get's called every frame.
         @method addObject
         @param {Object} object
     **/
