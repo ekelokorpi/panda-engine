@@ -41,12 +41,34 @@ game.createClass('Debug', {
     **/
     _bodies: [],
     /**
+        @property {Number} _fakeTouchTimer
+        @private
+    **/
+    _fakeTouchTimer: 0,
+    /**
+        @property {Number} _fakeTouchId
+        @private
+    **/
+    _fakeTouchId: 1,
+    /**
+        @property {Array} _fakeTouches
+        @private
+    **/
+    _fakeTouches: [],
+    /**
         @property {Number} _frames
         @private
     **/
     _frames: 0,
 
     init: function() {
+        game.Input.inject({
+            _calculateXY: function(event) {
+                if (game.Debug.fakeTouch) return;
+                this.super(event);
+            }
+        });
+
         game.Scene.inject({
             staticInit: function() {
                 this.super();
@@ -69,6 +91,7 @@ game.createClass('Debug', {
                     }
                 }
                 if (game.Debug.showBodies) game.debug._drawBodies();
+                if (game.Debug.fakeTouch) game.debug._drawFakeTouch();
             }
         });
 
@@ -233,6 +256,25 @@ game.createClass('Debug', {
     },
 
     /**
+        @method _drawFakeTouch
+        @private
+    **/
+    _drawFakeTouch: function() {
+        var context = game.renderer.context;
+
+        for (var i = 0; i < this._fakeTouches.length; i++) {
+            var touch = this._fakeTouches[i].touch;
+
+            context.setTransform(1, 0, 0, 1, 0, 0);
+            context.globalAlpha = game.Debug.fakeTouchAlpha;
+            context.fillStyle = game.Debug.fakeTouchColor;
+            context.beginPath();
+            context.arc(touch.canvasX, touch.canvasY, game.Debug.fakeTouchSize, 0, Math.PI * 2);
+            context.fill();
+        }
+    },
+
+    /**
         @method _drawHitArea
         @private
         @param {Container} container
@@ -321,6 +363,22 @@ game.createClass('Debug', {
         this._addText('HIRES', game.scale);
 
         this._updateText();
+
+        for (var i = this._fakeTouches.length - 1; i >= 0; i--) {
+            this._fakeTouches[i]._update();
+            if (this._fakeTouches[i]._remove) this._fakeTouches.splice(i, 1);
+        }
+
+        if (!game.Debug.fakeTouch) return;
+
+        this._fakeTouchTimer += game.delta * 1000;
+        if (this._fakeTouchTimer >= game.Debug.fakeTouchInterval) {
+            this._fakeTouchTimer = 0;
+            if (this._fakeTouches.length === 1 && !game.Input.multitouch) return;
+
+            var touch = new game.DebugTouch(this._fakeTouchId++);
+            if (this._fakeTouchId > 9999) this._fakeTouchId = 1;
+        }
     },
 
     /**
@@ -400,6 +458,66 @@ game.addAttributes('Debug', {
     **/
     enabled: false,
     /**
+        Enable fake touches.
+        @attribute {Boolean} fakeTouch
+        @default false
+    **/
+    fakeTouch: false,
+    /**
+        Sprite alpha for fake touches.
+        @attribute {Number} fakeTouchAlpha
+        @default 0.5
+    **/
+    fakeTouchAlpha: 0.5,
+    /**
+        Sprite color for fake touches.
+        @attribute {String} fakeTouchColor
+        @default #ff0000
+    **/
+    fakeTouchColor: '#ff0000',
+    /**
+        How often to create new fake touch (ms).
+        @attribute {Number} fakeTouchInterval
+        @default 100
+    **/
+    fakeTouchInterval: 100,
+    /**
+        Maximum lifetime of fake touch (ms).
+        @attribute {Number} fakeTouchMaxLife
+        @default 500
+    **/
+    fakeTouchMaxLife: 500,
+    /**
+        Maximum speed of fake touch movement.
+        @attribute {Number} fakeTouchMaxSpeed
+        @default 50
+    **/
+    fakeTouchMaxSpeed: 50,
+    /**
+        Minimum lifetime of fake touch (ms).
+        @attribute {Number} fakeTouchMinLife
+        @default 100
+    **/
+    fakeTouchMinLife: 100,
+    /**
+        Minimum speed of fake touch movement.
+        @attribute {Number} fakeTouchMinSpeed
+        @default 1
+    **/
+    fakeTouchMinSpeed: 1,
+    /**
+        How often to move fake touch (ms).
+        @attribute {Number} fakeTouchMoveInterval
+        @default 50
+    **/
+    fakeTouchMoveInterval: 50,
+    /**
+        Sprite radius of fake touches.
+        @attribute {Number} fakeTouchSize
+        @default 20
+    **/
+    fakeTouchSize: 20,
+    /**
         Debug panel font size.
         @attribute {Number} fontSize
         @default 14
@@ -463,6 +581,66 @@ game.addAttributes('Debug', {
         @default #ff0000
     **/
     textColor: '#ff0000'
+});
+
+game.createClass('DebugTouch', {
+    moveTimer: 0,
+    lifeTimer: 0,
+    event: {
+        changedTouches: []
+    },
+    touch: {},
+
+    init: function(id) {
+        this.touch.identifier = id;
+        this.touch.canvasX = game.width.random();
+        this.touch.canvasY = game.height.random();
+        this.event.changedTouches.push(this.touch);
+
+        game.input._touchstart(this.event);
+        game.debug._fakeTouches.push(this);
+
+        this.life = Math.random(game.Debug.fakeTouchMinLife, game.Debug.fakeTouchMaxLife);
+        this.speed = Math.random(game.Debug.fakeTouchMinSpeed, game.Debug.fakeTouchMaxSpeed);
+
+        this.fixed = Math.random() > 0.5;
+
+        if (!this.fixed) {
+            this.dir = new game.Vector(this.speed, 0);
+            this.dir.rotate(Math.random(0, Math.PI * 2));
+        }
+    },
+
+    remove: function() {
+        this._remove = true;
+        game.input._touchend(this.event);
+    },
+
+    move: function() {
+        this.touch.canvasX += this.dir.x;
+        this.touch.canvasY += this.dir.y;
+        if (this.touch.canvasX < 0) this.touch.canvasX = 0;
+        if (this.touch.canvasX > game.width) this.touch.canvasX = game.width;
+        if (this.touch.canvasY < 0) this.touch.canvasY = 0;
+        if (this.touch.canvasY > game.height) this.touch.canvasY = game.height;
+    },
+
+    _update: function() {
+        this.lifeTimer += game.delta * 1000;
+        if (this.lifeTimer >= this.life) {
+            this.remove();
+            return;
+        }
+
+        if (this.fixed) return;
+
+        this.moveTimer += game.delta * 1000;
+        if (this.moveTimer >= game.Debug.fakeTouchMoveInterval) {
+            this.moveTimer = 0;
+            this.move();
+            game.input._touchmove(this.event);
+        }
+    }
 });
 
 var href = document.location.href.toLowerCase();

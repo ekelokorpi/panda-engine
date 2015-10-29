@@ -52,7 +52,7 @@ game.createClass('TilingSprite', 'Container', {
         this.texture = this.texture || texture;
         this.texture = this.texture instanceof game.Texture ? this.texture : game.Texture.fromAsset(this.texture);
 
-        this._width = this._width ||width || this.texture.width;
+        this._width = this._width || width || this.texture.width;
         this._height = this._height || height || this.texture.height;
         
         this._generateSprites();

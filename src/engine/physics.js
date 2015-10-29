@@ -418,7 +418,7 @@ game.createClass('Body', {
         this.velocity.x += this.world.gravity.x * this.mass * game.delta;
         this.velocity.y += this.world.gravity.y * this.mass * game.delta;
         this.velocity.x += this.force.x * game.delta;
-        this.velocity.y += this.force.y * game.delta;    
+        this.velocity.y += this.force.y * game.delta;
 
         if (this.damping > 0 && this.damping < 1) {
             var damping = Math.pow(1 - this.damping, game.delta);
