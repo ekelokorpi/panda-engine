@@ -6,7 +6,7 @@ game.module(
 game.addAsset('panda.png');
 
 game.createScene('Main', {
-    backgroundColor: '#333333',
+    backgroundColor: '#666',
 
     init: function() {
         var sprite = new game.Sprite('panda.png');
