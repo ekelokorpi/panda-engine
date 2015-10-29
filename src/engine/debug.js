@@ -392,7 +392,7 @@ game.createClass('Debug', {
 
 game.addAttributes('Debug', {
     /**
-        Background color of debug bar.
+        Background color of debug panel.
         @attribute {String} backgroundColor
         @default rgba(0, 0, 0, 0.7)
     **/
@@ -540,11 +540,11 @@ game.addAttributes('Debug', {
     **/
     hitAreaAlpha: 0.5,
     /**
-        Vertical position of debug bar (top or bottom).
+        Vertical position of debug panel (top or bottom).
         @attribute {String} position
-        @default bottom
+        @default top
     **/
-    position: 'bottom',
+    position: 'top',
     /**
         Draw physics bodies.
         @attribute {Boolean} showBodies
@@ -576,7 +576,7 @@ game.addAttributes('Debug', {
     **/
     showInfo: true,
     /**
-        Text color of debug bar.
+        Text color of debug panel.
         @attribute {String} textColor
         @default #ff0000
     **/
