@@ -92,8 +92,8 @@ game.createClass('Scene', {
             game.audio.pausedSounds.length = 0;
             game.audio.playingSounds.length = 0;
         }
-        
-        game.input.items.length = 0;
+
+        game.input._reset();
 
         game.scene = this;
         

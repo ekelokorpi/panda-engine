@@ -38,6 +38,11 @@ game.createClass('Input', {
     **/
     _mouseDownTime: null,
     /**
+        @property {Container} _mouseMoveItem
+        @private
+    **/
+    _mouseMoveItem: null,
+    /**
         @property {Container} _mouseUpItem
         @private
     **/
@@ -218,6 +223,17 @@ game.createClass('Input', {
                 }
             }
         }
+    },
+
+    /**
+        @method _reset
+        @private
+    **/
+    _reset: function() {
+        this.items.length = 0;
+        this._mouseDownItem = null;
+        this._mouseMoveItem = null;
+        this._mouseUpItem = null;
     },
 
     /**
