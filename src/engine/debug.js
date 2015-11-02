@@ -167,7 +167,9 @@ game.createClass('Debug', {
         @param {Number|Boolean|String} value
     **/
     _addText: function(name, value) {
-        this.text += name + ': ' + value + ' ';
+        this.text += name;
+        if (value) this.text += ': ' + value;
+        this.text += ' ';
     },
 
     /**
@@ -352,6 +354,7 @@ game.createClass('Debug', {
         }
 
         this.text = '';
+        if (game.config.version) this._addText(game.config.version);
         this._addText('FPS', this.fps);
         this._addText('OBJECTS', game.scene.objects.length);
         this._addText('SPRITES', this.sprites);

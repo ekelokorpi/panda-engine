@@ -28,6 +28,11 @@ game.createClass('Input', {
     **/
     touches: [],
     /**
+        @property {String} _currentCursor
+        @private
+    **/
+    _currentCursor: null,
+    /**
         @property {Container} _mouseDownItem
         @private
     **/
@@ -148,6 +153,9 @@ game.createClass('Input', {
         this.mouse.set(event.canvasX, event.canvasY);
 
         var _mouseMoveItem = this._processEvent('mousemove', event);
+        
+        this._updateCursor(_mouseMoveItem);
+
         if (this._mouseMoveItem && this._mouseMoveItem !== _mouseMoveItem) {
             this._mouseMoveItem.mouseout(event.canvasX, event.canvasY, event.identifier, event);
         }
@@ -293,6 +301,23 @@ game.createClass('Input', {
     },
 
     /**
+        @method _updateCursor
+        @private
+    **/
+    _updateCursor: function(container) {
+        if (game.device.mobile) return;
+
+        var cursor = 'inherit';
+        if (container && container.buttonMode) {
+            cursor = game.Input.buttonModeCursor;
+        }
+        if (this._currentCursor !== cursor) {
+            this._currentCursor = cursor;
+            game.renderer.canvas.style.cursor = this._currentCursor;
+        }
+    },
+
+    /**
         @method _updateItems
         @param {Container} container
         @private
@@ -307,6 +332,12 @@ game.createClass('Input', {
 });
 
 game.addAttributes('Input', {
+    /**
+        Cursor to use on buttonMode.
+        @attribute {String} buttonModeCursor
+        @default pointer
+    **/
+    buttonModeCursor: 'pointer',
     /**
         Time after click is not called (ms).
         @attribute {Number} clickTimeout

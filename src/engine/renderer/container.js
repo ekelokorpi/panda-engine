@@ -23,6 +23,11 @@ game.createClass('Container', {
     **/
     anchor: null,
     /**
+        @property {Boolean} buttonMode
+        @default false
+    **/
+    buttonMode: false,
+    /**
         @property {Array} children
     **/
     children: [],
