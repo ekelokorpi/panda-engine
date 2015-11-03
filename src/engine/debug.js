@@ -180,7 +180,7 @@ game.createClass('Debug', {
     **/
     _addText: function(name, value) {
         this.text += name;
-        if (value) this.text += ': ' + value;
+        if (typeof value !== undefined) this.text += ': ' + value;
         this.text += ' ';
     },
 
