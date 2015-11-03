@@ -134,8 +134,7 @@ game.createClass('Loader', {
         Called, when loader is started.
         @method onStart
     **/
-    onStart: function() {
-    },
+    onStart: function() {},
 
     /**
         @method parseFont

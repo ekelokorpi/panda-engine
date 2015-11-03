@@ -50,6 +50,12 @@ var game = {
     **/
     input: null,
     /**
+        Is engine started.
+        @property {Boolean} isStarted
+        @default false
+    **/
+    isStarted: false,
+    /**
         List of JSON files.
         @property {Object} json
     **/
@@ -436,16 +442,16 @@ var game = {
     },
 
     /**
+        Called, when all modules are loaded.
+        @method onReady
+    **/
+    onReady: function() {},
+
+    /**
         Called, when engine is started.
         @method onStart
     **/
     onStart: function() {},
-
-    /**
-        Called, when core is ready, and autoStart not enabled.
-        @method ready
-    **/
-    ready: function() {},
 
     /**
         Require module.
@@ -460,6 +466,38 @@ var game = {
             if (name && this._current.requires.indexOf(name) === -1) this._current.requires.push(name);
         }
         return this;
+    },
+
+    /**
+        Start engine.
+        @method start
+    **/
+    start: function() {
+        if (this._moduleQueue.length > 0 || this.isStarted) return;
+        this.isStarted = true;
+
+        // Required classes
+        this.system = new this.System();
+        this.input = new this.Input(this.renderer.canvas);
+
+        // Optional classes
+        if (this.Keyboard) this.keyboard = new this.Keyboard();
+        if (this.Audio) this.audio = new this.Audio();
+        if (this.Pool) this.pool = new this.Pool();
+        if (this.Storage && this.Storage.id) this.storage = new this.Storage();
+        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
+
+        // Load plugins
+        for (var name in this.plugins) {
+            this.plugins[name] = new (this.plugins[name])();
+        }
+
+        if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
+
+        this._loader = new game.Loader();
+        this._loader.onComplete = this.System.startScene;
+        this._loader.onStart = this.onStart.bind(this);
+        if (!this.system._rotateScreenVisible) this._loader.start();
     },
 
     /**
@@ -695,7 +733,7 @@ var game = {
                 module.body();
                 moduleLoaded = true;
                 i--;
-                if (this._moduleQueue.length === 0) this._modulesLoaded();
+                if (this._moduleQueue.length === 0) this._ready();
             }
         }
 
@@ -828,10 +866,23 @@ var game = {
     },
 
     /**
-        @method _modulesLoaded
+        @method _normalizeVendorAttribute
+        @param {Object} el
+        @param {String} attr
         @private
     **/
-    _modulesLoaded: function() {
+    _normalizeVendorAttribute: function(el, attr) {
+        if (el[attr]) return;
+        var prefixedVal = this._getVendorAttribute(el, attr);
+        el[attr] = el[attr] || prefixedVal;
+    },
+
+    /**
+        Called, when all modules are loaded.
+        @method _ready
+        @private
+    **/
+    _ready: function() {
         // Parse config
         for (var c in this.config) {
             var m = c.ucfirst();
@@ -842,20 +893,9 @@ var game = {
             }
         }
 
-        if (this.config.autoStart !== false && !this.system) this._start();
-        else this.ready();
-    },
-
-    /**
-        @method _normalizeVendorAttribute
-        @param {Object} el
-        @param {String} attr
-        @private
-    **/
-    _normalizeVendorAttribute: function(el, attr) {
-        if (el[attr]) return;
-        var prefixedVal = this._getVendorAttribute(el, attr);
-        el[attr] = el[attr] || prefixedVal;
+        if (!this.onReady()) {
+            if (this.config.autoStart !== false) this.start();
+        }
     },
 
     /**
@@ -901,37 +941,6 @@ var game = {
     _setVendorAttribute: function(el, attr, val) {
         var uc = attr.ucfirst();
         el[attr] = el['ms' + uc] = el['moz' + uc] = el['webkit' + uc] = el['o' + uc] = val;
-    },
-
-    /**
-        @method _start
-        @private
-    **/
-    _start: function() {
-        if (this._moduleQueue.length > 0) return;
-
-        // Required classes
-        this.system = new this.System();
-        this.input = new this.Input(this.renderer.canvas);
-
-        // Optional classes
-        if (this.Keyboard) this.keyboard = new this.Keyboard();
-        if (this.Audio) this.audio = new this.Audio();
-        if (this.Pool) this.pool = new this.Pool();
-        if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
-        if (this.Storage && this.Storage.id) this.storage = new this.Storage();
-        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
-
-        // Load plugins
-        for (var name in this.plugins) {
-            this.plugins[name] = new (this.plugins[name])();
-        }
-
-        this._loader = new game.Loader();
-        this._loader.onComplete = this.System.startScene;
-        if (!this.system._rotateScreenVisible) this._loader.start();
-
-        this.onStart();
     }
 };
 

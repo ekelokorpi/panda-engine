@@ -62,6 +62,16 @@ game.createClass('Debug', {
     _frames: 0,
 
     init: function() {
+        console.log('Panda Engine ' + game.version);
+        console.log('Canvas ' + game.system.width + 'x' + game.system.height);
+
+        if (game.Audio && game.Audio.enabled) {
+            console.log((game.audio.context ? 'Web' : 'HTML5') + ' Audio engine');
+        }
+        else {
+            console.log('Audio disabled');
+        }
+
         game.Input.inject({
             _calculateXY: function(event) {
                 if (game.Debug.fakeTouch) return;
@@ -662,19 +672,5 @@ if (href.match(/\?debugdraw/)) {
     game.Debug.showCamera = true;
     game.Debug.showHitAreas = true;
 }
-
-game.onStart = function() {
-    if (!this.Debug.enabled || !this.Debug.showInfo) return;
-
-    console.log('Panda Engine ' + this.version);
-    console.log('Canvas ' + this.system.width + 'x' + this.system.height);
-
-    if (this.Audio && this.Audio.enabled) {
-        console.log((this.audio.context ? 'Web' : 'HTML5') + ' Audio engine');
-    }
-    else {
-        console.log('Audio disabled');
-    }
-};
 
 });
