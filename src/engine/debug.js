@@ -62,14 +62,16 @@ game.createClass('Debug', {
     _frames: 0,
 
     init: function() {
-        console.log('Panda Engine ' + game.version);
-        console.log('Canvas ' + game.system.width + 'x' + game.system.height);
+        if (game.Debug.showInfo) {
+            console.log('Panda Engine ' + game.version);
+            console.log('Canvas ' + game.system.width + 'x' + game.system.height);
 
-        if (game.Audio && game.Audio.enabled) {
-            console.log((game.audio.context ? 'Web' : 'HTML5') + ' Audio engine');
-        }
-        else {
-            console.log('Audio disabled');
+            if (game.Audio && game.Audio.enabled) {
+                console.log((game.audio.context ? 'Web' : 'HTML5') + ' Audio engine');
+            }
+            else {
+                console.log('Audio disabled');
+            }
         }
 
         game.Input.inject({
