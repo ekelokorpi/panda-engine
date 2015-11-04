@@ -634,6 +634,10 @@ game.createClass('DebugTouch', {
 
     remove: function() {
         this._remove = true;
+        if (this.touch.canvasX < 0) this.touch.canvasX = 0;
+        if (this.touch.canvasY < 0) this.touch.canvasY = 0;
+        if (this.touch.canvasX > game.width) this.touch.canvasX = game.width;
+        if (this.touch.canvasY > game.height) this.touch.canvasY = game.height;
         game.input._touchend(this.event);
     },
 
