@@ -144,8 +144,6 @@ game.createClass('Graphics', 'Container', {
     },
 
     _getBounds: function() {
-        if (this._worldTransform.tx === null) this._updateParentTransform();
-
         var wt = this._worldTransform;
         var a = wt.a;
         var b = wt.b;

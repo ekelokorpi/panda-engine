@@ -511,7 +511,7 @@ var game = {
     _addFileToQueue: function(path, id, queue) {
         if (id && this.paths[id]) return;
         if (this.paths[path]) return;
-        var realPath = this._getFilePath(path) + this._nocache;
+        var realPath = this._getFilePath(path);
         if (id) this.paths[id] = realPath;
         this.paths[path] = realPath;
         if (this[queue].indexOf(realPath) === -1) this[queue].push(realPath);

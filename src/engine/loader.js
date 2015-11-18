@@ -82,7 +82,7 @@ game.createClass('Loader', {
     loadFile: function(filePath, callback) {
         var request = new XMLHttpRequest();
         request.onload = callback.bind(this, request);
-        request.open('GET', filePath, true);
+        request.open('GET', filePath + game._nocache, true);
         request.send();
     },
 

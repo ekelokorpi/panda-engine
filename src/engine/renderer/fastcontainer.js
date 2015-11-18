@@ -51,8 +51,8 @@ game.createClass('FastContainer', 'Container', {
                 this._isRotated = false;
             }
 
-            var x = (child.position.x - child.anchor.x * child.scale.x) * game.scale;
-            var y = (child.position.y - child.anchor.y * child.scale.y) * game.scale;
+            var x = (child.position.x - child.width * child.anchor.x * child.scale.x) * game.scale;
+            var y = (child.position.y - child.height * child.anchor.y * child.scale.y) * game.scale;
 
             context.drawImage(texture.baseTexture.source, tx, ty, tw, th, x, y, tw * child.scale.x, th * child.scale.y);
         }

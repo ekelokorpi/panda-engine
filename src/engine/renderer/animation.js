@@ -97,6 +97,7 @@ game.createClass('Animation', 'Sprite', {
         @chainable
     **/
     gotoFrame: function(frame) {
+        if (!this.textures[frame]) return;
         this.currentFrame = frame;
         this._frameTime = 0;
         this.setTexture(this.textures[frame]);
@@ -143,11 +144,11 @@ game.createClass('Animation', 'Sprite', {
             if (this.random && this.textures.length > 1) {
                 var nextFrame = this.currentFrame;
                 while (nextFrame === this.currentFrame) {
-                    var nextFrame = Math.round(Math.random(0, this.textures.length - 1));
+                    nextFrame = Math.round(Math.random(0, this.textures.length - 1));
                 }
 
                 this.currentFrame = nextFrame;
-                this.setTexture(this.textures[this.textures[nextFrame]]);
+                this.setTexture(this.textures[nextFrame]);
                 return;
             }
 

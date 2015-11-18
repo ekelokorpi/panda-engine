@@ -248,8 +248,7 @@ game.createClass('Emitter', 'FastContainer', {
         particle.alpha = this.startAlpha;
         particle.position.x = this.startPos.x + this.getVariance(this.startPosVar.x);
         particle.position.y = this.startPos.y + this.getVariance(this.startPosVar.y);
-        particle.anchor.x = particle.texture.width / 2;
-        particle.anchor.y = particle.texture.height / 2;
+        particle.anchor.set(0.5);
 
         var angleVar = this.getVariance(this.angleVar);
         var angle = this.angle + angleVar;

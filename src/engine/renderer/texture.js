@@ -258,7 +258,7 @@ game.addAttributes('BaseTexture', {
 
         if (!baseTexture) {
             var source = document.createElement('img');
-            source.src = path;
+            source.src = path + game._nocache;
             baseTexture = new game.BaseTexture(source, loadCallback);
             baseTexture._id = path;
             this.cache[path] = baseTexture;

@@ -173,16 +173,6 @@ game.createClass('Container', {
     },
 
     /**
-        Set anchor to center.
-        @method anchorCenter
-        @chainable
-    **/
-    anchorCenter: function() {
-        this.anchor.set(this.width / 2, this.height / 2);
-        return this;
-    },
-
-    /**
         Position container to center of target.
         @method center
         @param {Container} target
@@ -203,8 +193,8 @@ game.createClass('Container', {
             var x = bounds.x + bounds.width / 2;
             var y = bounds.y + bounds.height / 2;
         }
-        x += this.anchor.x * this.scale.x;
-        y += this.anchor.y * this.scale.y;
+        x += this.width * this.anchor.x * this.scale.x;
+        y += this.height * this.anchor.y * this.scale.y;
         x -= this.width * this.scale.x / 2;
         y -= this.height * this.scale.y / 2;
         offsetX = offsetX || 0;
@@ -356,8 +346,8 @@ game.createClass('Container', {
             this._cosCache = Math.cos(this.rotation);
         }
 
-        var ax = Math.round(this.anchor.x);
-        var ay = Math.round(this.anchor.y);
+        var ax = this.width * this.anchor.x;
+        var ay = this.height * this.anchor.y;
         var a = this._cosCache * this.scale.x;
         var b = this._sinCache * this.scale.x;
         var c = -this._sinCache * this.scale.y;
@@ -399,6 +389,8 @@ game.createClass('Container', {
         @private
     **/
     _generateCachedSprite: function() {
+        this.updateTransform();
+
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
 
@@ -430,7 +422,6 @@ game.createClass('Container', {
             this._worldBounds.height = 0;
             return this._worldBounds;
         }
-        if (this._worldTransform.tx === null) this._updateParentTransform();
 
         if (this._cachedSprite) {
             this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;

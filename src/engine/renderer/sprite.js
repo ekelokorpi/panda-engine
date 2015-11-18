@@ -40,8 +40,6 @@ game.createClass('Sprite', 'Container', {
     },
 
     _getBounds: function() {
-        if (this._worldTransform.tx === null) this._updateParentTransform();
-
         if (this._cachedSprite) {
             this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
             this._worldBounds.y = this._worldTransform.ty + this._cachedSprite.position.y;
