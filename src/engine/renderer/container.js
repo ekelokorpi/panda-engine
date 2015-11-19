@@ -346,8 +346,10 @@ game.createClass('Container', {
             this._cosCache = Math.cos(this.rotation);
         }
 
-        var ax = this.width * this.anchor.x;
-        var ay = this.height * this.anchor.y;
+        var w = this.width / this.scale.x || 0;
+        var h = this.height / this.scale.y || 0;
+        var ax = w * this.anchor.x;
+        var ay = h * this.anchor.y;
         var a = this._cosCache * this.scale.x;
         var b = this._sinCache * this.scale.x;
         var c = -this._sinCache * this.scale.y;
