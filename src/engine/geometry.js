@@ -19,11 +19,31 @@ game.module(
 **/
 game.createClass('Arc', {
     /**
+        @property {Boolean} closePath
+        @default false
+    **/
+    closePath: false,
+    /**
+        @property {Boolean} counterClock
+        @default false
+    **/
+    counterClock: false,
+    /**
+        @property {Number} endAngle
+        @default 0
+    **/
+    endAngle: 0,
+    /**
         Radius of arc.
         @property {Number} radius
         @default 0
     **/
     radius: 0,
+    /**
+        @property {Number} startAngle
+        @default 0
+    **/
+    startAngle: 0,
     /**
         @property {Number} x
         @default 0
@@ -34,35 +54,15 @@ game.createClass('Arc', {
         @default 0
     **/
     y: 0,
-    /**
-        @property {Number} startAngle
-        @default 0
-    **/
-    startAngle: 0,
-    /**
-        @property {Number} endAngle
-        @default 0
-    **/
-    endAngle: 0,
-    /**
-        @property {Boolean} counterClock
-        @default false
-    **/
-    counterClock: false,
-    /**
-        @property {Boolean} closePath
-        @default false
-    **/
-    closePath: false,
 
     staticInit: function(radius, x, y, startAngle, endAngle, counterClock, closePath) {
+        this.closePath = closePath || this.closePath;
+        this.counterClock = counterClock || this.counterClock;
+        this.endAngle = endAngle || this.endAngle;
         this.radius = radius || this.radius;
+        this.startAngle = startAngle || this.startAngle;
         this.x = x || this.x;
         this.y = y || this.y;
-        this.startAngle = startAngle || this.startAngle;
-        this.endAngle = endAngle || this.endAngle;
-        this.counterClock = counterClock || this.counterClock;
-        this.closePath = closePath || this.closePath;
     }
 });
 
@@ -70,6 +70,8 @@ game.createClass('Arc', {
     @class Circle
     @constructor
     @param {Number} radius
+    @param {Number} x
+    @param {Number} y
 **/
 game.createClass('Circle', {
     /**
@@ -122,12 +124,14 @@ game.createClass('Matrix', {
     d: 1,
     /**
         @property {Number} tx
+        @default 0
     **/
-    tx: null,
+    tx: 0,
     /**
         @property {Number} ty
+        @default 0
     **/
-    ty: null,
+    ty: 0,
 
     /**
         Reset transform to default.
@@ -135,12 +139,13 @@ game.createClass('Matrix', {
         @chainable
     **/
     reset: function() {
-        this.a = 1;
-        this.b = 0;
-        this.c = 0;
-        this.d = 1;
-        this.tx = 0;
-        this.ty = 0;
+        var proto = this.constructor.prototype;
+        this.a = proto.a;
+        this.b = proto.b;
+        this.c = proto.c;
+        this.d = proto.d;
+        this.tx = proto.tx;
+        this.ty = proto.ty;
         return this;
     }
 });
