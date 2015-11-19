@@ -33,18 +33,6 @@ game.createClass('Scene', {
     **/
     stage: null,
     /**
-        Minimum distance to trigger swipe.
-        @property {Number} swipeDist
-        @default 100
-    **/
-    swipeDist: 100,
-    /**
-        Maximum time to trigger swipe (ms).
-        @property {Number} swipeTime
-        @default 500
-    **/
-    swipeTime: 500,
-    /**
         List of timers in scene.
         @property {Array} timers
     **/
@@ -321,10 +309,10 @@ game.createClass('Scene', {
     _mousemove: function(x, y, id, event) {
         this.mousemove(x, y, id, event);
         if (!this._mouseDownTime) return;
-        if (x - this._mouseDownX >= this.swipeDist) this._swipe('right');
-        else if (x - this._mouseDownX <= -this.swipeDist) this._swipe('left');
-        else if (y - this._mouseDownY >= this.swipeDist) this._swipe('down');
-        else if (y - this._mouseDownY <= -this.swipeDist) this._swipe('up');
+        if (x - this._mouseDownX >= game.Scene.swipeDist) this._swipe('RIGHT');
+        else if (x - this._mouseDownX <= -game.Scene.swipeDist) this._swipe('LEFT');
+        else if (y - this._mouseDownY >= game.Scene.swipeDist) this._swipe('DOWN');
+        else if (y - this._mouseDownY <= -game.Scene.swipeDist) this._swipe('UP');
     },
 
     /**
@@ -364,7 +352,9 @@ game.createClass('Scene', {
     _swipe: function(dir) {
         var time = game.Timer.time - this._mouseDownTime;
         this._mouseDownTime = null;
-        if (time <= this.swipeTime || this.swipeTime === 0) this.swipe(dir);
+        if (time <= game.Scene.swipeTime || game.Scene.swipeTime === 0) {
+            this.swipe(dir);
+        }
     },
     
     /**
@@ -443,6 +433,24 @@ game.createClass('Scene', {
 
 game.addAttributes('Scene', {
     /**
+        Default background color.
+        @attribute {String} backgroundColor
+        @default null
+    **/
+    backgroundColor: null,
+    /**
+        Minimum distance to trigger swipe.
+        @attribute {Number} swipeDist
+        @default 100
+    **/
+    swipeDist: 100,
+    /**
+        Maximum time to trigger swipe (ms).
+        @attribute {Number} swipeTime
+        @default 500
+    **/
+    swipeTime: 500,
+    /**
         Update order for scene.
         @attribute {Array} updateOrder
         @default tweens,physics,timers,emitters,objects,renderer
@@ -454,13 +462,7 @@ game.addAttributes('Scene', {
         'emitters',
         'objects',
         'renderer'
-    ],
-    /**
-        Default background color.
-        @attribute {String} backgroundColor
-        @default null
-    **/
-    backgroundColor: null
+    ]
 });
 
 });

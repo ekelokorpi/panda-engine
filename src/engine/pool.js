@@ -12,14 +12,19 @@ game.module(
 **/
 game.createClass('Pool', {
     /**
+        @property {Object} pools
+    **/
+    pools: {},
+
+    /**
         Create new pool.
         @method create
         @param {String} pool Name of the pool.
         @return {Boolean} Returns false, if pool already exists.
     **/
     create: function(pool) {
-        if (!this[pool]) {
-            this[pool] = [];
+        if (!this.pools[pool]) {
+            this.pools[pool] = [];
             return true;
         }
         return false;
@@ -32,8 +37,8 @@ game.createClass('Pool', {
         @return {Object} Returns false, if pool not found or empty.
     **/
     get: function(pool) {
-        if (!this[pool] || this[pool].length === 0) return false;
-        else return this[pool].pop();
+        if (!this.pools[pool] || this.pools[pool].length === 0) return false;
+        else return this.pools[pool].pop();
     },
 
     /**
@@ -44,8 +49,8 @@ game.createClass('Pool', {
         @return {Boolean} Returns false, if pool not found.
     **/
     put: function(pool, object) {
-        if (!this[pool]) return false;
-        this[pool].push(object);
+        if (!this.pools[pool]) return false;
+        this.pools[pool].push(object);
         return true;
     }
 });
