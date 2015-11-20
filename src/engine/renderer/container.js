@@ -76,11 +76,11 @@ game.createClass('Container', {
     **/
     visible: true,
     /**
-        @property {Boolean} _cacheAsBitmap
+        @property {Boolean} _cached
         @default false
         @private
     **/
-    _cacheAsBitmap: false,
+    _cached: false,
     /**
         @property {Sprite} _cachedSprite
         @private
@@ -154,7 +154,7 @@ game.createClass('Container', {
         this.children.push(child);
         child.parent = this;
         if (this.stage) child._setStageReference(this.stage);
-        if (this.cacheAsBitmap) {
+        if (this._cached) {
             this._destroyCachedSprite();
             this._generateCachedSprite();
         }
@@ -169,6 +169,15 @@ game.createClass('Container', {
     **/
     addTo: function(container) {
         container.addChild(this);
+        return this;
+    },
+
+    /**
+        @method anchorCenter
+        @chainable
+    **/
+    anchorCenter: function() {
+        this.anchor.set(this.width / 2, this.height / 2);
         return this;
     },
 
@@ -189,14 +198,15 @@ game.createClass('Container', {
             var y = game.height / 2;
         }
         else {
-            var bounds = target._getBounds();
-            var x = bounds.x + bounds.width / 2;
-            var y = bounds.y + bounds.height / 2;
+            var tb = target._getBounds();
+            var x = tb.x + tb.width / 2;
+            var y = tb.y + tb.height / 2;
         }
-        x += this.width * this.anchor.x * this.scale.x;
-        y += this.height * this.anchor.y * this.scale.y;
-        x -= this.width * this.scale.x / 2;
-        y -= this.height * this.scale.y / 2;
+        var bounds = this._getBounds();
+        x += this.anchor.x * this.scale.x;
+        y += this.anchor.y * this.scale.y;
+        x -= bounds.width * this.scale.x / 2;
+        y -= bounds.height * this.scale.y / 2;
         offsetX = offsetX || 0;
         offsetY = offsetY || 0;
         this.position.set(x + offsetX, y + offsetY);
@@ -294,7 +304,7 @@ game.createClass('Container', {
         this.children.splice(index, 1);
         child.parent = null;
         if (this.stage) child._removeStageReference();
-        if (this.cacheAsBitmap) {
+        if (this._cached) {
             this._destroyCachedSprite();
             this._generateCachedSprite();
         }
@@ -346,10 +356,8 @@ game.createClass('Container', {
             this._cosCache = Math.cos(this.rotation);
         }
 
-        var w = this.width / this.scale.x || 0;
-        var h = this.height / this.scale.y || 0;
-        var ax = w * this.anchor.x;
-        var ay = h * this.anchor.y;
+        var ax = this.anchor.x;
+        var ay = this.anchor.y;
         var a = this._cosCache * this.scale.x;
         var b = this._sinCache * this.scale.x;
         var c = -this._sinCache * this.scale.y;
@@ -395,9 +403,10 @@ game.createClass('Container', {
 
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
+        var bounds = this._getBounds();
 
-        canvas.width = this.width * game.scale;
-        canvas.height = this.height * game.scale;
+        canvas.width = (bounds.width / this.scale.x) * game.scale;
+        canvas.height = (bounds.height / this.scale.y) * game.scale;
 
         this._worldTransform.reset();
         this._updateChildTransform();
@@ -550,21 +559,21 @@ game.createClass('Container', {
 game.defineProperties('Container', {
     /**
         Cache container content as bitmap.
-        @property {Boolean} cacheAsBitmap
+        @property {Boolean} cache
         @default false
     **/
-    cacheAsBitmap: {
+    cache: {
         get: function() {
-            return this._cacheAsBitmap;
+            return this._cached;
         },
 
         set: function(value) {
-            if (this._cacheAsBitmap === value) return;
+            if (this._cached === value) return;
 
             if (value) this._generateCachedSprite();
             else this._destroyCachedSprite();
 
-            this._cacheAsBitmap = value;
+            this._cached = value;
         }
     },
 

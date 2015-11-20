@@ -225,14 +225,19 @@ game.createClass('Text', 'Container', {
             if (!charObj) continue;
 
             var texture = charObj.texture;
+            if (i === 0) x -= charObj.xoffset;
 
             var sprite = new game.Sprite(texture);
             sprite.position.x = (x + charObj.xoffset) / game.scale;
-            sprite.position.y = (y + charObj.yoffset) / game.scale;
+            if (this.text.length > 1) {
+                sprite.position.y = (y + charObj.yoffset) / game.scale;
+            }
             this.addChild(sprite);
 
-            x += sprite.width + charObj.xoffset;
+            x += charObj.xadvance;
         }
+
+        this.updateTransform();
     }
 });
 
@@ -271,7 +276,6 @@ game.createClass('Font', {
         var image = data.getElementsByTagName('page')[0].getAttribute('file');
         var info = data.getElementsByTagName('info')[0];
         var common = data.getElementsByTagName('common')[0];
-        var face = info.getAttribute('face');
         var chars = data.getElementsByTagName('char');
 
         this.baseTexture = game.BaseTexture.fromImage(game._getFilePath(image));
@@ -291,7 +295,7 @@ game.createClass('Font', {
             var width = parseInt(chars[i].getAttribute('width')) / game.scale;
             var height = parseInt(chars[i].getAttribute('height')) / game.scale;
             var texture = new game.Texture(this.baseTexture, x, y, width, height);
-            
+
             this.chars[id] = {
                 texture: texture,
                 xadvance: xadvance,

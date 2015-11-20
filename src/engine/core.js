@@ -482,7 +482,7 @@ var game = {
 
         // Optional classes
         if (this.Keyboard) this.keyboard = new this.Keyboard();
-        if (this.Audio) this.audio = new this.Audio();
+        if (this.Audio && this.Audio.enabled) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.Storage && this.Storage.id) this.storage = new this.Storage();
         if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
@@ -613,6 +613,18 @@ var game = {
         if (file.indexOf('://') !== -1) return file;
         if (this.config.mediaFolder) file = this.config.mediaFolder + '/' + file;
         return file;
+    },
+
+    /**
+        @method _getId
+        @param {String} path
+        @private
+        @return {String}
+    **/
+    _getId: function(path) {
+        for (var id in this.paths) {
+            if (this.paths[id] === path) return id;
+        }
     },
 
     /**

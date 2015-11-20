@@ -75,10 +75,10 @@ game.createClass('Scene', {
         }
 
         if (game.audio && game.Audio.stopOnSceneChange && game.scene) {
-            game.audio.stopMusic();
-            game.audio.stopSound(false, true);
-            game.audio.pausedSounds.length = 0;
-            game.audio.playingSounds.length = 0;
+            if (game.audio.music) game.audio.music.stop(true);
+            for (var i = 0; i < game.audio.sounds.length; i++) {
+                game.audio.sounds[i].stop(true);
+            }
         }
 
         game.input._reset();

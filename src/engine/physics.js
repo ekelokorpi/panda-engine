@@ -481,7 +481,7 @@ game.createClass('PhysicsSprite', 'Sprite', {
     shape: 'Rectangle',
 
     init: function(texture, width, height) {
-        this.anchor.set(0.5);
+        this.anchorCenter();
         width = width || this.width;
         height = height || this.height;
         var shape = new game[this.shape](width, height);

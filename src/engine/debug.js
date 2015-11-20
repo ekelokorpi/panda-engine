@@ -261,7 +261,7 @@ game.createClass('Debug', {
         context.rect(x, y, width, height);
         context.stroke();
 
-        if (container._cacheAsBitmap) return;
+        if (container._cached) return;
 
         for (var i = 0; i < container.children.length; i++) {
             var child = container.children[i];
