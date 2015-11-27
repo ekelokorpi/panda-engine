@@ -34,11 +34,12 @@ game.createClass('Pool', {
         Get object from pool.
         @method get
         @param {String} pool Name of the pool.
-        @return {Object} Returns false, if pool not found or empty.
+        @return {Object}
     **/
     get: function(pool) {
-        if (!this.pools[pool] || this.pools[pool].length === 0) return false;
-        else return this.pools[pool].pop();
+        if (this.pools[pool] && this.pools[pool].length) {
+            return this.pools[pool].pop();
+        }
     },
 
     /**

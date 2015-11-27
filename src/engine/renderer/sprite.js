@@ -149,7 +149,7 @@ game.createClass('Sprite', 'Container', {
 
 game.addAttributes('Sprite', {
     /**
-        List of supported blend modes.
+        List of available blend modes.
         @attribute {Array} blendModes
     **/
     blendModes: [
@@ -180,7 +180,7 @@ game.addAttributes('Sprite', {
         'color',
         'luminosity'
     ]
-})
+});
 
 game.defineProperties('Sprite', {
     width: {
