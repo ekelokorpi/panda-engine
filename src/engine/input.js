@@ -100,8 +100,8 @@ game.createClass('Input', {
             var bounds = container._getBounds();
             var tx = (bounds.x || wt.tx);
             var ty = (bounds.y || wt.ty);
-            var scaleX = wt.a / container._cosCache;
-            var scaleY = wt.d / container._cosCache;
+            var scaleX = Math.abs(wt.a / container._cosCache);
+            var scaleY = Math.abs(wt.d / container._cosCache);
             var aPercX = (container.anchor.x / container.width) || 0;
             var aPercY = (container.anchor.y / container.height) || 0;
             var hx = tx + hitArea.x * scaleX;

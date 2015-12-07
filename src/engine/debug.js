@@ -309,8 +309,8 @@ game.createClass('Debug', {
         context.fillStyle = game.Debug.hitAreaColor;
 
         if (hitArea) {
-            var scaleX = wt.a / container._cosCache;
-            var scaleY = wt.d / container._cosCache;
+            var scaleX = Math.abs(wt.a / container._cosCache);
+            var scaleY = Math.abs(wt.d / container._cosCache);
             var aPercX = (container.anchor.x / container.width) || 0;
             var aPercY = (container.anchor.y / container.height) || 0;
             x = hitArea.x * game.scale * scaleX;
