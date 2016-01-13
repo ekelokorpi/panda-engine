@@ -74,13 +74,6 @@ game.createClass('Scene', {
             this.backgroundColor = '#000';
         }
 
-        if (game.audio && game.Audio.stopOnSceneChange && game.scene) {
-            if (game.audio.music) game.audio.music.stop(true);
-            for (var i = 0; i < game.audio.sounds.length; i++) {
-                game.audio.sounds[i].stop(true);
-            }
-        }
-
         game.input._reset();
 
         game.scene = this;
@@ -282,6 +275,21 @@ game.createClass('Scene', {
         @method update
     **/
     update: function() {},
+
+    /**
+        @method _exit
+        @private
+    **/
+    _exit: function() {
+        if (game.audio && game.Audio.stopOnSceneChange) {
+            if (game.audio.music) game.audio.music.stop(true);
+            for (var i = 0; i < game.audio.sounds.length; i++) {
+                game.audio.sounds[i].stop(true);
+            }
+        }
+        
+        this.exit();
+    },
 
     /**
         @method _mousedown

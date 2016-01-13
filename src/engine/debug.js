@@ -169,6 +169,7 @@ game.createClass('Debug', {
         this.panel.style.fontSize = game.Debug.fontSize + 'px';
         this.panel.style.width = '100%';
         this.panel.style.pointerEvents = 'none';
+        this.panel.style.opacity = game.Debug.alpha;
         document.body.appendChild(this.panel);
     },
 
@@ -364,6 +365,7 @@ game.createClass('Debug', {
             this.last = now;
             this._frames = 0;
         }
+        else return;
 
         this.text = '';
         if (game.config.version) this._addText(game.config.version);
@@ -406,6 +408,12 @@ game.createClass('Debug', {
 });
 
 game.addAttributes('Debug', {
+    /**
+        Alpha of debug panel.
+        @attribute {Number} alpha
+        @default 1.0
+    **/
+    alpha: 1.0,
     /**
         Background color of debug panel.
         @attribute {String} backgroundColor
@@ -545,7 +553,7 @@ game.addAttributes('Debug', {
     **/
     fontSize: 14,
     /**
-        How often to update fps (ms).
+        How often to update debug panel (ms).
         @attribute {Number} frequency
         @default 500
     **/

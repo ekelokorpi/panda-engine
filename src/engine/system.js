@@ -350,7 +350,7 @@ game.createClass('System', {
     **/
     _setSceneNow: function(sceneClass) {
         if (this.paused) this.paused = false;
-        if (this.scene && this.scene.exit) this.scene.exit();
+        if (this.scene) this.scene._exit();
         this.scene = new (sceneClass)();
         this._newSceneClass = null;
         this._startRunLoop();
