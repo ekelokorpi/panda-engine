@@ -65,13 +65,6 @@ game.createClass('Debug', {
         if (game.Debug.showInfo) {
             console.log('Panda Engine ' + game.version);
             console.log('Canvas ' + game.system.width + 'x' + game.system.height);
-
-            if (game.Audio && game.Audio.enabled) {
-                console.log((game.audio.context ? 'Web' : 'HTML5') + ' Audio engine');
-            }
-            else {
-                console.log('Audio disabled');
-            }
         }
 
         game.Input.inject({
@@ -612,13 +605,51 @@ game.addAttributes('Debug', {
     textColor: '#ff0000'
 });
 
+/**
+    @class DebugTouch
+    @constructor
+    @param {Number} id
+**/
 game.createClass('DebugTouch', {
-    moveTimer: 0,
-    lifeTimer: 0,
+    /**
+        @property {Vector} dir
+    **/
+    dir: null,
+    /**
+        @property {Object} event
+    **/
     event: {
         changedTouches: []
     },
+    /**
+        @property {Number} life
+    **/
+    life: 0,
+    /**
+        @property {Number} lifeTimer
+    **/
+    lifeTimer: 0,
+    /**
+        @property {Number} moveTimer
+    **/
+    moveTimer: 0,
+    /**
+        @property {Boolean} moving
+    **/
+    moving: false,
+    /**
+        @property {Number} speed
+    **/
+    speed: 0,
+    /**
+        @property {Object} touch
+    **/
     touch: {},
+    /**
+        @property {Boolean} _remove
+        @private
+    **/
+    _remove: false,
 
     init: function(id) {
         this.touch.identifier = id;
@@ -640,15 +671,9 @@ game.createClass('DebugTouch', {
         }
     },
 
-    remove: function() {
-        this._remove = true;
-        if (this.touch.canvasX < 0) this.touch.canvasX = 0;
-        if (this.touch.canvasY < 0) this.touch.canvasY = 0;
-        if (this.touch.canvasX > game.width) this.touch.canvasX = game.width;
-        if (this.touch.canvasY > game.height) this.touch.canvasY = game.height;
-        game.input._touchend(this.event);
-    },
-
+    /**
+        @method move
+    **/
     move: function() {
         this.touch.canvasX += this.dir.x;
         this.touch.canvasY += this.dir.y;
@@ -660,6 +685,22 @@ game.createClass('DebugTouch', {
         }
     },
 
+    /**
+        @method remove
+    **/
+    remove: function() {
+        this._remove = true;
+        if (this.touch.canvasX < 0) this.touch.canvasX = 0;
+        if (this.touch.canvasY < 0) this.touch.canvasY = 0;
+        if (this.touch.canvasX > game.width) this.touch.canvasX = game.width;
+        if (this.touch.canvasY > game.height) this.touch.canvasY = game.height;
+        game.input._touchend(this.event);
+    },
+
+    /**
+        @method _update
+        @private
+    **/
     _update: function() {
         this.lifeTimer += game.delta * 1000;
         if (this.lifeTimer >= this.life) {

@@ -12,9 +12,13 @@ game.module(
 **/
 game.createClass('Audio', {
     buffers: {},
+    context: null,
     formats: [],
+    mainGain: null,
     music: null,
+    musicGain: null,
     muted: false,
+    soundGain: null,
     sounds: [],
 
     staticInit: function() {
