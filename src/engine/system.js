@@ -172,6 +172,19 @@ game.createClass('System', {
     },
 
     /**
+        Load new scene using default loader.
+        @method loadScene
+        @param {String} scenenName
+    **/
+    loadScene: function(sceneName) {
+        if (game.assetQueue.length + game.audioQueue.length === 0) {
+            this.setScene(sceneName);
+            return;
+        }
+        this.setScene(game.System.loader, sceneName);
+    },
+
+    /**
         Resize system.
         @method resize
         @param {Number} width
@@ -216,11 +229,14 @@ game.createClass('System', {
         @method setScene
         @param {String} sceneName
     **/
-    setScene: function(sceneName) {
+    setScene: function(sceneName, param) {
         var sceneClass = game[sceneName];
         if (!sceneClass) throw 'Scene ' + sceneName + ' not found';
-        if (this._running && !this.paused) this._newSceneClass = sceneClass;
-        else this._setSceneNow(sceneClass);
+        if (this._running && !this.paused) {
+            this._newSceneClass = sceneClass;
+            this._newSceneParam = param;
+        }
+        else this._setSceneNow(sceneClass, param);
     },
 
     /**
@@ -314,7 +330,7 @@ game.createClass('System', {
         game.input._update();
         this.scene._update();
 
-        if (this._newSceneClass) this._setSceneNow(this._newSceneClass, this._removeAssets);
+        if (this._newSceneClass) this._setSceneNow(this._newSceneClass, this._newSceneParam);
     },
 
     /**
@@ -346,12 +362,13 @@ game.createClass('System', {
     /**
         @method _setSceneNow
         @param {Scene} sceneClass
+        @param {*} [param]
         @private
     **/
-    _setSceneNow: function(sceneClass) {
+    _setSceneNow: function(sceneClass, param) {
         if (this.paused) this.paused = false;
         if (this.scene) this.scene._exit();
-        this.scene = new (sceneClass)();
+        this.scene = new (sceneClass)(param);
         this._newSceneClass = null;
         this._startRunLoop();
     },
@@ -435,6 +452,12 @@ game.addAttributes('System', {
         @default 2
     **/
     hiresRatio: 2,
+    /**
+        Default loader class.
+        @attribute {String} loader
+        @default Loader
+    **/
+    loader: 'Loader',
     /**
         Pause engine, when page is hidden.
         @attribute {Boolean} pauseOnHide

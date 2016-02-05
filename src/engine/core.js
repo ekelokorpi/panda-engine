@@ -451,7 +451,9 @@ var game = {
         Called, when engine is started.
         @method onStart
     **/
-    onStart: function() {},
+    onStart: function() {
+        game.system.loadScene(game.System.startScene);
+    },
 
     /**
         Require module.
@@ -494,10 +496,7 @@ var game = {
 
         if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
 
-        this._loader = new game.Loader();
-        this._loader.onComplete = this.System.startScene;
-        this._loader.onStart = this.onStart.bind(this);
-        if (!this.system._rotateScreenVisible) this._loader.start();
+        this.onStart();
     },
 
     /**

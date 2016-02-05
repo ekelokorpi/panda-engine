@@ -61,6 +61,11 @@ game.createClass('Audio', {
         this.muted = true;
     },
 
+    stopMusic: function() {
+        if (this.music) this.music.stop();
+        this.music = null;
+    },
+
     toggle: function() {
         if (this.muted) this.unmute();
         else this.mute();

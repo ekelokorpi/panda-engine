@@ -4,12 +4,19 @@
 game.module(
     'engine.debug'
 )
+.require(
+    'engine.camera'
+)
 .body(function() {
 
 /**
     @class Debug
 **/
 game.createClass('Debug', {
+    /**
+        @property {Camera} camera
+    **/
+    camera: null,
     /**
         Current fps.
         @property {Number} fps
@@ -199,7 +206,13 @@ game.createClass('Debug', {
         var context = game.renderer.context;
         var shape = body.shape;
 
-        context.setTransform(1, 0, 0, 1, 0, 0);
+        var x = 0;
+        var y = 0;
+        if (this.camera) {
+            x = -this.camera.position.x;
+            y = -this.camera.position.y;
+        }
+        context.setTransform(1, 0, 0, 1, x, y);
         context.globalAlpha = game.Debug.bodyAlpha;
         context.fillStyle = game.Debug.bodyColor;
         context.strokeStyle = game.Debug.bodyLineColor;
@@ -716,6 +729,13 @@ game.createClass('DebugTouch', {
             if (!this.move()) game.input._touchmove(this.event);
             else this.remove();
         }
+    }
+});
+
+game.Camera.inject({
+    staticInit: function(x, y) {
+        this.super(x, y);
+        if (game.debug) game.debug.camera = this;
     }
 });
 

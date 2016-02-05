@@ -4,6 +4,9 @@
 game.module(
     'engine.loader'
 )
+.require(
+    'engine.scene'
+)
 .body(function() {
 
 /**
@@ -11,7 +14,7 @@ game.module(
     @class Loader
     @constructor
 **/
-game.createClass('Loader', {
+game.createClass('Loader', 'Scene', {
     /**
         Number of files loaded.
         @property {Number} loaded
@@ -27,6 +30,11 @@ game.createClass('Loader', {
         @property {Number} percent
     **/
     percent: 0,
+    /**
+        Scene to set, when loader complete.
+        @property {String} scene
+    **/
+    scene: null,
     /**
         Is loader started.
         @property {Boolean} started
@@ -56,7 +64,12 @@ game.createClass('Loader', {
     **/
     _loadCount: 0,
 
-    init: function() {
+    staticInit: function(scene) {
+        if (scene) {
+            this.scene = scene;
+            this.super();
+        }
+
         for (var i = 0; i < game.assetQueue.length; i++) {
             this._assetQueue.push(this._getFilePath(game.assetQueue[i]));
         }
@@ -71,6 +84,9 @@ game.createClass('Loader', {
 
         this.totalFiles = this._assetQueue.length + this._audioQueue.length;
         if (this.totalFiles === 0) this.percent = 100;
+
+        if (scene) this.start();
+        else return true;
     },
 
     /**
@@ -114,6 +130,14 @@ game.createClass('Loader', {
     },
 
     /**
+        Called, when all files loaded.
+        @method onComplete
+    **/
+    onComplete: function() {
+        if (this.scene) game.system.setScene(this.scene);
+    },
+
+    /**
         Called, when loader got error.
         @method onError
         @param {String} error
@@ -125,9 +149,10 @@ game.createClass('Loader', {
     /**
         Called, when file is loaded.
         @method onProgress
+        @param {Number} percent
     **/
-    onProgress: function() {
-        if (this.barFg) this.barFg.scale.x = this.percent / 100;
+    onProgress: function(percent) {
+        if (this.barFg) this.barFg.scale.x = percent / 100;
     },
 
     /**
@@ -256,12 +281,7 @@ game.createClass('Loader', {
             }
         }
 
-        if (typeof this.onComplete === 'function') {
-            this.onComplete();
-        }
-        else {
-            game.system.setScene(this.onComplete);
-        }
+        this.onComplete();
     },
 
     /**
@@ -283,7 +303,7 @@ game.createClass('Loader', {
         this._loadCount--;
         this.loaded++;
         this.percent = Math.round(this.loaded / this.totalFiles * 100);
-        this.onProgress();
+        this.onProgress(this.percent);
         if (this.loaded === this.totalFiles) this._complete();
         else this._startLoading();
     },
