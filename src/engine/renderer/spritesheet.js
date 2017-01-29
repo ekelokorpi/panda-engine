@@ -9,7 +9,7 @@ game.module(
 /**
     @class SpriteSheet
     @constructor
-    @param {String} id Asset ID
+    @param {String} id Asset id
     @param {Number} width Sprite frame width
     @param {Number} height Sprite frame height
 **/
@@ -39,28 +39,18 @@ game.createClass('SpriteSheet', {
         @property {Number} width
     **/
     width: 0,
-    /**
-        @property {Number} _sx
-        @private
-    **/
-    _sx: 0,
-    /**
-        @property {Number} _sy
-        @private
-    **/
-    _sy: 0,
 
     staticInit: function(id, width, height) {
         this.width = this.width || width;
         this.height = this.height || height;
         var baseTexture = game.BaseTexture.cache[game.paths[this.texture || id]];
-        this._sx = Math.floor(baseTexture.width / this.width);
-        this._sy = Math.floor(baseTexture.height / this.height);
-        this.frames = this._sx * this._sy;
+        var sx = Math.floor(baseTexture.width / this.width);
+        var sy = Math.floor(baseTexture.height / this.height);
+        this.frames = sx * sy;
 
         for (var i = 0; i < this.frames; i++) {
-            var x = (i % this._sx) * this.width;
-            var y = Math.floor(i / this._sx) * this.height;
+            var x = (i % sx) * this.width;
+            var y = Math.floor(i / sx) * this.height;
             var texture = new game.Texture(baseTexture, x, y, this.width, this.height);
             this.textures.push(texture);
         }

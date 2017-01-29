@@ -480,7 +480,8 @@ game.createClass('PhysicsSprite', 'Sprite', {
     **/
     shape: 'Rectangle',
 
-    init: function(texture, width, height) {
+    staticInit: function(texture, width, height) {
+        this.super(texture);
         this.anchorCenter();
         width = width || this.width;
         height = height || this.height;

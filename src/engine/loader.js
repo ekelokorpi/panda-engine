@@ -22,7 +22,7 @@ game.createClass('Loader', 'Scene', {
     loaded: 0,
     /**
         Function or Scene name to run, when loader complete.
-        @propety {Function|String} onComplete
+        @property {Function|String} onComplete
     **/
     onComplete: null,
     /**

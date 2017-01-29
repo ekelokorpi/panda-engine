@@ -1,13 +1,4 @@
 /**
-    Panda Engine
-
-    Made by Eemeli Kelokorpi
-    Renderer based on Pixi.js by Mat Groves, Goodboy Digital
-    Financed by Yleisradio
-    Released under the MIT license
-**/
-
-/**
     @module game
     @class Core
 **/
