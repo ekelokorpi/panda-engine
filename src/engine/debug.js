@@ -308,8 +308,8 @@ game.createClass('Debug', {
         var hitArea = container.hitArea;
         var bounds = container._getBounds();
 
-        var x = (bounds.x || wt.tx) * game.scale;
-        var y = (bounds.y || wt.ty) * game.scale;
+        var x = typeof bounds.x === 'number' ? bounds.x : wt.tx * game.scale;
+        var y = typeof bounds.y === 'number' ? bounds.y : wt.ty * game.scale;
 
         context.setTransform(1, 0, 0, 1, x, y);
         context.globalAlpha = game.Debug.hitAreaAlpha;

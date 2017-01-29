@@ -195,6 +195,13 @@ var game = {
         @param {String} [id]
     **/
     addAsset: function(path, id) {
+        var fileType = path.split('?').shift().split('.').pop().toLowerCase();
+        for (var i = 0; i < game.Audio.formats.length; i++) {
+            if (game.Audio.formats[i].ext === fileType) {
+                this._addFileToQueue(path, id, 'audioQueue');
+                return;
+            }
+        };
         this._addFileToQueue(path, id, 'assetQueue');
     },
 
@@ -210,16 +217,6 @@ var game = {
         for (var name in attributes) {
             this[className][name] = attributes[name];
         }
-    },
-
-    /**
-        Add audio to loader.
-        @method addAudio
-        @param {String} path
-        @param {String} [id]
-    **/
-    addAudio: function(path, id) {
-        this._addFileToQueue(path, id, 'audioQueue');
     },
 
     /**

@@ -177,7 +177,7 @@ game.createClass('Container', {
         @chainable
     **/
     anchorCenter: function() {
-        this.anchor.set(this.width / 2, this.height / 2);
+        this.anchor.set(this.width / this.scale.x / 2, this.height / this.scale.y / 2);
         return this;
     },
 

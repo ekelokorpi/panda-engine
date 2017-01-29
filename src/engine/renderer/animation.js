@@ -189,13 +189,13 @@ game.createClass('Animation', 'Sprite', {
 
 game.addAttributes('Animation', {
     /**
-        Create animation from frames starting with name.
-        @method fromFrames
+        Create animation from textures starting with name.
+        @method fromTextures
         @static
         @param {String} name
         @return {Animation}
     **/
-    fromFrames: function(name) {
+    fromTextures: function(name) {
         var textures = [];
         for (var i in game.Texture.cache) {
             if (i.indexOf(name) === 0) textures.push(game.Texture.cache[i]);

@@ -713,6 +713,18 @@ game.addAttributes('Tween', {
                 return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
             }
         }
+    },
+
+    /**
+        @attribute {Function} stopTweensForObject
+        @param {Class} object
+    **/
+    stopTweensForObject: function(object) {
+        if (!game.scene) return;
+        for (var i = game.scene.tweens.length - 1; i >= 0; i--) {
+            var tween = game.scene.tweens[i];
+            if (tween.object === object) tween.stop();
+        };
     }
 });
 

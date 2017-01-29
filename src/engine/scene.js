@@ -140,6 +140,7 @@ game.createClass('Scene', {
         var tween = new game.Tween(obj);
         tween.to(props, time);
         for (var i in settings) {
+            if (!tween[i]) throw 'Invalid Tween setting: ' + i;
             tween[i](settings[i]);
         }
         return tween;
