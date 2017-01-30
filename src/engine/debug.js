@@ -374,7 +374,7 @@ game.createClass('Debug', {
         else return;
 
         this.text = '';
-        if (game.config.version) this._addText(game.config.version);
+        this._addText(game.version);
         this._addText('FPS', this.fps);
         this._addText('OBJECTS', game.scene.objects.length);
         this._addText('SPRITES', this.sprites);

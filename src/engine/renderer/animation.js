@@ -13,9 +13,19 @@ game.module(
     @class Animation
     @extends Sprite
     @constructor
-    @param {Array|String} textures List of textures or name of JSON file
+    @param {Array|String} textures Array of textures or name of JSON file
 **/
 game.createClass('Animation', 'Sprite', {
+    /**
+        List of animations.
+        @property {Object} anims
+    **/
+    anims: {},
+    /**
+        Current active animation.
+        @property {Animation} currentAnim
+    **/
+    currentAnim: null,
     /**
         Current frame index.
         @property {Number} currentFrame
@@ -54,9 +64,9 @@ game.createClass('Animation', 'Sprite', {
     /**
         Animation speed (frames per second).
         @property {Number} speed
-        @default 5
+        @default 10
     **/
-    speed: 5,
+    speed: 10,
     /**
         List of textures.
         @property {Array} textures
@@ -69,6 +79,7 @@ game.createClass('Animation', 'Sprite', {
     _frameTime: 0,
 
     staticInit: function(textures) {
+        this.currentAnim = this;
         this.textures = this.textures || textures;
 
         if (typeof this.textures === 'string' && this.textures.indexOf('json') !== -1) {
@@ -91,31 +102,60 @@ game.createClass('Animation', 'Sprite', {
     },
 
     /**
+        Add new animation.
+        @method addAnim
+        @param {String} name
+        @param {Array} frames
+        @param {Object} [props]
+        @chainable
+    **/
+    addAnim: function(name, frames, props) {
+        if (!name || !frames) return;
+
+        var textures = [];
+        for (var i = 0; i < frames.length; i++) {
+            textures[i] = this.textures[frames[i]];
+        }
+
+        var anim = new game.Animation(textures);
+        anim.loop = this.loop;
+        anim.random = this.random;
+        anim.reverse = this.reverse;
+        anim.speed = this.speed;
+        game.merge(anim, props);
+
+        this.anims[name] = anim;
+        return this;
+    },
+
+    /**
         Jump to specific frame.
         @method gotoFrame
         @param {Number} frame
         @chainable
     **/
     gotoFrame: function(frame) {
-        if (!this.textures[frame]) return;
+        if (!this.currentAnim.textures[frame]) return;
         this.currentFrame = frame;
         this._frameTime = 0;
-        this.setTexture(this.textures[frame]);
+        this.setTexture(this.currentAnim.textures[frame]);
         return this;
     },
 
     /**
         Play animation.
         @method play
-        @param {String} name Name of animation
-        @param {Number} [frame] Frame index
         @chainable
     **/
-    play: function(frame) {
+    play: function(name, frame) {
         this.playing = true;
+        this.currentAnim = this.anims[name] || this;
+        
+        if (typeof name === 'number') frame = name;
         if (typeof frame !== 'number' && this.reverse) {
             frame = this.textures.length - 1;
         }
+
         this.gotoFrame(frame || 0);
         return this;
     },
@@ -136,28 +176,28 @@ game.createClass('Animation', 'Sprite', {
         @method updateAnimation
     **/
     updateAnimation: function() {
-        this._frameTime += this.speed * game.delta;
+        this._frameTime += this.currentAnim.speed * game.delta;
 
         if (this._frameTime >= 1) {
             this._frameTime = 0;
 
-            if (this.random && this.textures.length > 1) {
+            if (this.currentAnim.random && this.currentAnim.textures.length > 1) {
                 var nextFrame = this.currentFrame;
                 while (nextFrame === this.currentFrame) {
-                    nextFrame = Math.round(Math.random(0, this.textures.length - 1));
+                    nextFrame = Math.round(Math.random(0, this.currentAnim.textures.length - 1));
                 }
 
                 this.currentFrame = nextFrame;
-                this.setTexture(this.textures[nextFrame]);
+                this.setTexture(this.currentAnim.textures[nextFrame]);
                 return;
             }
 
-            var nextFrame = this.currentFrame + (this.reverse ? -1 : 1);
+            var nextFrame = this.currentFrame + (this.currentAnim.reverse ? -1 : 1);
 
-            if (nextFrame >= this.textures.length) {
-                if (this.loop) {
+            if (nextFrame >= this.currentAnim.textures.length) {
+                if (this.currentAnim.loop) {
                     this.currentFrame = 0;
-                    this.setTexture(this.textures[0]);
+                    this.setTexture(this.currentAnim.textures[0]);
                 }
                 else {
                     this.playing = false;
@@ -165,9 +205,9 @@ game.createClass('Animation', 'Sprite', {
                 }
             }
             else if (nextFrame < 0) {
-                if (this.loop) {
-                    this.currentFrame = this.textures.length - 1;
-                    this.setTexture(this.textures.last());
+                if (this.currentAnim.loop) {
+                    this.currentFrame = this.currentAnim.textures.length - 1;
+                    this.setTexture(this.currentAnim.textures.last());
                 }
                 else {
                     this.playing = false;
@@ -176,7 +216,7 @@ game.createClass('Animation', 'Sprite', {
             }
             else {
                 this.currentFrame = nextFrame;
-                this.setTexture(this.textures[nextFrame]);
+                this.setTexture(this.currentAnim.textures[nextFrame]);
             }
         }
     },
@@ -201,59 +241,6 @@ game.addAttributes('Animation', {
             if (i.indexOf(name) === 0) textures.push(game.Texture.cache[i]);
         }
         if (textures.length > 0) return new game.Animation(textures);
-    }
-});
-
-game.createClass('AnimationSet', {
-    /**
-        List of animations.
-        @property {Object} anims
-    **/
-    anims: {},
-    /**
-        Current active animation.
-        @property {String} currentAnim
-    **/
-    currentAnim: null,
-
-    /**
-        Add new animation.
-        @method addAnim
-        @param {String} name
-        @param {Array} [frames]
-        @param {Object} [props]
-        @chainable
-    **/
-    addAnim: function(name, frames, props) {
-        if (!name) return;
-        if (!frames) {
-            frames = [];
-            for (var i = 0; i < this.textures.length; i++) {
-                frames.push(i);
-            }
-        }
-        var anim = new game.Animation(frames, props);
-        this.anims[name] = anim;
-        return this;
-    },
-
-    /**
-        Play animation.
-        @method play
-        @param {String} name Name of animation
-        @param {Number} [frame] Frame index
-        @chainable
-    **/
-    play: function(name, frame) {
-        name = name || this.currentAnim;
-        var anim = this.anims[name];
-        if (!anim) return;
-        anim.play();
-        this.currentAnim = name;
-        if (typeof frame !== 'number' && anim.reverse) {
-            frame = anim.frames.length - 1;
-        }
-        return this;
     }
 });
 

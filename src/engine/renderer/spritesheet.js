@@ -7,6 +7,7 @@ game.module(
 .body(function() {
 
 /**
+    Sprite sheet from single image with fixed frame size.
     @class SpriteSheet
     @constructor
     @param {String} id Asset id
@@ -72,7 +73,7 @@ game.createClass('SpriteSheet', {
         @method anim
         @param {Number|Array} frames List or number of frames
         @param {Number} [startIndex] The index to begin with, default to 0
-        @param {Boolean} [onlyTextures] Return only textures
+        @param {Boolean} [onlyTextures] Return only textures in array
         @return {Animation|Array}
     **/
     anim: function(frames, startIndex, onlyTextures) {

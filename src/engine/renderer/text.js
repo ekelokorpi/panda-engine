@@ -45,6 +45,7 @@ game.createClass('Text', 'Container', {
 
     staticInit: function(text, props) {
         this.super();
+        text = text || '';
         this.text = this.text || text.toString();
         game.merge(this, props);
         this.font = this.font || game.Text.defaultFont;

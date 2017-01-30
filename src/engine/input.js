@@ -185,8 +185,10 @@ game.createClass('Input', {
 
         this._preventDefault(event);
         this._calculateXY(event);
-        if (event.canvasX < 0 || event.canvasX > game.width) return;
-        if (event.canvasY < 0 || event.canvasY > game.height) return;
+        if (event.canvasX < 0 || event.canvasX > game.width || event.canvasY < 0 || event.canvasY > game.height) {
+            game.scene._mouseup(event.canvasX, event.canvasY, event.identifier, event);
+            return;
+        }
         this.mouse.set(event.canvasX, event.canvasY);
 
         this._mouseUpItem = this._processEvent('mouseup', event);

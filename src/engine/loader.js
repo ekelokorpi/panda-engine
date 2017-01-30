@@ -10,7 +10,7 @@ game.module(
 .body(function() {
 
 /**
-    Dynamic loader for assets and audio files.
+    Dynamic loader for files.
     @class Loader
     @constructor
 **/
@@ -317,7 +317,7 @@ game.createClass('Loader', 'Scene', {
             var filePath = this._assetQueue[i];
             if (!filePath) continue;
             var fileType = filePath.split('?').shift().split('.').pop().toLowerCase();
-            var loadFunc = game.Loader.formats[fileType];
+            var loadFunc = game.Loader._formats[fileType];
             if (!this[loadFunc]) throw 'Unsupported file format ' + fileType;
             this._loadCount++;
             this._assetQueue.splice(i, 1);
@@ -338,23 +338,23 @@ game.createClass('Loader', 'Scene', {
 
 game.addAttributes('Loader', {
     /**
+        How many files to load at same time.
+        @attribute {Number} maxFiles
+        @default 4
+    **/
+    maxFiles: 4,
+    /**
         List of supported file formats and load functions.
-        @attribute {Object} formats
+        @attribute {Object} _formats
         @private
     **/
-    formats: {
+    _formats: {
         png: 'loadImage',
         jpg: 'loadImage',
         jpeg: 'loadImage',
         json: 'loadJSON',
         fnt: 'loadFont'
-    },
-    /**
-        How many files to load at same time.
-        @attribute {Number} maxFiles
-        @default 4
-    **/
-    maxFiles: 4
+    }
 });
 
 });
