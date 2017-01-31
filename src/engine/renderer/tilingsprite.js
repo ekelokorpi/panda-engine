@@ -102,11 +102,35 @@ game.createClass('TilingSprite', 'Container', {
     },
 
     _getBounds: function() {
-        var minX = this._worldTransform.tx;
-        var minY = this._worldTransform.ty;
-        var maxX = minX + this.width;
-        var maxY = minY + this.height;
+        if (this.rotation) {
+            var width = this.width;
+            var height = this.height;
+            var wt = this._worldTransform;
+            var a = wt.a;
+            var b = wt.b;
+            var c = wt.c;
+            var d = wt.d;
+            var tx = wt.tx;
+            var ty = wt.ty;
+            var x2 = a * width + tx;
+            var y2 = b * width + ty;
+            var x3 = a * width + c * height + tx;
+            var y3 = d * height + b * width + ty;
+            var x4 = c * height + tx;
+            var y4 = d * height + ty;
 
+            var minX = Math.min(tx, x2, x3, x4);
+            var minY = Math.min(ty, y2, y3, y4);
+            var maxX = Math.max(tx, x2, x3, x4);
+            var maxY = Math.max(ty, y2, y3, y4);
+        }
+        else {
+            var minX = this._worldTransform.tx;
+            var minY = this._worldTransform.ty;
+            var maxX = minX + this.width;
+            var maxY = minY + this.height;
+        }
+        
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
             var childBounds = child._getBounds();

@@ -435,7 +435,7 @@ game.createClass('Container', {
         }
 
         if (this._cachedSprite) {
-            if (this._rotationCache) {
+            if (this.rotation) {
                 var width = this._cachedSprite.texture.width;
                 var height = this._cachedSprite.texture.height;
                 var wt = this._worldTransform;
