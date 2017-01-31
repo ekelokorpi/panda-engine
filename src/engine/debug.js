@@ -311,7 +311,7 @@ game.createClass('Debug', {
             context.globalAlpha = game.Debug.fakeTouchAlpha;
             context.fillStyle = game.Debug.fakeTouchColor;
             context.beginPath();
-            context.arc(touch.canvasX, touch.canvasY, game.Debug.fakeTouchSize, 0, Math.PI * 2);
+            context.arc(touch.canvasX * game.scale, touch.canvasY * game.scale, game.Debug.fakeTouchSize * game.scale, 0, Math.PI * 2);
             context.fill();
         }
     },
@@ -382,6 +382,8 @@ game.createClass('Debug', {
         @private
     **/
     _update: function() {
+        this._updateFakeTouch();
+
         if (!this.panel) return;
 
         this._frames++;
@@ -407,7 +409,13 @@ game.createClass('Debug', {
         this._addText('HIRES', game.scale);
 
         this._updateText();
+    },
 
+    /**
+        @method _updateFakeTouch
+        @private
+    **/
+    _updateFakeTouch: function() {
         for (var i = this._fakeTouches.length - 1; i >= 0; i--) {
             this._fakeTouches[i]._update();
             if (this._fakeTouches[i]._remove) this._fakeTouches.splice(i, 1);
@@ -522,9 +530,9 @@ game.addAttributes('Debug', {
     /**
         Sprite color for fake touches.
         @attribute {String} fakeTouchColor
-        @default #ff0000
+        @default #ffff00
     **/
-    fakeTouchColor: '#ff0000',
+    fakeTouchColor: '#ffff00',
     /**
         How often to create new fake touch (ms).
         @attribute {Number} fakeTouchInterval
