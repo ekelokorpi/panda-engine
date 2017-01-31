@@ -435,6 +435,34 @@ game.createClass('Container', {
         }
 
         if (this._cachedSprite) {
+            if (this._rotationCache) {
+                var width = this._cachedSprite.texture.width;
+                var height = this._cachedSprite.texture.height;
+                var wt = this._worldTransform;
+                var a = wt.a;
+                var b = wt.b;
+                var c = wt.c;
+                var d = wt.d;
+                var tx = wt.tx;
+                var ty = wt.ty;
+                var x2 = a * width + tx;
+                var y2 = b * width + ty;
+                var x3 = a * width + c * height + tx;
+                var y3 = d * height + b * width + ty;
+                var x4 = c * height + tx;
+                var y4 = d * height + ty;
+
+                var minX = Math.min(tx, x2, x3, x4);
+                var minY = Math.min(ty, y2, y3, y4);
+                var maxX = Math.max(tx, x2, x3, x4);
+                var maxY = Math.max(ty, y2, y3, y4);
+
+                this._worldBounds.x = minX;
+                this._worldBounds.y = minY;
+                this._worldBounds.width = maxX - minX;
+                this._worldBounds.height = maxY - minY;
+                return this._worldBounds;
+            }
             this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
             this._worldBounds.y = this._worldTransform.ty + this._cachedSprite.position.y;
             this._worldBounds.width = this._cachedSprite.texture.width * this._worldTransform.a;

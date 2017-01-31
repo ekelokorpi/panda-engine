@@ -577,9 +577,9 @@ game.addAttributes('Debug', {
     /**
         Vertical position of debug panel (top or bottom).
         @attribute {String} position
-        @default top
+        @default bottom
     **/
-    position: 'top',
+    position: 'bottom',
     /**
         Draw physics bodies.
         @attribute {Boolean} showBodies

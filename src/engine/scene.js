@@ -23,6 +23,11 @@ game.createClass('Scene', {
     **/
     emitters: [],
     /**
+        @property {Boolean} isMouseDown
+        @default false
+    **/
+    isMouseDown: false,
+    /**
         List of objects in scene.
         @property {Array} objects
     **/
@@ -301,6 +306,7 @@ game.createClass('Scene', {
         @private
     **/
     _mousedown: function(x, y, id, event) {
+        this.isMouseDown = true;
         this._mouseDownTime = game.Timer.time;
         this._mouseDownX = x;
         this._mouseDownY = y;
@@ -333,6 +339,7 @@ game.createClass('Scene', {
         @private
     **/
     _mouseup: function(x, y, id, event) {
+        this.isMouseDown = false;
         this._mouseDownTime = null;
         this.mouseup(x, y, id, event);
     },
