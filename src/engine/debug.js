@@ -70,8 +70,7 @@ game.createClass('Debug', {
 
     init: function() {
         if (game.Debug.showInfo) {
-            console.log('Panda Engine ' + game.version);
-            console.log('Canvas ' + game.system.width + 'x' + game.system.height);
+            console.log('Panda ' + game.version + ' (' + game.system.width + 'x' + game.system.height + ')');
         }
 
         game.Input.inject({
@@ -104,6 +103,7 @@ game.createClass('Debug', {
                 }
                 if (game.Debug.showBodies) game.debug._drawBodies();
                 if (game.Debug.fakeTouch) game.debug._drawFakeTouch();
+                if (game.Debug.showCamera) game.debug._drawCamera();
             }
         });
 
@@ -274,6 +274,27 @@ game.createClass('Debug', {
             var child = container.children[i];
             this._drawBounds(child);
         }
+    },
+
+    /**
+        @method _drawCamera
+        @private
+    **/
+    _drawCamera: function() {
+        if (!this.camera) return;
+
+        var context = game.renderer.context;
+        var width = this.camera.sensorSize.x * game.scale;
+        var height = this.camera.sensorSize.y * game.scale;
+        var x = (this.camera.sensorPosition.x * game.scale) + (this.camera.container.position.x * game.scale) - width / 2;
+        var y = (this.camera.sensorPosition.y * game.scale) + (this.camera.container.position.y * game.scale) - height / 2;
+
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = game.Debug.cameraAlpha;
+        context.fillStyle = game.Debug.cameraColor;
+        context.beginPath();
+        context.rect(x, y, width, height);
+        context.fill();
     },
 
     /**

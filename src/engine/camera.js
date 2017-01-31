@@ -25,12 +25,6 @@ game.createClass('Camera', {
     **/
     container: null,
     /**
-        Camera offset.
-        @property {Vector} offset
-        @default game.width / 2, game.height / 2
-    **/
-    offset: null,
-    /**
         Camera maximum move speed.
         @property {Number} maxSpeed
         @default 200
@@ -53,6 +47,12 @@ game.createClass('Camera', {
     **/
     minY: null,
     /**
+        Camera offset.
+        @property {Vector} offset
+        @default game.width / 2, game.height / 2
+    **/
+    offset: null,
+    /**
         Use rounding on container position.
         @property {Boolean} rounding
         @default false
@@ -65,17 +65,13 @@ game.createClass('Camera', {
     **/
     scale: 1,
     /**
-        @property {Number} sensorHeight
-    **/
-    sensorHeight: 0,
-    /**
         @property {Vector} sensorPosition
     **/
     sensorPosition: null,
     /**
-        @property {Number} sensorWidth
+        @property {Vector} sensorSize
     **/
-    sensorWidth: 0,
+    sensorSize: null,
     /**
         Current speed of camera.
         @property {Vector} speed
@@ -96,8 +92,7 @@ game.createClass('Camera', {
         this.speed = new game.Vector();
         this.offset = new game.Vector(game.width / 2, game.height / 2);
         this.sensorPosition = new game.Vector(this.offset.x, this.offset.y);
-        this.sensorWidth = 200 * game.scale;
-        this.sensorHeight = 200 * game.scale;
+        this.sensorSize = new game.Vector(200);
         if (typeof x === 'number' && typeof y === 'number') this.setPosition(x, y);
     },
 
@@ -125,10 +120,15 @@ game.createClass('Camera', {
 
     /**
         @method setPosition
-        @param {Number} x
-        @param {Number} y
+        @param {Vector|Number} x
+        @param {Number} [y]
     **/
     setPosition: function(x, y) {
+        if (x instanceof game.Vector) {
+            y = x.y;
+            x = x.x;
+        }
+
         this.position.set(x - this.offset.x, y - this.offset.y);
 
         if (typeof this.minX === 'number' && this.position.x < this.minX) {
@@ -152,16 +152,6 @@ game.createClass('Camera', {
             this.container.position.x = -(this.rounding ? (this.position.x + 0.5) | 0 : this.position.x);
             this.container.position.y = -(this.rounding ? (this.position.y + 0.5) | 0 : this.position.y);
         }
-    },
-
-    /**
-        @method setSensor
-        @param {Number} width
-        @param {Number} height
-    **/
-    setSensor: function(width, height) {
-        this.sensorWidth = width;
-        this.sensorHeight = height;
     },
 
     /**
@@ -204,23 +194,23 @@ game.createClass('Camera', {
 
         var targetWidth = this.target.width * this.scale;
         var targetHeight = this.target.height * this.scale;
-        var targetPosX = (this.target.position.x + this.target.width / 2) * this.scale;
-        var targetPosY = (this.target.position.y + this.target.height / 2) * this.scale;
+        var targetPosX = (this.target.position.x - this.target.anchor.x + this.target.width / 2) * this.scale;
+        var targetPosY = (this.target.position.y - this.target.anchor.y + this.target.height / 2) * this.scale;
         
-        if (this.sensorWidth < targetWidth || this.sensorHeight < targetHeight) this.setSensor(targetWidth, targetHeight);
+        if (this.sensorSize.x < targetWidth || this.sensorSize.y < targetHeight) this.setSensor(targetWidth, targetHeight);
 
-        if (targetPosX < this.sensorPosition.x - this.sensorWidth / 2 + targetWidth / 2) {
-            this.sensorPosition.x = targetPosX + this.sensorWidth / 2 - targetWidth / 2;
+        if (targetPosX < this.sensorPosition.x - this.sensorSize.x / 2 + targetWidth / 2) {
+            this.sensorPosition.x = targetPosX + this.sensorSize.x / 2 - targetWidth / 2;
         }
-        else if (targetPosX + (this.sensorWidth / 2 + targetWidth / 2) > this.sensorPosition.x + this.sensorWidth) {
-            this.sensorPosition.x = targetPosX + (this.sensorWidth / 2 + targetWidth / 2) - this.sensorWidth;
+        else if (targetPosX + (this.sensorSize.x / 2 + targetWidth / 2) > this.sensorPosition.x + this.sensorSize.x) {
+            this.sensorPosition.x = targetPosX + (this.sensorSize.x / 2 + targetWidth / 2) - this.sensorSize.x;
         }
 
-        if (targetPosY < this.sensorPosition.y - this.sensorHeight / 2 + targetHeight / 2) {
-            this.sensorPosition.y = targetPosY + this.sensorHeight / 2 - targetHeight / 2;
+        if (targetPosY < this.sensorPosition.y - this.sensorSize.y / 2 + targetHeight / 2) {
+            this.sensorPosition.y = targetPosY + this.sensorSize.y / 2 - targetHeight / 2;
         }
-        else if (targetPosY + (this.sensorHeight / 2 + targetHeight / 2) > this.sensorPosition.y + this.sensorHeight) {
-            this.sensorPosition.y = targetPosY + (this.sensorHeight / 2 + targetHeight / 2) - this.sensorHeight;
+        else if (targetPosY + (this.sensorSize.y / 2 + targetHeight / 2) > this.sensorPosition.y + this.sensorSize.y) {
+            this.sensorPosition.y = targetPosY + (this.sensorSize.y / 2 + targetHeight / 2) - this.sensorSize.y;
         }
     }
 });
