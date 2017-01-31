@@ -11,16 +11,52 @@ game.module(
     @class Audio
 **/
 game.createClass('Audio', {
+    /**
+        @property {Object} buffers
+    **/
     buffers: {},
+    /**
+        @property {AudioContext} context
+    **/
     context: null,
+    /**
+        @property {Array} formats
+    **/
     formats: [],
+    /**
+        @property {GainNode} mainGain
+    **/
     mainGain: null,
+    /**
+        @property {Music} music
+    **/
     music: null,
+    /**
+        @property {GainNode} musicGain
+    **/
     musicGain: null,
+    /**
+        @property {Boolean} muted
+        @default false
+    **/
     muted: false,
+    /**
+        @property {GainNode} soundGain
+    **/
     soundGain: null,
+    /**
+        @property {Array} sounds
+    **/
     sounds: [],
+    /**
+        @property {Music} _pauseMusic
+        @private
+    **/
     _pauseMusic: null,
+    /**
+        @property {Array} _pauseSounds
+        @private
+    **/
     _pauseSounds: [],
 
     staticInit: function() {
@@ -45,35 +81,51 @@ game.createClass('Audio', {
 
         this.context = new AudioContext();
 
-        this.mainGain = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
+        this.mainGain = this.context.createGain();
         this.mainGain.connect(this.context.destination);
 
-        this.musicGain = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
+        this.musicGain = this.context.createGain();
         this.musicGain.gain.value = game.Audio.musicVolume;
         this.musicGain.connect(this.mainGain);
 
-        this.soundGain = this.context.createGain ? this.context.createGain() : this.context.createGainNode();
+        this.soundGain = this.context.createGain();
         this.soundGain.gain.value = game.Audio.soundVolume;
         this.soundGain.connect(this.mainGain);
     },
 
+    /**
+        Mute all audio.
+        @method mute
+    **/
     mute: function() {
         if (!this.mainGain) return;
         this.mainGain.gain.value = 0;
         this.muted = true;
     },
 
+    /**
+        Stop current music.
+        @method stopMusic
+    **/
     stopMusic: function() {
         if (this.music) this.music.stop();
         this.music = null;
     },
 
+    /**
+        Toggle mute/unmute all audio.
+        @method toggle
+    **/
     toggle: function() {
         if (this.muted) this.unmute();
         else this.mute();
         return this.muted;
     },
 
+    /**
+        Unmute all audio.
+        @method unmute
+    **/
     unmute: function() {
         if (!this.mainGain) return;
         this.mainGain.gain.value = 1;
@@ -94,6 +146,16 @@ game.createClass('Audio', {
             this._error.bind(this, path, callback)
         );
     },
+
+    /**
+        @method _error
+        @param {String} path
+        @param {Function} callback
+        @private
+    **/
+    _error: function(path, callback) {
+        callback('Error loading audio ' + path);
+    },
     
     /**
         @method _load
@@ -112,16 +174,6 @@ game.createClass('Audio', {
         request.responseType = 'arraybuffer';
         request.onload = this._decode.bind(this, request, path, callback);
         request.send();
-    },
-
-    /**
-        @method _error
-        @param {String} path
-        @param {Function} callback
-        @private
-    **/
-    _error: function(path, callback) {
-        callback('Error loading audio ' + path);
     },
 
     /**
@@ -204,16 +256,61 @@ game.addAttributes('Audio', {
     stopOnSceneChange: true
 });
 
+/**
+    @class Sound
+    @constructor
+    @param {String} id Audio asset id
+**/
 game.createClass('Sound', {
+    /**
+        @property {Boolean} loop
+        @default false
+    **/
     loop: false,
+    /**
+        Function to call, when sound is completed.
+        @property {Function} onComplete
+    **/
     onComplete: null,
+    /**
+        @property {Boolean} paused
+        @default false
+    **/
     paused: false,
+    /**
+        @property {Boolean} playing
+        @default false
+    **/
     playing: false,
+    /**
+        @property {AudioBuffer} _buffer
+        @private
+    **/
     _buffer: null,
+    /**
+        @property {AudioContext} _context
+        @private
+    **/
     _context: null,
+    /**
+        @property {GainNode} _gainNode
+        @private
+    **/
     _gainNode: null,
+    /**
+        @property {Number} _rate
+        @private
+    **/
     _rate: 1,
+    /**
+        @property {AudioBufferSourceNode} _source
+        @private
+    **/
     _source: null,
+    /**
+        @property {Number} _volume
+        @private
+    **/
     _volume: 1,
 
     staticInit: function(id) {
@@ -231,19 +328,33 @@ game.createClass('Sound', {
         this.volume = game.Audio.soundVolume;
     },
 
+    /**
+        @method fadeIn
+        @param {Number} time Time in milliseconds
+    **/
     fadeIn: function(time) {
         this._fade(time, this.volume);
     },
 
+    /**
+        @method fadeOut
+        @param {Number} time Time in milliseconds
+    **/
     fadeOut: function(time) {
         this._fade(time, 0);
     },
 
+    /**
+        @method mute
+    **/
     mute: function() {
         if (!this._gainNode) return;
         this._gainNode.gain.value = 0;
     },
 
+    /**
+        @method pause
+    **/
     pause: function() {
         if (!this._source) return;
         if (this.paused) return;
@@ -254,6 +365,12 @@ game.createClass('Sound', {
         this._source.pauseTime = (this._context.currentTime - this._source.startTime) % this._buffer.duration;
     },
 
+    /**
+        @method play
+        @param {Number} when When to start playback in seconds, 0 is now
+        @param {Number} offset Offset of playback in seconds
+        @param {Number} duration Duration of playback in seconds
+    **/
     play: function(when, offset, duration) {
         if (!this._buffer) return;
 
@@ -282,6 +399,9 @@ game.createClass('Sound', {
         return this;
     },
 
+    /**
+        @method resume
+    **/
     resume: function() {
         if (!this._source) return;
         if (!this.paused) return;
@@ -292,6 +412,10 @@ game.createClass('Sound', {
         this.play(0, this._source.pauseTime);
     },
 
+    /**
+        @method stop
+        @param {Boolean} skipOnComplete Skip onComplete function
+    **/
     stop: function(skipOnComplete) {
         if (!this._source) return;
 
@@ -300,11 +424,20 @@ game.createClass('Sound', {
         this._source.stop(0);
     },
 
+    /**
+        @method unmute
+    **/
     unmute: function() {
         if (!this._gainNode) return;
         this._gainNode.gain.value = this._volume;
     },
 
+    /**
+        @method _fade
+        @param {Number} time
+        @param {Number} to
+        @private
+    **/
     _fade: function(time, to) {
         if (!this._buffer) return;
         time = (time || 1000) / 1000;
@@ -317,12 +450,20 @@ game.createClass('Sound', {
         this._gainNode.gain.linearRampToValueAtTime(to, currTime + time);
     },
 
+    /**
+        @method _onComplete
+        @private
+    **/
     _onComplete: function() {
         game.audio.sounds.erase(this);
         if (this.paused) return;
         if (typeof this.onComplete === 'function') this.onComplete();
     },
 
+    /**
+        @method _onStart
+        @private
+    **/
     _onStart: function() {
         this.stop();
         game.audio.sounds.push(this);
@@ -330,6 +471,10 @@ game.createClass('Sound', {
 });
 
 game.defineProperties('Sound', {
+    /**
+        Speed of audio.
+        @property {Number} rate
+    **/
     rate: {
         get: function() {
             return this._rate;
@@ -341,6 +486,9 @@ game.defineProperties('Sound', {
         }
     },
 
+    /**
+        @property {Number} volume
+    **/
     volume: {
         get: function() {
             return this._volume;
@@ -353,7 +501,17 @@ game.defineProperties('Sound', {
     }
 });
 
+/**
+    @class Music
+    @extends Sound
+    @constructor
+    @param {String} id Audio asset id
+**/
 game.createClass('Music', 'Sound', {
+    /**
+        @property {Boolean} loop
+        @default true
+    **/
     loop: true,
 
     init: function() {
