@@ -14,6 +14,8 @@ game.module(
     Particle emitter.
     @class Emitter
     @extends FastContainer
+    @constructor
+    @param {String|Array} textures Name of texture or array of texture names.
 **/
 game.createClass('Emitter', 'FastContainer', {
     /**
@@ -45,7 +47,19 @@ game.createClass('Emitter', 'FastContainer', {
     **/
     active: true,
     /**
-        Emit angle in radians.
+        End alpha for particle.
+        @property {Number} alphaEnd
+        @default 0
+    **/
+    alphaEnd: 0,
+    /**
+        Starting alpha for particle.
+        @property {Number} alphaStart
+        @default 1
+    **/
+    alphaStart: 1,
+    /**
+        Emit angle in radians (0 is right).
         @property {Number} angle
         @default 0
     **/
@@ -58,37 +72,22 @@ game.createClass('Emitter', 'FastContainer', {
     angleVar: 0,
     /**
         How many particles to emit.
-        @property {Number} count
+        @property {Number} emitCount
         @default 1
     **/
-    count: 1,
+    emitCount: 1,
     /**
-        Emitter duration in ms (0 is forever).
-        @property {Number} duration
+        How long to emit particles in milliseconds (0 is forever).
+        @property {Number} emitDuration
         @default 0
     **/
-    duration: 0,
+    emitDuration: 0,
     /**
-        @property {Number} durationTimer
-        @default 0
+        How often to emit particles in milliseconds.
+        @property {Number} emitRate
+        @default 100
     **/
-    durationTimer: 0,
-    /**
-        End alpha for particle.
-        @property {Number} endAlpha
-        @default 0
-    **/
-    endAlpha: 1,
-    /**
-        @property {Number} endScale
-        @default 1
-    **/
-    endScale: 1,
-    /**
-        @property {Number} endScaleVar
-        @default 0
-    **/
-    endScaleVar: 0,
+    emitRate: 100,
     /**
         Particle's life in ms (0 is forever).
         @property {Number} life
@@ -106,20 +105,10 @@ game.createClass('Emitter', 'FastContainer', {
     **/
     onComplete: null,
     /**
-        @property {Boolean} onCompleteCalled
-        @default false
-    **/
-    onCompleteCalled: false,
-    /**
         List of particles.
         @property {Array} particles
     **/
     particles: [],
-    /**
-        Pool name for particles.
-        @property {String} poolName
-    **/
-    poolName: null,
     /**
         Particle start position.
         @property {Vector} startPos
@@ -130,17 +119,6 @@ game.createClass('Emitter', 'FastContainer', {
         @property {Vector} startPosVar
     **/
     startPosVar: null,
-    /**
-        How often to emit new particles (ms).
-        @property {Number} rate
-        @default 100
-    **/
-    rate: 100,
-    /**
-        @property {Number} rateTimer
-        @default 0
-    **/
-    rateTimer: 0,
     /**
         Particle's sprite rotation speed.
         @property {Number} rotate
@@ -154,6 +132,27 @@ game.createClass('Emitter', 'FastContainer', {
     **/
     rotateVar: 0,
     /**
+        @property {Number} scaleEnd
+        @default 1
+    **/
+    scaleEnd: 1,
+    /**
+        @property {Number} scaleEndVar
+        @default 0
+    **/
+    scaleEndVar: 0,
+    /**
+        Starting scale for particle.
+        @property {Number} scaleStart
+        @default 1
+    **/
+    scaleStart: 1,
+    /**
+        @property {Number} scaleStartVar
+        @default 0
+    **/
+    scaleStartVar: 0,
+    /**
         Particle's initial speed.
         @property {Number} speed
         @default 100
@@ -166,23 +165,6 @@ game.createClass('Emitter', 'FastContainer', {
     **/
     speedVar: 0,
     /**
-        Starting alpha for particle.
-        @property {Number} startAlpha
-        @default 1
-    **/
-    startAlpha: 1,
-    /**
-        Starting scale for particle.
-        @property {Number} startScale
-        @default 1
-    **/
-    startScale: 1,
-    /**
-        @property {Number} startScaleVar
-        @default 0
-    **/
-    startScaleVar: 0,
-    /**
         Target position for particles.
         @property {Vector} target
     **/
@@ -194,14 +176,16 @@ game.createClass('Emitter', 'FastContainer', {
     **/
     targetForce: 0,
     /**
+        Update target position to all particles every frame. If this is false and you change target, it will affect only particles created after the change.
+        @property {Boolean} targetUpdate
+        @default true
+    **/
+    targetUpdate: true,
+    /**
         List of textures.
         @property {Array} textures
     **/
     textures: [],
-    /**
-        @property {Boolean} updateTarget
-    **/
-    updateTarget: true,
     /**
         @property {Vector} velocityLimit
         @default 0,0
@@ -219,72 +203,39 @@ game.createClass('Emitter', 'FastContainer', {
         @default 0
     **/
     velRotateVar: 0,
+    /**
+        @property {Number} _durationTimer
+        @private
+    **/
+    _durationTimer: 0,
+    /**
+        @property {Boolean} _onCompleteCalled
+        @private
+    **/
+    _onCompleteCalled: false,
+    /**
+        @property {String} poolName
+        @private
+    **/
+    _poolName: null,
+    /**
+        @property {Number} _rateTimer
+        @private
+    **/
+    _rateTimer: 0,
 
-    staticInit: function() {
+    staticInit: function(textures) {
         this.super();
-        this.poolName = game.Emitter.poolName;
+        if (textures) {
+            if (typeof textures === 'string') this.textures.push(textures);
+            else this.textures = textures;
+        }
+        this._poolName = game.Emitter.poolName;
         this.startPos = new game.Vector();
         this.startPosVar = new game.Vector();
         this.target = new game.Vector();
         this.velocityLimit = new game.Vector();
-        game.pool.create(this.poolName);
-    },
-
-    /**
-        Add particle to emitter.
-        @method addParticle
-    **/
-    addParticle: function() {
-        var texture = this.textures.random();
-        if (!texture) return;
-
-        var particle = game.pool.get(this.poolName);
-
-        if (!particle) particle = new game.Particle(texture);
-        else particle.setTexture(texture);
-
-        particle.emitter = this;
-        particle.rotation = 0;
-        particle.alpha = this.startAlpha;
-        particle.position.x = this.startPos.x + this.getVariance(this.startPosVar.x);
-        particle.position.y = this.startPos.y + this.getVariance(this.startPosVar.y);
-        particle.anchorCenter();
-
-        var angleVar = this.getVariance(this.angleVar);
-        var angle = this.angle + angleVar;
-        var speed = this.speed + this.getVariance(this.speedVar);
-
-        particle.velocity.x = Math.cos(angle) * speed;
-        particle.velocity.y = Math.sin(angle) * speed;
-
-        if (this.angleVar !== this.accelAngleVar) angleVar = this.getVariance(this.accelAngleVar);
-        angle = this.accelAngle + angleVar;
-        speed = this.accelSpeed + this.getVariance(this.accelSpeedVar);
-
-        particle.accel.x = Math.cos(angle) * speed;
-        particle.accel.y = Math.sin(angle) * speed;
-
-        particle.life = this.life + this.getVariance(this.lifeVar);
-        particle.rotateAmount = this.rotate + this.getVariance(this.rotateVar);
-        particle.velRotate = this.velRotate + this.getVariance(this.velRotateVar);
-
-        if (this.startAlpha !== this.endAlpha) {
-            particle.deltaAlpha = this.endAlpha - this.startAlpha;
-            particle.deltaAlpha /= particle.life / 1000;
-        }
-        else particle.deltaAlpha = 0;
-
-        var startScale = this.startScale + this.getVariance(this.startScaleVar);
-        if (this.startScale !== this.endScale) {
-            particle.deltaScale = (this.endScale + this.getVariance(this.endScaleVar)) - startScale;
-            particle.deltaScale /= particle.life / 1000;
-        }
-        else particle.deltaScale = 0;
-        particle.scale.set(startScale);
-
-        particle.target.copy(this.target);
-
-        this.addChild(particle);
+        game.pool.create(this._poolName);
     },
 
     /**
@@ -293,21 +244,10 @@ game.createClass('Emitter', 'FastContainer', {
         @param {Number} [count]
     **/
     emit: function(count) {
-        count = count || this.count;
+        count = count || this.emitCount;
         for (var i = 0; i < count; i++) {
-            this.addParticle();
+            this._addParticle();
         }
-    },
-
-    /**
-        Get value with variance.
-        Example: if you have value 100 with variance of 50, you will get value between 50 to 150.
-        @method getVariance
-        @param {Number} value
-        @return {Number}
-    **/
-    getVariance: function(value) {
-        return (Math.random() * value) * (Math.random() > 0.5 ? -1 : 1);
     },
 
     remove: function() {
@@ -316,23 +256,91 @@ game.createClass('Emitter', 'FastContainer', {
     },
 
     /**
-        Remove particle from emitter.
-        @method removeParticle
-        @param {Particle} particle
-    **/
-    removeParticle: function(particle) {
-        particle.remove();
-        game.pool.put(this.poolName, particle);
-    },
-
-    /**
         Reset emitter timer.
         @method reset
     **/
     reset: function() {
-        this.durationTimer = 0;
+        this._durationTimer = 0;
         this.active = true;
-        this.onCompleteCalled = false;
+        this._onCompleteCalled = false;
+    },
+
+    /**
+        @method _addParticle
+        @private
+    **/
+    _addParticle: function() {
+        var texture = this.textures.random();
+        if (!texture) return;
+
+        var particle = game.pool.get(this._poolName);
+
+        if (!particle) particle = new game.Particle(texture);
+        else particle.setTexture(texture);
+
+        particle.emitter = this;
+        particle.rotation = 0;
+        particle.alpha = this.alphaStart;
+        particle.position.x = this.startPos.x + this._getVar(this.startPosVar.x);
+        particle.position.y = this.startPos.y + this._getVar(this.startPosVar.y);
+        particle.anchorCenter();
+
+        var angleVar = this._getVar(this.angleVar);
+        var angle = this.angle + angleVar;
+        var speed = this.speed + this._getVar(this.speedVar);
+
+        particle.velocity.x = Math.cos(angle) * speed;
+        particle.velocity.y = Math.sin(angle) * speed;
+
+        if (this.angleVar !== this.accelAngleVar) angleVar = this._getVar(this.accelAngleVar);
+        angle = this.accelAngle + angleVar;
+        speed = this.accelSpeed + this._getVar(this.accelSpeedVar);
+
+        particle.accel.x = Math.cos(angle) * speed;
+        particle.accel.y = Math.sin(angle) * speed;
+
+        particle.life = this.life + this._getVar(this.lifeVar);
+        particle.rotateAmount = this.rotate + this._getVar(this.rotateVar);
+        particle.velRotate = this.velRotate + this._getVar(this.velRotateVar);
+
+        if (this.alphaStart !== this.alphaEnd) {
+            particle.deltaAlpha = this.alphaEnd - this.alphaStart;
+            particle.deltaAlpha /= particle.life / 1000;
+        }
+        else particle.deltaAlpha = 0;
+
+        var scaleStart = this.scaleStart + this._getVar(this.scaleStartVar);
+        if (this.scaleStart !== this.scaleEnd) {
+            particle.deltaScale = (this.scaleEnd + this._getVar(this.scaleEndVar)) - scaleStart;
+            particle.deltaScale /= particle.life / 1000;
+        }
+        else particle.deltaScale = 0;
+        particle.scale.set(scaleStart);
+
+        particle.target.copy(this.target);
+
+        this.addChild(particle);
+    },
+
+    /**
+        @method _getVar
+        @param {Number} value
+        @return {Number}
+        @private
+    **/
+    _getVar: function(value) {
+        return (Math.random() * value) * (Math.random() > 0.5 ? -1 : 1);
+    },
+
+    /**
+        Remove particle from emitter.
+        @method _removeParticle
+        @param {Particle} particle
+        @private
+    **/
+    _removeParticle: function(particle) {
+        particle.remove();
+        game.pool.put(this._poolName, particle);
     },
 
     /**
@@ -342,24 +350,24 @@ game.createClass('Emitter', 'FastContainer', {
     _update: function() {
         if (this._remove) {
             for (var i = this.children.length - 1; i >= 0; i--) {
-                this.removeParticle(this.children[i]);
+                this._removeParticle(this.children[i]);
             }
             return;
         }
 
-        this.durationTimer += game.delta * 1000;
-        if (this.duration > 0) {
-            this.active = this.durationTimer < this.duration;
-            if (!this.active && this.children.length === 0 && typeof this.onComplete === 'function' && !this.onCompleteCalled) {
+        this._durationTimer += game.delta * 1000;
+        if (this.emitDuration > 0) {
+            this.active = this._durationTimer < this.emitDuration;
+            if (!this.active && this.children.length === 0 && typeof this.onComplete === 'function' && !this._onCompleteCalled) {
                 this.onComplete();
-                this.onCompleteCalled = true;
+                this._onCompleteCalled = true;
             }
         }
 
-        if (this.rate && this.active) {
-            this.rateTimer += game.delta * 1000;
-            if (this.rateTimer >= this.rate) {
-                this.rateTimer = 0;
+        if (this.emitRate && this.active) {
+            this._rateTimer += game.delta * 1000;
+            if (this._rateTimer >= this.emitRate) {
+                this._rateTimer = 0;
                 this.emit();
             }
         }
@@ -438,11 +446,11 @@ game.createClass('Particle', 'Sprite', {
         
         if (this.life > 0) {
             this.life -= game.delta * 1000;
-            if (this.life <= 0) return this.emitter.removeParticle(this);
+            if (this.life <= 0) return this.emitter._removeParticle(this);
         }
 
         if (this.emitter.targetForce > 0) {
-            var target = this.emitter.updateTarget ? this.emitter.target : this.target;
+            var target = this.emitter.targetUpdate ? this.emitter.target : this.target;
             this.accel.set(target.x - this.position.x, target.y - this.position.y);
             var len = Math.sqrt(this.accel.x * this.accel.x + this.accel.y * this.accel.y);
             this.accel.x /= len || 1;
