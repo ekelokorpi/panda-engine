@@ -36,11 +36,6 @@ game.createClass('Container', {
     **/
     hitArea: null,
     /**
-        @property {Boolean} interactive
-        @default false
-    **/
-    interactive: false,
-    /**
         @property {Container} parent
     **/
     parent: null,
@@ -663,7 +658,7 @@ game.defineProperties('Container', {
     },
 
     /**
-        Shorthand for x position.
+        Shorthand for `position.x`.
         @property {Number} x
     **/
     x: {
@@ -677,7 +672,7 @@ game.defineProperties('Container', {
     },
 
     /**
-        Shorthand for y position.
+        Shorthand for `position.y`.
         @property {Number} y
     **/
     y: {
