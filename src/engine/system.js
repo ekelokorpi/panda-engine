@@ -431,9 +431,9 @@ game.addAttributes('System', {
     /**
         Position canvas to center of window.
         @attribute {Boolean} center
-        @default false
+        @default true
     **/
-    center: false,
+    center: true,
     /**
         System height.
         @attribute {Number} height
@@ -491,9 +491,9 @@ game.addAttributes('System', {
     /**
         Scale canvas to fit window.
         @attribute {Boolean} scale
-        @default false
+        @default true
     **/
-    scale: false,
+    scale: true,
     /**
         Maximum percent of scaling (0 = disabled).
         @attribute {Number} scaleMax

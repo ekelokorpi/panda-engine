@@ -10,6 +10,7 @@ game.module(
 .body(function() {
 
 /**
+    Instance of Debug class is created at `game.debug`, when Debug is enabled.
     @class Debug
 **/
 game.createClass('Debug', {
@@ -94,6 +95,7 @@ game.createClass('Debug', {
 
             _updateRenderer: function() {
                 this.super();
+                if (!game.Debug.enabled) return;
                 if (game.Debug.showHitAreas) game.debug._drawHitAreas();
                 if (game.Debug.showBounds) {
                     for (var i = 0; i < this.stage.children.length; i++) {
@@ -161,15 +163,15 @@ game.createClass('Debug', {
         this.panel.id = 'pandaDebug';
         this.panel.style.position = 'fixed';
         this.panel.style.left = '0px';
-        this.panel.style[game.Debug.position] = '0px';
+        this.panel.style[game.Debug.panelPosition] = '0px';
         this.panel.style.zIndex = 9999;
-        this.panel.style.backgroundColor = game.Debug.backgroundColor;
-        this.panel.style.color = game.Debug.textColor;
+        this.panel.style.backgroundColor = game.Debug.panelBackground;
+        this.panel.style.color = game.Debug.panelColor;
         this.panel.style.fontFamily = 'Arial';
-        this.panel.style.fontSize = game.Debug.fontSize + 'px';
+        this.panel.style.fontSize = game.Debug.panelFontSize + 'px';
         this.panel.style.width = '100%';
         this.panel.style.pointerEvents = 'none';
-        this.panel.style.opacity = game.Debug.alpha;
+        this.panel.style.opacity = game.Debug.panelAlpha;
         document.body.appendChild(this.panel);
     },
 
@@ -382,14 +384,19 @@ game.createClass('Debug', {
         @private
     **/
     _update: function() {
+        if (this.panel) this.panel.style.display = (game.Debug.showPanel && game.Debug.enabled) ? 'block' : 'none';
+        if (!game.Debug.enabled) return;
+
         this._updateFakeTouch();
 
         if (!this.panel) return;
 
+        if (!game.Debug.showPanel) return;
+
         this._frames++;
 
         var now = Date.now();
-        if (now >= this.last + game.Debug.frequency) {
+        if (now >= this.last + game.Debug.panelUpdate) {
             this.fps = Math.round(this._frames * 1000 / (now - this.last));
             this.last = now;
             this._frames = 0;
@@ -443,18 +450,6 @@ game.createClass('Debug', {
 });
 
 game.addAttributes('Debug', {
-    /**
-        Alpha of debug panel.
-        @attribute {Number} alpha
-        @default 1.0
-    **/
-    alpha: 1.0,
-    /**
-        Background color of debug panel.
-        @attribute {String} backgroundColor
-        @default rgba(0, 0, 0, 0.7)
-    **/
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     /**
         Alpha of bodies.
         @attribute {Number} bodyAlpha
@@ -582,18 +577,6 @@ game.addAttributes('Debug', {
     **/
     fakeTouchSize: 20,
     /**
-        Debug panel font size.
-        @attribute {Number} fontSize
-        @default 14
-    **/
-    fontSize: 14,
-    /**
-        How often to update debug panel (ms).
-        @attribute {Number} frequency
-        @default 500
-    **/
-    frequency: 500,
-    /**
         @attribute {String} hitAreaColor
         @default #0000ff
     **/
@@ -604,11 +587,41 @@ game.addAttributes('Debug', {
     **/
     hitAreaAlpha: 0.5,
     /**
+        Alpha of debug panel.
+        @attribute {Number} panelAlpha
+        @default 1.0
+    **/
+    panelAlpha: 1.0,
+    /**
+        Background color of debug panel.
+        @attribute {String} panelBackground
+        @default rgba(0, 0, 0, 0.7)
+    **/
+    panelBackground: 'rgba(0, 0, 0, 0.7)',
+    /**
+        Text color of debug panel.
+        @attribute {String} panelColor
+        @default #ff0000
+    **/
+    panelColor: '#ff0000',
+    /**
+        Debug panel font size.
+        @attribute {Number} panelFontSize
+        @default 14
+    **/
+    panelFontSize: 14,
+    /**
         Vertical position of debug panel (top or bottom).
-        @attribute {String} position
+        @attribute {String} panelPosition
         @default bottom
     **/
-    position: 'bottom',
+    panelPosition: 'bottom',
+    /**
+        How often to update debug panel (ms).
+        @attribute {Number} panelUpdate
+        @default 500
+    **/
+    panelUpdate: 500,
     /**
         Draw physics bodies.
         @attribute {Boolean} showBodies
@@ -640,11 +653,11 @@ game.addAttributes('Debug', {
     **/
     showInfo: true,
     /**
-        Text color of debug panel.
-        @attribute {String} textColor
-        @default #ff0000
+        Show debug panel.
+        @attribute {Boolean} showPanel
+        @default true
     **/
-    textColor: '#ff0000'
+    showPanel: true
 });
 
 /**

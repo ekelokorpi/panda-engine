@@ -41,6 +41,10 @@ game.createClass('TilingSprite', 'Container', {
         @private
     **/
     _sprites: [],
+    /**
+        @property {Boolean} _updateSprites
+        @private
+    **/
     _updateSprites: false,
 
     staticInit: function(texture, width, height) {
