@@ -451,9 +451,9 @@ game.addAttributes('Scene', {
     /**
         Default background color.
         @attribute {String} backgroundColor
-        @default null
+        @default #000
     **/
-    backgroundColor: null,
+    backgroundColor: '#000',
     /**
         Minimum distance to trigger swipe.
         @attribute {Number} swipeDist

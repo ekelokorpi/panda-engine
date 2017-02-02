@@ -716,6 +716,21 @@ game.addAttributes('Tween', {
     },
 
     /**
+        @attribute {Function} getTweensForObject
+        @param {Class} object
+        @return {Array}
+    **/
+    getTweensForObject: function(object) {
+        var tweens = [];
+        if (!game.scene) return tweens;
+        for (var i = game.scene.tweens.length - 1; i >= 0; i--) {
+            var tween = game.scene.tweens[i];
+            if (tween.object === object) tweens.push(tween);
+        };
+        return tweens;
+    },
+
+    /**
         @attribute {Function} stopTweensForObject
         @param {Class} object
     **/

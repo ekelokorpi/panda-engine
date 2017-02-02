@@ -186,6 +186,9 @@ game.createClass('Input', {
         this._preventDefault(event);
         this._calculateXY(event);
         if (event.canvasX < 0 || event.canvasX > game.width || event.canvasY < 0 || event.canvasY > game.height) {
+            if (this._mouseDownItem) {
+                this._mouseDownItem.mouseupoutside(event.canvasX, event.canvasY, event.identifier, event);
+            }
             game.scene._mouseup(event.canvasX, event.canvasY, event.identifier, event);
             return;
         }

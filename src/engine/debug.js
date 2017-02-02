@@ -524,9 +524,9 @@ game.addAttributes('Debug', {
     /**
         Sprite alpha for fake touches.
         @attribute {Number} fakeTouchAlpha
-        @default 0.5
+        @default 0.2
     **/
-    fakeTouchAlpha: 0.5,
+    fakeTouchAlpha: 0.2,
     /**
         Sprite color for fake touches.
         @attribute {String} fakeTouchColor
@@ -542,9 +542,9 @@ game.addAttributes('Debug', {
     /**
         Maximum lifetime of fake touch (ms).
         @attribute {Number} fakeTouchMaxLife
-        @default 500
+        @default 400
     **/
-    fakeTouchMaxLife: 500,
+    fakeTouchMaxLife: 400,
     /**
         Maximum speed of fake touch movement.
         @attribute {Number} fakeTouchMaxSpeed
@@ -775,6 +775,9 @@ if (href.match(/\?debugdraw/)) {
     game.Debug.showBounds = true;
     game.Debug.showCamera = true;
     game.Debug.showHitAreas = true;
+}
+if (href.match(/\?debugtouch/)) {
+    game.Debug.fakeTouch = true;
 }
 
 });
