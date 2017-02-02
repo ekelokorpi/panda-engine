@@ -14,6 +14,7 @@ game.module(
     @extends Container
     @constructor
     @param {Texture|String} texture
+    @param {Object} [props]
 **/
 game.createClass('Sprite', 'Container', {
     /**
@@ -26,8 +27,8 @@ game.createClass('Sprite', 'Container', {
     **/
     texture: null,
 
-    staticInit: function(texture, options) {
-        this.super(options);
+    staticInit: function(texture, props) {
+        this.super(props);
         this.setTexture(this.texture || texture);
     },
 

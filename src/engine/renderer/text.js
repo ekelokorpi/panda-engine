@@ -45,7 +45,7 @@ game.createClass('Text', 'Container', {
 
     staticInit: function(text, props) {
         this.super();
-        text = text || '';
+        text = (typeof text === 'string' || typeof text === 'number') ? text : '';
         this.text = this.text || text.toString();
         game.merge(this, props);
         this.font = this.font || game.Text.defaultFont;
@@ -69,7 +69,7 @@ game.createClass('Text', 'Container', {
     /**
         Set new text.
         @method setText
-        @param {String} text
+        @param {String|Number} text
         @chainable
     **/
     setText: function(text) {

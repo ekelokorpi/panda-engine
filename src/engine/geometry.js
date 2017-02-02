@@ -181,6 +181,17 @@ game.createClass('Rectangle', {
     y: 0,
 
     staticInit: function(width, height, x, y) {
+        this.set(width, height, x, y);
+    },
+
+    /**
+        @method set
+        @param {Number} width
+        @param {Number} height
+        @param {Number} x
+        @param {Number} y
+    **/
+    set: function(width, height, x, y) {
         this.width = width || this.width;
         this.height = typeof height === 'number' ? height : this.width;
         this.x = x || this.x;

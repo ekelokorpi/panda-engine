@@ -20,6 +20,10 @@ game.createClass('Camera', {
     **/
     acceleration: 3,
     /**
+        @property {Rectangle} boundary
+    **/
+    boundary: null,
+    /**
         Container, that the camera is moving.
         @property {Container} container
     **/
@@ -30,22 +34,6 @@ game.createClass('Camera', {
         @default 200
     **/
     maxSpeed: 200,
-    /**
-        @property {Number} maxX
-    **/
-    maxX: null,
-    /**
-        @property {Number} maxY
-    **/
-    maxY: null,
-    /**
-        @property {Number} minX
-    **/
-    minX: null,
-    /**
-        @property {Number} minY
-    **/
-    minY: null,
     /**
         Camera offset.
         @property {Vector} offset
@@ -88,6 +76,7 @@ game.createClass('Camera', {
     threshold: 1,
     
     staticInit: function(x, y) {
+        this.boundary = new game.Rectangle();
         this.position = new game.Vector();
         this.speed = new game.Vector();
         this.offset = new game.Vector(game.width / 2, game.height / 2);
@@ -131,20 +120,20 @@ game.createClass('Camera', {
 
         this.position.set(x - this.offset.x, y - this.offset.y);
 
-        if (typeof this.minX === 'number' && this.position.x < this.minX) {
-            this.position.x = this.minX;
+        if (typeof this.boundary.x === 'number' && this.position.x < this.boundary.x) {
+            this.position.x = this.boundary.x;
             this.speed.x = 0;
         }
-        else if (typeof this.maxX === 'number' && this.position.x > this.maxX) {
-            this.position.x = this.maxX;
+        else if (typeof this.boundary.width === 'number' && this.position.x > this.boundary.width) {
+            this.position.x = this.boundary.width;
             this.speed.x = 0;
         }
-        if (typeof this.minY === 'number' && this.position.y < this.minY) {
-            this.position.y = this.minY;
+        if (typeof this.boundary.y === 'number' && this.position.y < this.boundary.y) {
+            this.position.y = this.boundary.y;
             this.speed.y = 0;
         }
-        else if (typeof this.maxY === 'number' && this.position.y > this.maxY) {
-            this.position.y = this.maxY;
+        else if (typeof this.boundary.height === 'number' && this.position.y > this.boundary.height) {
+            this.position.y = this.boundary.height;
             this.speed.y = 0;
         }
 

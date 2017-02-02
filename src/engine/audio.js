@@ -104,6 +104,22 @@ game.createClass('Audio', {
     },
 
     /**
+        @method playMusic
+        @param {String} name
+    **/
+    playMusic: function(name) {
+        var music = new game.Music(name).play();
+    },
+
+    /**
+        @method playSound
+        @param {String} name
+    **/
+    playSound: function(name) {
+        var sound = new game.Sound(name).play();
+    },
+
+    /**
         Stop current music.
         @method stopMusic
     **/

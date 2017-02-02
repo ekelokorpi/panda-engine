@@ -12,7 +12,7 @@ game.module(
 /**
     @class Container
     @constructor
-    @param {Object} [options]
+    @param {Object} [props]
 **/
 game.createClass('Container', {
     /**
@@ -39,10 +39,6 @@ game.createClass('Container', {
         @property {Rectangle} hitArea
     **/
     hitArea: null,
-    /**
-        @property {Container} parent
-    **/
-    parent: null,
     /**
         @property {Vector} position
     **/
@@ -103,6 +99,11 @@ game.createClass('Container', {
     **/
     _mask: null,
     /**
+        @property {Container} _parent
+        @private
+    **/
+    _parent: null,
+    /**
         @property {Number} _rotationCache
         @default 0
         @private
@@ -131,33 +132,23 @@ game.createClass('Container', {
     **/
     _worldTransform: null,
 
-    staticInit: function(options) {
+    staticInit: function(props) {
         this.anchor = new game.Vector();
         this.position = new game.Vector();
-        this.scale = new game.Vector(1, 1);
+        this.scale = new game.Vector(1);
         this.skew = new game.Vector();
         this._worldBounds = new game.Rectangle();
         this._worldTransform = new game.Matrix();
-        game.merge(this, options);
+        game.merge(this, props);
     },
 
     /**
-        Add container to this.
         @method addChild
         @param {Container} child
         @chainable
     **/
     addChild: function(child) {
-        var index = this.children.indexOf(child);
-        if (index !== -1) return;
-        if (child.parent) child.remove();
-        this.children.push(child);
         child.parent = this;
-        if (this.stage) child._setStageReference(this.stage);
-        if (this._cached) {
-            this._destroyCachedSprite();
-            this._generateCachedSprite();
-        }
         return this;
     },
 
@@ -168,7 +159,7 @@ game.createClass('Container', {
         @chainable
     **/
     addTo: function(container) {
-        container.addChild(this);
+        this.parent = container;
         return this;
     },
 
@@ -646,6 +637,28 @@ game.defineProperties('Container', {
             if (this._mask === value) return;
             this._mask = value;
             if (value) this._mask.parent = this;
+        }
+    },
+
+    /**
+        @property {Container} parent
+    **/
+    parent: {
+        get: function() {
+            return this._parent;
+        },
+
+        set: function(value) {
+            var index = value.children.indexOf(this);
+            if (index !== -1) return;
+            if (this.parent) this.remove();
+            value.children.push(this);
+            this._parent = value;
+            if (value.stage) this._setStageReference(value.stage);
+            if (value._cached) {
+                value._destroyCachedSprite();
+                value._generateCachedSprite();
+            }
         }
     },
 
