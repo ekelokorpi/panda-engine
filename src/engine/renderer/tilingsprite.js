@@ -98,7 +98,7 @@ game.createClass('TilingSprite', 'Container', {
         this._sprites.length = 0;
         for (var i = 0; i < 4; i++) {
             var sprite = new game.Sprite(texture);
-            sprite.parent = this;
+            sprite._parent = this;
             this._sprites.push(sprite);
         }
 

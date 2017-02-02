@@ -293,7 +293,7 @@ game.createClass('Container', {
         var index = this.children.indexOf(child);
         if (index === -1) return;
         this.children.splice(index, 1);
-        child.parent = null;
+        child._parent = null;
         if (this.stage) child._removeStageReference();
         if (this._cached) {
             this._destroyCachedSprite();
