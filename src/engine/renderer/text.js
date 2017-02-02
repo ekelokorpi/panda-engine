@@ -230,9 +230,7 @@ game.createClass('Text', 'Container', {
 
             var sprite = new game.Sprite(texture);
             sprite.position.x = (x + charObj.xoffset) / game.scale;
-            if (this.text.length > 1) {
-                sprite.position.y = (y + charObj.yoffset) / game.scale;
-            }
+            sprite.position.y = (y + charObj.yoffset) / game.scale;
             this.addChild(sprite);
 
             x += charObj.xadvance;

@@ -11,9 +11,12 @@ game.module(
 
 /**
     @class Container
+    @constructor
+    @param {Object} [options]
 **/
 game.createClass('Container', {
     /**
+        Container opacity, 0 makes it invisible.
         @property {Number} alpha
         @default 1
     **/
@@ -23,6 +26,7 @@ game.createClass('Container', {
     **/
     anchor: null,
     /**
+        Change cursor, when mouse is over the container. Define cursor at `game.Input.buttonModeCursor`.
         @property {Boolean} buttonMode
         @default false
     **/
@@ -127,13 +131,14 @@ game.createClass('Container', {
     **/
     _worldTransform: null,
 
-    staticInit: function() {
+    staticInit: function(options) {
         this.anchor = new game.Vector();
         this.position = new game.Vector();
         this.scale = new game.Vector(1, 1);
         this.skew = new game.Vector();
         this._worldBounds = new game.Rectangle();
         this._worldTransform = new game.Matrix();
+        game.merge(this, options);
     },
 
     /**

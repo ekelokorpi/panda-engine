@@ -26,8 +26,8 @@ game.createClass('Sprite', 'Container', {
     **/
     texture: null,
 
-    staticInit: function(texture) {
-        this.super();
+    staticInit: function(texture, options) {
+        this.super(options);
         this.setTexture(this.texture || texture);
     },
 

@@ -16,6 +16,7 @@ game.module(
     @extends FastContainer
     @constructor
     @param {String|Array} textures Name of texture or array of texture names.
+    @param {Object} [options]
 **/
 game.createClass('Emitter', 'FastContainer', {
     /**
@@ -224,7 +225,7 @@ game.createClass('Emitter', 'FastContainer', {
     **/
     _rateTimer: 0,
 
-    staticInit: function(textures) {
+    staticInit: function(textures, options) {
         this.super();
         if (textures) {
             if (typeof textures === 'string') this.textures.push(textures);
@@ -236,6 +237,7 @@ game.createClass('Emitter', 'FastContainer', {
         this.target = new game.Vector();
         this.velocityLimit = new game.Vector();
         game.pool.create(this._poolName);
+        game.merge(this, options);
     },
 
     /**

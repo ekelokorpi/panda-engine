@@ -440,7 +440,7 @@ var game = {
         @method onStart
     **/
     onStart: function() {
-        game.system.loadScene(game.System.startScene);
+        this.system.loadScene(this.System.startScene);
     },
 
     /**
