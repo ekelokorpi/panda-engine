@@ -228,6 +228,7 @@ game.createClass('System', {
         Change current scene.
         @method setScene
         @param {String} sceneName
+        @param {String} [param]
     **/
     setScene: function(sceneName, param) {
         var sceneClass = game[sceneName];
