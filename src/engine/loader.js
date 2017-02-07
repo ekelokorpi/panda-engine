@@ -47,22 +47,16 @@ game.createClass('Loader', 'Scene', {
     **/
     totalFiles: 0,
     /**
-        List of assets to load.
-        @property {Array} assetQueue
-        @private
-    **/
-    _assetQueue: [],
-    /**
-        List of audios to load.
-        @property {Array} audioQueue
-        @private
-    **/
-    _audioQueue: [],
-    /**
         @property {Number} _loadCount
         @private
     **/
     _loadCount: 0,
+    /**
+        List of media files to load.
+        @property {Array} _queue
+        @private
+    **/
+    _queue: [],
 
     staticInit: function(scene) {
         if (scene) {
@@ -70,23 +64,20 @@ game.createClass('Loader', 'Scene', {
             this.super();
         }
 
-        for (var i = 0; i < game.assetQueue.length; i++) {
-            this._assetQueue.push(this._getFilePath(game.assetQueue[i]));
+        for (var i = 0; i < game.mediaQueue.length; i++) {
+            this._queue.push(this._getFilePath(game.mediaQueue[i]));
         }
-        game.assetQueue.length = 0;
+        game.mediaQueue.length = 0;
 
-        if (game.Audio && game.Audio.enabled) {
-            for (var i = 0; i < game.audioQueue.length; i++) {
-                this._audioQueue.push(game.audioQueue[i]);
-            }
-            game.audioQueue.length = 0;
-        }
-
-        this.totalFiles = this._assetQueue.length + this._audioQueue.length;
+        this.totalFiles = this._queue.length;
         if (this.totalFiles === 0) this.percent = 100;
 
         if (scene) this.start();
         else return true;
+    },
+
+    loadAudio: function(filePath, callback) {
+        game.audio._load(filePath, callback);
     },
 
     /**
@@ -313,24 +304,26 @@ game.createClass('Loader', 'Scene', {
         @private
     **/
     _startLoading: function() {
-        for (var i = this._assetQueue.length - 1; i >= 0; i--) {
-            var filePath = this._assetQueue[i];
+        for (var i = this._queue.length - 1; i >= 0; i--) {
+            var filePath = this._queue[i];
             if (!filePath) continue;
             var fileType = filePath.split('?').shift().split('.').pop().toLowerCase();
             var loadFunc = game.Loader._formats[fileType];
-            if (!this[loadFunc]) throw 'Unsupported file format ' + fileType;
-            this._loadCount++;
-            this._assetQueue.splice(i, 1);
-            this[loadFunc](filePath, this._progress.bind(this));
-            if (this._loadCount === game.Loader.maxFiles) return;
-        }
 
-        for (var i = this._audioQueue.length - 1; i >= 0; i--) {
-            var audio = this._audioQueue[i];
-            if (!audio) continue;
+            if (!loadFunc) {
+                for (var i = game.Audio.formats.length - 1; i >= 0; i--) {
+                    if (fileType === game.Audio.formats[i].ext) {
+                        loadFunc = 'loadAudio';
+                        continue;
+                    }
+                }
+            }
+            if (!loadFunc) throw 'Unsupported file format ' + fileType;
+
             this._loadCount++;
-            this._audioQueue.splice(i, 1);
-            game.audio._load(audio, this._progress.bind(this));
+            this._queue.splice(i, 1);
+
+            this[loadFunc](filePath, this._progress.bind(this));
             if (this._loadCount === game.Loader.maxFiles) return;
         }
     }

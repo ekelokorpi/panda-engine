@@ -96,7 +96,7 @@ game.createClass('Text', 'Container', {
         for (var i = 0; i < this.text.length; i++) {
             var charCode = this.text.charCodeAt(i);
 
-            // Space
+            // Space or line break
             if (charCode === 32 || charCode === 10) {
                 if (curWordWidth > 0) {
                     // Word before space or line break
@@ -138,7 +138,7 @@ game.createClass('Text', 'Container', {
             var charObj = this.fontClass.chars[charCode];
             if (!charObj) continue;
 
-            curWordWidth += charObj.xadvance + charObj.xoffset;
+            curWordWidth += charObj.xadvance;
         }
 
         // Add last word
@@ -170,6 +170,7 @@ game.createClass('Text', 'Container', {
         }
 
         this._lines = lines;
+        console.log(lines);
         this._generateText(width);
     },
 
@@ -216,7 +217,7 @@ game.createClass('Text', 'Container', {
             }
 
             // Line break
-            if (charCode === 10) {
+            if (charCode === 10 && x > 0) {
                 y += this.fontClass.lineHeight;
                 x = 0;
                 curWord++;

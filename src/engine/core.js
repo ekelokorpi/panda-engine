@@ -8,16 +8,6 @@ var game = {
     **/
     audio: null,
     /**
-        Audio load queue.
-        @property {Array} audioQueue
-    **/
-    audioQueue: [],
-    /**
-        Asset load queue.
-        @property {Array} assetQueue
-    **/
-    assetQueue: [],
-    /**
         Engine config.
         @property {Object} config
     **/
@@ -56,12 +46,17 @@ var game = {
     **/
     keyboard: null,
     /**
+        Media load queue.
+        @property {Array} mediaQueue
+    **/
+    mediaQueue: [],
+    /**
         List of modules.
         @property {Object} modules
     **/
     modules: {},
     /**
-        List of asset paths.
+        List of media paths.
         @property {Object} paths
     **/
     paths: {},
@@ -189,23 +184,6 @@ var game = {
     _waitForLoad: 0,
 
     /**
-        Add asset to loader.
-        @method addAsset
-        @param {String} path
-        @param {String} [id]
-    **/
-    addAsset: function(path, id) {
-        var fileType = path.split('?').shift().split('.').pop().toLowerCase();
-        for (var i = 0; i < game.Audio.formats.length; i++) {
-            if (game.Audio.formats[i].ext === fileType) {
-                this._addFileToQueue(path, id, 'audioQueue');
-                return;
-            }
-        };
-        this._addFileToQueue(path, id, 'assetQueue');
-    },
-
-    /**
         Add attributes to class.
         @method addAttributes
         @param {String} className
@@ -217,6 +195,22 @@ var game = {
         for (var name in attributes) {
             this[className][name] = attributes[name];
         }
+    },
+
+    /**
+        Add media to load queue.
+        @method addMedia
+        @param {String} path
+        @param {String} [id]
+    **/
+    addMedia: function(path, id) {
+        if (id && this.paths[id]) return;
+        if (this.paths[path]) return;
+        var realPath = this._getFilePath(path);
+        if (id) this.paths[id] = realPath;
+        this.paths[path] = realPath;
+        if (this.mediaQueue.indexOf(realPath) === -1) this.mediaQueue.push(realPath);
+        return id;
     },
 
     /**
@@ -485,24 +479,6 @@ var game = {
         if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
 
         this.onStart();
-    },
-
-    /**
-        @method _addFileToQueue
-        @param {String} path
-        @param {String} id
-        @param {String} queue
-        @private
-        @return {String}
-    **/
-    _addFileToQueue: function(path, id, queue) {
-        if (id && this.paths[id]) return;
-        if (this.paths[path]) return;
-        var realPath = this._getFilePath(path);
-        if (id) this.paths[id] = realPath;
-        this.paths[path] = realPath;
-        if (this[queue].indexOf(realPath) === -1) this[queue].push(realPath);
-        return id;
     },
 
     /**

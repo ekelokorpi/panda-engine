@@ -180,6 +180,10 @@ game.createClass('Audio', {
         @private
     **/
     _load: function(path, callback) {
+        if (!game.Audio.enabled) {
+            callback();
+            return;
+        }
         var ext = path.split('?').shift().split('.').pop();
         if (this.formats.indexOf(ext) === -1) ext = this.formats[0];
         

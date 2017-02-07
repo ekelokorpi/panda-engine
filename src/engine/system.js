@@ -177,11 +177,8 @@ game.createClass('System', {
         @param {String} scenenName
     **/
     loadScene: function(sceneName) {
-        if (game.assetQueue.length + game.audioQueue.length === 0) {
-            this.setScene(sceneName);
-            return;
-        }
-        this.setScene(game.System.loader, sceneName);
+        if (!game.mediaQueue.length) this.setScene(sceneName);
+        else this.setScene(game.System.loader, sceneName);
     },
 
     /**
