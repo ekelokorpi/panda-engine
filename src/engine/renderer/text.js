@@ -170,7 +170,6 @@ game.createClass('Text', 'Container', {
         }
 
         this._lines = lines;
-        console.log(lines);
         this._generateText(width);
     },
 
