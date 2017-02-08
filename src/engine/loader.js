@@ -184,7 +184,7 @@ game.createClass('Loader', 'Scene', {
             callback();
         }
 
-        return json;
+        callback();
     },
 
     /**
