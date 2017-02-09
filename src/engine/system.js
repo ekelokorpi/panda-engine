@@ -91,15 +91,27 @@ game.createClass('System', {
         @private
     **/
     _running: false,
+    /**
+        @property {Number} _windowWidth
+        @private
+    **/
+    _windowWidth: 0,
+    /**
+        @property {Number} _windowHeight
+        @private
+    **/
+    _windowHeight: 0,
 
     init: function() {
+        this._updateWindowSize();
+
         game.width = this.width = this.originalWidth = game.System.width;
         game.height = this.height = this.originalHeight = game.System.height;
         game.delta = this.delta;
         
         for (var i = 2; i <= game.System.hires; i += 2) {
             var ratio = game.System.hiresRatio * (i / 2);
-            if (window.innerWidth >= this.originalWidth * ratio && window.innerHeight >= this.originalHeight * ratio) {
+            if (this._windowWidth >= this.originalWidth * ratio && this._windowHeight >= this.originalHeight * ratio) {
                 this.hires = true;
                 game.scale = i;
             }
@@ -261,17 +273,15 @@ game.createClass('System', {
         @private
     **/
     _onWindowResize: function() {
+        this._updateWindowSize();
         if (this._toggleRotateScreen()) return;
 
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-
         var scalePercent = game.System.scalePercent / 100;
-        this._scale(width * scalePercent, height * scalePercent);
-        this._resize(width, height);
+        this._scale(this._windowWidth * scalePercent, this._windowHeight * scalePercent);
+        this._resize(this._windowWidth, this._windowHeight);
 
         if (game.System.center) {
-            game.renderer._position((width - this.canvasWidth) / 2, (height - this.canvasHeight) / 2);
+            game.renderer._position((this._windowWidth - this.canvasWidth) / 2, (this._windowHeight - this.canvasHeight) / 2);
         }
 
         if (game.System.scale || game.System.resize || this.retina) {
@@ -408,14 +418,23 @@ game.createClass('System', {
     _toggleRotateScreen: function() {
         if (!game.device.mobile || !game.System.rotateScreen) return false;
 
-        if (this.originalWidth > this.originalHeight && window.innerWidth < window.innerHeight ||
-            this.originalHeight > this.originalWidth && window.innerHeight < window.innerWidth) {
+        if (this.originalWidth > this.originalHeight && this._windowWidth < this._windowHeight ||
+            this.originalHeight > this.originalWidth && this._windowHeight < this._windowWidth) {
             this._showRotateScreen();
             return true;
         }
         
         this._hideRotateScreen();
         return false;
+    },
+
+    /**
+        @method _updateWindowSize
+        @private
+    **/
+    _updateWindowSize: function() {
+        this._windowWidth = window.innerWidth;
+        this._windowHeight = window.innerHeight;
     }
 });
 
