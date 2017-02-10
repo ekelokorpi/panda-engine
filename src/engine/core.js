@@ -466,7 +466,7 @@ var game = {
 
         // Optional classes
         if (this.Keyboard) this.keyboard = new this.Keyboard();
-        if (this.Audio && this.Audio.enabled) this.audio = new this.Audio();
+        if (this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.Storage && this.Storage.id) this.storage = new this.Storage();
         if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();

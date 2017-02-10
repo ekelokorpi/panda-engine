@@ -72,12 +72,16 @@ game.createClass('Loader', 'Scene', {
         this.totalFiles = this._queue.length;
         if (this.totalFiles === 0) this.percent = 100;
 
-        if (scene) this.start();
-        else return true;
+        if (scene) {
+            if (this.init) this.init();
+            this.start();
+        }
+        return true;
     },
 
     loadAudio: function(filePath, callback) {
-        game.audio._load(filePath, callback);
+        if (!game.Audio.enabled) callback();
+        else game.audio._load(filePath, callback);
     },
 
     /**

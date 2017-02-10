@@ -60,6 +60,8 @@ game.createClass('Audio', {
     _pauseSounds: [],
 
     staticInit: function() {
+        if (!game.Audio.enabled) return;
+        
         game._normalizeVendorAttribute(window, 'AudioContext');
 
         if (!window.AudioContext) {

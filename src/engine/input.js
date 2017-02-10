@@ -395,10 +395,10 @@ game.createClass('Keyboard', {
         @private
     **/
     _keydown: function(event) {
+        if (!game.system._running) return;
         var key = game.Keyboard.keys[event.keyCode];
-
         if (!key) key = event.keyCode;
-        
+        if (this._keysDown[key]) return;
         this._keysDown[key] = true;
         if (game.scene && game.scene.keydown) {
             var prevent = game.scene.keydown(key, this.down('SHIFT'), this.down('CTRL'), this.down('ALT'));
@@ -412,6 +412,7 @@ game.createClass('Keyboard', {
         @private
     **/
     _keyup: function(event) {
+        if (!game.system._running) return;
         var key = game.Keyboard.keys[event.keyCode];
         if (!key) key = event.keyCode;
         this._keysDown[key] = false;
