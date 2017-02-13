@@ -5,7 +5,8 @@ game.module(
     'engine.debug'
 )
 .require(
-    'engine.camera'
+    'engine.camera',
+    'engine.scene'
 )
 .body(function() {
 
@@ -71,7 +72,7 @@ game.createClass('Debug', {
 
     init: function() {
         if (game.Debug.showInfo) {
-            console.log('Panda ' + game.version + ' (' + game.system.width + 'x' + game.system.height + ')');
+            console.log('Panda Engine ' + game.version + ' (' + game.system.width + 'x' + game.system.height + ')');
         }
 
         game.Input.inject({
@@ -778,6 +779,13 @@ game.Camera.inject({
     staticInit: function(x, y) {
         this.super(x, y);
         if (game.debug) game.debug.camera = this;
+    }
+});
+
+game.Scene.inject({
+    staticInit: function() {
+        this.super();
+        game.debug.camera = null;
     }
 });
 

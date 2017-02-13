@@ -67,7 +67,16 @@ game.createClass('TilingSprite', 'Container', {
         if (this._updateSprites) this._generateSprites();
     },
 
+    /**
+        @method _generateSprites
+        @private
+    **/
     _generateSprites: function() {
+        if (this._sprites.length) {
+            delete game.TilingSprite.cache[this._sprites[0].texture.baseTexture._id];
+            this._sprites[0].texture.baseTexture.remove();
+            this._sprites[0].texture.remove();
+        }
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
 
@@ -94,6 +103,7 @@ game.createClass('TilingSprite', 'Container', {
         var texture = game.Texture.fromCanvas(canvas);
         this.tw = texture.width;
         this.th = texture.height;
+        game.TilingSprite.cache[canvas._id] = texture;
 
         this._sprites.length = 0;
         for (var i = 0; i < 4; i++) {
@@ -212,6 +222,25 @@ game.createClass('TilingSprite', 'Container', {
                 if (x > 0) x -= tw;
                 y += th;
             }
+        }
+    }
+});
+
+game.addAttributes('TilingSprite', {
+    /**
+        @attribute {Object} cache
+    **/
+    cache: {},
+
+    /**
+        @method clearCache
+        @static
+    **/
+    clearCache: function() {
+        for (var i in this.cache) {
+            this.cache[i].baseTexture.remove();
+            this.cache[i].remove();
+            delete this.cache[i];
         }
     }
 });

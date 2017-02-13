@@ -172,6 +172,19 @@ game.createClass('BaseTexture', {
     },
 
     /**
+        Remove base texture from cache.
+        @method remove
+    **/
+    remove: function() {
+        for (var name in game.BaseTexture.cache) {
+            if (game.BaseTexture.cache[name] === this) {
+                delete game.BaseTexture.cache[name];
+                return;
+            }
+        }
+    },
+
+    /**
         @method _onerror
         @private
     **/
@@ -198,6 +211,7 @@ game.addAttributes('BaseTexture', {
     cache: {},
     /**
         @attribute {Number} _id
+        @private
     **/
     _id: 1,
 

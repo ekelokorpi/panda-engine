@@ -376,6 +376,7 @@ game.createClass('System', {
     _setSceneNow: function(sceneClass, param) {
         if (this.paused) this.paused = false;
         if (this.scene) this.scene._exit();
+        game.TilingSprite.clearCache();
         this.scene = new (sceneClass)(param);
         this._newSceneClass = null;
         this._startRunLoop();

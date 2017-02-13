@@ -104,7 +104,9 @@ game.createClass('Camera', {
     **/
     setTarget: function(target) {
         this.target = target;
-        this.sensorPosition.set(this.target.position.x * this.scale, this.target.position.y * this.scale);
+        var targetPosX = (this.target.position.x - this.target.anchor.x + this.target.width / 2 * this.target.scale.x) * this.scale;
+        var targetPosY = (this.target.position.y - this.target.anchor.y + this.target.height / 2 * this.target.scale.y) * this.scale;
+        this.sensorPosition.set(targetPosX, targetPosY);
     },
 
     /**
