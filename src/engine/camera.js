@@ -14,7 +14,7 @@ game.module(
 **/
 game.createClass('Camera', {
     /**
-        Camera acceleration speed.
+        Camera acceleration speed. Higher is faster.
         @property {Number} acceleration
         @default 3
     **/
@@ -183,8 +183,8 @@ game.createClass('Camera', {
 
         var targetWidth = this.target.width * this.scale;
         var targetHeight = this.target.height * this.scale;
-        var targetPosX = (this.target.position.x - this.target.anchor.x + this.target.width / 2) * this.scale;
-        var targetPosY = (this.target.position.y - this.target.anchor.y + this.target.height / 2) * this.scale;
+        var targetPosX = (this.target.position.x - this.target.anchor.x + this.target.width / 2 * this.target.scale.x) * this.scale;
+        var targetPosY = (this.target.position.y - this.target.anchor.y + this.target.height / 2 * this.target.scale.y) * this.scale;
         
         if (this.sensorSize.x < targetWidth || this.sensorSize.y < targetHeight) this.setSensor(targetWidth, targetHeight);
 

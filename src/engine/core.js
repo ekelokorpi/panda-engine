@@ -297,7 +297,8 @@ var game = {
 
         this[name] = this[extend].extend(content);
         this[name].prototype.name = name;
-        this._currentModule.classes.push(name);
+        this[name].prototype.extend = extend;
+        this._currentModule.classes.push({ name: name, extend: extend });
         return this[name];
     },
 
@@ -633,6 +634,7 @@ var game = {
         this.device.iOS71 = (this.device.iOS && /OS 7_1/i.test(navigator.userAgent));
         this.device.iOS8 = (this.device.iOS && /OS 8/i.test(navigator.userAgent));
         this.device.iOS9 = (this.device.iOS && /OS 9/i.test(navigator.userAgent));
+        this.device.iOS10 = (this.device.iOS && /OS 10/i.test(navigator.userAgent));
 
         // Android
         this.device.android = /android/i.test(navigator.userAgent);

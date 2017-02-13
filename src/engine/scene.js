@@ -152,6 +152,16 @@ game.createClass('Scene', {
     },
 
     /**
+        Called, when mouse or touch is released and no swipe is triggered.
+        @method click
+        @param {Number} x
+        @param {Number} y
+        @param {Number} id
+        @param {MouseEvent|TouchEvent} event
+    **/
+    click: function() {},
+
+    /**
         Called, before scene is changed.
         @method exit
     **/
@@ -340,6 +350,7 @@ game.createClass('Scene', {
     **/
     _mouseup: function(x, y, id, event) {
         this.isMouseDown = false;
+        if (this._mouseDownTime) this.click(x, y, id, event);
         this._mouseDownTime = null;
         this.mouseup(x, y, id, event);
     },

@@ -51,13 +51,13 @@ game.createClass('Sprite', 'Container', {
 
         var width = this.texture.width;
         var height = this.texture.height;
-        var wt = this._worldTransform;
-        var a = wt.a;
-        var b = wt.b;
-        var c = wt.c;
-        var d = wt.d;
-        var tx = wt.tx;
-        var ty = wt.ty;
+        var lt = this._localTransform;
+        var a = lt.a;
+        var b = lt.b;
+        var c = lt.c;
+        var d = lt.d;
+        var tx = lt.tx;
+        var ty = lt.ty;
         var x2 = a * width + tx;
         var y2 = b * width + ty;
         var x3 = a * width + c * height + tx;
@@ -186,7 +186,7 @@ game.addAttributes('Sprite', {
 game.defineProperties('Sprite', {
     width: {
         get: function() {
-            return this.scale.x * this.texture.width;
+            return Math.abs(this.scale.x) * this.texture.width;
         },
 
         set: function(value) {
@@ -196,7 +196,7 @@ game.defineProperties('Sprite', {
 
     height: {
         get: function() {
-            return this.scale.y * this.texture.height;
+            return Math.abs(this.scale.y) * this.texture.height;
         },
 
         set: function(value) {

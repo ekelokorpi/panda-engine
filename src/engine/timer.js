@@ -128,6 +128,11 @@ game.addAttributes('Timer', {
     **/
     _last: 0,
     /**
+        @attribute {Number} _lastFrameTime
+        @private
+    **/
+    _lastFrameTime: 0,
+    /**
         @attribute {Number} _realDelta
         @private
     **/
@@ -141,6 +146,7 @@ game.addAttributes('Timer', {
         if (!this._last) this._last = now;
         this._realDelta = now - this._last;
         this.delta = Math.min(this._realDelta, 1000 / this.minFPS) * this.speed;
+        this._lastFrameTime = this.time;
         this.time += this.delta;
         this._last = now;
     }

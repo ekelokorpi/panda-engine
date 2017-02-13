@@ -94,6 +94,16 @@ game.createClass('Container', {
     **/
     _interactive: false,
     /**
+        @property {Number} _lastTransformUpdate
+        @private
+    **/
+    _lastTransformUpdate: -1,
+    /**
+        @property {Matrix} _localTransform
+        @private
+    **/
+    _localTransform: null,
+    /**
         @property {Graphics} _mask
         @private
     **/
@@ -139,6 +149,7 @@ game.createClass('Container', {
         this.skew = new game.Vector();
         this._worldBounds = new game.Rectangle();
         this._worldTransform = new game.Matrix();
+        this._localTransform = new game.Matrix();
         game.merge(this, props);
     },
 
@@ -168,7 +179,7 @@ game.createClass('Container', {
         @chainable
     **/
     anchorCenter: function() {
-        this.anchor.set(this.width / this.scale.x / 2, this.height / this.scale.y / 2);
+        this.anchor.set(this.width / 2, this.height / 2);
         return this;
     },
 
@@ -339,6 +350,7 @@ game.createClass('Container', {
         if (!this.parent) return this._updateChildTransform();
         
         var pt = this.parent._worldTransform;
+        var lt = this._localTransform;
         var wt = this._worldTransform;
         
         if (this._rotationCache !== this.rotation) {
@@ -349,19 +361,19 @@ game.createClass('Container', {
 
         var ax = this.anchor.x;
         var ay = this.anchor.y;
-        var a = this._cosCache * this.scale.x;
-        var b = this._sinCache * this.scale.x;
-        var c = -this._sinCache * this.scale.y;
-        var d = this._cosCache * this.scale.y;
-        var tx = this.position.x - (ax * a + ay * c);
-        var ty = this.position.y - (ax * b + ay * d);
+        lt.a = this._cosCache * this.scale.x;
+        lt.b = this._sinCache * this.scale.x;
+        lt.c = -this._sinCache * this.scale.y;
+        lt.d = this._cosCache * this.scale.y;
+        lt.tx = this.position.x - (ax * lt.a + ay * lt.c);
+        lt.ty = this.position.y - (ax * lt.b + ay * lt.d);
 
-        wt.a = a * pt.a + b * pt.c;
-        wt.b = a * pt.b + b * pt.d;
-        wt.c = c * pt.a + d * pt.c;
-        wt.d = c * pt.b + d * pt.d;
-        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
-        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+        wt.a = lt.a * pt.a + lt.b * pt.c;
+        wt.b = lt.a * pt.b + lt.b * pt.d;
+        wt.c = lt.c * pt.a + lt.d * pt.c;
+        wt.d = lt.c * pt.b + lt.d * pt.d;
+        wt.tx = lt.tx * pt.a + lt.ty * pt.c + pt.tx;
+        wt.ty = lt.tx * pt.b + lt.ty * pt.d + pt.ty;
 
         wt.c += this.skew.x * wt.a;
         wt.d += this.skew.x * wt.b;
@@ -371,6 +383,8 @@ game.createClass('Container', {
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
         if (this._mask) this._mask.updateTransform();
+
+        this._lastTransformUpdate = game.Timer.time;
 
         if (this._cachedSprite) this._cachedSprite._worldAlpha = this._worldAlpha;
         else this._updateChildTransform();
@@ -461,6 +475,8 @@ game.createClass('Container', {
             return this._worldBounds;
         }
 
+        if (this._lastTransformUpdate < game.Timer._lastFrameTime) this.updateTransform();
+
         var minX = this._worldTransform.tx;
         var minY = this._worldTransform.ty;
         var maxX = this._worldTransform.tx;
@@ -469,10 +485,12 @@ game.createClass('Container', {
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
             var childBounds = child._getBounds();
-            var childMaxX = childBounds.x + childBounds.width;
-            var childMaxY = childBounds.y + childBounds.height;
-            if (childBounds.x < minX) minX = childBounds.x;
-            if (childBounds.y < minY) minY = childBounds.y;
+            var childMinX = this._worldTransform.tx + childBounds.x;
+            var childMinY = this._worldTransform.ty + childBounds.y;
+            var childMaxX = childMinX + childBounds.width;
+            var childMaxY = childMinY + childBounds.height;
+            if (childMinX < minX) minX = childMinX;
+            if (childMinY < minY) minY = childMinY;
             if (childMaxX > maxX) maxX = childMaxX;
             if (childMaxY > maxY) maxY = childMaxY;
         }

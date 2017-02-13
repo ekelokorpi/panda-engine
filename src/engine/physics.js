@@ -11,12 +11,12 @@ game.module(
 
 /**
     Physics world.
-    @class World
+    @class Physics
     @constructor
     @param {Number} [x] Gravity x
     @param {Number} [y] Gravity y
 **/
-game.createClass('World', {
+game.createClass('Physics', {
     /**
         List of bodies in world.
         @property {Array} bodies
@@ -513,5 +513,8 @@ game.createClass('PhysicsSprite', 'Sprite', {
         return this.super();
     }
 });
+
+// Deprecated
+game.World = game.Physics;
 
 });
