@@ -12,10 +12,6 @@ game.module(
 **/
 game.createClass('Audio', {
     /**
-        @property {Object} buffers
-    **/
-    buffers: {},
-    /**
         @property {AudioContext} context
     **/
     context: null,
@@ -207,7 +203,7 @@ game.createClass('Audio', {
     **/
     _loaded: function(path, callback, buffer) {
         var id = game._getId(path);
-        this.buffers[id] = buffer;
+        game.Audio.cache[id] = buffer;
         callback();
     },
 
@@ -244,11 +240,27 @@ game.createClass('Audio', {
 
 game.addAttributes('Audio', {
     /**
+        @attribute {Object} cache
+    **/
+    cache: {},
+
+    /**
+        @method clearCache
+        @static
+    **/
+    clearCache: function() {
+        for (var i in this.cache) {
+            delete this.cache[i];
+        }
+    },
+
+    /**
         Is audio enabled.
         @attribute {Boolean} enabled
         @default true
     **/
     enabled: true,
+
     /**
         List of supported audio formats.
         @attribute {Array} formats
@@ -258,18 +270,21 @@ game.addAttributes('Audio', {
         { ext: 'm4a', type: 'audio/mp4; codecs="mp4a.40.5"' },
         { ext: 'wav', type: 'audio/wav' }
     ],
+
     /**
         Initial music volume.
         @attribute {Number} musicVolume
         @default 1
     **/
     musicVolume: 1,
+
     /**
         Initial sound volume.
         @attribute {Number} soundVolume
         @default 1
     **/
     soundVolume: 1,
+
     /**
         Stop all audio, when changing scene.
         @attribute {Boolean} stopOnSceneChange
@@ -338,7 +353,7 @@ game.createClass('Sound', {
     staticInit: function(id) {
         if (!game.Audio.enabled) return true;
 
-        this._buffer = game.audio.buffers[id];
+        this._buffer = game.Audio.cache[id];
         if (!this._buffer) throw 'Audio ' + id + ' not found';
 
         this._context = game.audio.context;

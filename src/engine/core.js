@@ -439,6 +439,21 @@ var game = {
     },
 
     /**
+        Remove media from memory.
+        @method removeAsset
+        @param {String} id
+    **/
+    removeMedia: function(id) {
+        if (!this.paths[id]) return;
+        var path = this.paths[id];
+
+        if (game.Audio.cache[path]) delete game.Audio.cache[path];
+        if (game.BaseTexture.cache[path]) delete game.BaseTexture.cache[path];
+        if (game.Texture.cache[path]) delete game.Texture.cache[path];
+        if (game.TilingSprite.cache[path]) delete game.TilingSprite.cache[path];
+    },
+
+    /**
         Require module.
         @method require
         @param {Array} modules

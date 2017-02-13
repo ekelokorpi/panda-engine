@@ -190,6 +190,7 @@ game.createClass('BaseTexture', {
     **/
     _onerror: function() {
         if (this._loadCallback) this._loadCallback('Error loading image ' + this._id);
+        else throw 'Error loading image ' + this._id;
     },
 
     /**

@@ -785,7 +785,7 @@ game.Camera.inject({
 game.Scene.inject({
     staticInit: function() {
         this.super();
-        game.debug.camera = null;
+        if (game.debug) game.debug.camera = null;
     }
 });
 

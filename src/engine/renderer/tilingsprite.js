@@ -72,6 +72,7 @@ game.createClass('TilingSprite', 'Container', {
         @private
     **/
     _generateSprites: function() {
+        if (!this.texture.baseTexture.loaded) return;
         if (this._sprites.length) {
             delete game.TilingSprite.cache[this._sprites[0].texture.baseTexture._id];
             this._sprites[0].texture.baseTexture.remove();
@@ -99,11 +100,11 @@ game.createClass('TilingSprite', 'Container', {
                 sprite._renderCanvas(context, null, null, this._pos);
             }
         }
-
+        
         var texture = game.Texture.fromCanvas(canvas);
         this.tw = texture.width;
         this.th = texture.height;
-        game.TilingSprite.cache[canvas._id] = texture;
+        game.TilingSprite.cache[this.texture.baseTexture._id] = texture;
 
         this._sprites.length = 0;
         for (var i = 0; i < 4; i++) {
@@ -164,6 +165,18 @@ game.createClass('TilingSprite', 'Container', {
     },
 
     _renderCanvas: function(context) {
+        if (!this.texture) return true;
+        if (!this.texture.baseTexture.loaded) return true;
+
+        if (!this.texture.width && this.texture.baseTexture.width) {
+            this.texture.width = this.texture.baseTexture.width;
+        }
+        if (!this.texture.height && this.texture.baseTexture.height) {
+            this.texture.height = this.texture.baseTexture.height;
+        }
+        
+        if (!this.texture.width || !this.texture.height) return true;
+
         var scaleX = this._worldTransform.a / this._cosCache;
         var scaleY = this._worldTransform.d / this._cosCache;
         var tw = this.tw * game.scale;
