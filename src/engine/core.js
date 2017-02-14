@@ -439,8 +439,21 @@ var game = {
     },
 
     /**
+        Remove all media from memory.
+        @method removeAllMedia
+    **/
+    removeAllMedia: function() {
+        game.Audio.clearCache();
+        game.BaseTexture.clearCache();
+        game.Texture.clearCache();
+        game.TilingSprite.clearCache();
+        this.json = {};
+        this.paths = {};
+    },
+
+    /**
         Remove media from memory.
-        @method removeAsset
+        @method removeMedia
         @param {String} id
     **/
     removeMedia: function(id) {
@@ -450,7 +463,13 @@ var game = {
         if (game.Audio.cache[path]) delete game.Audio.cache[path];
         if (game.BaseTexture.cache[path]) delete game.BaseTexture.cache[path];
         if (game.Texture.cache[path]) delete game.Texture.cache[path];
-        if (game.TilingSprite.cache[path]) delete game.TilingSprite.cache[path];
+        if (game.TilingSprite.cache[path]) {
+            game.TilingSprite.cache[path].baseTexture.remove();
+            game.TilingSprite.cache[path].remove();
+            delete game.TilingSprite.cache[path];
+        }
+        if (this.json[path]) delete this.json[path];
+        delete this.paths[id];
     },
 
     /**
