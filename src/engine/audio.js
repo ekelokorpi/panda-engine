@@ -397,8 +397,8 @@ game.createClass('Sound', {
         if (this.paused) return;
         if (!this.playing) return;
 
-        this.paused = true;
         this.stop();
+        this.paused = true;
         this._source.pauseTime = (this._context.currentTime - this._source.startTime) % this._buffer.duration;
     },
 
@@ -455,10 +455,11 @@ game.createClass('Sound', {
     **/
     stop: function(skipOnComplete) {
         if (!this._source) return;
+        if (this.paused) return;
 
         this.playing = false;
         if (skipOnComplete) this.onComplete = null;
-        this._source.stop(0);
+        this._source.stop();
     },
 
     /**

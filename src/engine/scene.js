@@ -298,7 +298,7 @@ game.createClass('Scene', {
     **/
     _exit: function() {
         if (game.audio && game.Audio.stopOnSceneChange) {
-            if (game.audio.music) game.audio.music.stop(true);
+            game.audio.stopMusic();
             for (var i = 0; i < game.audio.sounds.length; i++) {
                 game.audio.sounds[i].stop(true);
             }
