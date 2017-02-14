@@ -37,10 +37,10 @@ game.createClass('TilingSprite', 'Container', {
     **/
     _rect: [],
     /**
-        @property {Array} _sprites
+        @property {Sprite} _sprite
         @private
     **/
-    _sprites: [],
+    _sprite: null,
     /**
         @property {Boolean} _updateSprites
         @private
@@ -73,10 +73,10 @@ game.createClass('TilingSprite', 'Container', {
     **/
     _generateSprites: function() {
         if (!this.texture.baseTexture.loaded) return;
-        if (this._sprites.length) {
-            delete game.TilingSprite.cache[this._sprites[0].texture.baseTexture._id];
-            this._sprites[0].texture.baseTexture.remove();
-            this._sprites[0].texture.remove();
+        if (this._sprite) {
+            delete game.TilingSprite.cache[this._sprite.texture.baseTexture._id];
+            this._sprite.texture.baseTexture.remove();
+            this._sprite.texture.remove();
         }
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
@@ -106,12 +106,8 @@ game.createClass('TilingSprite', 'Container', {
         this.th = texture.height;
         game.TilingSprite.cache[this.texture.baseTexture._id] = texture;
 
-        this._sprites.length = 0;
-        for (var i = 0; i < 4; i++) {
-            var sprite = new game.Sprite(texture);
-            sprite._parent = this;
-            this._sprites.push(sprite);
-        }
+        this._sprite = new game.Sprite(texture);
+        this._sprite._parent = this;
 
         this._updateSprites = false;
     },
@@ -191,7 +187,7 @@ game.createClass('TilingSprite', 'Container', {
         if (x > 0) x -= tw;
         if (y > 0) y -= th;
 
-        for (var i = 0; i < this._sprites.length; i++) {
+        for (var i = 0; i < 4; i++) {
             if (y >= height) break;
 
             this._rect.x = 0;
@@ -227,7 +223,15 @@ game.createClass('TilingSprite', 'Container', {
                 this._rect.height = height;
             }
 
-            this._sprites[i]._renderCanvas(context, this._worldTransform, this._rect, this._pos);
+            if (this._rect.x + this._rect.width > tw) {
+                this._rect.width = tw - this._rect.x;
+            }
+
+            if (this._rect.y + this._rect.height > th) {
+                this._rect.height = th - this._rect.y;
+            }
+
+            this._sprite._renderCanvas(context, this._worldTransform, this._rect, this._pos);
 
             x += tw;
             if (x >= width) {
