@@ -3,7 +3,7 @@ game.module(
 )
 .body(function() {
 
-game.addAsset('panda.png');
+game.addMedia('panda.png');
 
 game.createScene('Main', {
     backgroundColor: '#666',
