@@ -113,8 +113,9 @@ game.createClass('Input', {
         }
         else {
             hitArea = container._getBounds();
-            var hx = hitArea.x;
-            var hy = hitArea.y;
+            var wt = container._worldTransform;
+            var hx = wt.tx;
+            var hy = wt.ty;
             var hw = hitArea.width;
             var hh = hitArea.height;
         }

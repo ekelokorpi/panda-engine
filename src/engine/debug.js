@@ -256,8 +256,9 @@ game.createClass('Debug', {
 
         var context = game.renderer.context;
         var bounds = container._getBounds();
-        var x = bounds.x * game.scale;
-        var y = bounds.y * game.scale;
+        var wt = container._worldTransform;
+        var x = wt.tx * game.scale;
+        var y = wt.ty * game.scale;
         var width = bounds.width * game.scale;
         var height = bounds.height * game.scale;
 
@@ -332,8 +333,8 @@ game.createClass('Debug', {
         var hitArea = container.hitArea;
         var bounds = container._getBounds();
 
-        var x = typeof bounds.x === 'number' ? bounds.x : wt.tx * game.scale;
-        var y = typeof bounds.y === 'number' ? bounds.y : wt.ty * game.scale;
+        var x = wt.tx * game.scale;
+        var y = wt.ty * game.scale;
 
         context.setTransform(1, 0, 0, 1, x, y);
         context.globalAlpha = game.Debug.hitAreaAlpha;
