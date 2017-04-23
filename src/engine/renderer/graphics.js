@@ -133,6 +133,14 @@ game.createClass('Graphics', 'Container', {
         return this;
     },
 
+    lineTo: function(x, y) {
+
+    },
+
+    moveTo: function(x, y) {
+
+    },
+
     /**
         @method _drawShape
         @param {Rectangle|Circle} shape

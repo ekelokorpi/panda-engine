@@ -52,6 +52,11 @@ game.createClass('Loader', 'Scene', {
     **/
     _loadCount: 0,
     /**
+        @property {Array} _loadedFiles
+        @private
+    **/
+    _loadedFiles: [],
+    /**
         List of media files to load.
         @property {Array} _queue
         @private
@@ -171,7 +176,6 @@ game.createClass('Loader', 'Scene', {
         @param {String} filePath
         @param {Function} callback
         @param {XMLHttpRequest} request
-        @return {JSON} json
     **/
     parseJSON: function(filePath, callback, request) {
         if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
@@ -184,11 +188,20 @@ game.createClass('Loader', 'Scene', {
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
             return;
         }
-        else {
-            callback();
+        else if (json.nodes) {
+            // Layout
+            for (var i = 0; i < json.media.length; i++) {
+                var media = json.media[i];
+                var realPath = game._getFilePath(media);
+                if (!game.paths[media] && this._queue.indexOf(realPath) === -1 && this._loadedFiles.indexOf(realPath) === -1) {
+                    game.paths[media] = realPath;
+                    this._queue.push(realPath);
+                    this.totalFiles++;
+                }
+            }    
         }
 
-        return json;
+        callback();
     },
 
     /**
@@ -326,6 +339,7 @@ game.createClass('Loader', 'Scene', {
 
             this._loadCount++;
             this._queue.splice(i, 1);
+            this._loadedFiles.push(filePath);
 
             this[loadFunc](filePath, this._progress.bind(this));
             if (this._loadCount === game.Loader.maxFiles) return;
