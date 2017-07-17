@@ -251,7 +251,7 @@ game.createClass('Debug', {
         @private
         @param {Container} container
     **/
-    _drawBounds: function(container) {
+    _drawBounds: function(container, scale) {
         if (!container.parent || !container.visible || container.alpha <= 0 || !container.renderable) return;
 
         var context = game.renderer.context;
@@ -261,6 +261,10 @@ game.createClass('Debug', {
         var y = wt.ty * game.scale;
         var width = bounds.width * game.scale;
         var height = bounds.height * game.scale;
+        if (scale) {
+            width *= scale.x;
+            height *= scale.y;
+        }
 
         if (!width && !height) return;
         
@@ -276,7 +280,7 @@ game.createClass('Debug', {
 
         for (var i = 0; i < container.children.length; i++) {
             var child = container.children[i];
-            this._drawBounds(child);
+            this._drawBounds(child, container.scale);
         }
     },
 
