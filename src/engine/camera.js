@@ -188,7 +188,7 @@ game.createClass('Camera', {
         var targetPosX = (this.target.position.x - this.target.anchor.x + this.target.width / 2 * this.target.scale.x) * this.scale;
         var targetPosY = (this.target.position.y - this.target.anchor.y + this.target.height / 2 * this.target.scale.y) * this.scale;
         
-        if (this.sensorSize.x < targetWidth || this.sensorSize.y < targetHeight) this.setSensor(targetWidth, targetHeight);
+        if (this.sensorSize.x < targetWidth || this.sensorSize.y < targetHeight) this.sensorSize.set(targetWidth, targetHeight);
 
         if (targetPosX < this.sensorPosition.x - this.sensorSize.x / 2 + targetWidth / 2) {
             this.sensorPosition.x = targetPosX + this.sensorSize.x / 2 - targetWidth / 2;
