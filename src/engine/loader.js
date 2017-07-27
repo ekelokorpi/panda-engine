@@ -70,7 +70,7 @@ game.createClass('Loader', 'Scene', {
         }
 
         for (var i = 0; i < game.mediaQueue.length; i++) {
-            this._queue.push(this._getFilePath(game.mediaQueue[i]));
+            this._queue.push(game.mediaQueue[i]);
         }
         game.mediaQueue.length = 0;
 
@@ -336,6 +336,10 @@ game.createClass('Loader', 'Scene', {
                 }
             }
             if (!loadFunc) throw 'Unsupported file format ' + fileType;
+
+            if (loadFunc === 'loadImage' || loadFunc === 'loadFont') {
+                filePath = this._getFilePath(filePath);
+            }
 
             this._loadCount++;
             this._queue.splice(i, 1);
