@@ -396,6 +396,14 @@ game.createClass('Scene', {
     },
 
     /**
+        @method _updateCollision
+        @private
+    **/
+    _updateCollision: function() {
+        if (this.world) this.world._updateCollision();
+    },
+
+    /**
         @method _updateEmitters
         @private
     **/
@@ -483,8 +491,9 @@ game.addAttributes('Scene', {
         @default tweens,physics,timers,emitters,objects,renderer
     **/
     updateOrder: [
-        'tweens',
         'physics',
+        'tweens',
+        'collision',
         'timers',
         'emitters',
         'objects',

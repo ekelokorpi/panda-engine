@@ -139,6 +139,13 @@ game.createClass('Physics', {
                 this.bodies[i]._update();
             }
         }
+    },
+
+    /**
+        @method _updateCollision
+        @private
+    **/
+    _updateCollision: function() {
         for (i in this._collisionGroups) {
             if (this._collisionGroups[i].length === 0) {
                 delete this._collisionGroups[i];
