@@ -152,7 +152,6 @@ game.createClass('Loader', 'Scene', {
         @param {Number} percent
     **/
     onProgress: function(percent) {
-        if (this.barFg) this.barFg.scale.x = percent / 100;
     },
 
     /**
