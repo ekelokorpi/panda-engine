@@ -236,9 +236,16 @@ game.addAttributes('Animation', {
         @return {Animation}
     **/
     fromTextures: function(name) {
-        var textures = [];
+        var cache = [];
         for (var i in game.Texture.cache) {
-            if (i.indexOf(name) === 0) textures.push(game.Texture.cache[i]);
+            cache.push(i);
+        }
+        cache.sort();
+        var textures = [];
+        for (var i = 0; i < cache.length; i++) {
+            if (cache[i].indexOf(name) === 0) {
+                textures.push(game.Texture.cache[cache[i]]);
+            }
         }
         if (textures.length > 0) return new game.Animation(textures);
     }
