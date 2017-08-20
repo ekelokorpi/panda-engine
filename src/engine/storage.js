@@ -33,10 +33,11 @@ game.createClass('Storage', {
         @method set
         @param {String} key
         @param {*} value
+        @return {*} value
     **/
     set: function(key, value) {
-        if (!this.supported) return false;
-        localStorage.setItem(this.id + '.' + key, this._encode(value));
+        if (this.supported) localStorage.setItem(this.id + '.' + key, this._encode(value));
+        return value;
     },
 
     /**

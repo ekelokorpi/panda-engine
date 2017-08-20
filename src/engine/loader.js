@@ -187,18 +187,6 @@ game.createClass('Loader', 'Scene', {
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
             return;
         }
-        else if (json.nodes) {
-            // Layout
-            for (var i = 0; i < json.media.length; i++) {
-                var media = json.media[i];
-                var realPath = game._getFilePath(media);
-                if (!game.paths[media] && this._queue.indexOf(realPath) === -1 && this._loadedFiles.indexOf(realPath) === -1) {
-                    game.paths[media] = realPath;
-                    this._queue.push(realPath);
-                    this.totalFiles++;
-                }
-            }    
-        }
 
         callback();
     },
@@ -250,8 +238,10 @@ game.createClass('Loader', 'Scene', {
 
         var pages = responseXML.getElementsByTagName('page');
         if (pages.length) {
+            var folder = this._getFolder(filePath);
             var font = pages[0].getAttribute('file');
-            var image = game._getFilePath(font);
+            pages[0].setAttribute('file', folder + font);
+            var image = game._getFilePath(folder + font);
             this.loadImage(image, this.parseFont.bind(this, responseXML, callback));
         }
     },
@@ -298,6 +288,17 @@ game.createClass('Loader', 'Scene', {
     **/
     _getFilePath: function(path) {
         return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
+    },
+
+    /**
+        @method _getFolder
+        @private
+        @return {String}
+    **/
+    _getFolder: function(filePath) {
+        var folder = filePath.substr((game.config.mediaFolder + '/').length);
+        folder = folder.substr(0, folder.lastIndexOf('/') + 1);
+        return folder;
     },
 
     /**

@@ -10,6 +10,99 @@ game.module(
 .body(function() {
 
 /**
+    @class Font
+    @constructor
+    @param {Object} data
+**/
+game.createClass('Font', {
+    /**
+        @property {BaseTexture} baseTexture
+    **/
+    baseTexture: null,
+    /**
+        @property {Object} chars
+    **/
+    chars: {},
+    /**
+        @property {Number} lineHeight
+    **/
+    lineHeight: 0,
+    /**
+        @property {Number} spaceWidth
+    **/
+    spaceWidth: 0,
+
+    staticInit: function(data) {
+        var image = data.getElementsByTagName('page')[0].getAttribute('file');
+        var info = data.getElementsByTagName('info')[0];
+        var common = data.getElementsByTagName('common')[0];
+        var chars = data.getElementsByTagName('char');
+
+        this.baseTexture = game.BaseTexture.fromImage(game._getFilePath(image));
+        this.lineHeight = parseInt(common.getAttribute('lineHeight'));
+        
+        for (var i = 0; i < chars.length; i++) {
+            var xadvance = parseInt(chars[i].getAttribute('xadvance'));
+            var id = parseInt(chars[i].getAttribute('id'));
+            if (id === 32) {
+                this.spaceWidth = xadvance;
+                continue;
+            }
+            var xoffset = parseInt(chars[i].getAttribute('xoffset'));
+            var yoffset = parseInt(chars[i].getAttribute('yoffset'));
+            var x = parseInt(chars[i].getAttribute('x')) / game.scale;
+            var y = parseInt(chars[i].getAttribute('y')) / game.scale;
+            var width = parseInt(chars[i].getAttribute('width')) / game.scale;
+            var height = parseInt(chars[i].getAttribute('height')) / game.scale;
+            var texture = new game.Texture(this.baseTexture, x, y, width, height);
+
+            this.chars[id] = {
+                texture: texture,
+                xadvance: xadvance,
+                xoffset: xoffset,
+                yoffset: yoffset
+            };
+        }
+    }
+});
+
+game.addAttributes('Font', {
+    /**
+        @attribute {Object} cache
+    **/
+    cache: {},
+
+    /**
+        @method fromData
+        @static
+        @param {Object} data
+    **/
+    fromData: function(data) {
+        var info = data.getElementsByTagName('info')[0];
+        var face = info.getAttribute('face');
+        var font = game.Font.cache[face];
+
+        if (!font) {
+            font = new game.Font(data);
+            game.Font.cache[face] = font;
+            if (!game.Text.defaultFont) game.Text.defaultFont = face;
+        }
+
+        return font;
+    },
+
+    /**
+        @method clearCache
+        @static
+    **/
+    clearCache: function() {
+        for (var i in this.cache) {
+            delete this.cache[i];
+        }
+    }
+});
+
+/**
     @class Text
     @extends Container
     @constructor
@@ -246,99 +339,6 @@ game.addAttributes('Text', {
         @attribute {String} defaultFont
     **/
     defaultFont: null
-});
-
-/**
-    @class Font
-    @constructor
-    @param {Object} data
-**/
-game.createClass('Font', {
-    /**
-        @property {BaseTexture} baseTexture
-    **/
-    baseTexture: null,
-    /**
-        @property {Object} chars
-    **/
-    chars: {},
-    /**
-        @property {Number} lineHeight
-    **/
-    lineHeight: 0,
-    /**
-        @property {Number} spaceWidth
-    **/
-    spaceWidth: 0,
-
-    staticInit: function(data) {
-        var image = data.getElementsByTagName('page')[0].getAttribute('file');
-        var info = data.getElementsByTagName('info')[0];
-        var common = data.getElementsByTagName('common')[0];
-        var chars = data.getElementsByTagName('char');
-
-        this.baseTexture = game.BaseTexture.fromImage(game._getFilePath(image));
-        this.lineHeight = parseInt(common.getAttribute('lineHeight'));
-        
-        for (var i = 0; i < chars.length; i++) {
-            var xadvance = parseInt(chars[i].getAttribute('xadvance'));
-            var id = parseInt(chars[i].getAttribute('id'));
-            if (id === 32) {
-                this.spaceWidth = xadvance;
-                continue;
-            }
-            var xoffset = parseInt(chars[i].getAttribute('xoffset'));
-            var yoffset = parseInt(chars[i].getAttribute('yoffset'));
-            var x = parseInt(chars[i].getAttribute('x')) / game.scale;
-            var y = parseInt(chars[i].getAttribute('y')) / game.scale;
-            var width = parseInt(chars[i].getAttribute('width')) / game.scale;
-            var height = parseInt(chars[i].getAttribute('height')) / game.scale;
-            var texture = new game.Texture(this.baseTexture, x, y, width, height);
-
-            this.chars[id] = {
-                texture: texture,
-                xadvance: xadvance,
-                xoffset: xoffset,
-                yoffset: yoffset
-            };
-        }
-    }
-});
-
-game.addAttributes('Font', {
-    /**
-        @attribute {Object} cache
-    **/
-    cache: {},
-
-    /**
-        @method fromData
-        @static
-        @param {Object} data
-    **/
-    fromData: function(data) {
-        var info = data.getElementsByTagName('info')[0];
-        var face = info.getAttribute('face');
-        var font = game.Font.cache[face];
-
-        if (!font) {
-            font = new game.Font(data);
-            game.Font.cache[face] = font;
-            if (!game.Text.defaultFont) game.Text.defaultFont = face;
-        }
-
-        return font;
-    },
-
-    /**
-        @method clearCache
-        @static
-    **/
-    clearCache: function() {
-        for (var i in this.cache) {
-            delete this.cache[i];
-        }
-    }
 });
 
 });

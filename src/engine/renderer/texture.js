@@ -7,123 +7,6 @@ game.module(
 .body(function() {
 
 /**
-    @class Texture
-    @constructor
-    @param {BaseTexture|String} baseTexture
-    @param {Number} [x]
-    @param {Number} [y]
-    @param {Number} [width]
-    @param {Number} [height]
-**/
-game.createClass('Texture', {
-    /**
-        @property {BaseTexture} baseTexture
-    **/
-    baseTexture: null,
-    /**
-        @property {Number} height
-    **/
-    height: 0,
-    /**
-        @property {Vector} position
-    **/
-    position: null,
-    /**
-        @property {Number} width
-    **/
-    width: 0,
-
-    staticInit: function(baseTexture, x, y, width, height) {
-        this.baseTexture = baseTexture instanceof game.BaseTexture ? baseTexture : game.BaseTexture.fromAsset(baseTexture);
-        this.position = new game.Vector(x, y);
-        this.width = width || this.baseTexture.width;
-        this.height = height || this.baseTexture.height;
-    },
-
-    /**
-        Remove texture from cache.
-        @method remove
-    **/
-    remove: function() {
-        for (var name in game.Texture.cache) {
-            if (game.Texture.cache[name] === this) {
-                delete game.Texture.cache[name];
-                return;
-            }
-        }
-    }
-});
-
-game.addAttributes('Texture', {
-    /**
-        @attribute {Object} cache
-    **/
-    cache: {},
-
-    /**
-        @method clearCache
-        @static
-    **/
-    clearCache: function() {
-        for (var i in this.cache) {
-            delete this.cache[i];
-        }
-    },
-    
-    /**
-        @method fromImage
-        @static
-        @param {String} path
-        @return {Texture}
-    **/
-    fromImage: function(path) {
-        var texture = this.cache[path];
-
-        if (!texture) {
-            texture = new game.Texture(game.BaseTexture.fromImage(path));
-            this.cache[path] = texture;
-        }
-
-        return texture;
-    },
-
-    /**
-        @method fromAsset
-        @static
-        @param {String} id
-        @return {Texture}
-    **/
-    fromAsset: function(id) {
-        var path = game.paths[id] || id;
-        var texture = this.cache[path];
-
-        if (!texture) {
-            texture = game.Texture.fromImage(path);
-        }
-
-        return texture;
-    },
-
-    /**
-        @method fromCanvas
-        @static
-        @param {HTMLCanvasElement} canvas
-        @return {Texture}
-    **/
-    fromCanvas: function(canvas) {
-        var texture = this.cache[canvas._id];
-
-        if (!texture) {
-            var baseTexture = game.BaseTexture.fromCanvas(canvas);
-            texture = new game.Texture(baseTexture);
-            this.cache[canvas._id] = texture;
-        }
-        
-        return texture;
-    }
-});
-
-/**
     @class BaseTexture
     @constructor
     @param {HTMLImageElement|HTMLCanvasElement} source
@@ -281,6 +164,123 @@ game.addAttributes('BaseTexture', {
         else if (loadCallback) loadCallback();
 
         return baseTexture;
+    }
+});
+
+/**
+    @class Texture
+    @constructor
+    @param {BaseTexture|String} baseTexture
+    @param {Number} [x]
+    @param {Number} [y]
+    @param {Number} [width]
+    @param {Number} [height]
+**/
+game.createClass('Texture', {
+    /**
+        @property {BaseTexture} baseTexture
+    **/
+    baseTexture: null,
+    /**
+        @property {Number} height
+    **/
+    height: 0,
+    /**
+        @property {Vector} position
+    **/
+    position: null,
+    /**
+        @property {Number} width
+    **/
+    width: 0,
+
+    staticInit: function(baseTexture, x, y, width, height) {
+        this.baseTexture = baseTexture instanceof game.BaseTexture ? baseTexture : game.BaseTexture.fromAsset(baseTexture);
+        this.position = new game.Vector(x, y);
+        this.width = width || this.baseTexture.width;
+        this.height = height || this.baseTexture.height;
+    },
+
+    /**
+        Remove texture from cache.
+        @method remove
+    **/
+    remove: function() {
+        for (var name in game.Texture.cache) {
+            if (game.Texture.cache[name] === this) {
+                delete game.Texture.cache[name];
+                return;
+            }
+        }
+    }
+});
+
+game.addAttributes('Texture', {
+    /**
+        @attribute {Object} cache
+    **/
+    cache: {},
+
+    /**
+        @method clearCache
+        @static
+    **/
+    clearCache: function() {
+        for (var i in this.cache) {
+            delete this.cache[i];
+        }
+    },
+    
+    /**
+        @method fromImage
+        @static
+        @param {String} path
+        @return {Texture}
+    **/
+    fromImage: function(path) {
+        var texture = this.cache[path];
+
+        if (!texture) {
+            texture = new game.Texture(game.BaseTexture.fromImage(path));
+            this.cache[path] = texture;
+        }
+
+        return texture;
+    },
+
+    /**
+        @method fromAsset
+        @static
+        @param {String} id
+        @return {Texture}
+    **/
+    fromAsset: function(id) {
+        var path = game.paths[id] || id;
+        var texture = this.cache[path];
+
+        if (!texture) {
+            texture = game.Texture.fromImage(path);
+        }
+
+        return texture;
+    },
+
+    /**
+        @method fromCanvas
+        @static
+        @param {HTMLCanvasElement} canvas
+        @return {Texture}
+    **/
+    fromCanvas: function(canvas) {
+        var texture = this.cache[canvas._id];
+
+        if (!texture) {
+            var baseTexture = game.BaseTexture.fromCanvas(canvas);
+            texture = new game.Texture(baseTexture);
+            this.cache[canvas._id] = texture;
+        }
+        
+        return texture;
     }
 });
 
