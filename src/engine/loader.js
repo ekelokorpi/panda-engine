@@ -183,6 +183,7 @@ game.createClass('Loader', 'Scene', {
         game.json[filePath] = json;
         if (json.frames) {
             // Sprite sheet
+            json.meta.image = this._getFolder(filePath) + json.meta.image;
             var image = game._getFilePath(json.meta.image);
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
             return;
