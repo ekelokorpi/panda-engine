@@ -180,15 +180,22 @@ game.createClass('Loader', 'Scene', {
         if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
 
         var json = JSON.parse(request.responseText);
-        game.json[filePath] = json;
         if (json.frames) {
             // Sprite sheet
+            if (game.scale > 1) {
+                var newFile = this._getFilePath(filePath);
+                if (newFile !== filePath) {
+                    this.loadFile(newFile, this.parseJSON.bind(this, newFile, callback));
+                    return;
+                }
+            }
             json.meta.image = this._getFolder(filePath) + json.meta.image;
             var image = game._getFilePath(json.meta.image);
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
             return;
         }
-
+        game.json[filePath] = json;
+        
         callback();
     },
 
@@ -264,15 +271,15 @@ game.createClass('Loader', 'Scene', {
         @private
     **/
     _complete: function() {
-        if (this.totalFiles > 0 && game.system.hires || game.system.retina) {
+        if (this.totalFiles > 0 && game.scale > 1) {
             for (var i in game.BaseTexture.cache) {
-                if (i.indexOf('@' + game.scale + 'x') !== -1) {
+                if (i.indexOf('@' + game.scale + 'x') >= 0) {
                     game.BaseTexture.cache[i.replace('@' + game.scale + 'x', '')] = game.BaseTexture.cache[i];
                     delete game.BaseTexture.cache[i];
                 }
             }
             for (var i in game.Texture.cache) {
-                if (i.indexOf('@' + game.scale + 'x') !== -1) {
+                if (i.indexOf('@' + game.scale + 'x') >= 0) {
                     game.Texture.cache[i.replace('@' + game.scale + 'x', '')] = game.Texture.cache[i];
                     delete game.Texture.cache[i];
                 }
@@ -288,7 +295,8 @@ game.createClass('Loader', 'Scene', {
         @return {String}
     **/
     _getFilePath: function(path) {
-        return game.system.retina || game.system.hires ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
+        if (path.indexOf('@' + game.scale + 'x.') >= 0) return path;
+        return game.scale > 1 ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
     },
 
     /**
