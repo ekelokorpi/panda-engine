@@ -447,7 +447,7 @@ game.createClass('Scene', {
     **/
     _updateTimers: function() {
         for (var i = this.timers.length - 1; i >= 0; i--) {
-            if (this.timers[i].time() >= 0) {
+            if (this.timers[i].time() === 0) {
                 if (typeof this.timers[i].callback === 'function') this.timers[i].callback();
                 if (this.timers[i].repeat) this.timers[i].reset();
                 else this.timers.splice(i, 1);

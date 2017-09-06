@@ -18,20 +18,20 @@ game.createClass('Timer', {
     **/
     target: 0,
     /**
-        Timer's base time.
-        @property {Number} base
+        @property {Number} _base
+        @private
     **/
-    base: 0,
+    _base: 0,
     /**
         @property {Number} _last
         @private
     **/
     _last: 0,
     /**
-        @property {Number} _pauseTime
+        @property {Number} _pause
         @private
     **/
-    _pauseTime: 0,
+    _pause: 0,
     
     init: function(ms) {
         this._last = game.Timer.time;
@@ -39,7 +39,7 @@ game.createClass('Timer', {
     },
     
     /**
-        Set time for timer.
+        Set target time for timer.
         @method set
         @param {Number} ms
     **/
@@ -54,29 +54,29 @@ game.createClass('Timer', {
         @method reset
     **/
     reset: function() {
-        this.base = game.Timer.time;
-        this._pauseTime = 0;
+        this._base = game.Timer.time;
+        this._pause = 0;
     },
     
     /**
-        Get time since last delta.
+        Get time since last frame.
         @method delta
         @return {Number} delta
     **/
     delta: function() {
         var delta = game.Timer.time - this._last;
         this._last = game.Timer.time;
-        return this._pauseTime ? 0 : delta;
+        return this._pause ? 0 : delta;
     },
     
     /**
-        Get time since start.
+        Get time left.
         @method time
         @return {Number} time
     **/
     time: function() {
-        var time = (this._pauseTime || game.Timer.time) - this.base - this.target;
-        return time;
+        var time = this._base + this.target - (this._pause || game.Timer.time);
+        return time < 0 ? 0 : time;
     },
 
     /**
@@ -84,7 +84,7 @@ game.createClass('Timer', {
         @method pause
     **/
     pause: function() {
-        if (!this._pauseTime) this._pauseTime = game.Timer.time;
+        if (!this._pause) this._pause = game.Timer.time;
     },
 
     /**
@@ -92,9 +92,9 @@ game.createClass('Timer', {
         @method resume
     **/
     resume: function() {
-        if (this._pauseTime) {
-            this.base += game.Timer.time - this._pauseTime;
-            this._pauseTime = 0;
+        if (this._pause) {
+            this._base += game.Timer.time - this._pause;
+            this._pause = 0;
         }
     }
 });
