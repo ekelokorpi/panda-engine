@@ -288,7 +288,7 @@ game.createClass('System', {
             game.renderer._size(this.canvasWidth, this.canvasHeight);
         }
 
-        if (game._loader && !game._loader.started) game._loader.start();
+        if (game.isStarted && !game.scene) game.onStart();
     },
 
     /**

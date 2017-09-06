@@ -158,11 +158,6 @@ var game = {
     **/
     _initializing: false,
     /**
-        @property {Loader} _loader
-        @private
-    **/
-    _loader: null,
-    /**
         @property {Boolean} _loadFinished
         @private
     **/
@@ -493,8 +488,7 @@ var game = {
     **/
     start: function() {
         if (this._moduleQueue.length > 0 || this.isStarted) return;
-        this.isStarted = true;
-
+        
         // Required classes
         this.system = new this.System();
         this.input = new this.Input(this.renderer.canvas);
@@ -513,7 +507,8 @@ var game = {
 
         if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
 
-        this.onStart();
+        this.isStarted = true;
+        if (!this.system._rotateScreenVisible) this.onStart();
     },
 
     /**
