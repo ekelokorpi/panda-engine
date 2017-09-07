@@ -68,9 +68,9 @@ game.createClass('Emitter', 'FastContainer', {
     /**
         Variance of emit angle in radians.
         @property {Number} angleVar
-        @default 0
+        @default Math.PI
     **/
-    angleVar: 0,
+    angleVar: Math.PI,
     /**
         How many particles to emit.
         @property {Number} emitCount
@@ -120,6 +120,10 @@ game.createClass('Emitter', 'FastContainer', {
         @property {Vector} startPosVar
     **/
     startPosVar: null,
+    /**
+        @property {Boolean} randomTexture
+    **/
+    randomTexture: true,
     /**
         Particle's sprite rotation speed.
         @property {Number} rotate
@@ -205,6 +209,11 @@ game.createClass('Emitter', 'FastContainer', {
     **/
     velRotateVar: 0,
     /**
+        @property {Number} _currentTexture
+        @default 0
+    **/
+    _currentTexture: 0,
+    /**
         @property {Number} _durationTimer
         @private
     **/
@@ -262,6 +271,7 @@ game.createClass('Emitter', 'FastContainer', {
         @method reset
     **/
     reset: function() {
+        this._rateTimer = 0;
         this._durationTimer = 0;
         this.active = true;
         this._onCompleteCalled = false;
@@ -272,7 +282,12 @@ game.createClass('Emitter', 'FastContainer', {
         @private
     **/
     _addParticle: function() {
-        var texture = this.textures.random();
+        if (!this.randomTexture) var texture = this.textures.random();
+        else {
+            var texture = this.textures[this._currentTexture];
+            this._currentTexture++;
+            if (this._currentTexture >= this.textures.length) this._currentTexture = 0;
+        }
         if (!texture) return;
 
         var particle = game.pool.get(this._poolName);
@@ -368,8 +383,8 @@ game.createClass('Emitter', 'FastContainer', {
 
         if (this.emitRate && this.active) {
             this._rateTimer += game.delta * 1000;
-            if (this._rateTimer >= this.emitRate) {
-                this._rateTimer = 0;
+            if (this._rateTimer >= 0) {
+                this._rateTimer = -this.emitRate;
                 this.emit();
             }
         }

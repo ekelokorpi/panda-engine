@@ -82,10 +82,18 @@ game.createClass('Debug', {
             }
         });
 
+        game.Camera.inject({
+            staticInit: function(x, y) {
+                this.super(x, y);
+                game.debug._camera = this;
+            }
+        });
+
         game.Scene.inject({
             staticInit: function() {
                 this.super();
                 game.debug._bodies.length = 0;
+                game.debug.last = 0;
             },
 
             _update: function() {
@@ -98,12 +106,6 @@ game.createClass('Debug', {
                 this.super();
                 if (!game.Debug.enabled) return;
                 if (game.Debug.showHitAreas) game.debug._drawHitAreas();
-                if (game.Debug.showBounds) {
-                    for (var i = 0; i < this.stage.children.length; i++) {
-                        var child = this.stage.children[i];
-                        game.debug._drawBounds(child);
-                    }
-                }
                 if (game.Debug.showBodies) game.debug._drawBodies();
                 if (game.Debug.fakeTouch) game.debug._drawFakeTouch();
                 if (game.Debug.showCamera) game.debug._drawCamera();
@@ -127,28 +129,60 @@ game.createClass('Debug', {
         game.Container.inject({
             _renderCachedSprite: function(context) {
                 this.super(context);
-                game.debug.sprites++;
+                game.debug._draws++;
             }
         });
 
         game.FastContainer.inject({
             _renderBatch: function(child, context) {
                 this.super(child, context);
-                game.debug.sprites++;
+                game.debug._draws++;
             }
         });
 
         game.Graphics.inject({
             _renderCanvas: function(context) {
                 this.super(context);
-                game.debug.sprites += this.shapes.length;
+                game.debug._draws += this.shapes.length;
+            }
+        });
+
+        game.Graphics.inject({
+            _renderCanvas: function(context) {
+                this.super(context);
+                game.debug._draws += this.shapes.length;
             }
         });
 
         game.Sprite.inject({
             _renderCanvas: function(context, transform, rect, offset) {
                 this.super(context, transform, rect, offset);
-                game.debug.sprites++;
+                game.debug._draws++;
+
+                if (!game.Debug.showSprites) return;
+
+                var context = game.renderer.context;
+                var texture = this.texture;
+                var wt = this._worldTransform;
+                // Better way to know that it's cachedsprite?
+                if (this._parent && this._parent._cachedSprite) {
+                    wt = this._parent._worldTransform;
+                }
+                var x = wt.tx * game.scale;
+                var y = wt.ty * game.scale;
+                var width = texture.width * game.scale;
+                var height = texture.height * game.scale;
+
+                if (!width && !height) return;
+                
+                context.globalCompositeOperation = 'source-over';
+                context.setTransform(wt.a, wt.b, wt.c, wt.d, x, y);
+                context.globalAlpha = game.Debug.boundAlpha;
+                context.lineWidth = game.Debug.boundLineWidth;
+                context.strokeStyle = game.Debug.boundColor;
+                context.beginPath();
+                context.rect(0, 0, width, height);
+                context.stroke();
             }
         });
 
@@ -243,44 +277,6 @@ game.createClass('Debug', {
             );
             context.fill();
             context.stroke();
-        }
-    },
-
-    /**
-        @method _drawBounds
-        @private
-        @param {Container} container
-    **/
-    _drawBounds: function(container, scale) {
-        if (!container.parent || !container.visible || container.alpha <= 0 || !container.renderable) return;
-
-        var context = game.renderer.context;
-        var bounds = container._getBounds();
-        var wt = container._worldTransform;
-        var x = wt.tx * game.scale;
-        var y = wt.ty * game.scale;
-        var width = bounds.width * game.scale;
-        var height = bounds.height * game.scale;
-        if (scale) {
-            width *= scale.x;
-            height *= scale.y;
-        }
-
-        if (!width && !height) return;
-        
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        context.globalAlpha = game.Debug.boundAlpha;
-        context.lineWidth = game.Debug.boundLineWidth;
-        context.strokeStyle = game.Debug.boundColor;
-        context.beginPath();
-        context.rect(x, y, width, height);
-        context.stroke();
-
-        if (container._cached) return;
-
-        for (var i = 0; i < container.children.length; i++) {
-            var child = container.children[i];
-            this._drawBounds(child, container.scale);
         }
     },
 
@@ -382,7 +378,7 @@ game.createClass('Debug', {
         @private
     **/
     _reset: function() {
-        this.sprites = 0;
+        this._draws = 0;
     },
 
     /**
@@ -409,19 +405,7 @@ game.createClass('Debug', {
         }
         else return;
 
-        this.text = '';
-        this._addText(game.version);
-        this._addText('FPS', this.fps);
-        this._addText('OBJECTS', game.scene.objects.length);
-        this._addText('SPRITES', this.sprites);
-        if (game.scene.tweens) this._addText('TWEENS', game.scene.tweens.length);
-        if (game.scene.timers) this._addText('TIMERS', game.scene.timers.length);
-        if (game.scene.emitters) this._addText('EMITTERS', game.scene.emitters.length);
-        if (game.scene.world) this._addText('BODIES', game.scene.world.bodies.length);
-        this._addText('INPUTS', game.input.items.length);
-        this._addText('HIRES', game.scale);
-
-        this._updateText();
+        this._updatePanel();
     },
 
     /**
@@ -446,11 +430,19 @@ game.createClass('Debug', {
         }
     },
 
-    /**
-        @method _updateText
-        @private
-    **/
-    _updateText: function() {
+    _updatePanel: function() {
+        this.text = '';
+        this._addText(game.version);
+        this._addText('FPS', this.fps);
+        this._addText('DRAWS', this._draws);
+        this._addText('BODIES', this._bodies.length);
+        this._addText('UPDATES', game.scene.objects.length);
+        this._addText('TWEENS', game.scene.tweens.length);
+        this._addText('TIMERS', game.scene.timers.length);
+        this._addText('EMITTERS', game.scene.emitters.length);
+        this._addText('INPUTS', game.input.items.length);
+        this._addText('HIRES', game.scale);
+
         this.panel.innerHTML = this.text;
     }
 });
@@ -635,12 +627,6 @@ game.addAttributes('Debug', {
     **/
     showBodies: false,
     /**
-        Draw container bounds.
-        @attribute {Boolean} showBounds
-        @default false
-    **/
-    showBounds: false,
-    /**
         Draw camera debug.
         @attribute {Boolean} showCamera
         @default false
@@ -653,7 +639,7 @@ game.addAttributes('Debug', {
     **/
     showHitAreas: false,
     /**
-        Show info on console.
+        Show startup info on console.
         @attribute {Boolean} showInfo
         @default true
     **/
@@ -663,7 +649,13 @@ game.addAttributes('Debug', {
         @attribute {Boolean} showPanel
         @default true
     **/
-    showPanel: true
+    showPanel: true,
+    /**
+        Draw sprites.
+        @attribute {Boolean} showSprites
+        @default false
+    **/
+    showSprites: false
 });
 
 /**
@@ -780,25 +772,11 @@ game.createClass('DebugTouch', {
     }
 });
 
-game.Camera.inject({
-    staticInit: function(x, y) {
-        this.super(x, y);
-        if (game.debug) game.debug.camera = this;
-    }
-});
-
-game.Scene.inject({
-    staticInit: function() {
-        this.super();
-        if (game.debug) game.debug.camera = null;
-    }
-});
-
 var href = document.location.href.toLowerCase();
 if (href.match(/\?debug/)) game.Debug.enabled = true;
 if (href.match(/\?debugdraw/)) {
     game.Debug.showBodies = true;
-    game.Debug.showBounds = true;
+    game.Debug.showSprites = true;
     game.Debug.showCamera = true;
     game.Debug.showHitAreas = true;
 }

@@ -279,9 +279,9 @@ game.createClass('Body', {
     /**
         Body's mass.
         @property {Number} mass
-        @default 0
+        @default 1
     **/
-    mass: 0,
+    mass: 1,
     /**
         Position of body.
         @property {Vector} position
