@@ -421,7 +421,8 @@ game.createClass('Container', {
 
         var texture = game.Texture.fromCanvas(canvas);
         var sprite = new game.Sprite(texture);
-
+        sprite._parent = this;
+        
         this._cachedSprite = sprite;
     },
 

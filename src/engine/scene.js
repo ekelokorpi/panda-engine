@@ -7,7 +7,6 @@ game.module(
 .body(function() {
 
 /**
-    Game scene.
     @class Scene
 **/
 game.createClass('Scene', {
@@ -17,11 +16,6 @@ game.createClass('Scene', {
         @default null
     **/
     backgroundColor: null,
-    /**
-        List of emitters in scene.
-        @property {Array} emitters
-    **/
-    emitters: [],
     /**
         @property {Boolean} isMouseDown
         @default false
@@ -90,17 +84,6 @@ game.createClass('Scene', {
             this._updateOrder.push(game.Scene.updateOrder[i].ucfirst());
         }
     },
-
-    /**
-        Add emitter to scene.
-        @method addEmitter
-        @param {Emitter} emitter
-    **/
-    addEmitter: function(emitter) {
-        if (this.emitters.indexOf(emitter) === -1) {
-            this.emitters.push(emitter);
-        }
-    },
     
     /**
         Add object to scene, so it's update function get's called every frame.
@@ -112,43 +95,6 @@ game.createClass('Scene', {
             object._remove = false;
             this.objects.push(object);
         }
-    },
-
-    /**
-        Add timer to scene.
-        @method addTimer
-        @param {Number} time Time (ms).
-        @param {Function} callback Callback function to run, when timer ends.
-        @param {Boolean} [repeat]
-        @param {Boolean} [instant]
-        @return {Timer}
-    **/
-    addTimer: function(time, callback, repeat, instant) {
-        var timer = new game.Timer(time);
-        timer.repeat = !!repeat;
-        timer.callback = callback;
-        this.timers.push(timer);
-        if (instant) callback();
-        return timer;
-    },
-
-    /**
-        Shorthand for adding tween.
-        @method addTween
-        @param {Object} obj
-        @param {Object} props
-        @param {Number} time
-        @param {Object} [settings]
-        @return {Tween}
-    **/
-    addTween: function(obj, props, time, settings) {
-        var tween = new game.Tween(obj);
-        tween.to(props, time);
-        for (var i in settings) {
-            if (!tween[i]) throw 'Invalid Tween setting: ' + i;
-            tween[i](settings[i]);
-        }
-        return tween;
     },
 
     /**
@@ -226,15 +172,6 @@ game.createClass('Scene', {
         @method onResize
     **/
     onResize: function() {},
-
-    /**
-        Remove emitter from scene.
-        @method removeEmitter
-        @param {Emitter} emitter
-    **/
-    removeEmitter: function(emitter) {
-        if (emitter) emitter.remove();
-    },
     
     /**
         Remove object from scene.
@@ -404,17 +341,6 @@ game.createClass('Scene', {
     },
 
     /**
-        @method _updateEmitters
-        @private
-    **/
-    _updateEmitters: function() {
-        for (var i = this.emitters.length - 1; i >= 0; i--) {
-            this.emitters[i]._update();
-            if (this.emitters[i]._remove) this.emitters.splice(i, 1);
-        }
-    },
-
-    /**
         @method _updateObjects
         @private
     **/
@@ -488,14 +414,13 @@ game.addAttributes('Scene', {
     /**
         Update order for scene.
         @attribute {Array} updateOrder
-        @default tweens,physics,timers,emitters,objects,renderer
+        @default tweens,physics,timers,objects,renderer
     **/
     updateOrder: [
         'physics',
         'tweens',
         'collision',
         'timers',
-        'emitters',
         'objects',
         'renderer'
     ]

@@ -277,6 +277,38 @@ game.createClass('Emitter', 'FastContainer', {
         this._onCompleteCalled = false;
     },
 
+    updateTransform: function() {
+        if (this._remove) {
+            for (var i = this.children.length - 1; i >= 0; i--) {
+                this._removeParticle(this.children[i]);
+            }
+            return;
+        }
+
+        this._durationTimer += game.delta * 1000;
+        if (this.emitDuration > 0) {
+            this.active = this._durationTimer < this.emitDuration;
+            if (!this.active && this.children.length === 0 && typeof this.onComplete === 'function' && !this._onCompleteCalled) {
+                this.onComplete();
+                this._onCompleteCalled = true;
+            }
+        }
+
+        if (this.emitRate && this.active) {
+            this._rateTimer += game.delta * 1000;
+            if (this._rateTimer >= 0) {
+                this._rateTimer = -this.emitRate;
+                this.emit();
+            }
+        }
+
+        for (var i = this.children.length - 1; i >= 0; i--) {
+            this.children[i]._update();
+        }
+
+        this.super();
+    },
+
     /**
         @method _addParticle
         @private
@@ -358,40 +390,6 @@ game.createClass('Emitter', 'FastContainer', {
     _removeParticle: function(particle) {
         particle.remove();
         game.pool.put(this._poolName, particle);
-    },
-
-    /**
-        @method _update
-        @private
-    **/
-    _update: function() {
-        if (this._remove) {
-            for (var i = this.children.length - 1; i >= 0; i--) {
-                this._removeParticle(this.children[i]);
-            }
-            return;
-        }
-
-        this._durationTimer += game.delta * 1000;
-        if (this.emitDuration > 0) {
-            this.active = this._durationTimer < this.emitDuration;
-            if (!this.active && this.children.length === 0 && typeof this.onComplete === 'function' && !this._onCompleteCalled) {
-                this.onComplete();
-                this._onCompleteCalled = true;
-            }
-        }
-
-        if (this.emitRate && this.active) {
-            this._rateTimer += game.delta * 1000;
-            if (this._rateTimer >= 0) {
-                this._rateTimer = -this.emitRate;
-                this.emit();
-            }
-        }
-
-        for (var i = this.children.length - 1; i >= 0; i--) {
-            this.children[i]._update();
-        }
     }
 });
 
@@ -458,6 +456,10 @@ game.createClass('Particle', 'Sprite', {
         this.velocity = new game.Vector();
     },
 
+    /**
+        @method _update
+        @private
+    **/
     _update: function() {
         if (!this.emitter) return;
         

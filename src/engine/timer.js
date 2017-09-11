@@ -138,8 +138,27 @@ game.addAttributes('Timer', {
     **/
     _realDelta: 0,
     /**
+        Add timer to scene.
+        @method add
+        @static
+        @param {Number} time Time (ms).
+        @param {Function} callback Callback function to run, when timer ends.
+        @param {Boolean} [repeat]
+        @param {Boolean} [instant]
+        @return {Timer}
+    **/
+    add: function(time, callback, repeat, instant) {
+        var timer = new game.Timer(time);
+        timer.repeat = !!repeat;
+        timer.callback = callback;
+        game.scene.timers.push(timer);
+        if (instant) callback();
+        return timer;
+    },
+    /**
         Update main timer.
-        @attribute {Function} update
+        @method update
+        @static
     **/
     update: function() {
         var now = Date.now();

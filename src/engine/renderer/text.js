@@ -341,4 +341,36 @@ game.addAttributes('Text', {
     defaultFont: null
 });
 
+/**
+    @class SystemText
+    @extends Container
+    @constructor
+    @param {String} text
+    @param {String} font
+    @param {Object} [props]
+**/
+game.createClass('SystemText', 'Container', {
+    align: 'left',
+    color: '#fff',
+    font: 'Arial',
+    size: 14,
+    text: '',
+
+    staticInit: function(text, props) {
+        this.super(props);
+        this.text = text;
+    },
+
+    _renderCanvas: function(context) {
+        var wt = this._worldTransform;
+
+        context.globalAlpha = this._worldAlpha;
+        context.setTransform(wt.a, wt.b, wt.c, wt.d, wt.tx * game.scale, (wt.ty + this.size) * game.scale);
+        context.fillStyle = this.color;
+        context.font = this.size * game.scale + 'px ' + this.font;
+        context.textAlign = this.align;
+        context.fillText(this.text, 0, 0);
+    }
+});
+
 });

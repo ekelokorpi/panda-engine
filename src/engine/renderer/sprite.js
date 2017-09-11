@@ -18,14 +18,23 @@ game.module(
 **/
 game.createClass('Sprite', 'Container', {
     /**
-        @property {Number} blendMode
-        @default 0
+        @property {String} blendMode
+        @default source-over
     **/
-    blendMode: 0,
+    blendMode: 'source-over',
     /**
         @property {Texture} texture
     **/
     texture: null,
+    /**
+        @property {String} tint
+    **/
+    tint: null,
+    /**
+        @property {Number} tintAlpha
+        @default 1
+    **/
+    tintAlpha: 1,
 
     staticInit: function(texture, props) {
         this.super(props);
@@ -38,6 +47,43 @@ game.createClass('Sprite', 'Container', {
     **/
     setTexture: function(texture) {
         this.texture = texture instanceof game.Texture ? texture : game.Texture.fromAsset(texture);
+    },
+
+    /**
+        @method _destroyTintedTexture
+        @private
+    **/
+    _destroyTintedTexture: function() {
+        if (this._tintedTexture) this._tintedTexture.remove();
+        this._tintedTexture = null;
+        this._tintedTextureGenerated = false;
+    },
+
+    /**
+        @method _generateTintedTexture
+        @param {String} tint
+        @return {Texture}
+        @private
+    **/
+    _generateTintedTexture: function(tint, alpha) {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var bounds = this._getBounds();
+
+        canvas.width = (bounds.width / this.scale.x) * game.scale;
+        canvas.height = (bounds.height / this.scale.y) * game.scale;
+
+        context.fillStyle = tint.substr(0, 7);
+        context.globalAlpha = alpha || 1.0;
+        context.fillRect(0 ,0 , canvas.width, canvas.height);
+        context.globalAlpha = 1.0;
+
+        var blendMode = this.blendMode;
+        this.blendMode = 'destination-atop';
+        this._renderCanvas(context, new game.Matrix());
+        this.blendMode = blendMode;
+
+        return game.Texture.fromCanvas(canvas);
     },
 
     _getBounds: function() {
@@ -71,6 +117,7 @@ game.createClass('Sprite', 'Container', {
         var maxY = Math.max(ty, y2, y3, y4);
 
         for (var i = 0; i < this.children.length; i++) {
+            if (!this.children[i].visible || this.children[i].alpha <= 0) continue;
             var childBounds = this.children[i]._getBounds();
             var childMinX = childBounds.x;
             var childMaxX = childMinX + childBounds.width;
@@ -109,11 +156,19 @@ game.createClass('Sprite', 'Container', {
         }
         
         if (!this.texture.width || !this.texture.height) return true;
+
+        if (this.tint && !this._tintedTexture && !this._tintedTextureGenerated) {
+            this._tintedTextureGenerated = true;
+            this._tintedTexture = this._generateTintedTexture(this.tint, this.tintAlpha);
+        }
+        else if (!this.tint && this._tintedTexture) {
+            this._destroyTintedTexture();
+        }
         
-        context.globalCompositeOperation = game.Sprite.blendModes[this.blendMode];
+        context.globalCompositeOperation = this.blendMode;
         context.globalAlpha = this._worldAlpha;
 
-        var t = this.texture;
+        var t = this._tintedTexture || this.texture;
         var wt = transform || this._worldTransform;
         var tx = wt.tx;
         var ty = wt.ty;
@@ -146,41 +201,6 @@ game.createClass('Sprite', 'Container', {
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
         context.drawImage(t.baseTexture.source, x, y, width, height, 0, 0, width, height);
     }
-});
-
-game.addAttributes('Sprite', {
-    /**
-        List of available blend modes.
-        @attribute {Array} blendModes
-    **/
-    blendModes: [
-        'source-over',
-        'source-in',
-        'source-out',
-        'source-atop',
-        'destination-over',
-        'destination-in',
-        'destination-out',
-        'destination-atop',
-        'lighter',
-        'copy',
-        'xor',
-        'multiply',
-        'screen',
-        'overlay',
-        'darken',
-        'lighten',
-        'color-dodge',
-        'color-burn',
-        'hard-light',
-        'soft-light',
-        'difference',
-        'exclusion',
-        'hue',
-        'saturation',
-        'color',
-        'luminosity'
-    ]
 });
 
 game.defineProperties('Sprite', {

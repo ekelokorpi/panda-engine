@@ -179,6 +179,22 @@ var game = {
     _waitForLoad: 0,
 
     /**
+        Add asset to load queue.
+        @method addAsset
+        @param {String} path
+        @param {String} [id]
+    **/
+    addAsset: function(path, id) {
+        if (id && this.paths[id]) return;
+        if (this.paths[path]) return;
+        var realPath = this._getFilePath(path);
+        if (id) this.paths[id] = realPath;
+        this.paths[path] = realPath;
+        if (this.mediaQueue.indexOf(realPath) === -1) this.mediaQueue.push(realPath);
+        return id;
+    },
+
+    /**
         Add attributes to class.
         @method addAttributes
         @param {String} className
@@ -190,22 +206,6 @@ var game = {
         for (var name in attributes) {
             this[className][name] = attributes[name];
         }
-    },
-
-    /**
-        Add media to load queue.
-        @method addMedia
-        @param {String} path
-        @param {String} [id]
-    **/
-    addMedia: function(path, id) {
-        if (id && this.paths[id]) return;
-        if (this.paths[path]) return;
-        var realPath = this._getFilePath(path);
-        if (id) this.paths[id] = realPath;
-        this.paths[path] = realPath;
-        if (this.mediaQueue.indexOf(realPath) === -1) this.mediaQueue.push(realPath);
-        return id;
     },
 
     /**
@@ -434,10 +434,10 @@ var game = {
     },
 
     /**
-        Remove all media from memory.
-        @method removeAllMedia
+        Remove all assets from memory.
+        @method removeAllAssets
     **/
-    removeAllMedia: function() {
+    removeAllAssets: function() {
         if (game.Audio) game.Audio.clearCache();
         game.BaseTexture.clearCache();
         game.Texture.clearCache();
@@ -447,11 +447,11 @@ var game = {
     },
 
     /**
-        Remove media from memory.
-        @method removeMedia
+        Remove asset from memory.
+        @method removeAsset
         @param {String} id
     **/
-    removeMedia: function(id) {
+    removeAsset: function(id) {
         if (!this.paths[id]) return;
         var path = this.paths[id];
 

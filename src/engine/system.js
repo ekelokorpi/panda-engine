@@ -455,9 +455,9 @@ game.addAttributes('System', {
     /**
         System height.
         @attribute {Number} height
-        @default 600
+        @default 768
     **/
-    height: 600,
+    height: 768,
     /**
         HiRes mode multiplier.
         @attribute {Number} hires
@@ -532,9 +532,9 @@ game.addAttributes('System', {
     /**
         System width.
         @attribute {Number} width
-        @default 800
+        @default 1024
     **/
-    width: 800
+    width: 1024
 });
 
 });

@@ -441,6 +441,25 @@ game.createClass('Tween', {
 
 game.addAttributes('Tween', {
     /**
+        Shorthand for adding tween.
+        @method addTween
+        @param {Object} obj
+        @param {Object} props
+        @param {Number} time
+        @param {Object} [settings]
+        @return {Tween}
+    **/
+    add: function(obj, props, time, settings) {
+        var tween = new game.Tween(obj);
+        tween.to(props, time);
+        for (var i in settings) {
+            if (!tween[i]) throw 'Invalid Tween setting: ' + i;
+            tween[i](settings[i]);
+        }
+        return tween;
+    },
+
+    /**
         @attribute {Object} Easing
     **/
     Easing: {
@@ -716,7 +735,8 @@ game.addAttributes('Tween', {
     },
 
     /**
-        @attribute {Function} getTweensForObject
+        @method getTweensForObject
+        @static
         @param {Class} object
         @return {Array}
     **/
@@ -731,7 +751,8 @@ game.addAttributes('Tween', {
     },
 
     /**
-        @attribute {Function} stopTweensForObject
+        @method stopTweensForObject
+        @static
         @param {Class} object
     **/
     stopTweensForObject: function(object) {
