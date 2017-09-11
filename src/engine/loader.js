@@ -376,7 +376,6 @@ game.createClass('Loader', 'Scene', {
         }
 
         var waitTime = game.Loader.minTime - (game.Timer.time - this._startTime);
-        console.log(waitTime);
         if (waitTime > 0) game.Timer.add(waitTime, this.onComplete.bind(this));
         else this.onComplete();
     },
