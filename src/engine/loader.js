@@ -156,8 +156,10 @@ game.createClass('Loader', 'Scene', {
             this.loaderText = new game.SystemText('', { size: 14 / game.scale, align: 'center' });
             this.loaderText.position.set(game.width / 2, curY + 8);
             this.loaderText.addTo(this.stage);
+        }
 
-            var credit = new game.SystemText('Created with Panda 2', { size: 14 / game.scale, align: 'center' });
+        if (game.Loader.showAd && game.Loader.ad !== '') {
+            var credit = new game.SystemText(game.Loader.ad, { size: 14 / game.scale, align: 'center' });
             credit.position.set(game.width / 2, game.height - 18 / game.scale);
             credit.addTo(this.stage);
         }
@@ -453,6 +455,7 @@ game.createClass('Loader', 'Scene', {
 });
 
 game.addAttributes('Loader', {
+    ad: 'Created with Panda 2 Game Engine',
     /**
         How many files to load at same time.
         @attribute {Number} maxFiles
@@ -464,6 +467,11 @@ game.addAttributes('Loader', {
         @default 500
     **/
     minTime: 500,
+    /**
+        @attribute {Boolean} showAd
+        @default true
+    **/
+    showAd: true,
     /**
         @attribute {Boolean} showBar
         @default true
