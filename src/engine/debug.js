@@ -16,10 +16,6 @@ game.module(
 **/
 game.createClass('Debug', {
     /**
-        @property {Camera} camera
-    **/
-    camera: null,
-    /**
         Current fps.
         @property {Number} fps
     **/
@@ -49,6 +45,11 @@ game.createClass('Debug', {
         @private
     **/
     _bodies: [],
+    /**
+        @property {Camera} _camera
+        @private
+    **/
+    _camera: null,
     /**
         @property {Number} _fakeTouchTimer
         @private
@@ -245,9 +246,9 @@ game.createClass('Debug', {
 
         var x = 0;
         var y = 0;
-        if (this.camera) {
-            x = -this.camera.position.x;
-            y = -this.camera.position.y;
+        if (this._camera) {
+            x = -this._camera.position.x;
+            y = -this._camera.position.y;
         }
         context.setTransform(1, 0, 0, 1, x, y);
         context.globalAlpha = game.Debug.bodyAlpha;
@@ -285,13 +286,13 @@ game.createClass('Debug', {
         @private
     **/
     _drawCamera: function() {
-        if (!this.camera) return;
+        if (!this._camera) return;
 
         var context = game.renderer.context;
-        var width = this.camera.sensorSize.x * game.scale;
-        var height = this.camera.sensorSize.y * game.scale;
-        var x = (this.camera.sensorPosition.x * game.scale) + (this.camera.container.position.x * game.scale) - width / 2;
-        var y = (this.camera.sensorPosition.y * game.scale) + (this.camera.container.position.y * game.scale) - height / 2;
+        var width = this._camera.sensorSize.x * game.scale;
+        var height = this._camera.sensorSize.y * game.scale;
+        var x = (this._camera.sensorPosition.x * game.scale) + (this._camera.container.position.x * game.scale) - width / 2;
+        var y = (this._camera.sensorPosition.y * game.scale) + (this._camera.container.position.y * game.scale) - height / 2;
 
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = game.Debug.cameraAlpha;
