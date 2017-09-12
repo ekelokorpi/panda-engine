@@ -174,25 +174,25 @@ game.createClass('CollisionSolver', {
     hitResponse: function(a, b) {
         if (a.static) return false;
         if (a.shape.width && b.shape.width) {
-            if (a._last.y + a.shape.height / 2 <= b._last.y - b.shape.height / 2) {
+            if (a.last.y + a.shape.height / 2 <= b.last.y - b.shape.height / 2) {
                 if (a.collide(b, 'DOWN')) {
                     a.position.y = b.position.y - b.shape.height / 2 - a.shape.height / 2;
                     return true;
                 }
             }
-            else if (a._last.y - a.shape.height / 2 >= b._last.y + b.shape.height / 2) {
+            else if (a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
                 if (a.collide(b, 'UP')) {
                     a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
                     return true;
                 }
             }
-            else if (a._last.x + a.shape.width / 2 <= b._last.x - b.shape.width / 2) {
+            else if (a.last.x + a.shape.width / 2 <= b.last.x - b.shape.width / 2) {
                 if (a.collide(b, 'RIGHT')) {
                     a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
                     return true;
                 }
             }
-            else if (a._last.x - a.shape.width / 2 >= b._last.x + b.shape.width / 2) {
+            else if (a.last.x - a.shape.width / 2 >= b.last.x + b.shape.width / 2) {
                 if (a.collide(b, 'LEFT')) {
                     a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
                     return true;
@@ -277,6 +277,11 @@ game.createClass('Body', {
     **/
     force: null,
     /**
+        Body's position on last frame.
+        @property {Vector} last
+    **/
+    last: null,
+    /**
         Body's mass.
         @property {Number} mass
         @default 1
@@ -324,18 +329,13 @@ game.createClass('Body', {
         @private
     **/
     _collisionGroup: 0,
-    /**
-        @property {Vector} _last
-        @private
-    **/
-    _last: null,
 
     init: function(properties) {
         this.force = new game.Vector();
         this.position = new game.Vector();
         this.velocity = new game.Vector();
         this.velocityLimit = new game.Vector(980, 980);
-        this._last = new game.Vector();
+        this.last = new game.Vector();
         game.merge(this, properties);
     },
 
@@ -418,7 +418,7 @@ game.createClass('Body', {
         @private
     **/
     _update: function() {
-        this._last.copy(this.position);
+        this.last.copy(this.position);
 
         if (this.static) return;
 
