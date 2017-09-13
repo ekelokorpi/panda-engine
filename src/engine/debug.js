@@ -337,7 +337,6 @@ game.createClass('Debug', {
         var x = wt.tx * game.scale;
         var y = wt.ty * game.scale;
 
-        // context.setTransform(1, 0, 0, 1, x, y);
         context.globalAlpha = game.Debug.hitAreaAlpha;
         context.fillStyle = game.Debug.hitAreaColor;
         context.beginPath();
@@ -356,10 +355,8 @@ game.createClass('Debug', {
             hx += bounds.width * scaleX * aPercX;
             hy += bounds.height * scaleY * aPercY;
             if (hitArea.radius) {
-                console.log(hitArea.x, hitArea.y);
                 // Circle
                 var r = hitArea.radius / 2 * game.scale;
-
                 context.setTransform(1, 0, 0, 1, hx, hy);
                 context.beginPath();
                 context.arc(r, r, r, 0, Math.PI * 2);
