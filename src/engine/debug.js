@@ -113,7 +113,7 @@ game.createClass('Debug', {
             }
         });
 
-        game.World.inject({
+        game.Physics.inject({
             addBody: function(body) {
                 this.super(body);
                 game.debug._bodies.push(body);
@@ -337,30 +337,57 @@ game.createClass('Debug', {
         var x = wt.tx * game.scale;
         var y = wt.ty * game.scale;
 
-        context.setTransform(1, 0, 0, 1, x, y);
+        // context.setTransform(1, 0, 0, 1, x, y);
         context.globalAlpha = game.Debug.hitAreaAlpha;
         context.fillStyle = game.Debug.hitAreaColor;
+        context.beginPath();
 
         if (hitArea) {
+            var wt = container._worldTransform;
+            var bounds = container._getBounds();
+            var tx = (bounds.x || wt.tx);
+            var ty = (bounds.y || wt.ty);
             var scaleX = Math.abs(wt.a / container._cosCache);
             var scaleY = Math.abs(wt.d / container._cosCache);
             var aPercX = (container.anchor.x / container.width) || 0;
             var aPercY = (container.anchor.y / container.height) || 0;
-            x = hitArea.x * game.scale * scaleX;
-            y = hitArea.y * game.scale * scaleY;
-            x += bounds.width * scaleX * aPercX * game.scale;
-            y += bounds.height * scaleY * aPercY * game.scale;
-            var width = hitArea.width * scaleX * game.scale;
-            var height = hitArea.height * scaleY * game.scale;
+            var hx = tx + hitArea.x * scaleX;
+            var hy = ty + hitArea.y * scaleY;
+            hx += bounds.width * scaleX * aPercX;
+            hy += bounds.height * scaleY * aPercY;
+            if (hitArea.radius) {
+                console.log(hitArea.x, hitArea.y);
+                // Circle
+                var r = hitArea.radius / 2 * game.scale;
+
+                context.setTransform(1, 0, 0, 1, hx, hy);
+                context.beginPath();
+                context.arc(r, r, r, 0, Math.PI * 2);
+                context.fill();
+            }
+            else {
+                // Rectangle
+                var hw = hitArea.width * scaleX;
+                var hh = hitArea.height * scaleY;
+                context.setTransform(1, 0, 0, 1, hx, hy);
+                context.fillRect(0, 0, hw, hh);
+            }
         }
         else {
             x = 0;
             y = 0;
             var width = bounds.width * game.scale;
             var height = bounds.height * game.scale;
-        }
 
-        context.fillRect(x, y, width, height);
+            var bounds = container._getBounds();
+            var hx = bounds.x;
+            var hy = bounds.y;
+            var hw = bounds.width;
+            var hh = bounds.height;
+
+            context.setTransform(1, 0, 0, 1, hx, hy);
+            context.fillRect(0, 0, hw, hh);
+        }
     },
 
     /**

@@ -36,7 +36,7 @@ game.createClass('Container', {
     **/
     children: [],
     /**
-        @property {Rectangle} hitArea
+        @property {Rectangle|Circle} hitArea
     **/
     hitArea: null,
     /**
@@ -485,7 +485,7 @@ game.createClass('Container', {
 
         for (var i = 0; i < this.children.length; i++) {
             var child = this.children[i];
-            var childBounds = child._getBounds();
+            var childBounds = child._getBounds(child._localTransform);
             var childMinX = this._worldTransform.tx + childBounds.x;
             var childMinY = this._worldTransform.ty + childBounds.y;
             var childMaxX = childMinX + childBounds.width;

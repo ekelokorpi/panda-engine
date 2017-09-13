@@ -10,157 +10,6 @@ game.module(
 .body(function() {
 
 /**
-    Physics world.
-    @class Physics
-    @constructor
-    @param {Number} [x] Gravity x
-    @param {Number} [y] Gravity y
-**/
-game.createClass('Physics', {
-    /**
-        List of bodies in world.
-        @property {Array} bodies
-    **/
-    bodies: [],
-    /**
-        Gravity of physics world.
-        @property {Vector} gravity
-        @default 0,980
-    **/
-    gravity: null,
-    /**
-        @property {Object} _collisionGroups
-        @private
-    **/
-    _collisionGroups: {},
-    /**
-        @property {CollisionSolver} _solver
-        @private
-    **/
-    _solver: null,
-
-    staticInit: function(x, y) {
-        x = typeof x === 'number' ? x : 0;
-        y = typeof y === 'number' ? y : 980;
-        this.gravity = new game.Vector(x, y);
-        this._solver = new game.CollisionSolver();
-    },
-
-    /**
-        Add body to world.
-        @method addBody
-        @param {Body} body
-    **/
-    addBody: function(body) {
-        body.world = this;
-        body._remove = false;
-        this.bodies.push(body);
-        this._addBodyCollision(body);
-    },
-
-    /**
-        Remove body from world.
-        @method removeBody
-        @param {Body} body
-    **/
-    removeBody: function(body) {
-        if (!body.world) return;
-        body.world = null;
-        body._remove = true;
-    },
-
-    /**
-        @method _addBodyCollision
-        @param {Body} body
-        @private
-    **/
-    _addBodyCollision: function(body) {
-        if (typeof body.collisionGroup !== 'number') return;
-        this._collisionGroups[body.collisionGroup] = this._collisionGroups[body.collisionGroup] || [];
-        if (this._collisionGroups[body.collisionGroup].indexOf(body) !== -1) return;
-        this._collisionGroups[body.collisionGroup].push(body);
-    },
-
-    /**
-        @method _collide
-        @param {Body} body
-        @private
-    **/
-    _collide: function(body) {
-        var g, i, b, group;
-
-        for (g = 0; g < body.collideAgainst.length; g++) {
-            body._collides.length = 0;
-            group = this._collisionGroups[body.collideAgainst[g]];
-            
-            if (!group) continue;
-
-            for (i = group.length - 1; i >= 0; i--) {
-                if (!group) break;
-                b = group[i];
-                if (body !== b) {
-                    if (this._solver.hitTest(body, b)) {
-                        body._collides.push(b);
-                    }
-                }
-            }
-            for (i = body._collides.length - 1; i >= 0; i--) {
-                if (this._solver.hitResponse(body, body._collides[i])) {
-                    body.afterCollide(body._collides[i]);
-                }
-            }
-        }
-    },
-
-    /**
-        @method _removeBodyCollision
-        @param {Body} body
-        @private
-    **/
-    _removeBodyCollision: function(body) {
-        if (typeof body.collisionGroup !== 'number') return;
-        if (!this._collisionGroups[body.collisionGroup]) return;
-        if (this._collisionGroups[body.collisionGroup].indexOf(body) === -1) return;
-        this._collisionGroups[body.collisionGroup].erase(body);
-    },
-
-    /**
-        @method _update
-        @private
-    **/
-    _update: function() {
-        var i, j;
-        for (i = this.bodies.length - 1; i >= 0; i--) {
-            if (this.bodies[i]._remove) {
-                this._removeBodyCollision(this.bodies[i]);
-                this.bodies.splice(i, 1);
-            }
-            else {
-                this.bodies[i]._update();
-            }
-        }
-    },
-
-    /**
-        @method _updateCollision
-        @private
-    **/
-    _updateCollision: function() {
-        for (i in this._collisionGroups) {
-            if (this._collisionGroups[i].length === 0) {
-                delete this._collisionGroups[i];
-                continue;
-            }
-            for (j = 0; j < this._collisionGroups[i].length; j++) {
-                if (this._collisionGroups[i][j] && this._collisionGroups[i][j].collideAgainst.length > 0) {
-                    this._collide(this._collisionGroups[i][j]);
-                }
-            }
-        }
-    }
-});
-
-/**
     @class CollisionSolver
 **/
 game.createClass('CollisionSolver', {
@@ -464,6 +313,157 @@ game.defineProperties('Body', {
             if (this.world && typeof this._collisionGroup === 'number') this.world._removeBodyCollision(this);
             this._collisionGroup = value;
             if (this.world) this.world._addBodyCollision(this);
+        }
+    }
+});
+
+/**
+    Physics world.
+    @class Physics
+    @constructor
+    @param {Number} [x] Gravity x
+    @param {Number} [y] Gravity y
+**/
+game.createClass('Physics', {
+    /**
+        List of bodies in world.
+        @property {Array} bodies
+    **/
+    bodies: [],
+    /**
+        Gravity of physics world.
+        @property {Vector} gravity
+        @default 0,980
+    **/
+    gravity: null,
+    /**
+        @property {Object} _collisionGroups
+        @private
+    **/
+    _collisionGroups: {},
+    /**
+        @property {CollisionSolver} _solver
+        @private
+    **/
+    _solver: null,
+
+    staticInit: function(x, y) {
+        x = typeof x === 'number' ? x : 0;
+        y = typeof y === 'number' ? y : 980;
+        this.gravity = new game.Vector(x, y);
+        this._solver = new game.CollisionSolver();
+    },
+
+    /**
+        Add body to world.
+        @method addBody
+        @param {Body} body
+    **/
+    addBody: function(body) {
+        body.world = this;
+        body._remove = false;
+        this.bodies.push(body);
+        this._addBodyCollision(body);
+    },
+
+    /**
+        Remove body from world.
+        @method removeBody
+        @param {Body} body
+    **/
+    removeBody: function(body) {
+        if (!body.world) return;
+        body.world = null;
+        body._remove = true;
+    },
+
+    /**
+        @method _addBodyCollision
+        @param {Body} body
+        @private
+    **/
+    _addBodyCollision: function(body) {
+        if (typeof body.collisionGroup !== 'number') return;
+        this._collisionGroups[body.collisionGroup] = this._collisionGroups[body.collisionGroup] || [];
+        if (this._collisionGroups[body.collisionGroup].indexOf(body) !== -1) return;
+        this._collisionGroups[body.collisionGroup].push(body);
+    },
+
+    /**
+        @method _collide
+        @param {Body} body
+        @private
+    **/
+    _collide: function(body) {
+        var g, i, b, group;
+
+        for (g = 0; g < body.collideAgainst.length; g++) {
+            body._collides.length = 0;
+            group = this._collisionGroups[body.collideAgainst[g]];
+            
+            if (!group) continue;
+
+            for (i = group.length - 1; i >= 0; i--) {
+                if (!group) break;
+                b = group[i];
+                if (body !== b) {
+                    if (this._solver.hitTest(body, b)) {
+                        body._collides.push(b);
+                    }
+                }
+            }
+            for (i = body._collides.length - 1; i >= 0; i--) {
+                if (this._solver.hitResponse(body, body._collides[i])) {
+                    body.afterCollide(body._collides[i]);
+                }
+            }
+        }
+    },
+
+    /**
+        @method _removeBodyCollision
+        @param {Body} body
+        @private
+    **/
+    _removeBodyCollision: function(body) {
+        if (typeof body.collisionGroup !== 'number') return;
+        if (!this._collisionGroups[body.collisionGroup]) return;
+        if (this._collisionGroups[body.collisionGroup].indexOf(body) === -1) return;
+        this._collisionGroups[body.collisionGroup].erase(body);
+    },
+
+    /**
+        @method _update
+        @private
+    **/
+    _update: function() {
+        var i, j;
+        for (i = this.bodies.length - 1; i >= 0; i--) {
+            if (this.bodies[i]._remove) {
+                this._removeBodyCollision(this.bodies[i]);
+                this.bodies.splice(i, 1);
+            }
+            else {
+                this.bodies[i]._update();
+            }
+        }
+    },
+
+    /**
+        @method _updateCollision
+        @private
+    **/
+    _updateCollision: function() {
+        for (i in this._collisionGroups) {
+            if (this._collisionGroups[i].length === 0) {
+                delete this._collisionGroups[i];
+                continue;
+            }
+            for (j = 0; j < this._collisionGroups[i].length; j++) {
+                if (this._collisionGroups[i][j] && this._collisionGroups[i][j].collideAgainst.length > 0) {
+                    this._collide(this._collisionGroups[i][j]);
+                }
+            }
         }
     }
 });

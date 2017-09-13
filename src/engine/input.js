@@ -108,14 +108,22 @@ game.createClass('Input', {
             var hy = ty + hitArea.y * scaleY;
             hx += bounds.width * scaleX * aPercX;
             hy += bounds.height * scaleY * aPercY;
+            if (hitArea.radius) {
+                var r = hitArea.radius / 2;
+                hx += r;
+                hy += r;
+                var a = x - hx;
+                var b = y - hy;
+                var c = Math.sqrt(a * a + b * b);
+                return (c < r);
+            }
             var hw = hitArea.width * scaleX;
             var hh = hitArea.height * scaleY;
         }
         else {
             hitArea = container._getBounds();
-            var wt = container._worldTransform;
-            var hx = wt.tx;
-            var hy = wt.ty;
+            var hx = hitArea.x;
+            var hy = hitArea.y;
             var hw = hitArea.width;
             var hh = hitArea.height;
         }

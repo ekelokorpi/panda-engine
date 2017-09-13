@@ -86,7 +86,7 @@ game.createClass('Sprite', 'Container', {
         return game.Texture.fromCanvas(canvas);
     },
 
-    _getBounds: function() {
+    _getBounds: function(transform) {
         if (this._cachedSprite) {
             this._worldBounds.x = this._worldTransform.tx + this._cachedSprite.position.x;
             this._worldBounds.y = this._worldTransform.ty + this._cachedSprite.position.y;
@@ -97,7 +97,7 @@ game.createClass('Sprite', 'Container', {
 
         var width = this.texture.width;
         var height = this.texture.height;
-        var lt = this._localTransform;
+        var lt = transform || this._worldTransform;
         var a = lt.a;
         var b = lt.b;
         var c = lt.c;

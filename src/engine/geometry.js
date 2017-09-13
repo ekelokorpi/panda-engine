@@ -93,8 +93,8 @@ game.createClass('Circle', {
 
     staticInit: function(radius, x, y) {
         this.radius = radius || this.radius;
-        this.x = x || this.x;
-        this.y = y || this.y;
+        this.x = typeof x === 'number' ? x : this.x;
+        this.y = typeof y === 'number' ? y : this.y;
     }
 });
 
