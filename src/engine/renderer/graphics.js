@@ -216,10 +216,11 @@ game.createClass('Graphics', 'Container', {
     /**
         @method _renderMask
         @param {CanvasRenderingContext2D} context
+        @param {Matrix} transform
         @private
     **/
-    _renderMask: function(context) {
-        var wt = this._worldTransform;
+    _renderMask: function(context, transform) {
+        var wt = transform;
         var tx = wt.tx * game.scale;
         var ty = wt.ty * game.scale;
 

@@ -4,10 +4,6 @@
 game.module(
     'engine.debug'
 )
-.require(
-    'engine.camera',
-    'engine.scene'
-)
 .body(function() {
 
 /**
@@ -138,13 +134,29 @@ game.createClass('Debug', {
             _renderBatch: function(child, context) {
                 this.super(child, context);
                 game.debug._draws++;
-            }
-        });
+                if (!game.Debug.showSprites) return;
 
-        game.Graphics.inject({
-            _renderCanvas: function(context) {
-                this.super(context);
-                game.debug._draws += this.shapes.length;
+                if (child.rotation % (Math.PI * 2) === 0) {
+                    var texture = child.texture;
+
+                    var x = (child.position.x - child.anchor.x * child.scale.x) * game.scale;
+                    var y = (child.position.y - child.anchor.y * child.scale.y) * game.scale;
+                    var width = texture.width * game.scale;
+                    var height = texture.height * game.scale;
+
+                    if (!width && !height) return;
+                    
+                    context.globalCompositeOperation = 'source-over';
+                    context.globalAlpha = game.Debug.boundAlpha;
+                    context.lineWidth = game.Debug.boundLineWidth;
+                    context.strokeStyle = game.Debug.boundColor;
+                    context.beginPath();
+                    context.rect(x, y, width, height);
+                    context.stroke();
+                }
+                else {
+                    game.debug._drawSprite(child);
+                }
             }
         });
 
@@ -159,31 +171,7 @@ game.createClass('Debug', {
             _renderCanvas: function(context, transform, rect, offset) {
                 this.super(context, transform, rect, offset);
                 game.debug._draws++;
-
-                if (!game.Debug.showSprites) return;
-
-                var context = game.renderer.context;
-                var texture = this.texture;
-                var wt = this._worldTransform;
-                // Better way to know that it's cachedsprite?
-                if (this._parent && this._parent._cachedSprite) {
-                    wt = this._parent._worldTransform;
-                }
-                var x = wt.tx * game.scale;
-                var y = wt.ty * game.scale;
-                var width = texture.width * game.scale;
-                var height = texture.height * game.scale;
-
-                if (!width && !height) return;
-                
-                context.globalCompositeOperation = 'source-over';
-                context.setTransform(wt.a, wt.b, wt.c, wt.d, x, y);
-                context.globalAlpha = game.Debug.boundAlpha;
-                context.lineWidth = game.Debug.boundLineWidth;
-                context.strokeStyle = game.Debug.boundColor;
-                context.beginPath();
-                context.rect(0, 0, width, height);
-                context.stroke();
+                if (game.Debug.showSprites) game.debug._drawSprite(this);
             }
         });
 
@@ -396,6 +384,37 @@ game.createClass('Debug', {
             var item = game.input.items[i];
             this._drawHitArea(item);
         }
+    },
+
+    /**
+        @method _drawSprite
+        @param {Container} container
+        @private
+    **/
+    _drawSprite: function(container) {
+        var context = game.renderer.context;
+        var texture = container.texture;
+        var wt = container._worldTransform;
+
+        // Better way to know that it's cachedsprite?
+        if (container._parent && container._parent._cachedSprite) {
+            wt = container._parent._worldTransform;
+        }
+        var x = wt.tx * game.scale;
+        var y = wt.ty * game.scale;
+        var width = texture.width * game.scale;
+        var height = texture.height * game.scale;
+
+        if (!width && !height) return;
+        
+        context.globalCompositeOperation = 'source-over';
+        context.setTransform(wt.a, wt.b, wt.c, wt.d, x, y);
+        context.globalAlpha = game.Debug.boundAlpha;
+        context.lineWidth = game.Debug.boundLineWidth;
+        context.strokeStyle = game.Debug.boundColor;
+        context.beginPath();
+        context.rect(0, 0, width, height);
+        context.stroke();
     },
 
     /**

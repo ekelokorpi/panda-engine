@@ -40,6 +40,10 @@ game.createClass('Container', {
     **/
     hitArea: null,
     /**
+        @property {Graphics} mask
+    **/
+    mask: null,
+    /**
         @property {Vector} position
     **/
     position: null,
@@ -103,11 +107,6 @@ game.createClass('Container', {
         @private
     **/
     _localTransform: null,
-    /**
-        @property {Graphics} _mask
-        @private
-    **/
-    _mask: null,
     /**
         @property {Container} _parent
         @private
@@ -382,8 +381,6 @@ game.createClass('Container', {
 
         this._worldAlpha = this.parent._worldAlpha * this.alpha;
 
-        if (this._mask) this._mask.updateTransform();
-
         this._lastTransformUpdate = game.Timer.time;
 
         if (this._cachedSprite) this._cachedSprite._worldAlpha = this._worldAlpha;
@@ -523,7 +520,7 @@ game.createClass('Container', {
         @private
     **/
     _render: function(context) {
-        if (this._mask) this._mask._renderMask(context);
+        if (this.mask && this.mask._renderMask) this.mask._renderMask(context, this._worldTransform);
 
         if (this._cachedSprite) {
             this._cachedSprite._renderCanvas(context, this._worldTransform);
@@ -533,7 +530,7 @@ game.createClass('Container', {
             this._renderChildren(context);
         }
 
-        if (this._mask) context.restore();
+        if (this.mask && this.mask._renderMask) context.restore();
     },
 
     /**
@@ -641,21 +638,6 @@ game.defineProperties('Container', {
             if (this._interactive === value) return;
             this._interactive = value;
             if (this.stage) game.input._needUpdate = true;
-        }
-    },
-
-    /**
-        @property {Graphics} mask
-    **/
-    mask: {
-        get: function() {
-            return this._mask;
-        },
-
-        set: function(value) {
-            if (this._mask === value) return;
-            this._mask = value;
-            if (value) this._mask.parent = this;
         }
     },
 
