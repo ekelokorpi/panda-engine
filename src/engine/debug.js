@@ -171,7 +171,7 @@ game.createClass('Debug', {
             _renderCanvas: function(context, transform, rect, offset) {
                 this.super(context, transform, rect, offset);
                 game.debug._draws++;
-                if (game.Debug.showSprites) game.debug._drawSprite(this);
+                if (game.Debug.showSprites) game.debug._drawSprite(this, transform, rect, offset);
             }
         });
 
@@ -391,21 +391,36 @@ game.createClass('Debug', {
         @param {Container} container
         @private
     **/
-    _drawSprite: function(container) {
+    _drawSprite: function(container, transform, rect, offset) {
         var context = game.renderer.context;
         var texture = container.texture;
-        var wt = container._worldTransform;
+        var wt = transform || container._worldTransform;
 
         // Better way to know that it's cachedsprite?
         if (container._parent && container._parent._cachedSprite) {
             wt = container._parent._worldTransform;
         }
+
         var x = wt.tx * game.scale;
         var y = wt.ty * game.scale;
         var width = texture.width * game.scale;
         var height = texture.height * game.scale;
+        var tx = 0;
+        var ty = 0;
 
         if (!width && !height) return;
+
+        if (rect) {
+            tx = rect.x;
+            ty = rect.y;
+            width = rect.width;
+            height = rect.height;
+        }
+
+        if (offset) {
+            x += offset.x;
+            y += offset.y;
+        }
         
         context.globalCompositeOperation = 'source-over';
         context.setTransform(wt.a, wt.b, wt.c, wt.d, x, y);
@@ -413,7 +428,7 @@ game.createClass('Debug', {
         context.lineWidth = game.Debug.boundLineWidth;
         context.strokeStyle = game.Debug.boundColor;
         context.beginPath();
-        context.rect(0, 0, width, height);
+        context.rect(tx, ty, width, height);
         context.stroke();
     },
 
