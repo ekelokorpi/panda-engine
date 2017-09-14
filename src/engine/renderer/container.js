@@ -253,6 +253,15 @@ game.createClass('Container', {
     mouseout: function() {},
 
     /**
+        @method mouseover
+        @param {Number} x
+        @param {Number} y
+        @param {Number} id
+        @param {MouseEvent|TouchEvent} event
+    **/
+    mouseover: function() {},
+
+    /**
         @method mouseup
         @param {Number} x
         @param {Number} y

@@ -291,14 +291,17 @@ game.createClass('Vector', {
     },
 
     /**
-        Get distance of two vectors.
+        Get distance between two points.
         @method distance
-        @param {Vector} vector
+        @param {Number|Vector} x
+        @param {Number} [y]
         @chainable
     **/
-    distance: function(vector) {
-        var x = vector.x - this.x;
-        var y = vector.y - this.y;
+    distance: function(x, y) {
+        x = x instanceof game.Vector ? x.x : x;
+        y = x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
+        x = x - this.x;
+        y = y - this.y;
         return Math.sqrt(x * x + y * y);
     },
 

@@ -168,6 +168,9 @@ game.createClass('Input', {
         if (this._mouseMoveItem && this._mouseMoveItem !== _mouseMoveItem) {
             this._mouseMoveItem.mouseout(event.canvasX, event.canvasY, event.identifier, event);
         }
+        else if (_mouseMoveItem && this._mouseMoveItem !== _mouseMoveItem) {
+            _mouseMoveItem.mouseover(event.canvasX, event.canvasY, event.identifier, event);
+        }
         this._mouseMoveItem = _mouseMoveItem;
 
         game.scene._mousemove(event.canvasX, event.canvasY, event.identifier, event);
