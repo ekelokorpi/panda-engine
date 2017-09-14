@@ -173,6 +173,7 @@ game.createClass('Loader', 'Scene', {
     loadFile: function(filePath, callback) {
         var request = new XMLHttpRequest();
         request.onload = callback.bind(this, request);
+        request.onerror = this._progress.bind(this, 'Error loading file ' + filePath);
         request.open('GET', filePath + game._nocache, true);
         request.send();
     },
