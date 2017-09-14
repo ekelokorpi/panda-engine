@@ -47,6 +47,11 @@ game.createClass('Loader', 'Scene', {
     **/
     totalFiles: 0,
     /**
+        @property {String} _error
+        @private
+    **/
+    _error: null,
+    /**
         @property {Number} _loadCount
         @private
     **/
@@ -92,10 +97,6 @@ game.createClass('Loader', 'Scene', {
         var spacing = 20 / game.scale;
 
         var items = 0;
-        if (game.Loader.showLogo) {
-            totalHeight += totalLogo;
-            items++;
-        }
         if (game.Loader.showBar) {
             totalHeight += totalBar;
             items++;
@@ -107,29 +108,6 @@ game.createClass('Loader', 'Scene', {
         totalHeight += (items - 1) * spacing;
 
         var curY = game.height / 2 - totalHeight / 2;
-
-        if (game.Loader.showLogo) {
-            var source = document.createElement('img');
-            source.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAH8AAABuCAMAAAA56TwfAAABlVBMVEUAAAD+/v7///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAAAGBgb29vYKCgoVFRUQEBDr6+skJCQaGhr4+Pj09PS2tradnZ2YmJiBgYF1dXXf39/FxcXAwMBycnJubm5KSkpEREQ8PDw1NTUxMTEqKiofHx/v7+/IyMhbW1v8/Pzn5+fc3NzW1tbPz8+vr696enpkZGRBQUHy8vKzs7OGhoZnZ2dSUlJOTk4uLi7j4+OoqKimpqaUlJSJiYlgYGBXV1fl5eWsrKykpKSRkZHh4eHU1NTMzMy/v7+6urqMjIyDg4N+fn5ra2vY2NjS0tLCwsLz8/OhoaHnBz12AAAAPnRSTlMA/vv3RQvNqA7znOuIcmAFAePfoe/n27+7jWlTA8etl389LSIfFxHXwraykndkW1dJODUxFAjSbGZOJ4Mc1Gnx8lYAAAdwSURBVGjevNf5X1JBEADweYCYCqiZt5aWVt6mdmg28zgUFBXl9M4bU1PDzDJTM+vvrnhc+3gLW6Df39/um539zMwCq7S/u6mjuLauvwHyqqWpUYd/6J5UdLUAxyNzjR73Zz6dbJ9KlabHkDelr/WnG0G7bJsP7rg9aDQPQ5o7dY14Ggk4KMq+c1XZDHnyvG1kl5LmJld09w1lkOqx6Z7VPUsp5BP9M8iPByOjxPJf49MhSLKUHG/YSeWkPD8pMCwHKE1wpsgCMQWF1imZ0sg/iiEPyowTpOW7y1SmpOep5z1p2dI9ykf4LidpClg74a8Kj5O0fTVB7orXiWNX1wcAg65Z4vBVQe7Kj4jnpBGg7M058YxiC+TqEc7z15f6oHnZSVxveyBX9SPEN/MaaheJ76wJctWZaf3Jamj8QHzuCshVxyfiWyqHEi/xXdRArgoniM+vB/0O8XmNkKu2SKb9izLHv1kFuXp6SXxHd8F4njk/rIaC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';
-            var texture = new game.BaseTexture(source);
-            var logo = new game.Sprite(new game.Texture(texture));
-            logo.anchor.set(64 / game.scale, 110 / game.scale);
-            logo.position.set(game.width / 2, curY + 86 / game.scale);
-            logo.addTo(this.stage);
-
-            var rotation = 0.1;
-            logo.rotation = -rotation;
-            var options = {
-                easing: 'Quadratic.InOut',
-                repeat: Infinity,
-                yoyo: true
-            };
-            this.logoTween = game.Tween.add(logo, {
-                rotation: rotation
-            }, 500, options).start();
-
-            curY += totalLogo + spacing;
-        }
 
         if (game.Loader.showBar) {
             var barWidth = 200 / game.scale;
@@ -159,14 +137,28 @@ game.createClass('Loader', 'Scene', {
         }
 
         if (game.Loader.showAd && game.Loader.ad !== '') {
-            var credit = new game.SystemText(game.Loader.ad, { size: 14 / game.scale, align: 'center' });
-            credit.position.set(game.width / 2, game.height - 18 / game.scale);
-            credit.addTo(this.stage);
+            var ad = new game.SystemText(game.Loader.ad, { size: 14 / game.scale, align: 'center' });
+            ad.position.set(game.width / 2, game.height - 20 / game.scale);
+            ad.addTo(this.stage);
         }
 
         this.onProgress();
     },
 
+    /**
+        @method loadAtlas
+        @param {String} filePath
+        @param {Function} callback
+    **/
+    loadAtlas: function(filePath, callback) {
+        this.loadFile(filePath, this.parseJSON.bind(this, filePath, callback));
+    },
+
+    /**
+        @method loadAudio
+        @param {String} filePath
+        @param {Function} callback
+    **/
     loadAudio: function(filePath, callback) {
         if (!game.Audio.enabled) callback();
         else game.audio._load(filePath, callback);
@@ -241,7 +233,7 @@ game.createClass('Loader', 'Scene', {
     **/
     onProgress: function() {
         if (this.barFg) this.barFg.scale.x = this.percent / 100;
-        if (this.loaderText) this.loaderText.text = 'LOADING... ' + this.percent + '%';
+        if (this.loaderText && !this._error) this.loaderText.text = 'LOADING... ' + this.percent + '%';
     },
 
     /**
@@ -272,13 +264,6 @@ game.createClass('Loader', 'Scene', {
         var json = JSON.parse(request.responseText);
         if (json.frames) {
             // Sprite sheet
-            if (game.scale > 1) {
-                var newFile = this._getFilePath(filePath);
-                if (newFile !== filePath) {
-                    this.loadFile(newFile, this.parseJSON.bind(this, newFile, callback));
-                    return;
-                }
-            }
             json.meta.image = this._getFolder(filePath) + json.meta.image;
             var image = game._getFilePath(json.meta.image);
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
@@ -409,7 +394,10 @@ game.createClass('Loader', 'Scene', {
         @private
     **/
     _progress: function(error) {
-        if (error) return this.onError(error);
+        if (error) {
+            this._error = error;
+            return this.onError(error);
+        }
         this._loadCount--;
         this.loaded++;
         this.percent = Math.round(this.loaded / this.totalFiles * 100);
@@ -423,6 +411,7 @@ game.createClass('Loader', 'Scene', {
         @private
     **/
     _startLoading: function() {
+        this._queue.reverse();
         for (var i = this._queue.length - 1; i >= 0; i--) {
             var filePath = this._queue[i];
             if (!filePath) continue;
@@ -439,7 +428,7 @@ game.createClass('Loader', 'Scene', {
             }
             if (!loadFunc) throw 'Unsupported file format ' + fileType;
 
-            if (loadFunc === 'loadImage' || loadFunc === 'loadFont') {
+            if (loadFunc === 'loadImage' || loadFunc === 'loadFont' || loadFunc === 'loadAtlas') {
                 filePath = this._getFilePath(filePath);
             }
 
@@ -478,11 +467,6 @@ game.addAttributes('Loader', {
     **/
     showBar: true,
     /**
-        @attribute {Boolean} showLogo
-        @default true
-    **/
-    showLogo: true,
-    /**
         @attribute {Boolean} showText
         @default true
     **/
@@ -493,6 +477,7 @@ game.addAttributes('Loader', {
         @private
     **/
     _formats: {
+        atlas: 'loadAtlas',
         png: 'loadImage',
         jpg: 'loadImage',
         jpeg: 'loadImage',
