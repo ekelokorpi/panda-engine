@@ -411,10 +411,10 @@ game.createClass('Debug', {
         if (!width && !height) return;
 
         if (rect) {
-            tx = rect.x;
-            ty = rect.y;
             width = rect.width;
             height = rect.height;
+            tx = 0;
+            ty = 0;
         }
 
         if (offset) {
