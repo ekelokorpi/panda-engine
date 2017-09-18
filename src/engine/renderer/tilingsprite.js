@@ -198,11 +198,11 @@ game.createClass('TilingSprite', 'Container', {
             this._pos.y = ~~(y * scaleY);
 
             if (x + tw > width) {
-                this._rect.width = width - x;
+                this._rect.width = Math.ceil(width - x);
             }
 
             if (y + th > height) {
-                this._rect.height = height - y;
+                this._rect.height = Math.ceil(height - y);
             }
 
             if (x < 0) {
@@ -230,9 +230,6 @@ game.createClass('TilingSprite', 'Container', {
             if (this._rect.y + this._rect.height > th) {
                 this._rect.height = th - this._rect.y;
             }
-
-            this._rect.width = Math.ceil(this._rect.width);
-            this._rect.height = Math.ceil(this._rect.height);
 
             this._sprite._renderCanvas(context, this._worldTransform, this._rect, this._pos);
 

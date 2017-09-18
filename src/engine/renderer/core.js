@@ -47,6 +47,7 @@ game.createClass('Renderer', {
             this.canvas = document.createElement('canvas');
             this.canvas.id = game.System.canvasId;
             this.canvas.style.display = 'block';
+            this.canvas.tabIndex = 1;
             document.body.appendChild(this.canvas);
             if (!game.System.center) document.body.style.margin = 0;
         }

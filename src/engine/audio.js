@@ -459,7 +459,7 @@ game.createClass('Sound', {
 
         this.playing = false;
         if (skipOnComplete) this.onComplete = null;
-        this._source.stop();
+        if (this._source.playbackState === 2) this._source.stop();
     },
 
     /**

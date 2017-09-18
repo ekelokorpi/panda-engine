@@ -445,7 +445,7 @@ game.createClass('Loader', 'Scene', {
 });
 
 game.addAttributes('Loader', {
-    ad: 'Created with Panda 2 Game Engine',
+    ad: 'Made with Panda 2 Game Engine',
     /**
         How many files to load at same time.
         @attribute {Number} maxFiles
