@@ -131,10 +131,11 @@ game.createClass('Animation', 'Sprite', {
     /**
         Jump to specific frame.
         @method gotoFrame
-        @param {Number} frame
+        @param {Number} frame Frame index
         @chainable
     **/
     gotoFrame: function(frame) {
+        if (!this.currentAnim.textures) throw 'No textures found for animation';
         if (!this.currentAnim.textures[frame]) return;
         this.currentFrame = frame;
         this._frameTime = 0;
@@ -145,6 +146,8 @@ game.createClass('Animation', 'Sprite', {
     /**
         Play animation.
         @method play
+        @param {String|Number} [name] Name of animation or frame index
+        @param {Number} [frame] Frame index
         @chainable
     **/
     play: function(name, frame) {
@@ -176,6 +179,7 @@ game.createClass('Animation', 'Sprite', {
         @method updateAnimation
     **/
     updateAnimation: function() {
+        if (!this.currentAnim.textures) throw 'No textures found for animation';
         this._frameTime += this.currentAnim.speed * game.delta;
 
         if (this._frameTime >= 1) {
