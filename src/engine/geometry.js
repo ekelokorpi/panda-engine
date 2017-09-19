@@ -99,58 +99,6 @@ game.createClass('Circle', {
 });
 
 /**
-    @class Matrix
-**/
-game.createClass('Matrix', {
-    /**
-        @property {Number} a
-        @default 1
-    **/
-    a: 1,
-    /**
-        @property {Number} b
-        @default 0
-    **/
-    b: 0,
-    /**
-        @property {Number} c
-        @default 0
-    **/
-    c: 0,
-    /**
-        @property {Number} d
-        @default 1
-    **/
-    d: 1,
-    /**
-        @property {Number} tx
-        @default 0
-    **/
-    tx: 0,
-    /**
-        @property {Number} ty
-        @default 0
-    **/
-    ty: 0,
-
-    /**
-        Reset transform to default.
-        @method reset
-        @chainable
-    **/
-    reset: function() {
-        var proto = this.constructor.prototype;
-        this.a = proto.a;
-        this.b = proto.b;
-        this.c = proto.c;
-        this.d = proto.d;
-        this.tx = proto.tx;
-        this.ty = proto.ty;
-        return this;
-    }
-});
-
-/**
     @class Rectangle
     @constructor
     @param {Number} width

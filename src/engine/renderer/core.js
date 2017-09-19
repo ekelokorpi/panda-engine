@@ -181,4 +181,24 @@ game.addAttributes('Renderer', {
     scaleMode: 'linear'
 });
 
+game.createClass('Matrix', {
+    a: 1,
+    b: 0,
+    c: 0,
+    d: 1,
+    tx: 0,
+    ty: 0,
+    
+    reset: function() {
+        var proto = this.constructor.prototype;
+        this.a = proto.a;
+        this.b = proto.b;
+        this.c = proto.c;
+        this.d = proto.d;
+        this.tx = proto.tx;
+        this.ty = proto.ty;
+        return this;
+    }
+});
+
 });

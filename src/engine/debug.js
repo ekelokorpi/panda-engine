@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 
 /**
-    Instance of Debug class is created at `game.debug`, when Debug is enabled.
+    Instance of Debug class is created at `game.debug`, when game.Debug.enabled is true.
     @class Debug
 **/
 game.createClass('Debug', {
@@ -715,50 +715,17 @@ game.addAttributes('Debug', {
     showSprites: false
 });
 
-/**
-    @class DebugTouch
-    @constructor
-    @param {Number} id
-**/
 game.createClass('DebugTouch', {
-    /**
-        @property {Vector} dir
-    **/
     dir: null,
-    /**
-        @property {Object} event
-    **/
     event: {
         changedTouches: []
     },
-    /**
-        @property {Number} life
-    **/
     life: 0,
-    /**
-        @property {Number} lifeTimer
-    **/
     lifeTimer: 0,
-    /**
-        @property {Number} moveTimer
-    **/
     moveTimer: 0,
-    /**
-        @property {Boolean} moving
-    **/
     moving: false,
-    /**
-        @property {Number} speed
-    **/
     speed: 0,
-    /**
-        @property {Object} touch
-    **/
     touch: {},
-    /**
-        @property {Boolean} _remove
-        @private
-    **/
     _remove: false,
 
     init: function(id) {
@@ -781,9 +748,6 @@ game.createClass('DebugTouch', {
         }
     },
 
-    /**
-        @method move
-    **/
     move: function() {
         this.touch.canvasX += this.dir.x;
         this.touch.canvasY += this.dir.y;
@@ -795,9 +759,6 @@ game.createClass('DebugTouch', {
         }
     },
 
-    /**
-        @method remove
-    **/
     remove: function() {
         this._remove = true;
         if (this.touch.canvasX < 0) this.touch.canvasX = 0;
@@ -807,10 +768,6 @@ game.createClass('DebugTouch', {
         game.input._touchend(this.event);
     },
 
-    /**
-        @method _update
-        @private
-    **/
     _update: function() {
         this.lifeTimer += game.delta * 1000;
         if (this.lifeTimer >= this.life) {

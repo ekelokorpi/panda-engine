@@ -147,7 +147,7 @@ game.createClass('Graphics', 'Container', {
         @private
     **/
     _drawShape: function(shape) {
-        var data = new game.GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, shape);
+        var data = new game.GraphicsShape(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, shape);
         this.shapes.push(data);
     },
 
@@ -236,7 +236,7 @@ game.createClass('Graphics', 'Container', {
 });
 
 /**
-    @class GraphicsData
+    @class GraphicsShape
     @constructor
     @param {Number} lineWidth
     @param {String} lineColor
@@ -245,7 +245,7 @@ game.createClass('Graphics', 'Container', {
     @param {Number} fillAlpha
     @param {Rectangle|Circle} shape
 **/
-game.createClass('GraphicsData', {
+game.createClass('GraphicsShape', {
     /**
         @property {Number} fillAlpha
     **/
