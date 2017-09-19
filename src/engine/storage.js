@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 
 /**
-    Local storage.
+    Class for storing data at local storage.
     @class Storage
     @constructor
     @param {String} id
@@ -16,12 +16,12 @@ game.createClass('Storage', {
     /**
         @property {String} id
     **/
-    id: null,
+    id: '',
     /**
         Is local storage supported.
         @property {Boolean} supported
     **/
-    supported: null,
+    supported: false,
 
     init: function(id) {
         this.id = id || game.Storage.id;
@@ -29,7 +29,55 @@ game.createClass('Storage', {
     },
 
     /**
-        Set value to local storage.
+        Clear storage. This removes ALL keys.
+        @method clear
+    **/
+    clear: function() {
+        for (var i = localStorage.length - 1; i >= 0; i--) {
+            var key = localStorage.key(i);
+            if (key.indexOf(this.id + '.') !== -1) localStorage.removeItem(key);
+        }
+    },
+
+    /**
+        Get value from storage.
+        @method get
+        @param {String} key
+        @param {*} [defaultValue]
+        @return {*} value
+    **/
+    get: function(key, defaultValue) {
+        var val = localStorage.getItem(this.id + '.' + key);
+        if (val === null) return defaultValue;
+        try {
+            return this._decode(val);
+        }
+        catch (e) {
+            return val;
+        }
+    },
+
+    /**
+        Check if a key exists in storage.
+        @method has
+        @param {String} key
+        @return {Boolean}
+    **/
+    has: function(key) {
+        return localStorage.getItem(this.id + '.' + key) !== null;
+    },
+
+    /**
+        Remove key from storage.
+        @method remove
+        @param {String} key
+    **/
+    remove: function(key) {
+        localStorage.removeItem(this.id + '.' + key);
+    },
+
+    /**
+        Set value to storage.
         @method set
         @param {String} key
         @param {*} value
@@ -41,51 +89,11 @@ game.createClass('Storage', {
     },
 
     /**
-        Get key from local storage.
-        @method get
-        @param {String} key
-        @param {*} [defaultValue]
-        @return {*} value
+        @method _decode
+        @private
     **/
-    get: function(key, defaultValue) {
-        var raw = localStorage.getItem(this.id + '.' + key);
-        if (raw === null) return defaultValue;
-        try {
-            return this._decode(raw);
-        }
-        catch (e) {
-            return raw;
-        }
-    },
-
-    /**
-        Check if a key is in local storage.
-        @method has
-        @param {String} key
-        @return {Boolean}
-    **/
-    has: function(key) {
-        return localStorage.getItem(this.id + '.' + key) !== null;
-    },
-
-    /**
-        Remove key from local storage.
-        @method remove
-        @param {String} key
-    **/
-    remove: function(key) {
-        localStorage.removeItem(this.id + '.' + key);
-    },
-
-    /**
-        Reset local storage. This removes ALL keys.
-        @method reset
-    **/
-    reset: function() {
-        for (var i = localStorage.length - 1; i >= 0; i--) {
-            var key = localStorage.key(i);
-            if (key.indexOf(this.id + '.') !== -1) localStorage.removeItem(key);
-        }
+    _decode: function(str) {
+        return JSON.parse(str);
     },
 
     /**
@@ -94,14 +102,6 @@ game.createClass('Storage', {
     **/
     _encode: function(val) {
         return JSON.stringify(val);
-    },
-
-    /**
-        @method _decode
-        @private
-    **/
-    _decode: function(str) {
-        return JSON.parse(str);
     },
 
     /**
