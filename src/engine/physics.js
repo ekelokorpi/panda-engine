@@ -10,97 +10,6 @@ game.module(
 .body(function() {
 
 /**
-    @class CollisionSolver
-**/
-game.createClass('CollisionSolver', {
-    /**
-        Hit response a versus b.
-        @method hitResponse
-        @param {Body} a
-        @param {Body} b
-        @return {Boolean} Returns true, if body is moved.
-    **/
-    hitResponse: function(a, b) {
-        if (a.static) return false;
-        if (a.shape.width && b.shape.width) {
-            if (a.last.y + a.shape.height / 2 <= b.last.y - b.shape.height / 2) {
-                if (a.collide(b, 'DOWN')) {
-                    a.position.y = b.position.y - b.shape.height / 2 - a.shape.height / 2;
-                    return true;
-                }
-            }
-            else if (a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
-                if (a.collide(b, 'UP')) {
-                    a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
-                    return true;
-                }
-            }
-            else if (a.last.x + a.shape.width / 2 <= b.last.x - b.shape.width / 2) {
-                if (a.collide(b, 'RIGHT')) {
-                    a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
-                    return true;
-                }
-            }
-            else if (a.last.x - a.shape.width / 2 >= b.last.x + b.shape.width / 2) {
-                if (a.collide(b, 'LEFT')) {
-                    a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
-                    return true;
-                }
-            }
-            else {
-                // Inside
-                if (a.collide(b)) return true;
-            }
-        }
-        else if (a.shape.radius && b.shape.radius) {
-            var angle = b.position.angle(a.position);
-            if (a.collide(b, angle)) {
-                var dist = a.shape.radius + b.shape.radius;
-                a.position.x = b.position.x + Math.cos(angle) * dist;
-                a.position.y = b.position.y + Math.sin(angle) * dist;
-                return true;
-            }
-        }
-        else {
-            if (a.collide(b)) return true;
-        }
-        return false;
-    },
-
-    /**
-        Hit test a versus b.
-        @method hitTest
-        @param {Body} a
-        @param {Body} b
-        @return {Boolean} return true, if bodies hit.
-    **/
-    hitTest: function(a, b) {
-        if (a.shape.width && b.shape.width) {
-            return !(
-                a.position.y + a.shape.height / 2 <= b.position.y - b.shape.height / 2 ||
-                a.position.y - a.shape.height / 2 >= b.position.y + b.shape.height / 2 ||
-                a.position.x - a.shape.width / 2 >= b.position.x + b.shape.width / 2 ||
-                a.position.x + a.shape.width / 2 <= b.position.x - b.shape.width / 2
-            );
-        }
-        if (a.shape.radius && b.shape.radius) {
-            return (a.shape.radius + b.shape.radius > a.position.distance(b.position));
-        }
-        if (a.shape.width && b.shape.radius || a.shape.radius && b.shape.width) {
-            var rect = a.shape.width ? a : b;
-            var circle = a.shape.radius ? a : b;
-
-            var x = Math.max(rect.position.x - rect.shape.width / 2, Math.min(rect.position.x + rect.shape.width / 2, circle.position.x));
-            var y = Math.max(rect.position.y - rect.shape.height / 2, Math.min(rect.position.y + rect.shape.height / 2, circle.position.y));
-
-            var dist = Math.pow(circle.position.x - x, 2) + Math.pow(circle.position.y - y, 2);
-            return dist < (circle.shape.radius * circle.shape.radius);
-        }
-        return false;
-    }
-});
-
-/**
     Physics body.
     @class Body
     @constructor
@@ -341,17 +250,11 @@ game.createClass('Physics', {
         @private
     **/
     _collisionGroups: {},
-    /**
-        @property {CollisionSolver} _solver
-        @private
-    **/
-    _solver: null,
 
     staticInit: function(x, y) {
         x = typeof x === 'number' ? x : 0;
         y = typeof y === 'number' ? y : 980;
         this.gravity = new game.Vector(x, y);
-        this._solver = new game.CollisionSolver();
     },
 
     /**
@@ -364,6 +267,92 @@ game.createClass('Physics', {
         body._remove = false;
         this.bodies.push(body);
         this._addBodyCollision(body);
+    },
+
+    /**
+        Hit response a versus b.
+        @method hitResponse
+        @param {Body} a
+        @param {Body} b
+        @return {Boolean} Returns true, if body is moved.
+    **/
+    hitResponse: function(a, b) {
+        if (a.static) return false;
+        if (a.shape.width && b.shape.width) {
+            if (a.last.y + a.shape.height / 2 <= b.last.y - b.shape.height / 2) {
+                if (a.collide(b, 'DOWN')) {
+                    a.position.y = b.position.y - b.shape.height / 2 - a.shape.height / 2;
+                    return true;
+                }
+            }
+            else if (a.last.y - a.shape.height / 2 >= b.last.y + b.shape.height / 2) {
+                if (a.collide(b, 'UP')) {
+                    a.position.y = b.position.y + b.shape.height / 2 + a.shape.height / 2;
+                    return true;
+                }
+            }
+            else if (a.last.x + a.shape.width / 2 <= b.last.x - b.shape.width / 2) {
+                if (a.collide(b, 'RIGHT')) {
+                    a.position.x = b.position.x - b.shape.width / 2 - a.shape.width / 2;
+                    return true;
+                }
+            }
+            else if (a.last.x - a.shape.width / 2 >= b.last.x + b.shape.width / 2) {
+                if (a.collide(b, 'LEFT')) {
+                    a.position.x = b.position.x + b.shape.width / 2 + a.shape.width / 2;
+                    return true;
+                }
+            }
+            else {
+                // Inside
+                if (a.collide(b)) return true;
+            }
+        }
+        else if (a.shape.radius && b.shape.radius) {
+            var angle = b.position.angle(a.position);
+            if (a.collide(b, angle)) {
+                var dist = a.shape.radius + b.shape.radius;
+                a.position.x = b.position.x + Math.cos(angle) * dist;
+                a.position.y = b.position.y + Math.sin(angle) * dist;
+                return true;
+            }
+        }
+        else {
+            if (a.collide(b)) return true;
+        }
+        return false;
+    },
+
+    /**
+        Hit test a versus b.
+        @method hitTest
+        @param {Body} a
+        @param {Body} b
+        @return {Boolean} return true, if bodies hit.
+    **/
+    hitTest: function(a, b) {
+        if (a.shape.width && b.shape.width) {
+            return !(
+                a.position.y + a.shape.height / 2 <= b.position.y - b.shape.height / 2 ||
+                a.position.y - a.shape.height / 2 >= b.position.y + b.shape.height / 2 ||
+                a.position.x - a.shape.width / 2 >= b.position.x + b.shape.width / 2 ||
+                a.position.x + a.shape.width / 2 <= b.position.x - b.shape.width / 2
+            );
+        }
+        if (a.shape.radius && b.shape.radius) {
+            return (a.shape.radius + b.shape.radius > a.position.distance(b.position));
+        }
+        if (a.shape.width && b.shape.radius || a.shape.radius && b.shape.width) {
+            var rect = a.shape.width ? a : b;
+            var circle = a.shape.radius ? a : b;
+
+            var x = Math.max(rect.position.x - rect.shape.width / 2, Math.min(rect.position.x + rect.shape.width / 2, circle.position.x));
+            var y = Math.max(rect.position.y - rect.shape.height / 2, Math.min(rect.position.y + rect.shape.height / 2, circle.position.y));
+
+            var dist = Math.pow(circle.position.x - x, 2) + Math.pow(circle.position.y - y, 2);
+            return dist < (circle.shape.radius * circle.shape.radius);
+        }
+        return false;
     },
 
     /**
@@ -407,13 +396,13 @@ game.createClass('Physics', {
                 if (!group) break;
                 b = group[i];
                 if (body !== b) {
-                    if (this._solver.hitTest(body, b)) {
+                    if (this.hitTest(body, b)) {
                         body._collides.push(b);
                     }
                 }
             }
             for (i = body._collides.length - 1; i >= 0; i--) {
-                if (this._solver.hitResponse(body, body._collides[i])) {
+                if (this.hitResponse(body, body._collides[i])) {
                     body.afterCollide(body._collides[i]);
                 }
             }
