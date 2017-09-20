@@ -33,11 +33,6 @@ game.createClass('Input', {
     **/
     _currentCursor: null,
     /**
-        @property {HTMLElement} _lastTarget
-        @private
-    **/
-    _lastTarget: null,
-    /**
         @property {Container} _mouseDownItem
         @private
     **/
@@ -65,7 +60,6 @@ game.createClass('Input', {
     _needUpdate: false,
 
     init: function(canvas) {
-        this._lastTarget = canvas;
         this.mouse = new game.Vector();
         var target = game.device.cocoonCanvasPlus ? window : canvas;
         target.addEventListener('touchstart', this._touchstart.bind(this));
@@ -76,7 +70,6 @@ game.createClass('Input', {
         target.addEventListener('mousemove', this._mousemove.bind(this));
         target.addEventListener('mouseout', this._mouseout.bind(this));
         window.addEventListener('mouseup', this._mouseup.bind(this));
-        window.addEventListener('mousedown', this._windowMouseDown.bind(this));
     },
 
     /**
@@ -352,16 +345,6 @@ game.createClass('Input', {
             if (child._interactive) this.items.push(child);
             if (child.children.length) this._updateItems(child);
         }
-    },
-
-    /**
-        @method _windowMouseDown
-        @param {MouseEvent} event
-        @private
-    **/
-    _windowMouseDown: function(event) {
-        this._lastTarget = event.target;
-        if (this._lastTarget === game.renderer.canvas) game.renderer.canvas.focus();
     }
 });
 
@@ -424,7 +407,7 @@ game.createClass('Keyboard', {
         @private
     **/
     _keydown: function(event) {
-        if (game.input._lastTarget !== game.renderer.canvas) return;
+        if (document.activeElement !== document.body && document.activeElement !== game.renderer.canvas) return;
         if (!game.system._running) return;
         var key = game.Keyboard.keys[event.keyCode];
         if (!key) key = event.keyCode;

@@ -1014,9 +1014,11 @@ game.Class.extend = function(prop) {
             Called, when creating new instance of class.
             @method init
             @param {Array} arguments
+            @return {Boolean} return true, to skip adding class with update function automatically to the scene.
         **/
-        if (this.init && !skipInit) this.init.apply(this, arguments);
-        if (game.scene && typeof this.update === 'function' && this !== game.scene) {
+        var skipAdd = false;
+        if (this.init && !skipInit) skipAdd = this.init.apply(this, arguments);
+        if (!skipAdd && game.scene && typeof this.update === 'function' && this !== game.scene) {
             game.scene.addObject(this);
         }
         return this;
