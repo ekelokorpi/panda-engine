@@ -194,8 +194,8 @@ game.createClass('TilingSprite', 'Container', {
             this._rect.y = 0;
             this._rect.width = tw;
             this._rect.height = th;
-            this._pos.x = ~~(x * scaleX);
-            this._pos.y = ~~(y * scaleY);
+            this._pos.x = x * scaleX;
+            this._pos.y = y * scaleY;
 
             if (x + tw > width) {
                 this._rect.width = Math.ceil(width - x);
