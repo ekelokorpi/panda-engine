@@ -112,9 +112,23 @@ game.createClass('Audio', {
     /**
         @method playSound
         @param {String} name
+        @param {Number} [volume]
     **/
-    playSound: function(name) {
-        var sound = new game.Sound(name).play();
+    playSound: function(name, volume) {
+        var sound = new game.Sound(name);
+        sound.volume = volume || sound.volume;
+        sound.play();
+    },
+
+    /**
+        Stop all sounds.
+        @method stopAll
+    **/
+    stopAll: function() {
+        this.stopMusic();
+        for (var i = 0; i < this.sounds.length; i++) {
+            this.sounds[i].stop();
+        }
     },
 
     /**
@@ -319,6 +333,11 @@ game.createClass('Sound', {
         @default false
     **/
     playing: false,
+    /**
+        @property {Number} volume
+        @default game.Audio.soundVolume
+    **/
+    volume: 0,
     /**
         @property {AudioBuffer} _buffer
         @private

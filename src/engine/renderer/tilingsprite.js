@@ -231,6 +231,7 @@ game.createClass('TilingSprite', 'Container', {
                 this._rect.height = th - this._rect.y;
             }
 
+            this._sprite._worldAlpha = this._worldAlpha;
             this._sprite._renderCanvas(context, this._worldTransform, this._rect, this._pos);
 
             x += tw;
