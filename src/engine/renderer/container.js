@@ -504,8 +504,8 @@ game.createClass('Container', {
 
         this._worldBounds.x = minX;
         this._worldBounds.y = minY;
-        this._worldBounds.width = (maxX - minX) * this.scale.x;
-        this._worldBounds.height = (maxY - minY) * this.scale.y;
+        this._worldBounds.width = (maxX - minX) * Math.abs(this.scale.x);
+        this._worldBounds.height = (maxY - minY) * Math.abs(this.scale.y);
         return this._worldBounds;
     },
 
