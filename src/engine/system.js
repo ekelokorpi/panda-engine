@@ -111,7 +111,9 @@ game.createClass('System', {
         
         for (var i = 2; i <= game.System.hires; i += 2) {
             var ratio = game.System.hiresRatio * (i / 2);
-            if (this._windowWidth >= this.originalWidth * ratio && this._windowHeight >= this.originalHeight * ratio) {
+            var width = game.System.hiresDeviceSize ? game.device.screen.width : this._windowWidth;
+            var height = game.System.hiresDeviceSize ? game.device.screen.height : this._windowHeight;
+            if (width >= this.originalWidth * ratio && height >= this.originalHeight * ratio) {
                 this.hires = true;
                 game.scale = i;
             }
@@ -464,6 +466,12 @@ game.addAttributes('System', {
         @default 0
     **/
     hires: 0,
+    /**
+        Use device size instead of window size on HiRes mode.
+        @attribute {Boolean} hiresDeviceSize
+        @default false
+    **/
+    hiresDeviceSize: false,
     /**
         Ratio value, when hires mode is used.
         @attribute {Number} hiresRatio
