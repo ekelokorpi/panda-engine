@@ -301,11 +301,16 @@ var game = {
         Create new scene.
         @method createScene
         @param {String} name
+        @param {String} [extend]
         @param {Object} content
         @return {Scene}
     **/
-    createScene: function(name, content) {
-        return this.createClass(name, 'Scene', content);
+    createScene: function(name, extend, content) {
+        if (typeof extend === 'object') {
+            content = extend;
+            extend = 'Scene';
+        }
+        return this.createClass(name, extend, content);
     },
 
     /**

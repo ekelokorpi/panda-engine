@@ -185,10 +185,12 @@ game.createClass('Text', 'Container', {
         var lines = [{ words: [], width: 0 }];
         var curLine = 0;
         var curWordWidth = 0;
+        var wordText = '';
+        var wordNum = 1;
 
         for (var i = 0; i < this.text.length; i++) {
             var charCode = this.text.charCodeAt(i);
-
+            
             // Space or line break
             if (charCode === 32 || charCode === 10) {
                 if (curWordWidth > 0) {
@@ -203,20 +205,30 @@ game.createClass('Text', 'Container', {
                     // Insert new word
                     lines[curLine].words.push({
                         width: curWordWidth,
-                        type: WORD
+                        type: WORD,
+                        text: wordText,
+                        num: wordNum
                     });
                     lines[curLine].width += curWordWidth;
+                    wordText = '';
+                    wordNum++;
                 }
+            }
+            else {
+                wordText += this.text[i];
             }
 
             if (charCode === 32) {
                 // Insert space
                 lines[curLine].words.push({
                     width: this.fontClass.spaceWidth,
-                    type: SPACE
+                    type: SPACE,
+                    text: ' ',
+                    num: wordNum
                 });
                 lines[curLine].width += this.fontClass.spaceWidth;
                 curWordWidth = 0;
+                wordNum++;
                 continue;
             }
 
@@ -245,7 +257,9 @@ game.createClass('Text', 'Container', {
 
             lines[curLine].words.push({
                 width: curWordWidth,
-                type: WORD
+                type: WORD,
+                text: wordText,
+                num: wordNum
             });
             lines[curLine].width += curWordWidth;
         }
