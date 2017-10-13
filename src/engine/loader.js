@@ -90,6 +90,8 @@ game.createClass('Loader', 'Scene', {
     },
 
     init: function() {
+        this.backgroundColor = game.Loader.backgroundColor;
+
         var totalHeight = 0;
         var totalLogo = 90 / game.scale;
         var totalBar = 4 / game.scale;
@@ -116,13 +118,14 @@ game.createClass('Loader', 'Scene', {
 
             var barBg = new game.Graphics();
             barBg.fillAlpha = 0;
+            barBg.lineColor = game.Loader.barColor;
             barBg.lineWidth = barBorder;
             barBg.drawRect(0, 0, barWidth, barHeight);
             barBg.position.set(game.system.width / 2 - barWidth / 2, curY);
             barBg.addTo(this.stage);
 
             this.barFg = new game.Graphics();
-            this.barFg.beginFill('#fff');
+            this.barFg.beginFill(game.Loader.barColor);
             this.barFg.drawRect(0, 0, barWidth, barHeight);
             this.barFg.position.set(game.system.width / 2 - barWidth / 2, curY);
             this.barFg.addTo(this.stage);
@@ -131,13 +134,13 @@ game.createClass('Loader', 'Scene', {
         }
 
         if (game.Loader.showText) {
-            this.loaderText = new game.SystemText('', { size: 14 / game.scale, align: 'center' });
+            this.loaderText = new game.SystemText('', { size: 14 / game.scale, align: 'center', color: game.Loader.textColor });
             this.loaderText.position.set(game.width / 2, curY + 8);
             this.loaderText.addTo(this.stage);
         }
 
         if (game.Loader.showAd && game.Loader.ad !== '') {
-            var ad = new game.SystemText(game.Loader.ad, { size: 14 / game.scale, align: 'center' });
+            var ad = new game.SystemText(game.Loader.ad, { size: 14 / game.scale, align: 'center', color: game.Loader.textColor });
             ad.position.set(game.width / 2, game.height - 20 / game.scale);
             ad.addTo(this.stage);
         }
@@ -445,7 +448,27 @@ game.createClass('Loader', 'Scene', {
 });
 
 game.addAttributes('Loader', {
+    /**
+        Text to show on bottom of the loader
+        @attribute {String} ad
+        @default Made with Panda 2 Game Engine
+    **/
     ad: 'Made with Panda 2 Game Engine',
+    /**
+        @attribute {String} backgroundColor
+        @default #000
+    **/
+    backgroundColor: '#000',
+    /**
+        @attribute {String} barColor
+        @default #fff
+    **/
+    barColor: '#fff',
+    /**
+        @attribute {String} textColor
+        @default #fff
+    **/
+    textColor: '#fff',
     /**
         How many files to load at same time.
         @attribute {Number} maxFiles
