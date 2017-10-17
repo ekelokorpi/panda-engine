@@ -92,57 +92,34 @@ game.createClass('Loader', 'Scene', {
     init: function() {
         this.backgroundColor = game.Loader.backgroundColor;
 
-        var totalHeight = 0;
-        var totalLogo = 90 / game.scale;
-        var totalBar = 4 / game.scale;
-        var totalText = 16;
-        var spacing = 20 / game.scale;
+        if (game.Loader.showLogo) {
+            var logo = new game.Sprite('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4BAMAAADLSivhAAAAMFBMVEUAAAD4uABHR0f4uABHR0f4uAD4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADRufxZAAAADnRSTlMAqqpV6aNEJFDJlHQb44EUTvwAAADvSURBVFjD7dkhDsIwFMbxQsIEIJiYIiRk4QYIJAkKReAGuwMHwOwcCwdAwA3QOO6AmalBTAJhGa9dspa3dGLJ9/c/t2bvtSKWhtbC3MaEHxYsjQEDtwB7O19pzMOHl9aZhZc6HgEDO8EpfZ52vAr1TuWDMTHgqbDUAQYGdox7Od7Wwl6OIw6m9vNPC8HHFDAw8L9L2ZGJY8WmV9Fkw0TbNHn19U2TV1eqAQMDGzD9tPmYxgU+pkGFj2lEAgYGdozv/rfgd65vod6sElNZgRNZzo6fBZbAwE7wQMcZC4uLrxREbbnABgaurMHnP8vD4xvY9ByhjWrtdAAAAABJRU5ErkJggg==');
+            logo.x = game.width / 2 - 60;
+            logo.y = game.height / 2 - 60;
+            logo.alpha = 0.3;
+            logo.addTo(this.stage);
 
-        var items = 0;
-        if (game.Loader.showBar) {
-            totalHeight += totalBar;
-            items++;
+            logo = new game.Sprite(logo.texture);
+            logo.x = game.width / 2 - 60;
+            logo.y = game.height / 2 - 60;
+            logo.addTo(this.stage);
+
+            this.mask = new game.Graphics();
+
+            logo.mask = this.mask;
         }
-        if (game.Loader.showText) {
-            totalHeight += totalText;
-            items++;
-        }
-        totalHeight += (items - 1) * spacing;
-
-        var curY = game.height / 2 - totalHeight / 2;
-
-        if (game.Loader.showBar) {
-            var barWidth = 200 / game.scale;
-            var barHeight = 20 / game.scale;
-            var barBorder = 2 / game.scale;
-
-            var barBg = new game.Graphics();
-            barBg.fillAlpha = 0;
-            barBg.lineColor = game.Loader.barColor;
-            barBg.lineWidth = barBorder;
-            barBg.drawRect(0, 0, barWidth, barHeight);
-            barBg.position.set(game.system.width / 2 - barWidth / 2, curY);
-            barBg.addTo(this.stage);
-
-            this.barFg = new game.Graphics();
-            this.barFg.beginFill(game.Loader.barColor);
-            this.barFg.drawRect(0, 0, barWidth, barHeight);
-            this.barFg.position.set(game.system.width / 2 - barWidth / 2, curY);
-            this.barFg.addTo(this.stage);
-
-            curY += totalBar + spacing;
-        }
-
-        if (game.Loader.showText) {
-            this.loaderText = new game.SystemText('', { size: 14 / game.scale, align: 'center', color: game.Loader.textColor });
-            this.loaderText.position.set(game.width / 2, curY + 8);
-            this.loaderText.addTo(this.stage);
+        
+        if (game.Loader.showPercent) {
+            var size = 20;
+            this.percentText = new game.SystemText('', { size: size / game.scale, align: 'center', color: game.Loader.textColor });
+            this.percentText.position.set(game.width / 2, game.height / 2 - size / 2 - 3);
+            this.percentText.addTo(this.stage);
         }
 
         if (game.Loader.showAd && game.Loader.ad !== '') {
-            var ad = new game.SystemText(game.Loader.ad, { size: 14 / game.scale, align: 'center', color: game.Loader.textColor });
-            ad.position.set(game.width / 2, game.height - 20 / game.scale);
-            ad.addTo(this.stage);
+            this.adText = new game.SystemText(game.Loader.ad, { size: 14 / game.scale, align: 'center', color: game.Loader.textColor });
+            this.adText.position.set(game.width / 2, game.height - 20 / game.scale);
+            this.adText.addTo(this.stage);
         }
 
         this.onProgress();
@@ -222,10 +199,10 @@ game.createClass('Loader', 'Scene', {
         @param {String} error
     **/
     onError: function(error) {
-        if (this.logoTween) this.logoTween.stop();
-        if (this.loaderText) {
-            this.loaderText.color = '#ff0000';
-            this.loaderText.text = error;
+        if (this.percentText) this.percentText.color = game.Loader.errorColor;
+        if (this.adText) {
+            this.adText.color = game.Loader.errorColor;
+            this.adText.text = error;
         }
         throw error;
     },
@@ -236,8 +213,8 @@ game.createClass('Loader', 'Scene', {
         @param {Number} percent
     **/
     onProgress: function() {
-        if (this.barFg) this.barFg.scale.x = this.percent / 100;
-        if (this.loaderText && !this._error) this.loaderText.text = 'LOADING... ' + this.percent + '%';
+        if (this.percentText) this.percentText.text = this.percent + '%';
+        if (this.mask) this.mask.drawRect(0, 0, 120 * (this.percent / 100), 120);
     },
 
     /**
@@ -451,24 +428,24 @@ game.addAttributes('Loader', {
     /**
         Text to show on bottom of the loader
         @attribute {String} ad
-        @default Made with Panda 2 Game Engine
+        @default Made with Panda 2 - www.panda2.io
     **/
-    ad: 'Made with Panda 2 Game Engine',
+    ad: 'Made with Panda 2 - www.panda2.io',
     /**
         @attribute {String} backgroundColor
         @default #000
     **/
     backgroundColor: '#000',
     /**
-        @attribute {String} barColor
-        @default #fff
+        @attribute {String} errorColor
+        @default #ff0000
     **/
-    barColor: '#fff',
+    errorColor: '#ff0000',
     /**
         @attribute {String} textColor
-        @default #fff
+        @default #f8b800
     **/
-    textColor: '#fff',
+    textColor: '#f8b800',
     /**
         How many files to load at same time.
         @attribute {Number} maxFiles
@@ -486,15 +463,15 @@ game.addAttributes('Loader', {
     **/
     showAd: true,
     /**
-        @attribute {Boolean} showBar
+        @attribute {Boolean} showLogo
         @default true
     **/
-    showBar: true,
+    showLogo: true,
     /**
-        @attribute {Boolean} showText
+        @attribute {Boolean} showPercent
         @default true
     **/
-    showText: true,
+    showPercent: true,
     /**
         List of supported file formats and load functions.
         @attribute {Object} _formats

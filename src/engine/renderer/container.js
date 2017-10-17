@@ -489,17 +489,26 @@ game.createClass('Container', {
         var maxX = this._worldTransform.tx;
         var maxY = this._worldTransform.ty;
 
-        for (var i = 0; i < this.children.length; i++) {
-            var child = this.children[i];
-            var childBounds = child._getBounds(child._localTransform);
-            var childMinX = this._worldTransform.tx + childBounds.x;
-            var childMinY = this._worldTransform.ty + childBounds.y;
-            var childMaxX = childMinX + childBounds.width;
-            var childMaxY = childMinY + childBounds.height;
-            if (childMinX < minX) minX = childMinX;
-            if (childMinY < minY) minY = childMinY;
-            if (childMaxX > maxX) maxX = childMaxX;
-            if (childMaxY > maxY) maxY = childMaxY;
+        if (this.mask) {
+            var maskBounds = this.mask._getBounds();
+            minX = maskBounds.x;
+            minY = maskBounds.y;
+            maxX = minX + maskBounds.width;
+            maxY = minY + maskBounds.height;
+        }
+        else {
+            for (var i = 0; i < this.children.length; i++) {
+                var child = this.children[i];
+                var childBounds = child._getBounds(child._localTransform);
+                var childMinX = this._worldTransform.tx + childBounds.x;
+                var childMinY = this._worldTransform.ty + childBounds.y;
+                var childMaxX = childMinX + childBounds.width;
+                var childMaxY = childMinY + childBounds.height;
+                if (childMinX < minX) minX = childMinX;
+                if (childMinY < minY) minY = childMinY;
+                if (childMaxX > maxX) maxX = childMaxX;
+                if (childMaxY > maxY) maxY = childMaxY;
+            }
         }
 
         this._worldBounds.x = minX;

@@ -69,6 +69,7 @@ game.createClass('Input', {
         target.addEventListener('mousedown', this._mousedown.bind(this));
         target.addEventListener('mousemove', this._mousemove.bind(this));
         target.addEventListener('mouseout', this._mouseout.bind(this));
+        window.addEventListener('blur', this._mouseout.bind(this));
         window.addEventListener('mouseup', this._mouseup.bind(this));
     },
 
@@ -184,6 +185,7 @@ game.createClass('Input', {
     _mouseout: function(event) {
         if (!game.scene) return;
 
+        if (this._mouseMoveItem) this._mouseMoveItem.mouseout(event.canvasX, event.canvasY, event.identifier, event);
         this._mouseMoveItem = null;
         
         game.scene.mouseout(event);
