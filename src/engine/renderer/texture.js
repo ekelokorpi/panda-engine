@@ -94,12 +94,6 @@ game.addAttributes('BaseTexture', {
     **/
     cache: {},
     /**
-        @attribute {Number} _id
-        @private
-    **/
-    _id: 1,
-
-    /**
         @method clearCache
         @static
     **/
@@ -108,7 +102,6 @@ game.addAttributes('BaseTexture', {
             delete this.cache[i];
         }
     },
-
     /**
         @method fromAsset
         @static
@@ -123,7 +116,6 @@ game.addAttributes('BaseTexture', {
 
         return baseTexture;
     },
-
     /**
         @method fromCanvas
         @static
@@ -143,7 +135,6 @@ game.addAttributes('BaseTexture', {
 
         return baseTexture;
     },
-
     /**
         @method fromImage
         @static
@@ -164,7 +155,12 @@ game.addAttributes('BaseTexture', {
         else if (loadCallback) loadCallback();
 
         return baseTexture;
-    }
+    },
+    /**
+        @attribute {Number} _id
+        @private
+    **/
+    _id: 1
 });
 
 /**
@@ -220,7 +216,6 @@ game.addAttributes('Texture', {
         @attribute {Object} cache
     **/
     cache: {},
-
     /**
         @method clearCache
         @static
@@ -230,24 +225,6 @@ game.addAttributes('Texture', {
             delete this.cache[i];
         }
     },
-    
-    /**
-        @method fromImage
-        @static
-        @param {String} path
-        @return {Texture}
-    **/
-    fromImage: function(path) {
-        var texture = this.cache[path];
-
-        if (!texture) {
-            texture = new game.Texture(game.BaseTexture.fromImage(path));
-            this.cache[path] = texture;
-        }
-
-        return texture;
-    },
-
     /**
         @method fromAsset
         @static
@@ -264,7 +241,6 @@ game.addAttributes('Texture', {
 
         return texture;
     },
-
     /**
         @method fromCanvas
         @static
@@ -280,6 +256,22 @@ game.addAttributes('Texture', {
             this.cache[canvas._id] = texture;
         }
         
+        return texture;
+    },
+    /**
+        @method fromImage
+        @static
+        @param {String} path
+        @return {Texture}
+    **/
+    fromImage: function(path) {
+        var texture = this.cache[path];
+
+        if (!texture) {
+            texture = new game.Texture(game.BaseTexture.fromImage(path));
+            this.cache[path] = texture;
+        }
+
         return texture;
     }
 });

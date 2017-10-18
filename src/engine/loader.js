@@ -93,20 +93,10 @@ game.createClass('Loader', 'Scene', {
         this.backgroundColor = game.Loader.backgroundColor;
 
         if (game.Loader.showLogo) {
-            var logo = new game.Sprite('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4BAMAAADLSivhAAAAMFBMVEUAAAD4uABHR0f4uABHR0f4uAD4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADRufxZAAAADnRSTlMAqqpV6aNEJFDJlHQb44EUTvwAAADvSURBVFjD7dkhDsIwFMbxQsIEIJiYIiRk4QYIJAkKReAGuwMHwOwcCwdAwA3QOO6AmalBTAJhGa9dspa3dGLJ9/c/t2bvtSKWhtbC3MaEHxYsjQEDtwB7O19pzMOHl9aZhZc6HgEDO8EpfZ52vAr1TuWDMTHgqbDUAQYGdox7Od7Wwl6OIw6m9vNPC8HHFDAw8L9L2ZGJY8WmV9Fkw0TbNHn19U2TV1eqAQMDGzD9tPmYxgU+pkGFj2lEAgYGdozv/rfgd65vod6sElNZgRNZzo6fBZbAwE7wQMcZC4uLrxREbbnABgaurMHnP8vD4xvY9ByhjWrtdAAAAABJRU5ErkJggg==');
-            logo.x = game.width / 2 - 60;
-            logo.y = game.height / 2 - 60;
-            logo.alpha = 0.3;
-            logo.addTo(this.stage);
-
-            logo = new game.Sprite(logo.texture);
-            logo.x = game.width / 2 - 60;
-            logo.y = game.height / 2 - 60;
-            logo.addTo(this.stage);
-
-            this.mask = new game.Graphics();
-
-            logo.mask = this.mask;
+            this.logo = new game.Sprite(game.logo);
+            this.logo.center(this.stage);
+            this.logo.alpha = 0;
+            this.logo.addTo(this.stage);
         }
         
         if (game.Loader.showPercent) {
@@ -116,10 +106,10 @@ game.createClass('Loader', 'Scene', {
             this.percentText.addTo(this.stage);
         }
 
-        if (game.Loader.showAd && game.Loader.ad !== '') {
-            this.adText = new game.SystemText(game.Loader.ad, { size: 14 / game.scale, align: 'center', color: game.Loader.textColor });
-            this.adText.position.set(game.width / 2, game.height - 20 / game.scale);
-            this.adText.addTo(this.stage);
+        if (game.Loader.text) {
+            this.loaderText = new game.SystemText(game.Loader.text, { size: 14 / game.scale, align: 'center', color: game.Loader.textColor });
+            this.loaderText.position.set(game.width / 2, game.height - 20 / game.scale);
+            this.loaderText.addTo(this.stage);
         }
 
         this.onProgress();
@@ -200,9 +190,9 @@ game.createClass('Loader', 'Scene', {
     **/
     onError: function(error) {
         if (this.percentText) this.percentText.color = game.Loader.errorColor;
-        if (this.adText) {
-            this.adText.color = game.Loader.errorColor;
-            this.adText.text = error;
+        if (this.loaderText) {
+            this.loaderText.color = game.Loader.errorColor;
+            this.loaderText.text = error;
         }
         throw error;
     },
@@ -214,7 +204,7 @@ game.createClass('Loader', 'Scene', {
     **/
     onProgress: function() {
         if (this.percentText) this.percentText.text = this.percent + '%';
-        if (this.mask) this.mask.drawRect(0, 0, 120 * (this.percent / 100), 120);
+        if (this.logo) this.logo.alpha = this.percent / 100;
     },
 
     /**
@@ -426,12 +416,6 @@ game.createClass('Loader', 'Scene', {
 
 game.addAttributes('Loader', {
     /**
-        Text to show on bottom of the loader
-        @attribute {String} ad
-        @default Made with Panda 2 - www.panda2.io
-    **/
-    ad: 'Made with Panda 2 - www.panda2.io',
-    /**
         @attribute {String} backgroundColor
         @default #000
     **/
@@ -441,11 +425,6 @@ game.addAttributes('Loader', {
         @default #ff0000
     **/
     errorColor: '#ff0000',
-    /**
-        @attribute {String} textColor
-        @default #f8b800
-    **/
-    textColor: '#f8b800',
     /**
         How many files to load at same time.
         @attribute {Number} maxFiles
@@ -458,11 +437,6 @@ game.addAttributes('Loader', {
     **/
     minTime: 500,
     /**
-        @attribute {Boolean} showAd
-        @default true
-    **/
-    showAd: true,
-    /**
         @attribute {Boolean} showLogo
         @default true
     **/
@@ -472,6 +446,17 @@ game.addAttributes('Loader', {
         @default true
     **/
     showPercent: true,
+    /**
+        Text to show on bottom of the loader
+        @attribute {String} text
+        @default Made with Panda 2 - www.panda2.io
+    **/
+    text: 'Made with Panda 2 - www.panda2.io',
+    /**
+        @attribute {String} textColor
+        @default #fff
+    **/
+    textColor: '#fff',
     /**
         List of supported file formats and load functions.
         @attribute {Object} _formats
