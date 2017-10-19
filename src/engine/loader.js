@@ -388,9 +388,9 @@ game.createClass('Loader', 'Scene', {
             var filePath = this._queue[i];
             if (!filePath) continue;
             var fileType = filePath.split('?').shift().split('.').pop().toLowerCase();
-            var loadFunc = game.Loader._formats[fileType];
+            var loadFunc = 'load' + game.Loader.formats[fileType];
 
-            if (!loadFunc) {
+            if (!this[loadFunc]) {
                 for (var i = game.Audio.formats.length - 1; i >= 0; i--) {
                     if (fileType === game.Audio.formats[i].ext) {
                         loadFunc = 'loadAudio';
@@ -398,7 +398,6 @@ game.createClass('Loader', 'Scene', {
                     }
                 }
             }
-            if (!loadFunc) throw 'Unsupported file format ' + fileType;
 
             if (loadFunc === 'loadImage' || loadFunc === 'loadFont' || loadFunc === 'loadAtlas') {
                 filePath = this._getFilePath(filePath);
@@ -408,7 +407,8 @@ game.createClass('Loader', 'Scene', {
             this._queue.splice(i, 1);
             this._loadedFiles.push(filePath);
 
-            this[loadFunc](filePath, this._progress.bind(this));
+            if (!this[loadFunc]) this.onError('Unsupported file format ' + fileType);
+            else this[loadFunc](filePath, this._progress.bind(this));
 
             if (this._loadCount === game.Loader.maxFiles) return;
         }
@@ -426,6 +426,19 @@ game.addAttributes('Loader', {
         @default #ff0000
     **/
     errorColor: '#ff0000',
+    /**
+        List of supported file formats and types.
+        @attribute {Object} formats
+        @private
+    **/
+    formats: {
+        atlas: 'Atlas',
+        png: 'Image',
+        jpg: 'Image',
+        jpeg: 'Image',
+        json: 'JSON',
+        fnt: 'Font'
+    },
     /**
         How many files to load at same time.
         @attribute {Number} maxFiles
@@ -457,20 +470,7 @@ game.addAttributes('Loader', {
         @attribute {String} textColor
         @default #fff
     **/
-    textColor: '#fff',
-    /**
-        List of supported file formats and load functions.
-        @attribute {Object} _formats
-        @private
-    **/
-    _formats: {
-        atlas: 'loadAtlas',
-        png: 'loadImage',
-        jpg: 'loadImage',
-        jpeg: 'loadImage',
-        json: 'loadJSON',
-        fnt: 'loadFont'
-    }
+    textColor: '#fff'
 });
 
 });
