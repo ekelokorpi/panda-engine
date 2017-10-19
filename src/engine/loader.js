@@ -94,7 +94,8 @@ game.createClass('Loader', 'Scene', {
 
         if (game.Loader.showLogo) {
             this.logo = new game.Sprite(game.logo);
-            this.logo.center(this.stage);
+            this.logo.x = game.width / 2 - this.logo.width / game.scale / 2;
+            this.logo.y = game.height / 2 - this.logo.height / game.scale / 2;
             this.logo.alpha = 0;
             this.logo.addTo(this.stage);
         }
@@ -102,7 +103,7 @@ game.createClass('Loader', 'Scene', {
         if (game.Loader.showPercent) {
             var size = 20;
             this.percentText = new game.SystemText('', { size: size / game.scale, align: 'center', color: game.Loader.textColor });
-            this.percentText.position.set(game.width / 2, game.height / 2 - size / 2 - 3);
+            this.percentText.position.set(game.width / 2, game.height / 2 - size / game.scale / 2 - 3 / game.scale);
             this.percentText.addTo(this.stage);
         }
 

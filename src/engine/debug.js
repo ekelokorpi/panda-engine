@@ -68,10 +68,6 @@ game.createClass('Debug', {
     _frames: 0,
 
     init: function() {
-        if (game.Debug.showInfo) {
-            console.log('Panda Engine ' + game.version + ' (' + game.system.width + 'x' + game.system.height + ')');
-        }
-
         game.Input.inject({
             _calculateXY: function(event) {
                 if (game.Debug.fakeTouch) return;
@@ -492,6 +488,7 @@ game.createClass('Debug', {
     _updatePanel: function() {
         this.text = '';
         this._addText(game.version);
+        this._addText('CANVAS', game.renderer.canvas.width + 'x' + game.renderer.canvas.height);
         this._addText('FPS', this.fps);
         this._addText('DRAWS', this._draws);
         this._addText('BODIES', this._bodies.length);
@@ -695,12 +692,6 @@ game.addAttributes('Debug', {
         @default false
     **/
     showHitAreas: false,
-    /**
-        Show startup info on console.
-        @attribute {Boolean} showInfo
-        @default true
-    **/
-    showInfo: true,
     /**
         Show debug panel.
         @attribute {Boolean} showPanel
