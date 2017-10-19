@@ -361,10 +361,10 @@ game.createClass('Debug', {
             var height = bounds.height * game.scale;
 
             var bounds = container._getBounds();
-            var hx = bounds.x;
-            var hy = bounds.y;
-            var hw = bounds.width;
-            var hh = bounds.height;
+            var hx = bounds.x * game.scale;
+            var hy = bounds.y * game.scale;
+            var hw = bounds.width * game.scale;
+            var hh = bounds.height * game.scale;
 
             context.setTransform(1, 0, 0, 1, hx, hy);
             context.fillRect(0, 0, hw, hh);
