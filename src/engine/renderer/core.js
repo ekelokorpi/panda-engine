@@ -48,6 +48,7 @@ game.createClass('Renderer', {
             this.canvas.id = game.System.canvasId;
             this.canvas.style.display = 'block';
             this.canvas.style.outline = 'none';
+            if (game.Renderer.scaleMode === 'nearest') this.canvas.style.imageRendering = 'pixelated';
             this.canvas.tabIndex = 1;
             document.body.appendChild(this.canvas);
             if (!game.System.center) document.body.style.margin = 0;

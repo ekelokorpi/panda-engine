@@ -208,6 +208,7 @@ var game = {
         if (!this[className]) throw 'Class ' + className + ' not found';
 
         for (var name in attributes) {
+            if (this[className][name]) continue;
             this[className][name] = attributes[name];
         }
     },
@@ -295,8 +296,8 @@ var game = {
         if (!this[extend]) throw 'Class ' + extend + ' not found';
 
         this[name] = this[extend].extend(content);
-        this[name].prototype.name = name;
-        this[name].prototype.extend = extend;
+        this[name]._name = name;
+        this[name]._extend = extend;
         this._currentModule.classes.push({ name: name, extend: extend });
         return this[name];
     },
@@ -974,10 +975,6 @@ var game = {
 **/
 game.Class = function() {};
 /**
-    Name of class.
-    @property {String} name
-**/
-/**
     Extend class.
     @method extend
     @static
@@ -1080,6 +1077,16 @@ game.Class.extend = function(prop) {
             }
         }
     };
+    /**
+        Name of the class that this class is extended from.
+        @attribute {String} _extend
+        @private
+    **/
+    /**
+        Name of the class.
+        @attribute {String} _name
+        @private
+    **/
 
     return Class;
 };

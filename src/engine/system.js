@@ -400,6 +400,7 @@ game.createClass('System', {
         @private
     **/
     _startRunLoop: function() {
+        if (!this.scene) return;
         if (this._runLoopId) this._stopRunLoop();
         this._runLoopId = game._setGameLoop(this._run.bind(this));
         this._running = true;
