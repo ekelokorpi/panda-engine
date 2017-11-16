@@ -14,20 +14,8 @@ game.module(
     @param {Number} y
     @param {Number} startAngle
     @param {Number} endAngle
-    @param {Boolean} counterClock
-    @param {Boolean} closePath
 **/
 game.createClass('Arc', {
-    /**
-        @property {Boolean} closePath
-        @default false
-    **/
-    closePath: false,
-    /**
-        @property {Boolean} counterClock
-        @default false
-    **/
-    counterClock: false,
     /**
         @property {Number} endAngle
         @default 0
@@ -55,12 +43,10 @@ game.createClass('Arc', {
     **/
     y: 0,
 
-    staticInit: function(radius, x, y, startAngle, endAngle, counterClock, closePath) {
-        this.closePath = closePath || this.closePath;
-        this.counterClock = counterClock || this.counterClock;
+    staticInit: function(radius, x, y, startAngle, endAngle,) {
+        this.startAngle = startAngle || this.startAngle;
         this.endAngle = endAngle || this.endAngle;
         this.radius = radius || this.radius;
-        this.startAngle = startAngle || this.startAngle;
         this.x = x || this.x;
         this.y = y || this.y;
     }
@@ -93,8 +79,8 @@ game.createClass('Circle', {
 
     staticInit: function(radius, x, y) {
         this.radius = radius || this.radius;
-        this.x = typeof x === 'number' ? x : this.x;
-        this.y = typeof y === 'number' ? y : this.y;
+        this.x = x || this.x;
+        this.y = y || this.y;
     }
 });
 

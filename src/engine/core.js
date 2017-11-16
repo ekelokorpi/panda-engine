@@ -102,7 +102,6 @@ var game = {
         @private
     **/
     _coreModules: [
-        'engine.analytics',
         'engine.audio',
         'engine.camera',
         'engine.debug',
@@ -508,7 +507,6 @@ var game = {
         if (this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.Storage && this.Storage.id) this.storage = new this.Storage();
-        if (this.Analytics && this.Analytics.id) this.analytics = new this.Analytics();
 
         // Load plugins
         for (var name in this.plugins) {

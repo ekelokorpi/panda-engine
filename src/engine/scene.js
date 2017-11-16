@@ -110,6 +110,8 @@ game.createClass('Scene', {
     /**
         Called, before scene is changed.
         @method exit
+        @param {String} sceneName
+        @return {Boolean} Return true to abort exit.
     **/
     exit: function() {},
 
@@ -231,9 +233,10 @@ game.createClass('Scene', {
 
     /**
         @method _exit
+        @param {String} sceneName
         @private
     **/
-    _exit: function() {
+    _exit: function(sceneName) {
         if (game.audio && game.Audio.stopOnSceneChange) {
             game.audio.stopMusic();
             for (var i = 0; i < game.audio.sounds.length; i++) {
@@ -241,7 +244,8 @@ game.createClass('Scene', {
             }
         }
         
-        this.exit();
+        var exit = this.exit(sceneName);
+        return exit;
     },
 
     /**

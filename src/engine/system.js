@@ -66,10 +66,10 @@ game.createClass('System', {
     **/
     width: 0,
     /**
-        @property {Scene} _newSceneClass
+        @property {String} _newSceneName
         @private
     **/
-    _newSceneClass: null,
+    _newSceneName: null,
     /**
         @property {Boolean} _pausedOnHide
         @private
@@ -242,13 +242,12 @@ game.createClass('System', {
         @param {String} [param]
     **/
     setScene: function(sceneName, param) {
-        var sceneClass = game[sceneName];
-        if (!sceneClass) throw 'Scene ' + sceneName + ' not found';
+        if (!game[sceneName]) throw 'Scene ' + sceneName + ' not found';
         if (this._running && !this.paused) {
-            this._newSceneClass = sceneClass;
+            this._newSceneName = sceneName;
             this._newSceneParam = param;
         }
-        else this._setSceneNow(sceneClass, param);
+        else this._setSceneNow(sceneName, param);
     },
 
     /**
@@ -340,7 +339,7 @@ game.createClass('System', {
         game.input._update();
         this.scene._update();
 
-        if (this._newSceneClass) this._setSceneNow(this._newSceneClass, this._newSceneParam);
+        if (this._newSceneName) this._setSceneNow(this._newSceneName, this._newSceneParam);
     },
 
     /**
@@ -371,16 +370,16 @@ game.createClass('System', {
 
     /**
         @method _setSceneNow
-        @param {Scene} sceneClass
+        @param {String} sceneName
         @param {*} [param]
         @private
     **/
-    _setSceneNow: function(sceneClass, param) {
+    _setSceneNow: function(sceneName, param) {
+        this._newSceneName = null;
+        if (this.scene && this.scene._exit(sceneName)) return;
         if (this.paused) this.paused = false;
-        if (this.scene) this.scene._exit();
         game.TilingSprite.clearCache();
-        this.scene = new (sceneClass)(param);
-        this._newSceneClass = null;
+        this.scene = new game[sceneName](param);
         this._startRunLoop();
     },
 

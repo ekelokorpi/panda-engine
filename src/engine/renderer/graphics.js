@@ -77,13 +77,11 @@ game.createClass('Graphics', 'Container', {
         @param {Number} radius
         @param {Number} startAngle
         @param {Number} endAngle
-        @param {Boolean} counterClock
-        @param {Boolean} closePath
         @chainable
     **/
-    drawArc: function(x, y, radius, startAngle, endAngle, counterClock, closePath) {
+    drawArc: function(x, y, radius, startAngle, endAngle) {
         radius *= game.scale;
-        var shape = new game.Arc(radius, x, y, startAngle, endAngle, counterClock, closePath);
+        var shape = new game.Arc(radius, x, y, startAngle, endAngle);
         this._drawShape(shape);
         return this;
     },
@@ -316,12 +314,9 @@ game.createClass('GraphicsShape', {
             context.rect(x, y, shape.width, shape.height);
         }
         else if (shape.radius) {
-            if (shape.startAngle && shape.endAngle) {
-                context.arc(x, y, shape.radius, shape.startAngle, shape.endAngle, shape.counterClock);
-                if (shape.closePath) {
-                    context.lineTo(x, y);
-                    context.closePath();
-                }
+            if (typeof shape.startAngle === 'number' && typeof shape.endAngle === 'number') {
+                context.arc(x, y, shape.radius, shape.startAngle, shape.endAngle);
+                context.closePath();
             }
             else {
                 context.arc(x, y, shape.radius, 0, Math.PI * 2);

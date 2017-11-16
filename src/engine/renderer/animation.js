@@ -13,7 +13,7 @@ game.module(
     @class Animation
     @extends Sprite
     @constructor
-    @param {Array|String} textures Array of textures or name of JSON file
+    @param {Array|String} textures Array of textures or name of atlas file
 **/
 game.createClass('Animation', 'Sprite', {
     /**
@@ -82,7 +82,7 @@ game.createClass('Animation', 'Sprite', {
         this.currentAnim = this;
         this.textures = this.textures || textures;
 
-        if (typeof this.textures === 'string' && this.textures.indexOf('json') !== -1) {
+        if (typeof this.textures === 'string' && this.textures.indexOf('atlas') !== -1) {
             var json = game.getJSON(this.textures);
             this.textures = [];
             for (var name in json.frames) {

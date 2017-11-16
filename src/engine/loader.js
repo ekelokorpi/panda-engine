@@ -231,17 +231,17 @@ game.createClass('Loader', 'Scene', {
         @param {XMLHttpRequest} request
     **/
     parseJSON: function(filePath, callback, request) {
-        if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
+        if (!request.responseText || request.status === 404) callback('Error parsing file ' + filePath);
 
         var json = JSON.parse(request.responseText);
+        game.json[filePath] = json;
         if (json.frames) {
-            // Sprite sheet
+            // Atlas
             json.meta.image = this._getFolder(filePath) + json.meta.image;
             var image = game._getFilePath(json.meta.image);
             this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
             return;
         }
-        game.json[filePath] = json;
         
         callback();
     },
