@@ -12,13 +12,13 @@ game.module(
 
 /**
     Particle emitter.
-    @class Emitter
+    @class Particles
     @extends FastContainer
     @constructor
     @param {String|Array} textures Name of texture or array of texture names.
     @param {Object} [options]
 **/
-game.createClass('Emitter', 'FastContainer', {
+game.createClass('Particles', 'FastContainer', {
     /**
         Acceleration angle in radians.
         @property {Number} accelAngle
@@ -240,7 +240,7 @@ game.createClass('Emitter', 'FastContainer', {
             if (typeof textures === 'string') this.textures.push(textures);
             else this.textures = textures;
         }
-        this._poolName = game.Emitter.poolName;
+        this._poolName = game.Particles.poolName;
         this.startPos = new game.Vector();
         this.startPosVar = new game.Vector();
         this.target = new game.Vector();
@@ -393,7 +393,7 @@ game.createClass('Emitter', 'FastContainer', {
     }
 });
 
-game.addAttributes('Emitter', {
+game.addAttributes('Particles', {
     /**
         @attribute {String} poolName
         @default particle

@@ -488,8 +488,8 @@ game.createClass('Debug', {
     _updatePanel: function() {
         this.text = '';
         this._addText(game.version);
-        this._addText('CANVAS', game.renderer.canvas.width + 'x' + game.renderer.canvas.height);
         this._addText('FPS', this.fps);
+        this._addText('CANVAS', game.renderer.canvas.width + 'x' + game.renderer.canvas.height);
         this._addText('DRAWS', this._draws);
         this._addText('BODIES', this._bodies.length);
         this._addText('UPDATES', game.scene.objects.length);

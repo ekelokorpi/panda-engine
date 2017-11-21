@@ -113,11 +113,13 @@ game.createClass('Audio', {
         @method playSound
         @param {String} name
         @param {Number} [volume]
+        @return {Sound}
     **/
     playSound: function(name, volume) {
         var sound = new game.Sound(name);
         sound.volume = volume || sound.volume;
         sound.play();
+        return sound;
     },
 
     /**

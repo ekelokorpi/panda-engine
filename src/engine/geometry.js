@@ -43,7 +43,7 @@ game.createClass('Arc', {
     **/
     y: 0,
 
-    staticInit: function(radius, x, y, startAngle, endAngle,) {
+    staticInit: function(radius, x, y, startAngle, endAngle) {
         this.startAngle = startAngle || this.startAngle;
         this.endAngle = endAngle || this.endAngle;
         this.radius = radius || this.radius;
