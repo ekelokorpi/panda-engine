@@ -442,7 +442,8 @@ game.createClass('Tween', {
 game.addAttributes('Tween', {
     /**
         Shorthand for adding tween.
-        @method addTween
+        @method add
+        @static
         @param {Object} obj
         @param {Object} props
         @param {Number} time
@@ -461,6 +462,10 @@ game.addAttributes('Tween', {
 
     /**
         @attribute {Object} Easing
+        @example
+            Linear
+            Quadratic
+            Cubic
     **/
     Easing: {
         Linear: {
