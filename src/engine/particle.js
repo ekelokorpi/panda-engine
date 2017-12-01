@@ -314,7 +314,9 @@ game.createClass('Particles', 'FastContainer', {
         @private
     **/
     _addParticle: function() {
-        if (!this.randomTexture) var texture = this.textures.random();
+        if (!this.randomTexture) {
+            var texture = this.textures.random();
+        }
         else {
             var texture = this.textures[this._currentTexture];
             this._currentTexture++;

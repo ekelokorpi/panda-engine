@@ -75,7 +75,7 @@ game.createClass('Sprite', 'Container', {
 
         context.fillStyle = tint.substr(0, 7);
         context.globalAlpha = alpha || 1.0;
-        context.fillRect(0 ,0 , canvas.width, canvas.height);
+        context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalAlpha = 1.0;
 
         var blendMode = this.blendMode;
