@@ -1,6 +1,10 @@
-# Panda 2 Engine
+![Panda 2 Logo](http://panda2.io/img/logo2.png)
 
-Game engine for Panda 2 game development platform.
+# Panda Engine
+
+Panda Engine is a part of Panda 2 Game Development Platform, for more information please visit:
+
+https://panda2.io
 
 ## Credits
 
@@ -9,4 +13,4 @@ Game engine for Panda 2 game development platform.
 
 ## License
 
-- Released under the [MIT License](http://opensource.org/licenses/MIT).
+- Panda Engine is released under the [MIT License](http://opensource.org/licenses/MIT).
