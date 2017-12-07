@@ -4,7 +4,7 @@
 
 Panda Engine is a part of Panda 2 Game Development Platform, for more information please visit:
 
-https://panda2.io
+https://www.panda2.io
 
 ## Credits
 

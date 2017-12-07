@@ -210,7 +210,7 @@ game.createClass('Particles', 'FastContainer', {
     velRotateVar: 0,
     /**
         @property {Number} _currentTexture
-        @default 0
+        @private
     **/
     _currentTexture: 0,
     /**
