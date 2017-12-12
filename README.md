@@ -1,6 +1,6 @@
-![Panda 2 Logo](http://panda2.io/img/logo2.png)
-
 # Panda Engine
+
+[![Panda 2 Logo](https://www.panda2.io/img/logo_github.png)](https://www.panda2.io/)
 
 Panda Engine is a part of Panda 2 Game Development Platform, for more information please visit:
 
@@ -9,7 +9,7 @@ https://www.panda2.io
 ## Credits
 
 - Made by Eemeli Kelokorpi
-- Renderer based on [Pixi.js](http://www.pixijs.com) by Mat Groves, Goodboy Digital
+- Renderer based on [PixiJS](http://www.pixijs.com) by Mat Groves, Goodboy Digital
 
 ## License
 
