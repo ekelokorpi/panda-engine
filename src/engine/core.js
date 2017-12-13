@@ -91,7 +91,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.0.0',
+    version: '2.0.1',
     /**
         @property {Boolean} _booted
         @private
@@ -297,6 +297,7 @@ var game = {
         this[name] = this[extend].extend(content);
         this[name]._name = name;
         this[name]._extend = extend;
+        this[name]._content = content;
         this._currentModule.classes.push({ name: name, extend: extend });
         return this[name];
     },
@@ -486,6 +487,7 @@ var game = {
         var i, modules = Array.prototype.slice.call(arguments);
         for (i = 0; i < modules.length; i++) {
             var name = modules[i];
+            if (this.config.ignoreModules && this.config.ignoreModules.indexOf(name) !== -1) continue;
             if (name && this._current.requires.indexOf(name) === -1) this._current.requires.push(name);
         }
         return this;
