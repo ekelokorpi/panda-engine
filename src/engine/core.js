@@ -91,7 +91,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.0.1',
+    version: '2.0.2',
     /**
         @property {Boolean} _booted
         @private
@@ -704,6 +704,8 @@ var game = {
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
         this.device.facebook = /FB/i.test(navigator.userAgent);
         this.device.wiiu = /Nintendo WiiU/i.test(navigator.userAgent);
+        this.device.xbox = /Xbox/i.test(navigator.userAgent);
+        this.device.xboxOne = /Xbox One/i.test(navigator.userAgent);
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
 
