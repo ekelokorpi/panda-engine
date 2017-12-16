@@ -510,7 +510,4 @@ game.createClass('PhysicsSprite', 'Sprite', {
     }
 });
 
-// Deprecated
-game.World = game.Physics;
-
 });

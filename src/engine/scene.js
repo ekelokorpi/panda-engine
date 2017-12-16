@@ -330,7 +330,6 @@ game.createClass('Scene', {
         @private
     **/
     _update: function() {
-        this.update();
         for (var i = 0; i < this._updateOrder.length; i++) {
             this['_update' + this._updateOrder[i]]();
         }
@@ -369,6 +368,14 @@ game.createClass('Scene', {
     **/
     _updateRenderer: function() {
         game.renderer._render(this.stage);
+    },
+
+    /**
+        @method _updateScene
+        @private
+    **/
+    _updateScene: function() {
+        this.update();
     },
 
     /**
@@ -416,15 +423,16 @@ game.addAttributes('Scene', {
     **/
     swipeTime: 500,
     /**
-        Update order for scene.
+        Update order for each frame.
         @attribute {Array} updateOrder
-        @default tweens,physics,timers,objects,renderer
+        @default physics,tweens,collision,timers,scene,objects,renderer
     **/
     updateOrder: [
         'physics',
         'tweens',
         'collision',
         'timers',
+        'scene',
         'objects',
         'renderer'
     ]

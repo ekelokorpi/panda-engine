@@ -388,7 +388,7 @@ game.createClass('Loader', 'Scene', {
             var filePath = this._queue[i];
             if (!filePath) continue;
             var fileType = filePath.split('?').shift().split('.').pop().toLowerCase();
-            var loadFunc = 'load' + game.Loader.formats[fileType];
+            var loadFunc = game.Loader.formats[fileType];
 
             if (!this[loadFunc]) {
                 for (var i = game.Audio.formats.length - 1; i >= 0; i--) {
@@ -432,12 +432,12 @@ game.addAttributes('Loader', {
         @private
     **/
     formats: {
-        atlas: 'Atlas',
-        png: 'Image',
-        jpg: 'Image',
-        jpeg: 'Image',
-        json: 'JSON',
-        fnt: 'Font'
+        atlas: 'loadAtlas',
+        png: 'loadImage',
+        jpg: 'loadImage',
+        jpeg: 'loadImage',
+        json: 'loadJSON',
+        fnt: 'loadFont'
     },
     /**
         How many files to load at same time.

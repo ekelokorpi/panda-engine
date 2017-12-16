@@ -495,7 +495,6 @@ game.createClass('Debug', {
         this._addText('UPDATES', game.scene.objects.length);
         this._addText('TWEENS', game.scene.tweens.length);
         this._addText('TIMERS', game.scene.timers.length);
-        // this._addText('INPUTS', game.input.items.length);
         this._addText('HIRES', game.scale);
         this.panel.innerHTML = this.text;
     }
