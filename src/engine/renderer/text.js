@@ -372,7 +372,7 @@ game.createClass('SystemText', 'Container', {
 
     staticInit: function(text, props) {
         this.super(props);
-        this.text = text;
+        this.text = text || this.text;
     },
 
     _renderCanvas: function(context) {

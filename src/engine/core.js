@@ -681,11 +681,12 @@ var game = {
         var androidVer = navigator.userAgent.match(/Android.*AppleWebKit\/([\d.]+)/);
         this.device.androidStock = !!(androidVer && androidVer[1] < 537);
         
-        // Internet Explorer
+        // Microsoft
         this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
         this.device.ie10 = /MSIE 10/i.test(navigator.userAgent);
         this.device.ie11 = /rv:11.0/i.test(navigator.userAgent);
         this.device.ie = this.device.ie10 || this.device.ie11 || this.device.ie9;
+        this.device.edge = /Edge/i.test(navigator.userAgent);
 
         // Windows Phone
         this.device.wp7 = /Windows Phone OS 7/i.test(navigator.userAgent);
@@ -695,6 +696,11 @@ var game = {
         // Windows Tablet
         this.device.wt = (this.device.ie && /Tablet/i.test(navigator.userAgent));
 
+        // Consoles
+        this.device.wiiu = /Nintendo WiiU/i.test(navigator.userAgent);
+        this.device.xbox = /Xbox/i.test(navigator.userAgent);
+        this.device.xboxOne = /Xbox One/i.test(navigator.userAgent);
+
         // Others
         this.device.safari = /Safari/i.test(navigator.userAgent);
         this.device.opera = /Opera/i.test(navigator.userAgent) || /OPR/i.test(navigator.userAgent);
@@ -703,18 +709,20 @@ var game = {
         this.device.cocoonCanvasPlus = /CocoonJS/i.test(navigator.browser);
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
         this.device.facebook = /FB/i.test(navigator.userAgent);
-        this.device.wiiu = /Nintendo WiiU/i.test(navigator.userAgent);
-        this.device.xbox = /Xbox/i.test(navigator.userAgent);
-        this.device.xboxOne = /Xbox One/i.test(navigator.userAgent);
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
 
         if (typeof navigator.plugins === 'undefined' || navigator.plugins.length === 0) {
-            try {
-                new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-                this.device.flash = true;
+            if (window.ActiveXObject) {
+                try {
+                    new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+                    this.device.flash = true;
+                }
+                catch (err) {
+                    this.device.flash = false;
+                }
             }
-            catch (err) {
+            else {
                 this.device.flash = false;
             }
         }
