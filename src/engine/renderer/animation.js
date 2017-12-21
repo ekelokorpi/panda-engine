@@ -10,6 +10,7 @@ game.module(
 .body(function() {
 
 /**
+    Animation that is generated from multiple textures.
     @class Animation
     @extends Sprite
     @constructor

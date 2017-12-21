@@ -7,6 +7,7 @@ game.module(
 .body(function() {
 
 /**
+    Animate objects by tweening it's values.
     @class Tween
     @constructor
     @param {Object} object

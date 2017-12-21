@@ -134,6 +134,7 @@ game.createClass('Rectangle', {
 });
 
 /**
+    Basic vector class with two values.
     @class Vector
     @constructor
     @param {Number} [x]

@@ -11,7 +11,7 @@ game.module(
 .body(function() {
 
 /**
-    Particle emitter.
+    Particle emitter, that emits particles using Particle class.
     @class Particles
     @extends FastContainer
     @constructor
@@ -404,6 +404,7 @@ game.addAttributes('Particles', {
 });
 
 /**
+    Particle sprite, that is emitted from Particles class.
     @class Particle
     @extends Sprite
 **/

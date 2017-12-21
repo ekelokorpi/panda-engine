@@ -981,6 +981,7 @@ var game = {
 };
 
 /**
+    Base class that every class extends from.
     @class Class
 **/
 game.Class = function() {};

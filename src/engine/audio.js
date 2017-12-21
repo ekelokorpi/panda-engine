@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 
 /**
-    Audio manager.
+    Audio manager. Instance automatically created at `game.audio`
     @class Audio
 **/
 game.createClass('Audio', {

@@ -10,6 +10,7 @@ game.module(
 .body(function() {
 
 /**
+    Special version of Container, that renders faster if it's sprites are not rotated.
     @class FastContainer
     @extends Container
 **/
