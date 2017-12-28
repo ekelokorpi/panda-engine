@@ -164,7 +164,7 @@ game.createClass('Renderer', {
 
 game.addAttributes('Renderer', {
     /**
-        Clear canvas on every animation frame.
+        Clear canvas on start of every frame.
         @attribute {Boolean} clearBeforeRender
         @default true
     **/
@@ -176,6 +176,7 @@ game.addAttributes('Renderer', {
     **/
     roundPixels: false,
     /**
+        Set scaleMode to nearest to disable smoothing (great for scaled pixel art).
         @attribute {String} scaleMode
         @default linear
     **/

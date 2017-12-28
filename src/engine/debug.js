@@ -275,8 +275,8 @@ game.createClass('Debug', {
         var context = game.renderer.context;
         var width = this._camera.sensorSize.x * game.scale;
         var height = this._camera.sensorSize.y * game.scale;
-        var x = (this._camera.sensorPosition.x * game.scale) + (this._camera.container.position.x * game.scale) - width / 2;
-        var y = (this._camera.sensorPosition.y * game.scale) + (this._camera.container.position.y * game.scale) - height / 2;
+        var x = (this._camera.sensorPosition.x * game.scale) + (this._camera._container.position.x * game.scale) - width / 2;
+        var y = (this._camera.sensorPosition.y * game.scale) + (this._camera._container.position.y * game.scale) - height / 2;
 
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = game.Debug.cameraAlpha;
