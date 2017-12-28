@@ -360,14 +360,37 @@ game.addAttributes('Text', {
     @extends Container
     @constructor
     @param {String} text
-    @param {String} font
     @param {Object} [props]
 **/
 game.createClass('SystemText', 'Container', {
+    /**
+        Align of the text. Can be left, right or center.
+        @property {String} align
+        @default left
+    **/
     align: 'left',
+    /**
+        Color of the text.
+        @property {String} color
+        @default #fff
+    **/
     color: '#fff',
+    /**
+        Font used for the text.
+        @property {String} font
+        @default Arial
+    **/
     font: 'Arial',
+    /**
+        Size of the text.
+        @property {Number} size
+        @default 14
+    **/
     size: 14,
+    /**
+        Current text.
+        @property {String} text
+    **/
     text: '',
 
     staticInit: function(text, props) {
