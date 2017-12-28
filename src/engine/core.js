@@ -4,15 +4,17 @@
 **/
 var game = {
     /**
+        Instance of Audio class.
         @property {Audio} audio
     **/
     audio: null,
     /**
-        Engine config.
+        Game config.
         @property {Object} config
     **/
     config: {},
     /**
+        Instance of Debug class.
         @property {Debug} debug
     **/
     debug: null,
@@ -27,6 +29,7 @@ var game = {
     **/
     devicemotion: null,
     /**
+        Instance of Input class.
         @property {Input} input
     **/
     input: null,
@@ -42,10 +45,12 @@ var game = {
     **/
     json: {},
     /**
+        Instance of Keyboard class.
         @property {Keyboard} keyboard
     **/
     keyboard: null,
     /**
+        Texture of Panda 2 logo.
         @property {Texture} logo
     **/
     logo: null,
@@ -60,7 +65,7 @@ var game = {
     **/
     modules: {},
     /**
-        List of media paths.
+        List of asset paths.
         @property {Object} paths
     **/
     paths: {},
@@ -70,6 +75,7 @@ var game = {
     **/
     plugins: {},
     /**
+        Instance of Pool class.
         @property {Pool} pool
     **/
     pool: null,
@@ -80,10 +86,12 @@ var game = {
     **/
     scale: 1,
     /**
+        Instance of Storage class.
         @property {Storage} storage
     **/
     storage: null,
     /**
+        Instance of System class.
         @property {System} system
     **/
     system: null,
@@ -182,7 +190,7 @@ var game = {
     _waitForLoad: 0,
 
     /**
-        Add asset to load queue.
+        Add asset to load queue. Path is relative to media folder. If not id defined, path will be used as id.
         @method addAsset
         @param {String} path
         @param {String} [id]
@@ -494,7 +502,7 @@ var game = {
     },
 
     /**
-        Start engine.
+        Start engine. By default, this is called automatically.
         @method start
     **/
     start: function() {
