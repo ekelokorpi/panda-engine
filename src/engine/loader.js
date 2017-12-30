@@ -84,7 +84,6 @@ game.createClass('Loader', 'Scene', {
 
         if (scene) {
             this.init();
-            this.start();
         }
         return true;
     },
@@ -412,6 +411,11 @@ game.createClass('Loader', 'Scene', {
 
             if (this._loadCount === game.Loader.maxFiles) return;
         }
+    },
+
+    _update: function() {
+        this.super();
+        if (this.scene && !this.started) this.start();
     }
 });
 
