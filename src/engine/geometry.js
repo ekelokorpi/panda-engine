@@ -126,10 +126,10 @@ game.createClass('Rectangle', {
         @param {Number} y
     **/
     set: function(width, height, x, y) {
-        this.width = width || this.width;
+        this.width = typeof width === 'number' ? width : this.width;
         this.height = typeof height === 'number' ? height : this.width;
-        this.x = x || this.x;
-        this.y = y || this.y;
+        this.x = typeof x === 'number' ? x : this.x;
+        this.y = typeof y === 'number' ? y : this.y;
     }
 });
 
