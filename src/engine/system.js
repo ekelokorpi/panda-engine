@@ -236,12 +236,13 @@ game.createClass('System', {
     },
 
     /**
-        Change current scene.
+        Change current scene. If you don't define sceneName, current scene will be restarted.
         @method setScene
         @param {String} sceneName
         @param {String} [param]
     **/
     setScene: function(sceneName, param) {
+        if (!sceneName && this.scene) sceneName = this.scene.constructor._name;
         if (!game[sceneName]) throw 'Scene ' + sceneName + ' not found';
         if (this._running && !this.paused) {
             this._newSceneName = sceneName;
