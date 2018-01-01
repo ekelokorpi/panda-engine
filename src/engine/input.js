@@ -392,7 +392,7 @@ game.createClass('Keyboard', {
     init: function() {
         window.addEventListener('keydown', this._keydown.bind(this));
         window.addEventListener('keyup', this._keyup.bind(this));
-        window.addEventListener('blur', this._resetKeys.bind(this));
+        window.addEventListener('blur', this._reset.bind(this));
     },
 
     /**
@@ -437,10 +437,10 @@ game.createClass('Keyboard', {
     },
 
     /**
-        @method _resetKeys
+        @method _reset
         @private
     **/
-    _resetKeys: function() {
+    _reset: function() {
         for (var key in this._keysDown) {
             this._keysDown[key] = false;
         }

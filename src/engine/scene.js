@@ -74,6 +74,7 @@ game.createClass('Scene', {
         }
 
         game.input._reset();
+        game.keyboard._reset();
 
         game.scene = this;
         
