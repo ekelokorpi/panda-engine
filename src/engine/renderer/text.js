@@ -12,7 +12,7 @@ game.module(
 /**
     @class Font
     @constructor
-    @param {Object} data
+    @param {XML|JSON} data
 **/
 game.createClass('Font', {
     /**
@@ -33,27 +33,55 @@ game.createClass('Font', {
     spaceWidth: 0,
 
     staticInit: function(data) {
-        var image = data.getElementsByTagName('page')[0].getAttribute('file');
-        var info = data.getElementsByTagName('info')[0];
-        var common = data.getElementsByTagName('common')[0];
-        var chars = data.getElementsByTagName('char');
-
+        if (data.getElementsByTagName) {
+            var image = data.getElementsByTagName('page')[0].getAttribute('file');
+            var info = data.getElementsByTagName('info')[0];
+            var common = data.getElementsByTagName('common')[0];
+            var chars = data.getElementsByTagName('char');
+        }
+        else {
+            var image = data.pages[0].file;
+            var info = data.info;
+            var common = data.common;
+            var chars = data.chars;
+        }
+        
         this.baseTexture = game.BaseTexture.fromImage(game._getFilePath(image));
-        this.lineHeight = parseInt(common.getAttribute('lineHeight'));
+        if (data.getElementsByTagName) this.lineHeight = parseInt(common.getAttribute('lineHeight'));
+        else this.lineHeight = parseInt(common.lineHeight);
         
         for (var i = 0; i < chars.length; i++) {
-            var xadvance = parseInt(chars[i].getAttribute('xadvance'));
-            var id = parseInt(chars[i].getAttribute('id'));
+            if (data.getElementsByTagName) {
+                var xadvance = parseInt(chars[i].getAttribute('xadvance'));
+                var id = parseInt(chars[i].getAttribute('id'));
+            }
+            else {
+                var xadvance = parseInt(chars[i].xadvance);
+                var id = parseInt(chars[i].id);
+            }
+            
             if (id === 32) {
                 this.spaceWidth = xadvance;
                 continue;
             }
-            var xoffset = parseInt(chars[i].getAttribute('xoffset'));
-            var yoffset = parseInt(chars[i].getAttribute('yoffset'));
-            var x = parseInt(chars[i].getAttribute('x')) / game.scale;
-            var y = parseInt(chars[i].getAttribute('y')) / game.scale;
-            var width = parseInt(chars[i].getAttribute('width')) / game.scale;
-            var height = parseInt(chars[i].getAttribute('height')) / game.scale;
+
+            if (data.getElementsByTagName) {
+                var xoffset = parseInt(chars[i].getAttribute('xoffset'));
+                var yoffset = parseInt(chars[i].getAttribute('yoffset'));
+                var x = parseInt(chars[i].getAttribute('x')) / game.scale;
+                var y = parseInt(chars[i].getAttribute('y')) / game.scale;
+                var width = parseInt(chars[i].getAttribute('width')) / game.scale;
+                var height = parseInt(chars[i].getAttribute('height')) / game.scale;
+            }
+            else {
+                var xoffset = parseInt(chars[i].xoffset);
+                var yoffset = parseInt(chars[i].yoffset);
+                var x = parseInt(chars[i].x) / game.scale;
+                var y = parseInt(chars[i].y) / game.scale;
+                var width = parseInt(chars[i].width) / game.scale;
+                var height = parseInt(chars[i].height) / game.scale;
+            }
+
             var texture = new game.Texture(this.baseTexture, x, y, width, height);
 
             this.chars[id] = {
@@ -75,11 +103,17 @@ game.addAttributes('Font', {
     /**
         @method fromData
         @static
-        @param {Object} data
+        @param {XML|JSON} data
     **/
     fromData: function(data) {
-        var info = data.getElementsByTagName('info')[0];
-        var face = info.getAttribute('face');
+        if (data.getElementsByTagName) {
+            var info = data.getElementsByTagName('info')[0];
+            var face = info.getAttribute('face');
+        }
+        else {
+            var face = data.info.face;
+        }
+        
         var font = game.Font.cache[face];
 
         if (!font) {

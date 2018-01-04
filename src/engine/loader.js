@@ -116,6 +116,16 @@ game.createClass('Loader', 'Scene', {
     },
 
     /**
+        @method generateFont
+        @param {XML|JSON} data
+        @param {Function} callback
+    **/
+    generateFont: function(data, callback) {
+        game.Font.fromData(data);
+        callback();
+    },
+
+    /**
         @method loadAtlas
         @param {String} filePath
         @param {Function} callback
@@ -154,7 +164,7 @@ game.createClass('Loader', 'Scene', {
         @param {Function} callback
     **/
     loadFont: function(filePath, callback) {
-        this.loadFile(filePath, this.parseXML.bind(this, filePath, callback));
+        this.loadFile(filePath, this.parseFont.bind(this, filePath, callback));
     },
 
     /**
@@ -215,12 +225,72 @@ game.createClass('Loader', 'Scene', {
 
     /**
         @method parseFont
-        @param {XML} data
+        @param {String} filePath
         @param {Function} callback
+        @param {XMLHttpRequest} request
     **/
-    parseFont: function(data, callback) {
-        game.Font.fromData(data);
-        callback();
+    parseFont: function(filePath, callback, request) {
+        if (!request.responseText || request.status === 404) callback('Error loading font ' + filePath);
+
+        var text = request.responseText.split('\n');
+        if (text[0].indexOf('xml') !== -1) {
+            // XML
+            var responseXML = request.responseXML;
+            if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
+                if (typeof window.DOMParser === 'function') {
+                    var domparser = new DOMParser();
+                    responseXML = domparser.parseFromString(request.responseText, 'text/xml');
+                }
+                else {
+                    var div = document.createElement('div');
+                    div.innerHTML = request.responseText;
+                    responseXML = div;
+                }
+            }
+
+            var pages = responseXML.getElementsByTagName('page');
+            if (pages.length) {
+                var folder = this._getFolder(filePath);
+                var font = pages[0].getAttribute('file');
+                pages[0].setAttribute('file', folder + font);
+                var image = game._getFilePath(folder + font);
+                this.loadImage(image, this.generateFont.bind(this, responseXML, callback));
+            }
+        }
+        else {
+            // BMfont
+            var font = {
+                pages: [],
+                chars: [],
+                kernings: []
+            };
+            for (var i = 0; i < text.length; i++) {
+                if (text[i].length === 0) continue; // Skip empty lines
+                var lineData = text[i].split(' ');
+                var name = lineData.shift();
+                if (name === 'char' || name === 'kerning' || name === 'page') {
+                    var fontData = {};
+                    for (var o = 0; o < lineData.length; o++) {
+                        var cont = lineData[o].split('=');
+                        fontData[cont[0]] = cont[1].replace(/['"]+/g, '');
+                    }
+                    font[name + 's'].push(fontData);
+                }
+                else if (name === 'chars' || name === 'kernings') {
+                    // Do nothing
+                }
+                else {
+                    font[name] = {};
+                    for (var o = 0; o < lineData.length; o++) {
+                        var cont = lineData[o].split('=');
+                        font[name][cont[0]] = cont[1].replace(/['"]+/g, '');
+                    }
+                }
+            }
+            var folder = this._getFolder(filePath);
+            var image = game._getFilePath(folder + font.pages[0].file);
+            this.loadImage(image, this.generateFont.bind(this, font, callback));
+        }
     },
 
     /**
@@ -266,38 +336,6 @@ game.createClass('Loader', 'Scene', {
         }
 
         callback();
-    },
-
-    /**
-        @method parseXML
-        @param {String} filePath
-        @param {Function} callback
-        @param {XMLHttpRequest} request
-    **/
-    parseXML: function(filePath, callback, request) {
-        if (!request.responseText || request.status === 404) callback('Error loading XML ' + filePath);
-
-        var responseXML = request.responseXML;
-        if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
-            if (typeof window.DOMParser === 'function') {
-                var domparser = new DOMParser();
-                responseXML = domparser.parseFromString(request.responseText, 'text/xml');
-            }
-            else {
-                var div = document.createElement('div');
-                div.innerHTML = request.responseText;
-                responseXML = div;
-            }
-        }
-
-        var pages = responseXML.getElementsByTagName('page');
-        if (pages.length) {
-            var folder = this._getFolder(filePath);
-            var font = pages[0].getAttribute('file');
-            pages[0].setAttribute('file', folder + font);
-            var image = game._getFilePath(folder + font);
-            this.loadImage(image, this.parseFont.bind(this, responseXML, callback));
-        }
     },
 
     /**
