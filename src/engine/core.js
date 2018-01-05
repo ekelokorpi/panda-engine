@@ -682,7 +682,8 @@ var game = {
         this.device.iOS8 = (this.device.iOS && /OS 8/i.test(navigator.userAgent));
         this.device.iOS9 = (this.device.iOS && /OS 9/i.test(navigator.userAgent));
         this.device.iOS10 = (this.device.iOS && /OS 10/i.test(navigator.userAgent));
-
+        this.device.WKWebView = (this.device.iOS && window.webkit && window.webkit.messageHandlers);
+        
         // Android
         this.device.android = /android/i.test(navigator.userAgent);
         this.device.android2 = /android 2/i.test(navigator.userAgent);

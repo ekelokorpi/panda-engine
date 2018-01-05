@@ -152,9 +152,16 @@ game.createClass('Loader', 'Scene', {
     **/
     loadFile: function(filePath, callback) {
         var request = new XMLHttpRequest();
-        request.onload = callback.bind(this, request);
-        request.onerror = this._progress.bind(this, 'Error loading file ' + filePath);
-        request.open('GET', filePath + game._nocache, true);
+        
+        if (game.device.WKWebView) {
+            request.addEventListener('loadend', callback.bind(this, request));
+        }
+        else {
+            request.onload = callback.bind(this, request);
+            request.onerror = this._progress.bind(this, 'Error loading file ' + filePath);
+        }
+        request.responseType = "text";
+        request.open('GET', filePath);
         request.send();
     },
 
