@@ -276,10 +276,7 @@ game.createClass('Loader', 'Scene', {
                     }
                     font[name + 's'].push(fontData);
                 }
-                else if (name === 'chars' || name === 'kernings') {
-                    // Do nothing
-                }
-                else {
+                else if (name !== 'chars' && name !== 'kernings') {
                     font[name] = {};
                     for (var o = 0; o < lineData.length; o++) {
                         var cont = lineData[o].split('=');
