@@ -60,7 +60,7 @@ game.createClass('Audio', {
         
         game._normalizeVendorAttribute(window, 'AudioContext');
 
-        if (!window.AudioContext && !game.device.ejecta) {
+        if (!window.AudioContext && !game.device.ejecta && !game.device.cocoonJS) {
             game.Audio.enabled = false;
             return;
         }
