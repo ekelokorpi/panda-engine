@@ -163,7 +163,8 @@ game.createClass('System', {
             this.canvasHeight /= 2;
         }
 
-        window.addEventListener('resize', this._onWindowResize.bind(this));
+        if (game.device.WKWebView) window.addEventListener('orientationchange', this._onWindowResize.bind(this));
+        else window.addEventListener('resize', this._onWindowResize.bind(this));
         this._onWindowResize();
     },
 
@@ -437,8 +438,8 @@ game.createClass('System', {
         @private
     **/
     _updateWindowSize: function() {
-        this._windowWidth = window.innerWidth;
-        this._windowHeight = window.innerHeight;
+        this._windowWidth = game.device.WKWebView ? document.documentElement.clientWidth : window.innerWidth;
+        this._windowHeight = game.device.WKWebView ? document.documentElement.clientHeight : window.innerHeight;
     }
 });
 
