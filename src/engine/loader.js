@@ -160,7 +160,7 @@ game.createClass('Loader', 'Scene', {
             request.onload = callback.bind(this, request);
             request.onerror = this._progress.bind(this, 'Error loading file ' + filePath);
         }
-        request.responseType = "text";
+        
         request.open('GET', filePath);
         request.send();
     },
