@@ -115,11 +115,13 @@ game.createClass('Audio', {
         @method playSound
         @param {String} name
         @param {Number} [volume]
+        @param {Number} [rate]
         @return {Sound}
     **/
-    playSound: function(name, volume) {
+    playSound: function(name, volume, rate) {
         var sound = new game.Sound(name);
         sound.volume = volume || sound.volume;
+        sound.rate = rate || sound._rate;
         sound.play();
         return sound;
     },
