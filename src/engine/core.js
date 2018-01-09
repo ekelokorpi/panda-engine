@@ -24,11 +24,6 @@ var game = {
     **/
     device: {},
     /**
-        Device acceleration.
-        @property {DeviceAcceleration} devicemotion
-    **/
-    devicemotion: null,
-    /**
         Instance of Input class.
         @property {Input} input
     **/

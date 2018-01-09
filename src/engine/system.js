@@ -150,12 +150,6 @@ game.createClass('System', {
 
         if (game.System.resize) game.System.center = false;
 
-        if (game.device.mobile) {
-            window.addEventListener('devicemotion', function(event) {
-                game.accelerometer = event.accelerationIncludingGravity;
-            });
-        }
-
         this._initRenderer();
 
         if (this.retina) {

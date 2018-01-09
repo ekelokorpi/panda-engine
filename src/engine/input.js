@@ -18,6 +18,11 @@ game.createClass('Input', {
     **/
     items: [],
     /**
+        Device motion info.
+        @property {DeviceMotionEvent} motion
+    **/
+    motion: null,
+    /**
         Mouse position.
         @property {Vector} mouse
     **/
@@ -71,6 +76,7 @@ game.createClass('Input', {
         target.addEventListener('mouseout', this._mouseout.bind(this));
         window.addEventListener('blur', this._mouseout.bind(this));
         window.addEventListener('mouseup', this._mouseup.bind(this));
+        if (game.device.mobile) window.addEventListener('devicemotion', this._devicemotion.bind(this));
     },
 
     /**
@@ -84,6 +90,14 @@ game.createClass('Input', {
         var y = (event.clientY - rect.top) * (game.renderer.canvas.height / rect.height);
         event.canvasX = x / game.scale;
         event.canvasY = y / game.scale;
+    },
+
+    /**
+        @method _devicemotion
+        @param {DeviceMotionEvent} event
+    **/
+    _devicemotion: function(event) {
+        this.motion = event;
     },
 
     /**
