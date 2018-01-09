@@ -473,6 +473,13 @@ var game = {
         if (!this.paths[id]) return;
         var path = this.paths[id];
 
+        if (path.indexOf('.atlas') !== -1 && this.json[path]) {
+            var atlas = this.json[path];
+            for (var frame in atlas.frames) {
+                delete game.Texture.cache[frame];
+            }
+            delete game.BaseTexture.cache[game._getFilePath(atlas.meta.image)];
+        }
         if (game.Audio && game.Audio.cache[path]) delete game.Audio.cache[path];
         if (game.BaseTexture.cache[path]) delete game.BaseTexture.cache[path];
         if (game.Texture.cache[path]) delete game.Texture.cache[path];
