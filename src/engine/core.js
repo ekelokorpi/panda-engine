@@ -239,18 +239,6 @@ var game = {
     },
 
     /**
-        Clear engine cache.
-        @method clearCache
-    **/
-    clearCache: function() {
-        this.Texture.clearCache();
-        this.BaseTexture.clearCache();
-        this.Font.clearCache();
-        this.json = {};
-        this.paths = {};
-    },
-
-    /**
         Copy object.
         @method copy
         @param {Object} object
@@ -456,10 +444,11 @@ var game = {
         @method removeAllAssets
     **/
     removeAllAssets: function() {
-        if (game.Audio) game.Audio.clearCache();
-        game.BaseTexture.clearCache();
-        game.Texture.clearCache();
-        game.TilingSprite.clearCache();
+        if (this.Audio) this.Audio.clearCache();
+        this.BaseTexture.clearCache();
+        this.Texture.clearCache();
+        this.TilingSprite.clearCache();
+        this.Font.clearCache();
         this.json = {};
         this.paths = {};
     },
