@@ -150,6 +150,7 @@ game.createClass('Tween', {
         this.interpolationFunction = game.Tween.Interpolation.Linear;
 
         for (var field in object) {
+            if (typeof object[field] !== 'number') continue;
             this._valuesStart[field] = parseFloat(object[field], 10);
         }
     },
