@@ -75,6 +75,11 @@ var game = {
     **/
     pool: null,
     /**
+        Instance of Renderer class.
+        @property {Renderer} renderer
+    **/
+    renderer: null,
+    /**
         Scale multiplier for Retina and HiRes mode.
         @property {Number} scale
         @default 1
