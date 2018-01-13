@@ -174,6 +174,11 @@ var game = {
     **/
     _loadFinished: false,
     /**
+        @property {HTMLImageElement} _logoSource
+        @private
+    **/
+    _logoSource: null,
+    /**
         @property {Array} _moduleQueue
         @private
     **/
@@ -525,14 +530,10 @@ var game = {
         var canvas = document.createElement('canvas');
         canvas.width = canvas.height = 120 * game.scale;
         var ctx = canvas.getContext('2d');
-        var source = document.createElement('img');
-        source.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAA8BAMAAABfg2ObAAAALVBMVEUAAAD4uABHR0f4uABHR0f4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADOcJEWAAAADXRSTlMAqqpV6UQkUMmUdBvjKrIhowAAAH1JREFUSMdjKLmLB7gz4Ae++DRfIaD5Ll4wqnlU8xDQzCqIDKRI05z3DgUsIEmzHapmgVHNo5qpovkGInkS1uykhApmo2cMGTyaFRgIAMZRzaOaRzUPJs2sEM0BZGlmSDYGAjMG0jUjwKjmUc2jmontlE0gUXMJckNgA2l6ASc7KJOPBNRIAAAAAElFTkSuQmCC';
-        source.onload = function() {
-            ctx.drawImage(source, 0, 0, canvas.width, canvas.height / 2);
-            ctx.rotate(Math.PI);
-            ctx.translate(-canvas.width, -canvas.height);
-            ctx.drawImage(source, 0, 0, canvas.width, canvas.height / 2);
-        };
+        ctx.drawImage(this._logoSource, 0, 0, canvas.width, canvas.height / 2);
+        ctx.rotate(Math.PI);
+        ctx.translate(-canvas.width, -canvas.height);
+        ctx.drawImage(this._logoSource, 0, 0, canvas.width, canvas.height / 2);
         this.logo = new game.Texture(new game.BaseTexture(canvas));
 
         this.isStarted = true;
@@ -938,6 +939,17 @@ var game = {
             }
         }
 
+        this._logoSource = document.createElement('img');
+        this._logoSource.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAA8BAMAAABfg2ObAAAALVBMVEUAAAD4uABHR0f4uABHR0f4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADOcJEWAAAADXRSTlMAqqpV6UQkUMmUdBvjKrIhowAAAH1JREFUSMdjKLmLB7gz4Ae++DRfIaD5Ll4wqnlU8xDQzCqIDKRI05z3DgUsIEmzHapmgVHNo5qpovkGInkS1uykhApmo2cMGTyaFRgIAMZRzaOaRzUPJs2sEM0BZGlmSDYGAjMG0jUjwKjmUc2jmontlE0gUXMJckNgA2l6ASc7KJOPBNRIAAAAAElFTkSuQmCC';
+        this._logoSource.onload = this._readyLogo.bind(this);
+    },
+
+    /**
+        Called, when logo source is loaded.
+        @method _readyLogo
+        @private
+    **/
+    _readyLogo: function() {
         if (!this.onReady()) {
             if (this.config.autoStart !== false) this.start();
         }
