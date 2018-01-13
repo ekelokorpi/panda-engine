@@ -292,7 +292,10 @@ game.createClass('Scene', {
     **/
     _mouseup: function(x, y, id, event) {
         this.isMouseDown = false;
-        if (this._mouseDownTime) this.click(x, y, id, event);
+        if (this._mouseDownTime) {
+            var time = game.Timer.time - this._mouseDownTime;
+            if (game.Input.clickTimeout === 0 || time < game.Input.clickTimeout) this.click(x, y, id, event);
+        }
         this._mouseDownTime = null;
         this.mouseup(x, y, id, event);
     },

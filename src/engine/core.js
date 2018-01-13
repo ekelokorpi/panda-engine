@@ -99,7 +99,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.1.1',
+    version: '2.2.0dev',
     /**
         @property {Boolean} _booted
         @private
@@ -526,10 +526,12 @@ var game = {
         canvas.width = canvas.height = 120 * game.scale;
         var ctx = canvas.getContext('2d');
         var source = document.createElement('img');
-        // TODO optimise, can be half smaller
-        source.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4BAMAAADLSivhAAAAMFBMVEUAAAD4uABHR0f4uABHR0f4uAD4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADRufxZAAAADnRSTlMAqqpV6aNEJFDJlHQb44EUTvwAAADvSURBVFjD7dkhDsIwFMbxQsIEIJiYIiRk4QYIJAkKReAGuwMHwOwcCwdAwA3QOO6AmalBTAJhGa9dspa3dGLJ9/c/t2bvtSKWhtbC3MaEHxYsjQEDtwB7O19pzMOHl9aZhZc6HgEDO8EpfZ52vAr1TuWDMTHgqbDUAQYGdox7Od7Wwl6OIw6m9vNPC8HHFDAw8L9L2ZGJY8WmV9Fkw0TbNHn19U2TV1eqAQMDGzD9tPmYxgU+pkGFj2lEAgYGdozv/rfgd65vod6sElNZgRNZzo6fBZbAwE7wQMcZC4uLrxREbbnABgaurMHnP8vD4xvY9ByhjWrtdAAAAABJRU5ErkJggg==';
+        source.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAA8BAMAAABfg2ObAAAALVBMVEUAAAD4uABHR0f4uABHR0f4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADOcJEWAAAADXRSTlMAqqpV6UQkUMmUdBvjKrIhowAAAH1JREFUSMdjKLmLB7gz4Ae++DRfIaD5Ll4wqnlU8xDQzCqIDKRI05z3DgUsIEmzHapmgVHNo5qpovkGInkS1uykhApmo2cMGTyaFRgIAMZRzaOaRzUPJs2sEM0BZGlmSDYGAjMG0jUjwKjmUc2jmontlE0gUXMJckNgA2l6ASc7KJOPBNRIAAAAAElFTkSuQmCC';
         source.onload = function() {
-            ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(source, 0, 0, canvas.width, canvas.height / 2);
+            ctx.rotate(Math.PI);
+            ctx.translate(-canvas.width, -canvas.height);
+            ctx.drawImage(source, 0, 0, canvas.width, canvas.height / 2);
         };
         this.logo = new game.Texture(new game.BaseTexture(canvas));
 

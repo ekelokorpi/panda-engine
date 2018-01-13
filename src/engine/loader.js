@@ -93,10 +93,18 @@ game.createClass('Loader', 'Scene', {
 
         if (game.Loader.showLogo) {
             this.logo = new game.Sprite(game.logo);
-            this.logo.x = game.width / 2 - this.logo.width / 2;
-            this.logo.y = game.height / 2 - this.logo.height / 2;
-            this.logo.alpha = 0;
+            this.logo.anchorCenter();
+            this.logo.x = game.width / 2;
+            this.logo.y = game.height / 2;
             this.logo.addTo(this.stage);
+            this.logoTween = game.Tween.add(this.logo.scale, {
+                x: 1.1,
+                y: 1.1
+            }, 500, {
+                easing: 'Quadratic.Out',
+                repeat: Infinity,
+                yoyo: true
+            }).start();
         }
         
         if (game.Loader.showPercent) {
@@ -206,6 +214,7 @@ game.createClass('Loader', 'Scene', {
         @param {String} error
     **/
     onError: function(error) {
+        if (this.logoTween) this.logoTween.stop();
         if (this.percentText) this.percentText.color = game.Loader.errorColor;
         if (this.loaderText) {
             this.loaderText.color = game.Loader.errorColor;
@@ -221,7 +230,6 @@ game.createClass('Loader', 'Scene', {
     **/
     onProgress: function() {
         if (this.percentText) this.percentText.text = this.percent + '%';
-        if (this.logo) this.logo.alpha = this.percent / 100;
     },
 
     /**
@@ -463,17 +471,19 @@ game.createClass('Loader', 'Scene', {
 
 game.addAttributes('Loader', {
     /**
+        Background color of loader.
         @attribute {String} backgroundColor
         @default #000
     **/
     backgroundColor: '#000',
     /**
+        Color of error text.
         @attribute {String} errorColor
         @default #ff0000
     **/
     errorColor: '#ff0000',
     /**
-        List of supported file formats and types.
+        List of supported file formats and their loading functions.
         @attribute {Object} formats
         @private
     **/
@@ -492,16 +502,19 @@ game.addAttributes('Loader', {
     **/
     maxFiles: 4,
     /**
+        Minimum time, that the loader is visible.
         @attribute {Number} minTime
         @default 500
     **/
     minTime: 500,
     /**
+        Show Panda 2 logo in loader.
         @attribute {Boolean} showLogo
         @default true
     **/
     showLogo: true,
     /**
+        Show percents of how much is loaded.
         @attribute {Boolean} showPercent
         @default true
     **/
@@ -513,6 +526,7 @@ game.addAttributes('Loader', {
     **/
     text: 'Made with Panda 2 - www.panda2.io',
     /**
+        Color of loader texts.
         @attribute {String} textColor
         @default #fff
     **/
