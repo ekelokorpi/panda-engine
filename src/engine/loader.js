@@ -93,8 +93,8 @@ game.createClass('Loader', 'Scene', {
 
         if (game.Loader.showLogo) {
             this.logo = new game.Sprite(game.logo);
-            this.logo.x = game.width / 2 - this.logo.width / game.scale / 2;
-            this.logo.y = game.height / 2 - this.logo.height / game.scale / 2;
+            this.logo.x = game.width / 2 - this.logo.width / 2;
+            this.logo.y = game.height / 2 - this.logo.height / 2;
             this.logo.alpha = 0;
             this.logo.addTo(this.stage);
         }
@@ -102,13 +102,13 @@ game.createClass('Loader', 'Scene', {
         if (game.Loader.showPercent) {
             var size = 20;
             this.percentText = new game.SystemText('', { size: size / game.scale, align: 'center', color: game.Loader.textColor });
-            this.percentText.position.set(game.width / 2, game.height / 2 - size / game.scale / 2 - 3 / game.scale);
+            this.percentText.position.set(game.width / 2, game.height / 2 - size / game.scale + 7);
             this.percentText.addTo(this.stage);
         }
 
         if (game.Loader.text) {
             this.loaderText = new game.SystemText(game.Loader.text, { size: 14 / game.scale, align: 'center', color: game.Loader.textColor });
-            this.loaderText.position.set(game.width / 2, game.height - 20 / game.scale);
+            this.loaderText.position.set(game.width / 2, game.height - size / game.scale);
             this.loaderText.addTo(this.stage);
         }
 

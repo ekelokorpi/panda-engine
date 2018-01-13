@@ -438,7 +438,7 @@ game.createClass('SystemText', 'Container', {
         context.globalAlpha = this._worldAlpha;
         context.setTransform(wt.a, wt.b, wt.c, wt.d, wt.tx * game.scale, (wt.ty + this.size) * game.scale);
         context.fillStyle = this.color;
-        context.font = this.size * game.scale + 'px ' + this.font;
+        context.font = this.size * game.scale * game.scale + 'px ' + this.font;
         context.textAlign = this.align;
         context.fillText(this.text, 0, 0);
     }

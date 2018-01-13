@@ -521,6 +521,18 @@ var game = {
 
         if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
 
+        // Logo
+        var canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 120 * game.scale;
+        var ctx = canvas.getContext('2d');
+        var source = document.createElement('img');
+        // TODO optimise, can be half smaller
+        source.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4BAMAAADLSivhAAAAMFBMVEUAAAD4uABHR0f4uABHR0f4uAD4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADRufxZAAAADnRSTlMAqqpV6aNEJFDJlHQb44EUTvwAAADvSURBVFjD7dkhDsIwFMbxQsIEIJiYIiRk4QYIJAkKReAGuwMHwOwcCwdAwA3QOO6AmalBTAJhGa9dspa3dGLJ9/c/t2bvtSKWhtbC3MaEHxYsjQEDtwB7O19pzMOHl9aZhZc6HgEDO8EpfZ52vAr1TuWDMTHgqbDUAQYGdox7Od7Wwl6OIw6m9vNPC8HHFDAw8L9L2ZGJY8WmV9Fkw0TbNHn19U2TV1eqAQMDGzD9tPmYxgU+pkGFj2lEAgYGdozv/rfgd65vod6sElNZgRNZzo6fBZbAwE7wQMcZC4uLrxREbbnABgaurMHnP8vD4xvY9ByhjWrtdAAAAABJRU5ErkJggg==';
+        source.onload = function() {
+            ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+        };
+        this.logo = new game.Texture(new game.BaseTexture(canvas));
+
         this.isStarted = true;
         if (!this.system._rotateScreenVisible) this.onStart();
     },
@@ -923,16 +935,6 @@ var game = {
                 }
             }
         }
-
-        var canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 120;
-        var ctx = canvas.getContext('2d');
-        var source = document.createElement('img');
-        source.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4BAMAAADLSivhAAAAMFBMVEUAAAD4uABHR0f4uABHR0f4uAD4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADRufxZAAAADnRSTlMAqqpV6aNEJFDJlHQb44EUTvwAAADvSURBVFjD7dkhDsIwFMbxQsIEIJiYIiRk4QYIJAkKReAGuwMHwOwcCwdAwA3QOO6AmalBTAJhGa9dspa3dGLJ9/c/t2bvtSKWhtbC3MaEHxYsjQEDtwB7O19pzMOHl9aZhZc6HgEDO8EpfZ52vAr1TuWDMTHgqbDUAQYGdox7Od7Wwl6OIw6m9vNPC8HHFDAw8L9L2ZGJY8WmV9Fkw0TbNHn19U2TV1eqAQMDGzD9tPmYxgU+pkGFj2lEAgYGdozv/rfgd65vod6sElNZgRNZzo6fBZbAwE7wQMcZC4uLrxREbbnABgaurMHnP8vD4xvY9ByhjWrtdAAAAABJRU5ErkJggg==';
-        source.onload = function() {
-            ctx.drawImage(source, 0, 0);
-        };
-        this.logo = new game.Texture(new game.BaseTexture(canvas));
 
         if (!this.onReady()) {
             if (this.config.autoStart !== false) this.start();
