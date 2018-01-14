@@ -10,7 +10,7 @@ game.module(
 .body(function() {
 
 /**
-    Dynamic loader for files.
+    Dynamic loader for assets.
     @class Loader
     @constructor
 **/
@@ -522,7 +522,7 @@ game.addAttributes('Loader', {
     /**
         Text to show on bottom of the loader
         @attribute {String} text
-        @default Made with Panda 2 - www.panda2.io
+        @default 'Made with Panda 2 - www.panda2.io'
     **/
     text: 'Made with Panda 2 - www.panda2.io',
     /**
