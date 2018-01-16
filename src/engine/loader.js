@@ -12,6 +12,7 @@ game.module(
 /**
     Dynamic loader for assets.
     @class Loader
+    @extends Scene
     @constructor
 **/
 game.createClass('Loader', 'Scene', {
