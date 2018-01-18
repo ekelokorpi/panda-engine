@@ -70,6 +70,7 @@ game.createClass('Container', {
     **/
     stage: null,
     /**
+        Visibility. If set to false, rendering and interactivity will be disabled.
         @property {Boolean} visible
         @default true
     **/

@@ -259,7 +259,7 @@ game.createClass('Input', {
     _processEvent: function(eventName, event) {
         for (var i = this.items.length - 1; i >= 0; i--) {
             var item = this.items[i];
-            if (!item._interactive || !item.visible || item.alpha <= 0 || !item.renderable) continue;
+            if (!item._interactive || !item.visible) continue;
             if (this._hitTest(item, event.canvasX, event.canvasY)) {
                 if (!item[eventName](event.canvasX, event.canvasY, event.identifier, event)) {
                     return item;
@@ -386,7 +386,7 @@ game.addAttributes('Input', {
     **/
     multitouch: true,
     /**
-        Should events prevent default action.
+        Should mouse and touch events prevent default action.
         @attribute {Boolean} preventDefault
         @default true
     **/
