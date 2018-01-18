@@ -13,6 +13,11 @@ game.module(
 **/
 game.createClass('Timer', {
     /**
+        Should timer repeat.
+        @property {Boolean} repeat
+    **/
+    repeat: false,
+    /**
         Timer's target time.
         @property {Number} target
     **/
