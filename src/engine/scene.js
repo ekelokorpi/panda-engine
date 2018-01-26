@@ -192,10 +192,20 @@ game.createClass('Scene', {
     mouseup: function() {},
 
     /**
+        Called, when scene is paused.
+        @method onResize
+    **/
+    onPause: function() {},
+    /**
         Called, when system is resized.
         @method onResize
     **/
     onResize: function() {},
+    /**
+        Called, when paused scene is resumed.
+        @method onResize
+    **/
+    onResume: function() {},
 
     /**
         Pause scene. All current objects, timers and tweens are saved and restored when pause is resumed. Also physics are not updated when scene is paused.
@@ -219,6 +229,7 @@ game.createClass('Scene', {
         this.timers.length = 0;
         this.tweens.length = 0;
         this.paused = true;
+        this.onPause();
     },
     
     /**
@@ -280,6 +291,7 @@ game.createClass('Scene', {
             this.tweens.push(this._pausedTweens[i]);
         }
         this.paused = false;
+        this.onResume();
     },
 
     /**
