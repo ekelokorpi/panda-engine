@@ -27,6 +27,12 @@ game.createClass('Scene', {
     **/
     objects: [],
     /**
+        Is scene paused.
+        @property {Boolean} paused
+        @default false
+    **/
+    paused: false,
+    /**
         Main container for scene.
         @property {Container} stage
     **/
@@ -61,6 +67,21 @@ game.createClass('Scene', {
         @private
     **/
     _mouseDownY: null,
+    /**
+        @property {Array} _pausedObjects
+        @private
+    **/
+    _pausedObjects: [],
+    /**
+        @property {Array} _pausedTimers
+        @private
+    **/
+    _pausedTimers: [],
+    /**
+        @property {Array} _pausedTweens
+        @private
+    **/
+    _pausedTweens: [],
     /**
         @property {Array} _updateOrder
         @private
@@ -175,6 +196,30 @@ game.createClass('Scene', {
         @method onResize
     **/
     onResize: function() {},
+
+    /**
+        Pause scene. All current objects, timers and tweens are saved and restored when pause is resumed. Also physics are not updated when scene is paused.
+        @method pause
+    **/
+    pause: function() {
+        if (this.paused) return;
+        this._pausedObjects.length = 0;
+        this._pausedTimers.length = 0;
+        this._pausedTweens.length = 0;
+        for (var i = 0; i < this.objects.length; i++) {
+            this._pausedObjects.push(this.objects[i]);
+        }
+        for (var i = 0; i < this.timers.length; i++) {
+            this._pausedTimers.push(this.timers[i]);
+        }
+        for (var i = 0; i < this.tweens.length; i++) {
+            this._pausedTweens.push(this.tweens[i]);
+        }
+        this.objects.length = 0;
+        this.timers.length = 0;
+        this.tweens.length = 0;
+        this.paused = true;
+    },
     
     /**
         Remove object from scene.
@@ -217,6 +262,24 @@ game.createClass('Scene', {
         for (var i = 0; i < this.tweens.length; i++) {
             this.tweens[i]._shouldRemove = true;
         }
+    },
+
+    /**
+        Resume paused scene.
+        @method resume
+    **/
+    resume: function() {
+        if (!this.paused) return;
+        for (var i = 0; i < this._pausedObjects.length; i++) {
+            this.objects.push(this._pausedObjects[i]);
+        }
+        for (var i = 0; i < this._pausedTimers.length; i++) {
+            this.timers.push(this._pausedTimers[i]);
+        }
+        for (var i = 0; i < this._pausedTweens.length; i++) {
+            this.tweens.push(this._pausedTweens[i]);
+        }
+        this.paused = false;
     },
 
     /**
@@ -344,6 +407,7 @@ game.createClass('Scene', {
         @private
     **/
     _updateCollision: function() {
+        if (this.paused) return;
         if (this.world) this.world._updateCollision();
     },
 
@@ -363,6 +427,7 @@ game.createClass('Scene', {
         @private
     **/
     _updatePhysics: function() {
+        if (this.paused) return;
         if (this.world) this.world._update();
     },
 
