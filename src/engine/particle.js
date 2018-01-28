@@ -334,7 +334,6 @@ game.createClass('Particles', 'FastContainer', {
         particle.alpha = this.alphaStart;
         particle.position.x = this.startPos.x + this._getVar(this.startPosVar.x);
         particle.position.y = this.startPos.y + this._getVar(this.startPosVar.y);
-        particle.anchorCenter();
 
         var angleVar = this._getVar(this.angleVar);
         var angle = this.angle + angleVar;
@@ -368,6 +367,8 @@ game.createClass('Particles', 'FastContainer', {
         else particle.deltaScale = 0;
         particle.scale.set(scaleStart);
 
+        particle.anchor.x = particle.texture.width / 2;
+        particle.anchor.y = particle.texture.height / 2;
         particle.target.copy(this.target);
 
         this.addChild(particle);
