@@ -16,6 +16,7 @@ game.createClass('Audio', {
     **/
     context: null,
     /**
+        Current supported audio formats.
         @property {Array} formats
     **/
     formats: [],
@@ -24,6 +25,7 @@ game.createClass('Audio', {
     **/
     mainGain: null,
     /**
+        Current music.
         @property {Music} music
     **/
     music: null,
@@ -32,6 +34,7 @@ game.createClass('Audio', {
     **/
     musicGain: null,
     /**
+        Is audio muted.
         @property {Boolean} muted
         @default false
     **/
@@ -41,6 +44,7 @@ game.createClass('Audio', {
     **/
     soundGain: null,
     /**
+        Currently playing sounds.
         @property {Array} sounds
     **/
     sounds: [],
@@ -106,9 +110,11 @@ game.createClass('Audio', {
     /**
         @method playMusic
         @param {String} name
+        @return {Music}
     **/
     playMusic: function(name) {
         var music = new game.Music(name).play();
+        return music;
     },
 
     /**

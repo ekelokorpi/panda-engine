@@ -9,9 +9,14 @@ game.module(
 /**
     @class Timer
     @constructor
-    @param {Number} [ms]
+    @param {Number} [time] Timer's target time (milliseconds)
 **/
 game.createClass('Timer', {
+    /**
+        Function to call, when timer's time is reached.
+        @property {Function} callback
+    **/
+    callback: null,
     /**
         Should timer repeat.
         @property {Boolean} repeat
@@ -38,9 +43,58 @@ game.createClass('Timer', {
     **/
     _pause: 0,
     
-    init: function(ms) {
+    init: function(time) {
         this._last = game.Timer.time;
-        this.set(ms);
+        this.set(time);
+    },
+
+    /**
+        Clear timer.
+        @method clear
+    **/
+    clear: function() {
+        this.callback = null;
+        this.repeat = false;
+        this.set(0);
+    },
+
+    /**
+        Get time since last frame.
+        @method delta
+        @return {Number} delta
+    **/
+    delta: function() {
+        var delta = game.Timer.time - this._last;
+        this._last = game.Timer.time;
+        return this._pause ? 0 : delta;
+    },
+
+    /**
+        Pause timer.
+        @method pause
+    **/
+    pause: function() {
+        if (!this._pause) this._pause = game.Timer.time;
+    },
+
+    /**
+        Reset timer.
+        @method reset
+    **/
+    reset: function() {
+        this._base = game.Timer.time;
+        this._pause = 0;
+    },
+
+    /**
+        Resume paused timer.
+        @method resume
+    **/
+    resume: function() {
+        if (this._pause) {
+            this._base += game.Timer.time - this._pause;
+            this._pause = 0;
+        }
     },
     
     /**
@@ -53,27 +107,7 @@ game.createClass('Timer', {
         this.target = ms;
         this.reset();
     },
-    
-    /**
-        Reset timer.
-        @method reset
-    **/
-    reset: function() {
-        this._base = game.Timer.time;
-        this._pause = 0;
-    },
-    
-    /**
-        Get time since last frame.
-        @method delta
-        @return {Number} delta
-    **/
-    delta: function() {
-        var delta = game.Timer.time - this._last;
-        this._last = game.Timer.time;
-        return this._pause ? 0 : delta;
-    },
-    
+
     /**
         Get time left.
         @method time
@@ -82,40 +116,15 @@ game.createClass('Timer', {
     time: function() {
         var time = this._base + this.target - (this._pause || game.Timer.time);
         return time < 0 ? 0 : time;
-    },
-
-    /**
-        Pause timer.
-        @method pause
-    **/
-    pause: function() {
-        if (!this._pause) this._pause = game.Timer.time;
-    },
-
-    /**
-        Resume paused timer.
-        @method resume
-    **/
-    resume: function() {
-        if (this._pause) {
-            this._base += game.Timer.time - this._pause;
-            this._pause = 0;
-        }
     }
 });
 
 game.addAttributes('Timer', {
     /**
-        Current time.
-        @attribute {Number} time
+        Main timer's delta (ms).
+        @attribute {Number} delta
     **/
-    time: 0,
-    /**
-        Main timer's speed factor.
-        @attribute {Number} speed
-        @default 1
-    **/
-    speed: 1,
+    delta: 0,
     /**
         Main timer's minimum fps.
         @attribute {Number} minFPS
@@ -123,10 +132,16 @@ game.addAttributes('Timer', {
     **/
     minFPS: 20,
     /**
-        Main timer's delta (ms).
-        @attribute {Number} delta
+        Main timer's speed factor.
+        @attribute {Number} speed
+        @default 1
     **/
-    delta: 0,
+    speed: 1,
+    /**
+        Current time.
+        @attribute {Number} time
+    **/
+    time: 0,
     /**
         @attribute {Number} _last
         @private
