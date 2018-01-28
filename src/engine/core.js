@@ -888,6 +888,12 @@ var game = {
         String.prototype.ucfirst = function() {
             return this.charAt(0).toUpperCase() + this.slice(1);
         };
+
+        if (window.Intl) {
+            // Natural alphanumerical sort
+            var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+            this.compare = collator.compare;
+        }
     },
 
     /**

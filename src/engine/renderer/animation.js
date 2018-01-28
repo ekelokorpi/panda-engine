@@ -254,7 +254,7 @@ game.addAttributes('Animation', {
                 }
             }
         }
-        textures.sort();
+        textures.sort(game.compare);
         if (textures.length > 0) return new game.Animation(textures);
     }
 });
