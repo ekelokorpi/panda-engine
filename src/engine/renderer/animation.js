@@ -112,7 +112,7 @@ game.createClass('Animation', 'Sprite', {
         @chainable
     **/
     addAnim: function(name, frames, frameCount, props) {
-        if (!name || !frames) return;
+        if (!name || typeof frames === undefined) return;
 
         if (typeof frameCount === 'object') props = frameCount;
 
