@@ -105,17 +105,27 @@ game.createClass('Animation', 'Sprite', {
     /**
         Add new animation.
         @method addAnim
-        @param {String} name
-        @param {Array} frames
-        @param {Object} [props]
+        @param {String} name Name of animation.
+        @param {Array|Number} frames List of invidual frame indexes or start frame index.
+        @param {Number|Object} [frameCount] Number of frames or animation properties.
+        @param {Object} [props] Animation properties.
         @chainable
     **/
-    addAnim: function(name, frames, props) {
+    addAnim: function(name, frames, frameCount, props) {
         if (!name || !frames) return;
 
+        if (typeof frameCount === 'object') props = frameCount;
+
         var textures = [];
-        for (var i = 0; i < frames.length; i++) {
-            textures[i] = this.textures[frames[i]];
+        if (frames.length) {
+            for (var i = 0; i < frames.length; i++) {
+                textures[i] = this.textures[frames[i]];
+            }
+        }
+        else if (typeof frames === 'number' && typeof frameCount === 'number') {
+            for (var i = 0; i < frameCount; i++) {
+                textures[i] = this.textures[frames + i];
+            }
         }
 
         var anim = new game.Animation(textures);
