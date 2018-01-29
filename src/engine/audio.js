@@ -305,6 +305,20 @@ game.addAttributes('Audio', {
     ],
 
     /**
+        Length to trim looped audio from end (seconds).
+        @attribute {Number} loopEnd
+        @default 0
+    **/
+    loopEnd: 0,
+
+    /**
+        Length to trim looped audio from start (seconds).
+        @attribute {Number} loopStart
+        @default 0
+    **/
+    loopStart: 0,
+
+    /**
         Initial music volume.
         @attribute {Number} musicVolume
         @default 1
@@ -477,6 +491,8 @@ game.createClass('Sound', {
             this._source.play();
         }
         else if (this.loop) {
+            this._source.loopStart = game.Audio.loopStart;
+            this._source.loopEnd = this._source.buffer.duration - game.Audio.loopEnd;
             this._source.start(this._context.currentTime + when, offset);
         }
         else {
