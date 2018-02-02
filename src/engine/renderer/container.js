@@ -595,7 +595,7 @@ game.createClass('Container', {
     _updateChildTransform: function() {
         for (var i = this.children.length - 1; i >= 0; i--) {
             var child = this.children[i];
-            if (!child.visible || child.alpha <= 0) continue;
+            if (!child.visible) continue;
             child.updateTransform();
         }
     },
