@@ -190,48 +190,49 @@ game.createClass('Animation', 'Sprite', {
         @method updateAnimation
     **/
     updateAnimation: function() {
-        if (!this.currentAnim.textures) throw 'No textures found for animation';
-        this._frameTime += this.currentAnim.speed * game.delta;
+        var anim = this.currentAnim;
+        if (!anim.textures) throw 'No textures found for animation';
+        this._frameTime += anim.speed * game.delta;
 
         if (this._frameTime >= 1) {
             this._frameTime = 0;
 
-            if (this.currentAnim.random && this.currentAnim.textures.length > 1) {
+            if (anim.random && anim.textures.length > 1) {
                 var nextFrame = this.currentFrame;
                 while (nextFrame === this.currentFrame) {
-                    nextFrame = Math.round(Math.random(0, this.currentAnim.textures.length - 1));
+                    nextFrame = Math.round(Math.random(0, anim.textures.length - 1));
                 }
 
                 this.currentFrame = nextFrame;
-                this.setTexture(this.currentAnim.textures[nextFrame]);
+                this.setTexture(anim.textures[nextFrame]);
                 return;
             }
 
-            var nextFrame = this.currentFrame + (this.currentAnim.reverse ? -1 : 1);
+            var nextFrame = this.currentFrame + (anim.reverse ? -1 : 1);
 
-            if (nextFrame >= this.currentAnim.textures.length) {
-                if (this.currentAnim.loop) {
+            if (nextFrame >= anim.textures.length) {
+                if (anim.loop) {
                     this.currentFrame = 0;
-                    this.setTexture(this.currentAnim.textures[0]);
+                    this.setTexture(anim.textures[0]);
                 }
                 else {
                     this.playing = false;
-                    if (this.onComplete) this.onComplete();
+                    if (anim.onComplete) anim.onComplete();
                 }
             }
             else if (nextFrame < 0) {
-                if (this.currentAnim.loop) {
-                    this.currentFrame = this.currentAnim.textures.length - 1;
-                    this.setTexture(this.currentAnim.textures.last());
+                if (anim.loop) {
+                    this.currentFrame = anim.textures.length - 1;
+                    this.setTexture(anim.textures.last());
                 }
                 else {
                     this.playing = false;
-                    if (this.onComplete) this.onComplete();
+                    if (anim.onComplete) anim.onComplete();
                 }
             }
             else {
                 this.currentFrame = nextFrame;
-                this.setTexture(this.currentAnim.textures[nextFrame]);
+                this.setTexture(anim.textures[nextFrame]);
             }
         }
     },
