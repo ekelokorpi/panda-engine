@@ -48,7 +48,7 @@ game.createClass('FastContainer', 'Container', {
 
         if (child.rotation % (Math.PI * 2) === 0) {
             if (this._isRotated) {
-                context.setTransform(wt.a, wt.b, wt.c, wt.d, wt.tx, wt.ty);
+                context.setTransform(wt.a, wt.b, wt.c, wt.d, wt.tx * game.scale, wt.ty * game.scale);
                 this._isRotated = false;
             }
 
