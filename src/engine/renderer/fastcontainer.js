@@ -41,8 +41,8 @@ game.createClass('FastContainer', 'Container', {
         var wt = this._worldTransform;
         var texture = child.texture;
         if (child._cachedSprite) texture = child._cachedSprite.texture;
-        var tx = texture.position.x;
-        var ty = texture.position.y;
+        var tx = texture.position.x * game.scale;
+        var ty = texture.position.y * game.scale;
         var tw = texture.width * game.scale;
         var th = texture.height * game.scale;
 
