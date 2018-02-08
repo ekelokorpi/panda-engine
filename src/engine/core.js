@@ -989,9 +989,7 @@ var game = {
             window.requestAnimationFrame(animate);
             return id;
         }
-        else {
-            return window.setInterval(callback, 1000 / 60);
-        }
+        return window.setInterval(callback, 1000 / 60);
     },
 
     /**

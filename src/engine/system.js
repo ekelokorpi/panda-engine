@@ -451,6 +451,12 @@ game.addAttributes('System', {
     **/
     center: true,
     /**
+        Set custom frame rate for game loop.
+        @attribute {Number} frameRate
+        @default null
+    **/
+    frameRate: null,
+    /**
         System height.
         @attribute {Number} height
         @default 768
