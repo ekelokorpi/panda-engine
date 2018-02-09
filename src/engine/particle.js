@@ -121,6 +121,17 @@ game.createClass('Particles', 'FastContainer', {
     **/
     startPosVar: null,
     /**
+        Particle start rotation.
+        @property {Number} startRot
+    **/
+    startRot: 0,
+    /**
+        Particle start rotation variance.
+        @property {Number} startRotVar
+    **/
+    startRotVar: 0,
+    /**
+        Use random texture from textures list.
         @property {Boolean} randomTexture
     **/
     randomTexture: true,
@@ -314,7 +325,7 @@ game.createClass('Particles', 'FastContainer', {
         @private
     **/
     _addParticle: function() {
-        if (!this.randomTexture) {
+        if (this.randomTexture) {
             var texture = this.textures.random();
         }
         else {
@@ -330,7 +341,7 @@ game.createClass('Particles', 'FastContainer', {
         else particle.setTexture(texture);
 
         particle.emitter = this;
-        particle.rotation = 0;
+        particle.rotation = this.startRot + this._getVar(this.startRotVar);
         particle.alpha = this.alphaStart;
         particle.position.x = this.startPos.x + this._getVar(this.startPosVar.x);
         particle.position.y = this.startPos.y + this._getVar(this.startPosVar.y);
