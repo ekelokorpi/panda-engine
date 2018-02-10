@@ -189,7 +189,10 @@ game.createClass('Loader', 'Scene', {
         @param {Function} callback
     **/
     loadImage: function(filePath, callback) {
-        game.BaseTexture.fromImage(filePath, callback);
+        game.BaseTexture.fromImage(filePath, function() {
+            if (game.Loader.preRender) game.renderer.context.drawImage(this.source, 0, 0);
+            callback();
+        });
     },
 
     /**
@@ -313,7 +316,7 @@ game.createClass('Loader', 'Scene', {
         @param {XMLHttpRequest} request
     **/
     parseJSON: function(filePath, callback, request) {
-        if (!request.responseText || request.status === 404) callback('Error parsing file ' + filePath);
+        if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
 
         var json = JSON.parse(request.responseText);
         game.json[filePath] = json;
@@ -508,6 +511,12 @@ game.addAttributes('Loader', {
         @default 500
     **/
     minTime: 500,
+    /**
+        Pre-render images, when they are loaded. Use this to avoid small pause, when rendering large images first time.
+        @attribute {Boolean} preRender
+        @default false
+    **/
+    preRender: false,
     /**
         Show Panda 2 logo in loader.
         @attribute {Boolean} showLogo
