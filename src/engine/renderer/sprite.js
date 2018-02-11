@@ -199,7 +199,13 @@ game.createClass('Sprite', 'Container', {
         }
 
         context.setTransform(wt.a, wt.b, wt.c, wt.d, tx, ty);
-        context.drawImage(t.baseTexture.source, x, y, width, height, 0, 0, width, height);
+
+        if (t._trim.x) width = t._trim.x;
+        if (t._trim.y) height = t._trim.y;
+        var sx = t._offset.x - t._anchor.x;
+        var sy = t._offset.y - t._anchor.y;
+
+        context.drawImage(t.baseTexture.source, x, y, width, height, sx, sy, width, height);
     }
 });
 

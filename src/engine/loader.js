@@ -243,6 +243,35 @@ game.createClass('Loader', 'Scene', {
     onStart: function() {},
 
     /**
+        @method parseAtlas
+        @param {Object} json
+        @param {Function} callback
+    **/
+    parseAtlas: function(json, callback) {
+        var image = game._getFilePath(json.meta.image);
+        var baseTexture = game.BaseTexture.fromImage(image);
+        var frames = json.frames;
+
+        for (var name in frames) {
+            var frame = frames[name].frame || frames[name];
+            var x = frame.x / game.scale;
+            var y = frame.y / game.scale;
+            var w = frame.w / game.scale;
+            var h = frame.h / game.scale;
+            var texture = new game.Texture(baseTexture, x, y, w, h);
+            if (frame.sx) texture._offset.x = frame.sx / game.scale;
+            if (frame.sy) texture._offset.y = frame.sy / game.scale;
+            if (frame.sw) texture._trim.x = frame.sw / game.scale;
+            if (frame.sh) texture._trim.y = frame.sh / game.scale;
+            if (frame.ax) texture._anchor.x = frame.ax / game.scale;
+            if (frame.ay) texture._anchor.y = frame.ay / game.scale;
+            game.Texture.cache[name] = texture;
+        }
+
+        callback();
+    },
+
+    /**
         @method parseFont
         @param {String} filePath
         @param {Function} callback
@@ -318,39 +347,23 @@ game.createClass('Loader', 'Scene', {
     parseJSON: function(filePath, callback, request) {
         if (!request.responseText || request.status === 404) callback('Error loading JSON ' + filePath);
 
-        var json = JSON.parse(request.responseText);
+        try {
+            var json = JSON.parse(request.responseText);
+        }
+        catch (error) {
+            callback(error);
+            return;
+        }
+
         game.json[filePath] = json;
         if (json.frames) {
             // Atlas
             json.meta.image = this._getFolder(filePath) + json.meta.image;
             var image = game._getFilePath(json.meta.image);
-            this.loadImage(image, this.parseSpriteSheet.bind(this, json, callback));
+            this.loadImage(image, this.parseAtlas.bind(this, json, callback));
             return;
         }
         
-        callback();
-    },
-
-    /**
-        @method parseSpriteSheet
-        @param {Object} json
-        @param {Function} callback
-    **/
-    parseSpriteSheet: function(json, callback) {
-        var image = game._getFilePath(json.meta.image);
-        var baseTexture = game.BaseTexture.fromImage(image);
-        var frames = json.frames;
-
-        for (var name in frames) {
-            var frame = frames[name].frame || frames[name];
-            var x = frame.x / game.scale;
-            var y = frame.y / game.scale;
-            var w = frame.w / game.scale;
-            var h = frame.h / game.scale;
-            var texture = new game.Texture(baseTexture, x, y, w, h);
-            game.Texture.cache[name] = texture;
-        }
-
         callback();
     },
 

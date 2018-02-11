@@ -189,8 +189,26 @@ game.createClass('Texture', {
         @property {Number} width
     **/
     width: 0,
+    /**
+        @property {Vector} _anchor
+        @private
+    **/
+    _anchor: null,
+    /**
+        @property {Vector} _offset
+        @private
+    **/
+    _offset: null,
+    /**
+        @property {Vector} _trim
+        @private
+    **/
+    _trim: null,
 
     staticInit: function(baseTexture, x, y, width, height) {
+        this._anchor = new game.Vector();
+        this._offset = new game.Vector();
+        this._trim = new game.Vector();
         this.baseTexture = baseTexture instanceof game.BaseTexture ? baseTexture : game.BaseTexture.fromAsset(baseTexture);
         this.position = new game.Vector(x, y);
         this.width = width || this.baseTexture.width;
