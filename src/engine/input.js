@@ -152,6 +152,7 @@ game.createClass('Input', {
         @private
     **/
     _mousedown: function(event) {
+        if (game.Input.focusOnMouseDown) window.focus();
         if (!game.scene) return;
 
         this._preventDefault(event);
@@ -379,6 +380,12 @@ game.addAttributes('Input', {
         @default 500
     **/
     clickTimeout: 500,
+    /**
+        Set focus to window in mousedown event.
+        @attribute {Boolean} focusOnMouseDown
+        @default true
+    **/
+    focusOnMouseDown: true,
     /**
         Enable multitouch.
         @attribute {Boolean} multitouch
