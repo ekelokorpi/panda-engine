@@ -434,6 +434,10 @@ game.createClass('System', {
     _updateWindowSize: function() {
         this._windowWidth = game.device.WKWebView ? document.documentElement.clientWidth : window.innerWidth;
         this._windowHeight = game.device.WKWebView ? document.documentElement.clientHeight : window.innerHeight;
+        if (game.device.crosswalk && this._windowWidth === 0) {
+            this._windowWidth = window.screen.width;
+            this._windowHeight = window.screen.height;
+        }
     }
 });
 
