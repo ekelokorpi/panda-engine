@@ -488,8 +488,10 @@ game.createClass('PhysicsSprite', 'Sprite', {
         this.position = this.body.position;
     },
 
-    addTo: function(container) {
-        this.body.addTo(game.scene.world);
+    addTo: function(container, world) {
+        world = world || game.scene.world;
+        if (!world) throw 'Physics world not found';
+        this.body.addTo(world);
         return this.super(container);
     },
 
