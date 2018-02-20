@@ -510,7 +510,8 @@ game.addAttributes('Loader', {
         jpg: 'loadImage',
         jpeg: 'loadImage',
         json: 'loadJSON',
-        fnt: 'loadFont'
+        fnt: 'loadFont',
+        svg: 'loadImage'
     },
     /**
         How many files to load at same time.

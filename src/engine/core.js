@@ -700,6 +700,7 @@ var game = {
         this.device.android2 = /android 2/i.test(navigator.userAgent);
         var androidVer = navigator.userAgent.match(/Android.*AppleWebKit\/([\d.]+)/);
         this.device.androidStock = !!(androidVer && androidVer[1] < 537);
+        this.device.androidTV = /Android TV/i.test(navigator.userAgent);
         
         // Microsoft
         this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
@@ -731,6 +732,7 @@ var game = {
         this.device.facebook = /FB/i.test(navigator.userAgent);
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
+        if (this.device.androidTV) this.device.mobile = false;
 
         if (typeof navigator.plugins === 'undefined' || navigator.plugins.length === 0) {
             if (window.ActiveXObject) {
