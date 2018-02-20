@@ -411,7 +411,7 @@ game.createClass('Loader', 'Scene', {
         @return {String}
     **/
     _getFilePath: function(path) {
-        if (path.indexOf('@' + game.scale + 'x.') >= 0) return path;
+        if (path.indexOf('@' + game.scale + 'x.') >= 0 || path.indexOf('.svg') >= 0) return path;
         return game.scale > 1 ? path.replace(/\.(?=[^.]*$)/, '@' + game.scale + 'x.') : path;
     },
 
