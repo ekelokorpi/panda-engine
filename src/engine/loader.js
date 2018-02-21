@@ -259,12 +259,12 @@ game.createClass('Loader', 'Scene', {
             var w = frame.w / game.scale;
             var h = frame.h / game.scale;
             var texture = new game.Texture(baseTexture, x, y, w, h);
-            if (frame.sx) texture._offset.x = frame.sx / game.scale;
-            if (frame.sy) texture._offset.y = frame.sy / game.scale;
-            if (frame.sw) texture._trim.x = frame.sw / game.scale;
-            if (frame.sh) texture._trim.y = frame.sh / game.scale;
-            if (frame.ax) texture._anchor.x = frame.ax / game.scale;
-            if (frame.ay) texture._anchor.y = frame.ay / game.scale;
+            if (frame.sx) texture._offset.x = frame.sx;
+            if (frame.sy) texture._offset.y = frame.sy;
+            if (frame.sw) texture._trim.x = frame.sw;
+            if (frame.sh) texture._trim.y = frame.sh;
+            if (frame.ax) texture._anchor.x = frame.ax;
+            if (frame.ay) texture._anchor.y = frame.ay;
             game.Texture.cache[name] = texture;
         }
 
