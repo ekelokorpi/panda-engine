@@ -56,7 +56,7 @@ game.createClass('Font', {
                 var id = parseInt(chars[i].getAttribute('id'));
             }
             else {
-                var xadvance = parseInt(chars[i].xadvance);
+                var xadvance = parseInt(chars[i].xadvance) * game.scale;
                 var id = parseInt(chars[i].id);
             }
             
