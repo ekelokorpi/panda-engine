@@ -299,7 +299,7 @@ game.createClass('Loader', 'Scene', {
             var pages = responseXML.getElementsByTagName('page');
             if (pages.length) {
                 var folder = this._getFolder(filePath);
-                var font = pages[0].getAttribute('file');
+                var font = this._getFilePath(pages[0].getAttribute('file'));
                 pages[0].setAttribute('file', folder + font);
                 var image = game._getFilePath(folder + font);
                 this.loadImage(image, this.generateFont.bind(this, responseXML, callback));
@@ -332,6 +332,7 @@ game.createClass('Loader', 'Scene', {
                     }
                 }
             }
+            font.pages[0].file = this._getFilePath(font.pages[0].file);
             var folder = this._getFolder(filePath);
             var image = game._getFilePath(folder + font.pages[0].file);
             this.loadImage(image, this.generateFont.bind(this, font, callback));
@@ -465,7 +466,7 @@ game.createClass('Loader', 'Scene', {
                 }
             }
 
-            if (loadFunc === 'loadImage' || loadFunc === 'loadFont' || loadFunc === 'loadAtlas') {
+            if (loadFunc === 'loadImage' || loadFunc === 'loadAtlas') {
                 filePath = this._getFilePath(filePath);
             }
 
