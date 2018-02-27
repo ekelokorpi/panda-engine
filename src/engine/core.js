@@ -503,6 +503,37 @@ var game = {
     },
 
     /**
+        Take screenshot from the game.
+        @method screenshot
+        @param {Function} callback
+        @param {Number} [x]
+        @param {Number} [y]
+        @param {Number} [width]
+        @param {Number} [height]
+    **/
+    screenshot: function(callback, x, y, width, height) {
+        if (!this.renderer) return;
+
+        x = typeof x === 'number' ? x : 0;
+        y = typeof y === 'number' ? y : 0;
+        width = width || game.width;
+        height = height || game.height;
+
+        var img = document.createElement('img');
+        img.crossOrigin = game.BaseTexture.crossOrigin;
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, x, y, width, height, 0, 0, width, height);
+
+            callback(canvas.toDataURL());
+        };
+        img.src = this.renderer.canvas.toDataURL();
+    },
+
+    /**
         Start engine. By default, this is called automatically.
         @method start
     **/
@@ -632,7 +663,7 @@ var game = {
         @return {String}
     **/
     _getFilePath: function(file) {
-        if (file.indexOf('://') !== -1) return file;
+        if (file.indexOf('://') !== -1 || file.indexOf('data:') !== -1) return file;
         if (this.config.mediaFolder) file = this.config.mediaFolder + '/' + file;
         return file;
     },
