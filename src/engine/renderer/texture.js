@@ -94,6 +94,12 @@ game.addAttributes('BaseTexture', {
     **/
     cache: {},
     /**
+        Default crossOrigin property to use in all Image sources
+        @attribute {String} crossOrigin
+        @default ''
+    **/
+    crossOrigin: '',
+    /**
         @method clearCache
         @static
     **/
@@ -147,6 +153,7 @@ game.addAttributes('BaseTexture', {
 
         if (!baseTexture) {
             var source = document.createElement('img');
+            if (this.crossOrigin) source.crossOrigin = this.crossOrigin;
             source.src = path + game._nocache;
             baseTexture = new game.BaseTexture(source, loadCallback);
             baseTexture._id = path;
