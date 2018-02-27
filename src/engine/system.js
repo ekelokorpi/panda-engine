@@ -51,11 +51,6 @@ game.createClass('System', {
     **/
     paused: false,
     /**
-        Is engine in Retina mode.
-        @property {Boolean} retina
-    **/
-    retina: false,
-    /**
         Current scene (game.scene).
         @property {Scene} scene
     **/
@@ -108,20 +103,22 @@ game.createClass('System', {
         game.width = this.width = this.originalWidth = game.System.width;
         game.height = this.height = this.originalHeight = game.System.height;
         game.delta = this.delta;
+
+        var realWidth = this.originalWidth;
+        var realHeight = this.originalHeight;
+        if (game.System.hidpi) {
+            realWidth /= game.device.pixelRatio;
+            realHeight /= game.device.pixelRatio;
+        }
         
         for (var i = 2; i <= game.System.hires; i += 2) {
             var ratio = game.System.hiresRatio * (i / 2);
             var width = game.System.hiresDeviceSize ? game.device.screen.width : this._windowWidth;
             var height = game.System.hiresDeviceSize ? game.device.screen.height : this._windowHeight;
-            if (width >= this.originalWidth * ratio && height >= this.originalHeight * ratio) {
+            if (width >= realWidth * ratio && height >= realHeight * ratio) {
                 this.hires = true;
                 game.scale = i;
             }
-        }
-
-        if (game.System.retina && game.device.pixelRatio === 2 && game.scale < game.System.hires) {
-            this.retina = true;
-            game.scale *= 2;
         }
 
         this.canvasWidth = this.originalWidth * game.scale;
@@ -152,9 +149,9 @@ game.createClass('System', {
 
         this._initRenderer();
 
-        if (this.retina) {
-            this.canvasWidth /= 2;
-            this.canvasHeight /= 2;
+        if (game.System.hidpi)  {
+            this.canvasWidth /= game.device.pixelRatio;
+            this.canvasHeight /= game.device.pixelRatio;
         }
 
         if (game.device.WKWebView) window.addEventListener('orientationchange', this._onWindowResize.bind(this));
@@ -281,7 +278,7 @@ game.createClass('System', {
             game.renderer._position((this._windowWidth - this.canvasWidth) / 2, (this._windowHeight - this.canvasHeight) / 2);
         }
 
-        if (game.System.scale || game.System.resize || this.retina) {
+        if (game.System.scale || game.System.resize || game.System.hidpi && game.device.pixelRatio > 1) {
             game.renderer._size(this.canvasWidth, this.canvasHeight);
         }
 
@@ -467,6 +464,12 @@ game.addAttributes('System', {
     **/
     height: 768,
     /**
+        Scale canvas for HiDPI screens.
+        @attribute {Boolean} hidpi
+        @default false
+    **/
+    hidpi: false,
+    /**
         HiRes mode multiplier.
         @attribute {Number} hires
         @default 0
@@ -479,7 +482,7 @@ game.addAttributes('System', {
     **/
     hiresDeviceSize: false,
     /**
-        Ratio value, when hires mode is used.
+        Ratio value, when HiRes mode is used.
         @attribute {Number} hiresRatio
         @default 2
     **/
@@ -502,12 +505,6 @@ game.addAttributes('System', {
         @default false
     **/
     resize: false,
-    /**
-        Use Retina mode.
-        @attribute {Boolean} retina
-        @default false
-    **/
-    retina: false,
     /**
         Use rotate screen on mobile.
         @attribute {Boolean} rotateScreen
