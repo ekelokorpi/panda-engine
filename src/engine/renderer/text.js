@@ -52,11 +52,11 @@ game.createClass('Font', {
         
         for (var i = 0; i < chars.length; i++) {
             if (data.getElementsByTagName) {
-                var xadvance = parseInt(chars[i].getAttribute('xadvance')) * game.scale;
+                var xadvance = parseInt(chars[i].getAttribute('xadvance'));
                 var id = parseInt(chars[i].getAttribute('id'));
             }
             else {
-                var xadvance = parseInt(chars[i].xadvance) * game.scale;
+                var xadvance = parseInt(chars[i].xadvance);
                 var id = parseInt(chars[i].id);
             }
             
@@ -66,20 +66,20 @@ game.createClass('Font', {
             }
 
             if (data.getElementsByTagName) {
-                var xoffset = parseInt(chars[i].getAttribute('xoffset')) * game.scale;
-                var yoffset = parseInt(chars[i].getAttribute('yoffset')) * game.scale;
-                var x = parseInt(chars[i].getAttribute('x'));
-                var y = parseInt(chars[i].getAttribute('y'));
-                var width = parseInt(chars[i].getAttribute('width'));
-                var height = parseInt(chars[i].getAttribute('height'));
+                var xoffset = parseInt(chars[i].getAttribute('xoffset'));
+                var yoffset = parseInt(chars[i].getAttribute('yoffset'));
+                var x = parseInt(chars[i].getAttribute('x')) / game.scale;
+                var y = parseInt(chars[i].getAttribute('y')) / game.scale;
+                var width = parseInt(chars[i].getAttribute('width')) / game.scale;
+                var height = parseInt(chars[i].getAttribute('height')) / game.scale;
             }
             else {
-                var xoffset = parseInt(chars[i].xoffset) * game.scale;
-                var yoffset = parseInt(chars[i].yoffset) * game.scale;
-                var x = parseInt(chars[i].x);
-                var y = parseInt(chars[i].y);
-                var width = parseInt(chars[i].width);
-                var height = parseInt(chars[i].height);
+                var xoffset = parseInt(chars[i].xoffset);
+                var yoffset = parseInt(chars[i].yoffset);
+                var x = parseInt(chars[i].x) / game.scale;
+                var y = parseInt(chars[i].y) / game.scale;
+                var width = parseInt(chars[i].width) / game.scale;
+                var height = parseInt(chars[i].height) / game.scale;
             }
 
             var texture = new game.Texture(this.baseTexture, x, y, width, height);

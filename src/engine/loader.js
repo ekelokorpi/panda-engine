@@ -466,7 +466,7 @@ game.createClass('Loader', 'Scene', {
                 }
             }
 
-            if (loadFunc === 'loadImage' || loadFunc === 'loadAtlas') {
+            if (loadFunc === 'loadImage' || loadFunc === 'loadAtlas' || loadFunc === 'loadFont') {
                 filePath = this._getFilePath(filePath);
             }
 
