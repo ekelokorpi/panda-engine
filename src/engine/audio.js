@@ -84,11 +84,11 @@ game.createClass('Audio', {
         this.mainGain.connect(this.context.destination);
 
         this.musicGain = this.context.createGain();
-        this.musicGain.gain.value = game.Audio.musicVolume;
+        this.musicGain.gain.setValueAtTime(game.Audio.musicVolume, this.context.currentTime);
         this.musicGain.connect(this.mainGain);
 
         this.soundGain = this.context.createGain();
-        this.soundGain.gain.value = game.Audio.soundVolume;
+        this.soundGain.gain.setValueAtTime(game.Audio.soundVolume, this.context.currentTime);
         this.soundGain.connect(this.mainGain);
     },
 
@@ -98,7 +98,7 @@ game.createClass('Audio', {
     **/
     mute: function() {
         if (!this.mainGain) return;
-        this.mainGain.gain.value = 0;
+        this.mainGain.gain.setValueAtTime(0, this.context.currentTime);
         this.muted = true;
     },
 
@@ -163,7 +163,7 @@ game.createClass('Audio', {
     **/
     unmute: function() {
         if (!this.mainGain) return;
-        this.mainGain.gain.value = 1;
+        this.mainGain.gain.setValueAtTime(1, this.context.currentTime);
         this.muted = false;
     },
 
@@ -342,26 +342,36 @@ game.addAttributes('Audio', {
 **/
 game.createClass('Sound', {
     /**
+        Is sound looping.
         @property {Boolean} loop
         @default false
     **/
     loop: false,
+    /**
+        Is sound muted.
+        @property {Boolean} muted
+        @default false
+    **/
+    muted: false,
     /**
         Function to call, when sound is completed.
         @property {Function} onComplete
     **/
     onComplete: null,
     /**
+        Is sound paused.
         @property {Boolean} paused
         @default false
     **/
     paused: false,
     /**
+        Is sound playing.
         @property {Boolean} playing
         @default false
     **/
     playing: false,
     /**
+        Sound volume.
         @property {Number} volume
         @default game.Audio.soundVolume
     **/
@@ -434,8 +444,9 @@ game.createClass('Sound', {
         @method mute
     **/
     mute: function() {
-        if (!this._gainNode) return;
-        this._gainNode.gain.value = 0;
+        if (!this._gainNode) this._source.volume = 0;
+        else this._gainNode.gain.setValueAtTime(0, this._context.currentTime);
+        this.muted = true;
     },
 
     /**
@@ -473,7 +484,7 @@ game.createClass('Sound', {
         
         this._source.buffer = this._buffer;
         this._source.loop = this.loop;
-        if (this._source.playbackRate) this._source.playbackRate.value = this.rate;
+        if (this._source.playbackRate) this._source.playbackRate.setValueAtTime(this.rate, this._context.currentTime);
         this._source.onended = this._onComplete.bind(this);
         if (this._source.connect) {
             this._source.connect(this._gainNode);
@@ -528,8 +539,9 @@ game.createClass('Sound', {
         @method unmute
     **/
     unmute: function() {
-        if (!this._gainNode) return;
-        this._gainNode.gain.value = this._volume;
+        if (!this._gainNode) this._source.volume = this._volume;
+        else this._gainNode.gain.setValueAtTime(this._volume, this._context.currentTime);
+        this.muted = false;
     },
 
     /**
@@ -543,7 +555,7 @@ game.createClass('Sound', {
         time = (time || 1000) / 1000;
 
         var currTime = this._context.currentTime;
-        if (to === this.volume) this._gainNode.gain.value = 0;
+        if (to === this.volume) this._gainNode.gain.setValueAtTime(0, this._context.currentTime);;
         var from = this._gainNode.gain.value;
 
         this._gainNode.gain.linearRampToValueAtTime(from, currTime);
@@ -596,7 +608,7 @@ game.defineProperties('Sound', {
 
         set: function(value) {
             this._volume = value;
-            if (this._gainNode) this._gainNode.gain.value = value;
+            if (this._gainNode) this._gainNode.gain.setValueAtTime(value, this._context.currentTime);
         }
     }
 });
