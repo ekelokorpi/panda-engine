@@ -193,7 +193,7 @@ game.createClass('Scene', {
 
     /**
         Called, when scene is paused.
-        @method onResize
+        @method onPause
     **/
     onPause: function() {},
     /**
@@ -203,7 +203,7 @@ game.createClass('Scene', {
     onResize: function() {},
     /**
         Called, when paused scene is resumed.
-        @method onResize
+        @method onResume
     **/
     onResume: function() {},
 
