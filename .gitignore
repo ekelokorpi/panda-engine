@@ -7,4 +7,5 @@ bamboo
 .jscsrc
 media/*
 !media/panda.png
-
+*.mobileprovision
+*.p12
