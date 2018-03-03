@@ -10,7 +10,7 @@ game.module(
 .body(function() {
 
 /**
-    Animation that is generated from multiple textures.
+    Animation that is generated from multiple textures. Animation can also contain multiple animations created with addAnim method.
     @class Animation
     @extends Sprite
     @constructor
@@ -186,10 +186,16 @@ game.createClass('Animation', 'Sprite', {
         return this;
     },
 
+    updateTransform: function() {
+        if (this.playing) this._updateAnimation();
+        this.super();
+    },
+
     /**
-        @method updateAnimation
+        @method _updateAnimation
+        @private
     **/
-    updateAnimation: function() {
+    _updateAnimation: function() {
         var anim = this.currentAnim;
         if (!anim.textures) throw 'No textures found for animation';
         this._frameTime += anim.speed * game.delta;
@@ -235,11 +241,6 @@ game.createClass('Animation', 'Sprite', {
                 this.setTexture(anim.textures[nextFrame]);
             }
         }
-    },
-
-    updateTransform: function() {
-        if (this.playing) this.updateAnimation();
-        this.super();
     }
 });
 
