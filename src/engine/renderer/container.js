@@ -189,9 +189,10 @@ game.createClass('Container', {
         @param {Container} target
         @param {Number} [offsetX]
         @param {Number} [offsetY]
+        @param {Boolean} [worldPos] Use world position.
         @chainable
     **/
-    center: function(target, offsetX, offsetY) {
+    center: function(target, offsetX, offsetY, worldPos) {
         if (!target) target = this.parent;
         if (!target) return;
 
@@ -201,8 +202,12 @@ game.createClass('Container', {
         }
         else {
             var tb = target._getBounds();
-            var x = tb.x + tb.width / 2;
-            var y = tb.y + tb.height / 2;
+            var x = tb.width / 2;
+            var y = tb.height / 2;
+            if (worldPos) {
+                x += tb.x;
+                y += tb.y;
+            }
         }
         var bounds = this._getBounds();
         x += this.anchor.x * this.scale.x;
