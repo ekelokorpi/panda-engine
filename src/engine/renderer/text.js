@@ -137,6 +137,7 @@ game.addAttributes('Font', {
 });
 
 /**
+    Text that uses bitmap fonts for rendering.
     @class Text
     @extends Container
     @constructor
@@ -390,6 +391,7 @@ game.addAttributes('Text', {
 });
 
 /**
+    Text that uses canvas fillText for rendering.
     @class SystemText
     @extends Container
     @constructor
