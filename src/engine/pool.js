@@ -7,7 +7,7 @@ game.module(
 .body(function() {
 
 /**
-    Object pool.
+    Pool manager. Instance automatically created at `game.pool`
     @class Pool
 **/
 game.createClass('Pool', {

@@ -7,10 +7,10 @@ game.module(
 .body(function() {
 
 /**
-    Class for storing data at local storage.
+    Local storage manager. Instance automatically created at `game.storage`, when `Storage.id` is defined
     @class Storage
     @constructor
-    @param {String} id
+    @param {String} [id]
 **/
 game.createClass('Storage', {
     /**

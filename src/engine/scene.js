@@ -7,6 +7,7 @@ game.module(
 .body(function() {
 
 /**
+    Game scene. Instance of current scene is at `game.scene`
     @class Scene
 **/
 game.createClass('Scene', {

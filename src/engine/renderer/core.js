@@ -18,6 +18,7 @@ game.module(
 .body(function() {
 
 /**
+    Canvas renderer. Instance automatically created at `game.renderer`
     @class Renderer
     @constructor
     @param {Number} width

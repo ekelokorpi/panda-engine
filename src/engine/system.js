@@ -7,6 +7,7 @@ game.module(
 .body(function() {
 
 /**
+    System manager. Instance automatically created at `game.system`
     @class System
 **/
 game.createClass('System', {

@@ -7,6 +7,7 @@ game.module(
 .body(function() {
 
 /**
+    Interactivity controller. Instance automatically created at `game.input`
     @class Input
     @constructor
     @param {HTMLCanvasElement} canvas
@@ -95,6 +96,7 @@ game.createClass('Input', {
     /**
         @method _devicemotion
         @param {DeviceMotionEvent} event
+        @private
     **/
     _devicemotion: function(event) {
         this.motion = event;
@@ -401,6 +403,7 @@ game.addAttributes('Input', {
 });
 
 /**
+    Keyboard controller. Instance automatically created at `game.keyboard`
     @class Keyboard
 **/
 game.createClass('Keyboard', {
@@ -470,7 +473,7 @@ game.createClass('Keyboard', {
 
 game.addAttributes('Keyboard', {
     /**
-        List of available keys.
+        List of key codes and their key names. Key events are not called to key codes, that are not in the list.
         @attribute {Object} keys
     **/
     keys: {

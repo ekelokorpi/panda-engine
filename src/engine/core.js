@@ -548,6 +548,7 @@ var game = {
         if (this.Keyboard) this.keyboard = new this.Keyboard();
         if (this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
+        if (this.config.id && !this.Storage.id) this.Storage.id = this.config.id;
         if (this.Storage && this.Storage.id) this.storage = new this.Storage();
 
         // Load plugins
