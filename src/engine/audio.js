@@ -415,7 +415,7 @@ game.createClass('Sound', {
 
         if (!window.AudioContext) return;
 
-        this._context = game.audio.context;
+        this._context = game.audio._context;
         this._gainNode = this._context.createGain();
     },
 
