@@ -584,20 +584,6 @@ var game = {
         this._normalizeVendorAttribute(window, 'requestAnimationFrame');
         this._normalizeVendorAttribute(navigator, 'vibrate');
 
-        // Load device specific config
-        for (var i in this.device) {
-            if (this.device[i] && this.config[i]) {
-                for (var o in this.config[i]) {
-                    if (typeof this.config[i][o] === 'object') {
-                        this.merge(this.config[o], this.config[i][o]);
-                    }
-                    else {
-                        this.config[o] = this.config[i][o];
-                    }
-                }
-            }
-        }
-
         if (document.location.href.match(/\?nocache/) || this.config.disableCache) this._nocache = '?' + Date.now();
 
         // Default config
@@ -762,7 +748,6 @@ var game = {
         this.device.cocoonCanvasPlus = /CocoonJS/i.test(navigator.browser);
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
         this.device.facebook = /FB/i.test(navigator.userAgent);
-        if (location.href.indexOf('fbsbx.com/instant-bundle') !== -1 || location.href.indexOf('source=fbinstant') !== -1) this.device.facebook = true;
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
         if (this.device.androidTV) this.device.mobile = false;
@@ -970,6 +955,21 @@ var game = {
         @private
     **/
     _ready: function() {
+        // Apply device specific config
+        for (var i in this.device) {
+            if (this.device[i] && this.config[i]) {
+                for (var o in this.config[i]) {
+                    if (typeof this.config[i][o] === 'object') {
+                        this.config[o] = this.config[o] || {};
+                        this.merge(this.config[o], this.config[i][o]);
+                    }
+                    else {
+                        this.config[o] = this.config[i][o];
+                    }
+                }
+            }
+        }
+
         // Parse config
         for (var c in this.config) {
             var m = c.ucfirst();
