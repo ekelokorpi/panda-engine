@@ -230,6 +230,26 @@ game.createClass('Container', {
     click: function() {},
 
     /**
+        Test if container's bounds are overlapping target's bounds.
+        @method hitTest
+        @param {Container} target
+        @return {Boolean}
+    **/
+    hitTest: function(target) {
+        if (!target) return false;
+
+        var a = this._getBounds();
+        var b = target._getBounds();
+
+        return !(
+            a.y + a.height / 2 <= b.y - b.height / 2 ||
+            a.y - a.height / 2 >= b.y + b.height / 2 ||
+            a.x - a.width / 2 >= b.x + b.width / 2 ||
+            a.x + a.width / 2 <= b.x - b.width / 2
+        );
+    },
+
+    /**
         @method mousedown
         @param {Number} x
         @param {Number} y
