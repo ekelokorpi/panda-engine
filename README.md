@@ -8,9 +8,9 @@ https://www.panda2.io
 
 ## Learn
 
+- [Code examples](https://www.panda2.io/examples)
 - [Video tutorials](https://www.panda2.io/tutorials)
 - [Game templates](https://www.panda2.io/templates)
-- [Playground](https://www.panda2.io/playground)
 - [API Documentation](https://www.panda2.io/docs/api)
 
 ## Credits
