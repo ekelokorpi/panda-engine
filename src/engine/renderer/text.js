@@ -24,6 +24,11 @@ game.createClass('Font', {
     **/
     chars: {},
     /**
+        @property {Number} letterSpacing
+        @default 0
+    **/
+    letterSpacing: 0,
+    /**
         @property {Number} lineHeight
     **/
     lineHeight: 0,
@@ -146,22 +151,27 @@ game.addAttributes('Font', {
 **/
 game.createClass('Text', 'Container', {
     /**
+        Align for multi-lined text. Can be left, center or right.
         @property {String} align
     **/
     align: 'left',
     /**
+        Name of the font that this text is using.
         @property {String} font
     **/
     font: null,
     /**
+        Font class that this text is using.
         @property {Font} fontClass
     **/
     fontClass: null,
     /**
+        Current text value.
         @property {String} text
     **/
     text: null,
     /**
+        If text width is higher than wrap value, text will be wrapped to multiple lines. 0 to disable.
         @property {Number} wrap
     **/
     wrap: 0,
@@ -278,7 +288,7 @@ game.createClass('Text', 'Container', {
             var charObj = this.fontClass.chars[charCode];
             if (!charObj) continue;
 
-            curWordWidth += charObj.xadvance;
+            curWordWidth += charObj.xadvance + this.fontClass.letterSpacing;
         }
 
         // Add last word
@@ -375,7 +385,7 @@ game.createClass('Text', 'Container', {
             sprite.position.y = (y + charObj.yoffset) / game.scale;
             this.addChild(sprite);
 
-            x += charObj.xadvance;
+            x += charObj.xadvance + this.fontClass.letterSpacing;
         }
 
         this.updateTransform();
