@@ -99,7 +99,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.5.0',
+    version: '2.5.1dev',
     /**
         @property {Boolean} _booted
         @private
@@ -719,6 +719,10 @@ var game = {
         var androidVer = navigator.userAgent.match(/Android.*AppleWebKit\/([\d.]+)/);
         this.device.androidStock = !!(androidVer && androidVer[1] < 537);
         this.device.androidTV = /Android TV/i.test(navigator.userAgent);
+        this.device.android5 = /Android 5/i.test(navigator.userAgent);
+        this.device.android6 = /Android 6/i.test(navigator.userAgent);
+        this.device.android7 = /Android 7/i.test(navigator.userAgent);
+        this.device.android8 = /Android 8/i.test(navigator.userAgent);
         
         // Microsoft
         this.device.ie9 = /MSIE 9/i.test(navigator.userAgent);
