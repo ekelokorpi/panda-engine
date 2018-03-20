@@ -265,7 +265,7 @@ game.createClass('GraphicsShape', {
     **/
     lineWidth: 0,
     /**
-        @property {Rectangle|Circle} shape
+        @property {Arc|Circle|Rectangle} shape
     **/
     shape: null,
 
@@ -315,6 +315,7 @@ game.createClass('GraphicsShape', {
         }
         else if (shape.radius) {
             if (typeof shape.startAngle === 'number' && typeof shape.endAngle === 'number') {
+                context.moveTo(x, y);
                 context.arc(x, y, shape.radius, shape.startAngle, shape.endAngle);
                 context.closePath();
             }
