@@ -306,6 +306,18 @@ game.createClass('Vector', {
     },
 
     /**
+        Change values based on distance and angle.
+        @method move
+        @param {Number} distance
+        @param {Vector|Number} angle
+    **/
+    move: function(distance, angle) {
+        if (angle instanceof game.Vector) angle = this.angle(angle);
+        this.x += distance * Math.cos(angle);
+        this.y += distance * Math.sin(angle);
+    },
+
+    /**
         Multiply vector values.
         @method multiply
         @param {Number|Vector} x
