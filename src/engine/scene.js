@@ -234,7 +234,7 @@ game.createClass('Scene', {
     },
     
     /**
-        Remove object from scene.
+        Remove object from scene, so it's update function doesn't get called anymore.
         @method removeObject
         @param {Object} object
     **/
