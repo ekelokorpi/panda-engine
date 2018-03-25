@@ -347,6 +347,19 @@ var game = {
     },
 
     /**
+        Inject class.
+        @method injectClass
+        @param {String} name
+        @param {Object} content
+        @return {Class}
+    **/
+    injectClass: function(name, content) {
+        if (!this[name]) throw 'Class ' + name + ' not found';
+        this[name].inject(content);
+        return this[name];
+    },
+
+    /**
         Sort object by key names.
         @method ksort
         @param {Object} obj
