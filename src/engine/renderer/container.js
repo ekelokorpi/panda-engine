@@ -159,6 +159,7 @@ game.createClass('Container', {
         @chainable
     **/
     addChild: function(child) {
+        if (!child) throw 'Child not defined';
         child.parent = this;
         return this;
     },
@@ -170,6 +171,7 @@ game.createClass('Container', {
         @chainable
     **/
     addTo: function(container) {
+        if (!container) throw 'Parent not defined';
         this.parent = container;
         return this;
     },
