@@ -22,12 +22,12 @@ game.createClass('System', {
     **/
     canvasWidth: 0,
     /**
-        Current delta time in seconds (game.delta).
+        Time since last frame (seconds), shorthand game.delta
         @property {Number} delta
     **/
     delta: 0,
     /**
-        Height of the game canvas (game.height).
+        Height of the game canvas (pixels), shorthand game.height
         @property {Number} height
     **/
     height: 0,
@@ -57,7 +57,7 @@ game.createClass('System', {
     **/
     scene: null,
     /**
-        Width of the game canvas (game.width).
+        Width of the game canvas (pixels), shorthand game.width
         @property {Number} width
     **/
     width: 0,
