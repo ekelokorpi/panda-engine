@@ -380,6 +380,29 @@ game.createClass('Container', {
     },
 
     /**
+        Convert local position to match world position
+        @method toWorldPosition
+        @param {Vector} [vector] Vector to set world position
+        @param {Container} [container] Get world position relative to container's world position
+        @return {Vector} Returns new Vector, if vector parameter not defined
+    **/
+    toWorldPosition: function(vector, container) {
+        if (this._lastTransformUpdate !== game.Timer.time) this._updateParentTransform();
+
+        if (container) {
+            var x = this._worldTransform.tx - container._worldTransform.tx;
+            var y = this._worldTransform.ty - container._worldTransform.ty;
+        }
+        else {
+            var x = -this.parent._worldTransform.tx + this.position.x;
+            var y = -this.parent._worldTransform.ty + this.position.y;
+        }
+
+        if (vector) vector.set(x, y);
+        else return new game.Vector(x, y);
+    },
+
+    /**
         @method updateTransform
     **/
     updateTransform: function() {
