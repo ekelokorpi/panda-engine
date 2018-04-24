@@ -205,6 +205,24 @@ game.createClass('Loader', 'Scene', {
     },
 
     /**
+        @method loadScript
+        @param {String} filePath
+        @param {Function} callback
+    **/
+    loadScript: function(filePath, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = filePath;
+        script.onload = function() {
+            callback();
+        };
+        script.onerror = function(error) {
+            callback('Error loading script ' + filePath);
+        };
+        document.getElementsByTagName('head')[0].appendChild(script);
+    },
+
+    /**
         Called, when all files loaded.
         @method onComplete
     **/
@@ -510,6 +528,7 @@ game.addAttributes('Loader', {
         png: 'loadImage',
         jpg: 'loadImage',
         jpeg: 'loadImage',
+        js: 'loadScript',
         json: 'loadJSON',
         fnt: 'loadFont',
         svg: 'loadImage'

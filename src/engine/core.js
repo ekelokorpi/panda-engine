@@ -649,11 +649,10 @@ var game = {
         @private
     **/
     _DOMReady: function() {
-        if (!this._DOMLoaded) {
-            if (!document.body) return setTimeout(this._DOMReady.bind(this), 13);
-            this._DOMLoaded = true;
-            if (this._gameModuleDefined) this._loadModules();
-        }
+        if (this._DOMLoaded) return;
+        if (!document.body) return setTimeout(this._DOMReady.bind(this), 13);
+        this._DOMLoaded = true;
+        if (this._gameModuleDefined) this._loadModules();
     },
 
     /**
