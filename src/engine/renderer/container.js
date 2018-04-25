@@ -420,14 +420,20 @@ game.createClass('Container', {
 
         var ax = this.anchor.x;
         var ay = this.anchor.y;
-        var pax = this.parent.anchor.x;
-        var pay = this.parent.anchor.y;
+
         lt.a = this._cosCache * this.scale.x;
         lt.b = this._sinCache * this.scale.x;
         lt.c = -this._sinCache * this.scale.y;
         lt.d = this._cosCache * this.scale.y;
-        lt.tx = this.position.x - (ax * lt.a + ay * lt.c) + pax;
-        lt.ty = this.position.y - (ax * lt.b + ay * lt.d) + pay;
+        lt.tx = this.position.x - (ax * lt.a + ay * lt.c);
+        lt.ty = this.position.y - (ax * lt.b + ay * lt.d);
+
+        if (this.parent.texture) {
+            var pax = this.parent.anchor.x;
+            var pay = this.parent.anchor.y;
+            lt.tx += pax;
+            lt.ty += pay;
+        }
 
         wt.a = lt.a * pt.a + lt.b * pt.c;
         wt.b = lt.a * pt.b + lt.b * pt.d;
