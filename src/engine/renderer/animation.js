@@ -201,7 +201,7 @@ game.createClass('Animation', 'Sprite', {
         this._frameTime += anim.speed * game.delta;
 
         if (this._frameTime >= 1) {
-            this._frameTime = 0;
+            this._frameTime = this._frameTime % 1;
 
             if (anim.random && anim.textures.length > 1) {
                 var nextFrame = this.currentFrame;
