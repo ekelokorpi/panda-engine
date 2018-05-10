@@ -166,6 +166,18 @@ game.createClass('Text', 'Container', {
     **/
     fontClass: null,
     /**
+        If text height is higher than maxHeight value, text will be scaled down to fit maxHeight. 0 to disable.
+        @propety {Number} maxHeight
+        @defaul 0
+    **/
+    maxHeight: 0,
+    /**
+        If text width is higher than maxWidth value, text will be scaled down to fit maxWidth. 0 to disable.
+        @propety {Number} maxWidth
+        @defaul 0
+    **/
+    maxWidth: 0,
+    /**
         Current text value.
         @property {String} text
     **/
@@ -389,6 +401,21 @@ game.createClass('Text', 'Container', {
         }
 
         this.updateTransform();
+
+        if (!this.maxWidth && !this.maxHeight) return;
+
+        var scale = 0;
+
+        if (this.maxWidth && this.width > this.maxWidth) {
+            scale = this.maxWidth / this.width;
+        }
+        if (this.maxHeight && this.height > this.maxHeight) {
+            scale = this.maxHeight / this.height;
+        }
+
+        scale.limit(0, 1);
+
+        this.scale.set(scale);
     }
 });
 
