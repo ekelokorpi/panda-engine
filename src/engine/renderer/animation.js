@@ -270,6 +270,9 @@ game.addAttributes('Animation', {
             textures.sort(game.compare);
             return new game.Animation(textures);
         }
+        else {
+            throw 'No textures found for ' + name;
+        }
     }
 });
 
