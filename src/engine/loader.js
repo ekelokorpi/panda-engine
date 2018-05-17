@@ -22,17 +22,12 @@ game.createClass('Loader', 'Scene', {
     **/
     loaded: 0,
     /**
-        Function or Scene name to run, when loader complete.
-        @property {Function|String} onComplete
-    **/
-    onComplete: null,
-    /**
         Percent of files loaded.
         @property {Number} percent
     **/
     percent: 0,
     /**
-        Scene to set, when loader complete.
+        Name of scene to set, when loader complete.
         @property {String} scene
     **/
     scene: null,
@@ -83,9 +78,7 @@ game.createClass('Loader', 'Scene', {
         this.totalFiles = this._queue.length;
         if (this.totalFiles === 0) this.percent = 100;
 
-        if (scene) {
-            this.init();
-        }
+        if (scene) this.init();
         return true;
     },
 
