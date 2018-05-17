@@ -61,26 +61,25 @@ game.createClass('Sprite', 'Container', {
 
     /**
         @method _generateTintedTexture
-        @param {String} tint
+        @param {String} color
         @return {Texture}
         @private
     **/
-    _generateTintedTexture: function(tint, alpha) {
+    _generateTintedTexture: function(color, alpha) {
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
-        var bounds = this._getBounds();
 
-        canvas.width = (bounds.width / this.scale.x) * game.scale;
-        canvas.height = (bounds.height / this.scale.y) * game.scale;
+        canvas.width = this.texture.width * game.scale;
+        canvas.height = this.texture.height * game.scale;
 
-        context.fillStyle = tint.substr(0, 7);
+        context.fillStyle = color.substr(0, 7);
         context.globalAlpha = alpha || 1.0;
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalAlpha = 1.0;
 
         var blendMode = this.blendMode;
         this.blendMode = 'destination-atop';
-        this._renderCanvas(context, new game.Matrix());
+        this._renderCanvas(context, game.Matrix.empty);
         this.blendMode = blendMode;
 
         return game.Texture.fromCanvas(canvas);

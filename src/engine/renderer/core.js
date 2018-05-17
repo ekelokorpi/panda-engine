@@ -204,4 +204,8 @@ game.createClass('Matrix', {
     }
 });
 
+game.addAttributes('Matrix', {
+    empty: new game.Matrix()
+});
+
 });
