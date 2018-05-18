@@ -175,6 +175,18 @@ game.createClass('Debug', {
     },
 
     /**
+        Add text to debug panel.
+        @method addText
+        @param {String} name
+        @param {Number|Boolean|String} value
+    **/
+    addText: function(name, value) {
+        this.text += name;
+        if (typeof value !== 'undefined') this.text += ': ' + value;
+        this.text += ' ';
+    },
+
+    /**
         @method _addPanel
         @private
     **/
@@ -193,18 +205,6 @@ game.createClass('Debug', {
         this.panel.style.pointerEvents = 'none';
         this.panel.style.opacity = game.Debug.panelAlpha;
         document.body.appendChild(this.panel);
-    },
-
-    /**
-        @method _addText
-        @private
-        @param {String} name
-        @param {Number|Boolean|String} value
-    **/
-    _addText: function(name, value) {
-        this.text += name;
-        if (typeof value !== 'undefined') this.text += ': ' + value;
-        this.text += ' ';
     },
 
     /**
@@ -487,20 +487,27 @@ game.createClass('Debug', {
 
     _updatePanel: function() {
         this.text = '';
-        this._addText(game.version);
-        this._addText('FPS', this.fps);
-        this._addText('CANVAS', game.renderer.canvas.width + 'x' + game.renderer.canvas.height);
-        this._addText('DRAWS', this._draws);
-        this._addText('BODIES', this._bodies.length);
-        this._addText('UPDATES', game.scene.objects.length);
-        this._addText('TWEENS', game.scene.tweens.length);
-        this._addText('TIMERS', game.scene.timers.length);
-        this._addText('HIRES', game.scale);
+        this.addText(game.version);
+        this.addText('FPS', this.fps);
+        this.addText('CANVAS', game.renderer.canvas.width + 'x' + game.renderer.canvas.height);
+        this.addText('DRAWS', this._draws);
+        this.addText('BODIES', this._bodies.length);
+        this.addText('UPDATES', game.scene.objects.length);
+        this.addText('TWEENS', game.scene.tweens.length);
+        this.addText('TIMERS', game.scene.timers.length);
+        this.addText('HIRES', game.scale);
+        game.Debug.customUpdate.call(this);
         this.panel.innerHTML = this.text;
     }
 });
 
 game.addAttributes('Debug', {
+    /**
+        Function that is called every time the debug panel is updated.
+        @method customUpdate
+        @static
+    **/
+    customUpdate: function() {},
     /**
         Alpha of bodies.
         @attribute {Number} bodyAlpha
