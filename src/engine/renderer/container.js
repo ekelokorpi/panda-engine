@@ -181,7 +181,9 @@ game.createClass('Container', {
         @chainable
     **/
     anchorCenter: function() {
-        this.anchor.set(this.width / 2, this.height / 2);
+        var width = this.width / this.scale.x;
+        var height = this.height / this.scale.y;
+        this.anchor.set(width / 2, height / 2);
         return this;
     },
 
@@ -201,19 +203,24 @@ game.createClass('Container', {
         if (target === game.scene.stage) {
             var x = game.width / 2;
             var y = game.height / 2;
+            x += this.anchor.x * this.scale.x;
+            y += this.anchor.y * this.scale.y;
         }
         else {
+            target.updateTransform();
             var tb = target._getBounds();
-            var x = tb.width / 2;
-            var y = tb.height / 2;
             if (worldPos) {
-                x += tb.x;
-                y += tb.y;
+                var x = tb.x + tb.width / 2;
+                var y = tb.y + tb.height / 2;
             }
+            else {
+                var x = -target.anchor.x + tb.width / target.scale.x / 2;
+                var y = -target.anchor.y + tb.height / target.scale.y / 2;
+            }
+            x += this.anchor.x * this.scale.x;
+            y += this.anchor.y * this.scale.y;
         }
         var bounds = this._getBounds();
-        x += this.anchor.x * this.scale.x;
-        y += this.anchor.y * this.scale.y;
         x -= bounds.width * this.scale.x / 2;
         y -= bounds.height * this.scale.y / 2;
         offsetX = offsetX || 0;
