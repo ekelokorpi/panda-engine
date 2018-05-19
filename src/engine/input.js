@@ -426,7 +426,7 @@ game.createClass('Keyboard', {
         @return {Boolean}
     **/
     down: function(key) {
-        return !!this._keysDown[key];
+        return !!this._keysDown[key.toUpperCase()];
     },
 
     /**

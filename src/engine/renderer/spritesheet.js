@@ -44,6 +44,7 @@ game.createClass('SpriteSheet', {
     staticInit: function(id, width, height) {
         this.width = this.width || width;
         this.height = this.height || height;
+        if (!this.height) this.height = this.width;
         var baseTexture = game.BaseTexture.cache[game.paths[this.texture || id]];
         var sx = Math.floor(baseTexture.width / this.width);
         var sy = Math.floor(baseTexture.height / this.height);
