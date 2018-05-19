@@ -707,8 +707,15 @@ var game = {
 
         // iPhone
         this.device.iPhone = /iPhone/i.test(navigator.userAgent);
-        this.device.iPhone4 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 920);
-        this.device.iPhone5 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 1096);
+        this.device.iPhone4 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 960);
+        this.device.iPhone5 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 1136);
+        this.device.iPhone6 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 1334);
+        this.device.iPhone7 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 1334);
+        this.device.iPhone8 = (this.device.iPhone && this.device.pixelRatio === 2 && this.device.screen.height === 1334);
+        this.device.iPhoneX = (this.device.iPhone && this.device.pixelRatio === 3 && this.device.screen.height === 2436);
+        this.device.iPhone6Plus = (this.device.iPhone && this.device.pixelRatio === 3 && this.device.screen.height === 2208);
+        this.device.iPhone7Plus = (this.device.iPhone && this.device.pixelRatio === 3 && this.device.screen.height === 2208);
+        this.device.iPhone8Plus = (this.device.iPhone && this.device.pixelRatio === 3 && this.device.screen.height === 2208);
 
         // iPad
         this.device.iPad = /iPad/i.test(navigator.userAgent);
@@ -723,6 +730,7 @@ var game = {
         this.device.iOS8 = (this.device.iOS && /OS 8/i.test(navigator.userAgent));
         this.device.iOS9 = (this.device.iOS && /OS 9/i.test(navigator.userAgent));
         this.device.iOS10 = (this.device.iOS && /OS 10/i.test(navigator.userAgent));
+        this.device.iOS11 = (this.device.iOS && /OS 11/i.test(navigator.userAgent));
         this.device.WKWebView = (this.device.iOS && window.webkit && window.webkit.messageHandlers);
         
         // Android
