@@ -407,6 +407,18 @@ game.createClass('Vector', {
         this.x -= x instanceof game.Vector ? x.x : x;
         this.y -= x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
         return this;
+    },
+
+    /**
+        Swap vector values with another vector.
+        @method swap
+        @param {Vector} target
+    **/
+    swap: function(target) {
+        var x = this.x;
+        var y = this.y;
+        this.copy(target);
+        target.set(x, y);
     }
 });
 
