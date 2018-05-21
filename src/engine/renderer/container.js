@@ -159,7 +159,7 @@ game.createClass('Container', {
         @chainable
     **/
     addChild: function(child) {
-        if (!child) throw 'Child not defined';
+        if (!child) throw 'addChild: child undefined';
         child.parent = this;
         return this;
     },
@@ -171,7 +171,7 @@ game.createClass('Container', {
         @chainable
     **/
     addTo: function(container) {
-        if (!container) throw 'Parent not defined';
+        if (!container) throw 'addTo: child undefined';
         this.parent = container;
         return this;
     },
@@ -198,7 +198,7 @@ game.createClass('Container', {
     **/
     center: function(target, offsetX, offsetY, worldPos) {
         if (!target) target = this.parent;
-        if (!target) return;
+        if (!target) throw 'center: target undefined';
 
         if (target === game.scene.stage) {
             var x = game.width / 2;
@@ -245,7 +245,7 @@ game.createClass('Container', {
         @return {Boolean}
     **/
     hitTest: function(target) {
-        if (!target) return false;
+        if (!target) throw 'hitTest: target undefined';
 
         var a = this._getBounds();
         var b = target._getBounds();
@@ -344,6 +344,7 @@ game.createClass('Container', {
         @chainable
     **/
     removeChild: function(child) {
+        if (!child) throw 'removeChild: child undefined';
         var index = this.children.indexOf(child);
         if (index === -1) return;
         this.children.splice(index, 1);
@@ -363,6 +364,7 @@ game.createClass('Container', {
         @chainable
     **/
     swap: function(container) {
+        if (!container) throw 'swap: container undefined';
         if (!this.parent) return;
         this.parent.swapChildren(this, container);
         return this;

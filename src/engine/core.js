@@ -195,17 +195,18 @@ var game = {
     _waitForLoad: 0,
 
     /**
-        Add asset to load queue. Path is relative to media folder. If not id defined, path will be used as id.
+        Add asset to load queue. If not id defined, filename will be used as id.
         @method addAsset
-        @param {String} path
+        @param {String} filename
         @param {String} [id]
     **/
-    addAsset: function(path, id) {
+    addAsset: function(filename, id) {
+        if (!filename) throw 'addAsset: filename undefined';
         if (id && this.paths[id]) return;
-        if (this.paths[path]) return;
-        var realPath = this._getFilePath(path);
+        if (this.paths[filename]) return;
+        var realPath = this._getFilePath(filename);
         if (id) this.paths[id] = realPath;
-        this.paths[path] = realPath;
+        this.paths[filename] = realPath;
         if (this.mediaQueue.indexOf(realPath) === -1) this.mediaQueue.push(realPath);
         return id;
     },
@@ -284,6 +285,7 @@ var game = {
         @return {Class}
     **/
     createClass: function(name, extend, content) {
+        if (!name) throw 'createClass: name undefined';
         if (typeof name === 'object') return this.Class.extend(name);
 
         if (this[name]) throw 'Class ' + name + ' already created';
@@ -320,7 +322,7 @@ var game = {
     },
 
     /**
-        Define properties to class.
+        Define properties to class with get and set functions.
         @method defineProperties
         @param {String} className
         @param {Object} properties
@@ -343,6 +345,7 @@ var game = {
         @return {Object}
     **/
     getJSON: function(id) {
+        if (!id) throw 'getJSON: id undefined';
         return this.json[this.paths[id]];
     },
 
@@ -354,6 +357,7 @@ var game = {
         @return {Class}
     **/
     injectClass: function(name, content) {
+        if (!name) throw 'injectClass: name undefined';
         if (!this[name]) throw 'Class ' + name + ' not found';
         this[name].inject(content);
         return this[name];
