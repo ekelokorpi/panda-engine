@@ -79,7 +79,10 @@ game.createClass('Sprite', 'Container', {
 
         var blendMode = this.blendMode;
         this.blendMode = 'destination-atop';
+        var alpha = this._worldAlpha;
+        this._worldAlpha = 1;
         this._renderCanvas(context, game.Matrix.empty);
+        this._worldAlpha = alpha;
         this.blendMode = blendMode;
 
         return game.Texture.fromCanvas(canvas);
