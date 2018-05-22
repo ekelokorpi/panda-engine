@@ -145,6 +145,7 @@ game.createClass('Scene', {
         @param {Boolean} shift
         @param {Boolean} ctrl
         @param {Boolean} alt
+        @return {Boolean} return true to prevent default keydown action.
     **/
     keydown: function() {},
     
