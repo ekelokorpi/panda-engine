@@ -97,6 +97,8 @@ game.createClass('Sprite', 'Container', {
             return this._worldBounds;
         }
 
+        if (this._lastTransformUpdate < game.Timer._lastFrameTime) this.updateTransform();
+
         var width = this.texture.width;
         var height = this.texture.height;
         var lt = transform || this._worldTransform;
