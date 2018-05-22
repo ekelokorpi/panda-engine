@@ -485,6 +485,10 @@ game.createClass('Debug', {
         }
     },
 
+    /**
+        @method _updatePanel
+        @private
+    **/
     _updatePanel: function() {
         this.text = '';
         this.addText(game.version);
@@ -496,18 +500,12 @@ game.createClass('Debug', {
         this.addText('TWEENS', game.scene.tweens.length);
         this.addText('TIMERS', game.scene.timers.length);
         this.addText('HIRES', game.scale);
-        game.Debug.customUpdate.call(this);
+        game.Debug.updatePanel.call(this);
         this.panel.innerHTML = this.text;
     }
 });
 
 game.addAttributes('Debug', {
-    /**
-        Function that is called every time the debug panel is updated.
-        @method customUpdate
-        @static
-    **/
-    customUpdate: function() {},
     /**
         Alpha of bodies.
         @attribute {Number} bodyAlpha
@@ -709,7 +707,13 @@ game.addAttributes('Debug', {
         @attribute {Boolean} showSprites
         @default false
     **/
-    showSprites: false
+    showSprites: false,
+    /**
+        Function that is called every time the debug panel is updated.
+        @method updatePanel
+        @static
+    **/
+    updatePanel: function() {}
 });
 
 game.createClass('DebugTouch', {
