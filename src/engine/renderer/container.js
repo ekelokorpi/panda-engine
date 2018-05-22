@@ -316,6 +316,20 @@ game.createClass('Container', {
     mouseupoutside: function() {},
 
     /**
+        Check if container is on the screen.
+        @method onScreen
+        @return {Boolean} Return true, if on the screen.
+    **/
+    onScreen: function() {
+        var bounds = this._getBounds();
+        if (bounds.x + bounds.width < 0) return false;
+        if (bounds.x > game.width) return false;
+        if (bounds.y + bounds.height < 0) return false;
+        if (bounds.y > game.height) return false;
+        return true;
+    },
+
+    /**
         Remove this from it's parent.
         @method remove
         @chainable
