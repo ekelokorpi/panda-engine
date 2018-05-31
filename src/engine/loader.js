@@ -292,7 +292,7 @@ game.createClass('Loader', 'Scene', {
         if (!request.responseText || request.status === 404) callback('Error loading font ' + filePath);
 
         var text = request.responseText.split('\n');
-        if (text[0].indexOf('xml') !== -1) {
+        if (text[0].indexOf('<font>') !== -1) {
             // XML
             var responseXML = request.responseXML;
             if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
