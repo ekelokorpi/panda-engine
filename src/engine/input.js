@@ -154,7 +154,10 @@ game.createClass('Input', {
         @private
     **/
     _mousedown: function(event) {
-        if (game.Input.focusOnMouseDown) window.focus();
+        if (game.Input.focusOnMouseDown) {
+            window.focus();
+            game.renderer.canvas.focus();
+        }
         if (!game.scene) return;
 
         this._preventDefault(event);
@@ -383,7 +386,7 @@ game.addAttributes('Input', {
     **/
     clickTimeout: 500,
     /**
-        Set focus to window in mousedown event.
+        Set focus to canvas in mousedown event.
         @attribute {Boolean} focusOnMouseDown
         @default true
     **/
@@ -437,9 +440,10 @@ game.createClass('Keyboard', {
     _keydown: function(event) {
         if (document.activeElement !== document.body && document.activeElement !== game.renderer.canvas) return;
         if (!game.system._running) return;
+        if (game.Keyboard.preventDefault) event.preventDefault();
         var key = game.Keyboard.keys[event.keyCode];
         if (!key) key = event.keyCode;
-        if (this._keysDown[key]) return event.preventDefault();
+        if (this._keysDown[key]) return;
         this._keysDown[key] = true;
         if (game.scene && game.scene.keydown) {
             var prevent = game.scene.keydown(key, this.down('SHIFT'), this.down('CTRL'), this.down('ALT'));
@@ -566,7 +570,13 @@ game.addAttributes('Keyboard', {
         189: 'MINUS',
         192: 'GRAVE_ACCENT',
         222: 'SINGLE_QUOTE'
-    }
+    },
+    /**
+        Should keydown event prevent default action.
+        @attribute {Boolean} preventDefault
+        @default true
+    **/
+    preventDefault: true
 });
 
 });
