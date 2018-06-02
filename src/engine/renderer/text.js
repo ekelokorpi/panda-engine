@@ -347,6 +347,7 @@ game.createClass('Text', 'Container', {
         var y = 0;
         var curLine = 0;
         var curWord = 0;
+        var prevChar = 0;
 
         if (this.align === 'center') x = width / 2 - this._lines[0].width / 2;
         if (this.align === 'right') x = width - this._lines[0].width;
@@ -374,7 +375,7 @@ game.createClass('Text', 'Container', {
                 // Only add space if not beginning of line
                 if (x > 0) {
                     x += this.fontClass.spaceWidth;
-                    curWord++;
+                    if (prevChar !== 32) curWord++;
                 }
                 curWord++;
             }
@@ -385,6 +386,8 @@ game.createClass('Text', 'Container', {
                 x = 0;
                 curWord++;
             }
+
+            prevChar = charCode;
 
             var charObj = this.fontClass.chars[charCode];
             if (!charObj) continue;
