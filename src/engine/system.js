@@ -467,9 +467,9 @@ game.addAttributes('System', {
     /**
         Scale canvas for HiDPI screens.
         @attribute {Boolean} hidpi
-        @default false
+        @default true
     **/
-    hidpi: false,
+    hidpi: true,
     /**
         HiRes mode multiplier.
         @attribute {Number} hires
