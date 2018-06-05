@@ -574,9 +574,9 @@ game.addAttributes('Keyboard', {
     /**
         Should keydown event prevent default action.
         @attribute {Boolean} preventDefault
-        @default true
+        @default false
     **/
-    preventDefault: true
+    preventDefault: false
 });
 
 });
