@@ -68,6 +68,14 @@ game.createClass('Debug', {
     _frames: 0,
 
     init: function() {
+        if (game.Debug.showInfo) {
+            console.log('Panda Engine ' + game.version);
+            for (var name in game.modules) {
+                if (name.indexOf('plugin') === 0 && game.modules[name].version) {
+                    console.log(name + ' ' + game.modules[name].version);
+                }
+            }
+        }
         game.Input.inject({
             _calculateXY: function(event) {
                 if (game.Debug.fakeTouch) return;
@@ -696,6 +704,12 @@ game.addAttributes('Debug', {
         @default false
     **/
     showHitAreas: false,
+    /**
+        Show version info on console.
+        @attribute {Boolean} showInfo
+        @default true
+    **/
+    showInfo: true,
     /**
         Show debug panel.
         @attribute {Boolean} showPanel
