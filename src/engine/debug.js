@@ -348,8 +348,8 @@ game.createClass('Debug', {
             }
             else {
                 // Rectangle
-                var hw = hitArea.width * scaleX;
-                var hh = hitArea.height * scaleY;
+                var hw = hitArea.width * scaleX * game.scale;
+                var hh = hitArea.height * scaleY * game.scale;
                 context.setTransform(1, 0, 0, 1, hx, hy);
                 context.fillRect(0, 0, hw, hh);
             }
