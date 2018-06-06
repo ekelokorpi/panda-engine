@@ -255,6 +255,7 @@ game.createClass('Physics', {
         x = typeof x === 'number' ? x : 0;
         y = typeof y === 'number' ? y : 980;
         this.gravity = new game.Vector(x, y);
+        if (game.scene) game.scene.physics.push(this);
     },
 
     /**

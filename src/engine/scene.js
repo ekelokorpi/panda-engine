@@ -34,6 +34,11 @@ game.createClass('Scene', {
     **/
     paused: false,
     /**
+        List of physics worlds in scene.
+        @property {Array} physics
+    **/
+    physics: [],
+    /**
         Main container for scene.
         @property {Container} stage
     **/
@@ -422,7 +427,9 @@ game.createClass('Scene', {
     **/
     _updateCollision: function() {
         if (this.paused) return;
-        if (this.world) this.world._updateCollision();
+        for (var i = 0; i < this.physics.length; i++) {
+            this.physics[i]._updateCollision();
+        }
     },
 
     /**
@@ -442,7 +449,9 @@ game.createClass('Scene', {
     **/
     _updatePhysics: function() {
         if (this.paused) return;
-        if (this.world) this.world._update();
+        for (var i = 0; i < this.physics.length; i++) {
+            this.physics[i]._update();
+        }
     },
 
     /**
