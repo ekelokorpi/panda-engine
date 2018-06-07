@@ -22,11 +22,6 @@ game.createClass('System', {
     **/
     canvasWidth: 0,
     /**
-        Name of current scene.
-        @property {String} currentSceneName
-    **/
-    currentSceneName: null,
-    /**
         Time since last frame (seconds), shorthand game.delta
         @property {Number} delta
     **/
@@ -61,6 +56,11 @@ game.createClass('System', {
         @property {Scene} scene
     **/
     scene: null,
+    /**
+        Name of current scene.
+        @property {String} sceneName
+    **/
+    sceneName: null,
     /**
         Width of the game canvas (pixels), shorthand game.width
         @property {Number} width
@@ -374,7 +374,7 @@ game.createClass('System', {
         @private
     **/
     _setSceneNow: function(sceneName, param) {
-        this.currentSceneName = sceneName;
+        this.sceneName = sceneName;
         this._newSceneName = null;
         if (this.scene && this.scene._exit(sceneName)) return;
         if (this.paused) this.paused = false;
