@@ -74,6 +74,11 @@ game.createClass('Scene', {
     **/
     _mouseDownY: null,
     /**
+        @property {Array} _pausedAnims
+        @private
+    **/
+    _pausedAnims: [],
+    /**
         @property {Array} _pausedObjects
         @private
     **/
@@ -220,6 +225,7 @@ game.createClass('Scene', {
     **/
     pause: function() {
         if (this.paused) return;
+        this._pausedAnims.length = 0;
         this._pausedObjects.length = 0;
         this._pausedTimers.length = 0;
         this._pausedTweens.length = 0;
@@ -232,6 +238,7 @@ game.createClass('Scene', {
         for (var i = 0; i < this.tweens.length; i++) {
             this._pausedTweens.push(this.tweens[i]);
         }
+        this._getPausedAnims();
         this.objects.length = 0;
         this.timers.length = 0;
         this.tweens.length = 0;
@@ -297,6 +304,7 @@ game.createClass('Scene', {
         for (var i = 0; i < this._pausedTweens.length; i++) {
             this.tweens.push(this._pausedTweens[i]);
         }
+        this._pausedAnims.length = 0;
         this.paused = false;
         this.onResume();
     },
@@ -329,6 +337,15 @@ game.createClass('Scene', {
         
         var exit = this.exit(sceneName);
         return exit;
+    },
+
+    _getPausedAnims: function(container) {
+        container = container || this.stage;
+        for (var i = 0; i < container.children.length; i++) {
+            var child = container.children[i];
+            if (child instanceof game.Animation) this._pausedAnims.push(child);
+            if (child.children.length) this._getPausedAnims(child);
+        }
     },
 
     /**

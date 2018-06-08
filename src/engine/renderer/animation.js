@@ -196,6 +196,7 @@ game.createClass('Animation', 'Sprite', {
         @private
     **/
     _updateAnimation: function() {
+        if (game.scene.paused && game.scene._pausedAnims.indexOf(this) !== -1) return;
         var anim = this.currentAnim;
         if (!anim.textures) throw 'No textures found for animation';
         this._frameTime += anim.speed * game.delta;
