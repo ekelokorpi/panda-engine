@@ -147,6 +147,15 @@ game.createClass('Loader', 'Scene', {
     },
 
     /**
+        @method loadCSS
+        @param {String} filePath
+        @param {Function} callback
+    **/
+    loadCSS: function(filePath, callback) {
+        this.loadFile(filePath, this.parseCSS.bind(this, filePath, callback));
+    },
+
+    /**
         Load file with XMLHttpRequest.
         @method loadFile
         @param {String} filePath
@@ -279,6 +288,23 @@ game.createClass('Loader', 'Scene', {
             game.Texture.cache[name] = texture;
         }
 
+        callback();
+    },
+
+    /**
+        @method parseCSS
+        @param {String} filePath
+        @param {Function} callback
+        @param {XMLHttpRequest} request
+    **/
+    parseCSS: function(filePath, callback, request) {
+        if (!request.responseText || request.status === 404) callback('Error loading CSS ' + filePath);
+
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = request.responseText;
+        document.getElementsByTagName('head')[0].appendChild(style);
+        
         callback();
     },
 
@@ -518,6 +544,7 @@ game.addAttributes('Loader', {
     **/
     formats: {
         atlas: 'loadAtlas',
+        css: 'loadCSS',
         png: 'loadImage',
         jpg: 'loadImage',
         jpeg: 'loadImage',
