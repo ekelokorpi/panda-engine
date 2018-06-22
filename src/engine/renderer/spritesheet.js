@@ -7,88 +7,90 @@ game.module(
 .body(function() {
 
 /**
-    Sprite sheet from single image with fixed frame size.
+    Sprite which contains multiple textures from sprite sheet with fixed frame size.
     @class SpriteSheet
+    @extends Sprite
     @constructor
     @param {String} id Asset id
     @param {Number} width Sprite frame width
     @param {Number} height Sprite frame height
 **/
-game.createClass('SpriteSheet', {
+game.createClass('SpriteSheet', 'Sprite', {
     /**
-        Number of frames.
-        @property {Number} frames
+        Width of frame.
+        @property {Number} frameWidth
     **/
-    frames: 0,
+    frameWidth: 0,
     /**
         Height of frame.
-        @property {Number} height
+        @property {Number} frameHeight
     **/
-    height: 0,
-    /**
-        Asset id of texture to use as spritesheet.
-        @property {String} texture
-    **/
-    texture: null,
+    frameHeight: 0,
     /**
         List of textures.
         @property {Array} textures
     **/
     textures: [],
-    /**
-        Width of frame.
-        @property {Number} width
-    **/
-    width: 0,
 
-    staticInit: function(id, width, height) {
-        this.width = this.width || width;
-        this.height = this.height || height;
-        if (!this.height) this.height = this.width;
-        var baseTexture = game.BaseTexture.cache[game.paths[this.texture || id]];
-        var sx = Math.floor(baseTexture.width / this.width);
-        var sy = Math.floor(baseTexture.height / this.height);
+    staticInit: function(id, frameWidth, frameHeight) {
+        this.frameWidth = this.frameWidth || frameWidth;
+        this.frameHeight = this.frameHeight || frameHeight;
+        if (!this.frameHeight) this.frameHeight = this.frameWidth;
+        var baseTexture = game.BaseTexture.cache[game.paths[id]];
+        if (!baseTexture) throw 'No texture found for ' + id;
+        var sx = Math.floor(baseTexture.width / this.frameWidth);
+        var sy = Math.floor(baseTexture.height / this.frameHeight);
         this.frames = sx * sy;
 
         for (var i = 0; i < this.frames; i++) {
-            var x = (i % sx) * this.width;
-            var y = Math.floor(i / sx) * this.height;
-            var texture = new game.Texture(baseTexture, x, y, this.width, this.height);
+            var x = (i % sx) * this.frameWidth;
+            var y = Math.floor(i / sx) * this.frameHeight;
+            var texture = new game.Texture(baseTexture, x, y, this.frameWidth, this.frameHeight);
             this.textures.push(texture);
         }
+
+        this.super(this.textures[0]);
     },
 
     /**
-        Create sprite from specific frame.
+        Set texture to specific frame.
         @method frame
         @param {Number} index Frame index
-        @return {Sprite}
     **/
     frame: function(index) {
-        index = index.limit(0, this.frames - 1);
-        return new game.Sprite(this.textures[index]);
-    },
+        if (!this.textures[index]) return;
+        this.texture = this.textures[index];
+        return this;
+    }
+});
 
+game.addAttributes('SpriteSheet', {
     /**
         Create animation from spritesheet.
         @method anim
+        @static
+        @param {String} id Asset id
+        @param {Number} width Sprite frame width
+        @param {Number} height Sprite frame height
         @param {Number|Array} frames List or number of frames
         @param {Number} [startIndex] The index to begin with, default to 0
         @param {Boolean} [onlyTextures] Return only textures in array
         @return {Animation|Array}
     **/
-    anim: function(frames, startIndex, onlyTextures) {
+    anim: function(id, frameWidth, frameHeight, frames, startIndex, onlyTextures) {
+        var sprite = new game.SpriteSheet(id, frameWidth, frameHeight);
+
         startIndex = startIndex || 0;
-        frames = frames || this.frames;
+        frames = frames || sprite.textures.length;
         var textures = [];
         if (frames.length > 0) {
             for (var i = 0; i < frames.length; i++) {
-                textures.push(this.textures[startIndex + frames[i]]);
+                textures.push(sprite.textures[startIndex + frames[i]]);
             }
         }
         else {
             for (var i = 0; i < frames; i++) {
-                textures.push(this.textures[startIndex + i]);
+                textures.push(sprite.textures[startIndex + i]);
             }
         }
         if (onlyTextures) return textures;
