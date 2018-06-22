@@ -510,8 +510,8 @@ var game = {
         @chainable
     **/
     require: function(modules) {
-        var i, modules = Array.prototype.slice.call(arguments);
-        for (i = 0; i < modules.length; i++) {
+        modules = Array.prototype.slice.call(arguments);
+        for (var i = 0; i < modules.length; i++) {
             var name = modules[i];
             if (this.config.ignoreModules && this.config.ignoreModules.indexOf(name) !== -1) continue;
             if (name && this._current.requires.indexOf(name) === -1) this._current.requires.push(name);
@@ -609,14 +609,15 @@ var game = {
 
         if (this.device.mobile) {
             // Search for viewport meta
+            var viewportFound = false;
             var metaTags = document.getElementsByTagName('meta');
             for (i = 0; i < metaTags.length; i++) {
                 if (metaTags[i].name === 'viewport') {
-                    var viewportFound = true;
+                    viewportFound = true;
                     break;
                 }
             }
-
+            
             // Add viewport meta, if none found
             if (!viewportFound) {
                 var viewport = document.createElement('meta');
