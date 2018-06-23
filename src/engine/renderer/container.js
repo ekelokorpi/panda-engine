@@ -163,16 +163,34 @@ game.createClass('Container', {
         child.parent = this;
         return this;
     },
+    
+    /**
+        @method addChildAt
+        @param {Container} child
+        @param {Number} index
+        @chainable
+    **/
+    addChildAt: function(child, index) {
+        if (!child) throw 'addChildAt: child undefined';
+        this.addChild(child);
+        if (index >= 0 && index < this.children.length - 1) {
+            console.log('splicing');
+            this.children.splice(this.children.indexOf(child));
+            this.children.splice(index, 0, child);
+        }
+        return this;
+    },
 
     /**
         Add this to container.
         @method addTo
         @param {Container} container
+        @param {Number} [index]
         @chainable
     **/
-    addTo: function(container) {
+    addTo: function(container, index) {
         if (!container) throw 'addTo: child undefined';
-        this.parent = container;
+        container.addChildAt(this, index);
         return this;
     },
 
@@ -400,6 +418,28 @@ game.createClass('Container', {
 
         this.children[index1] = child2;
         this.children[index2] = child;
+    },
+    
+    /**
+        Move container to first children.
+        @method toBottom
+    **/
+    toBottom: function() {
+        if (!this.parent) return;
+        var parent = this.parent;
+        this.remove();
+        this.addTo(parent, 0);
+    },
+    
+    /**
+        Move container to last children.
+        @method toTop
+    **/
+    toTop: function() {
+        if (!this.parent) return;
+        var parent = this.parent;
+        this.remove();
+        this.addTo(parent);
     },
 
     /**
