@@ -191,9 +191,12 @@ game.createClass('Loader', 'Scene', {
         @param {Function} callback
     **/
     loadImage: function(filePath, callback) {
-        game.BaseTexture.fromImage(filePath, function() {
-            if (game.Loader.preRender) game.renderer.context.drawImage(this.source, 0, 0);
-            callback();
+        game.BaseTexture.fromImage(filePath, function(error) {
+            if (error) callback(error);
+            else {
+                if (game.Loader.preRender) game.renderer.context.drawImage(this.source, 0, 0);
+                callback();
+            }
         });
     },
 
