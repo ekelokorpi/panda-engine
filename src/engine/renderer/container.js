@@ -452,14 +452,8 @@ game.createClass('Container', {
     toWorldPosition: function(vector, local) {
         if (this._lastTransformUpdate !== game.Timer.time) this._updateParentTransform();
 
-        if (local) {
-            var x = -this.parent._worldTransform.tx + this.position.x;
-            var y = -this.parent._worldTransform.ty + this.position.y;
-        }
-        else {
-            var x = this._worldTransform.tx;
-            var y = this._worldTransform.ty;
-        }
+        var x = local ? -this.parent._worldTransform.tx + this.position.x : this._worldTransform.tx;
+        var y = local ? -this.parent._worldTransform.ty + this.position.y : this._worldTransform.ty;
 
         if (vector) vector.set(x, y);
         else return new game.Vector(x, y);
