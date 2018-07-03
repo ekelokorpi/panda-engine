@@ -18,27 +18,37 @@ game.module(
 **/
 game.createClass('Sprite', 'Container', {
     /**
+        Blend mode for sprite rendering.
         @property {String} blendMode
         @default source-over
     **/
     blendMode: 'source-over',
     /**
+        Texture for sprite.
         @property {Texture} texture
     **/
     texture: null,
     /**
+        Tint sprite with color.
         @property {String} tint
     **/
     tint: null,
     /**
+        Alpha of sprite tint.
         @property {Number} tintAlpha
         @default 1
     **/
     tintAlpha: 1,
+    /**
+        Crop tint area. x is from left, y is from top, width is from right and height is from bottom.
+        @property {Rectangle} tintCrop
+    **/
+    tintCrop: null,
 
     staticInit: function(texture, props) {
+        this.tintCrop = new game.Rectangle();
         this.super(props);
-        this.setTexture(this.texture || texture);
+        this.setTexture(this.texture || texture);
     },
 
     /**
@@ -73,13 +83,17 @@ game.createClass('Sprite', 'Container', {
         canvas.height = this.texture.height * game.scale;
 
         context.fillStyle = color.substr(0, 7);
-        context.globalAlpha = alpha || 1.0;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        context.globalAlpha = 1.0;
+        context.globalAlpha = alpha || 1;
+        var x = this.tintCrop.x * game.scale;
+        var y = this.tintCrop.y * game.scale;
+        var width = canvas.width - x - this.tintCrop.width * game.scale;
+        var height = canvas.height - y - this.tintCrop.height * game.scale;
+        context.fillRect(x, y, width, height);
+        context.globalAlpha = 1;
 
         var blendMode = this.blendMode;
         this.blendMode = 'destination-atop';
-        var alpha = this._worldAlpha;
+        alpha = this._worldAlpha;
         this._worldAlpha = 1;
         this._renderCanvas(context, game.Matrix.empty);
         this._worldAlpha = alpha;
@@ -172,8 +186,8 @@ game.createClass('Sprite', 'Container', {
         context.globalCompositeOperation = this.blendMode;
         context.globalAlpha = this._worldAlpha;
 
-        var t = this._tintedTexture || this.texture;
-        var wt = transform || this._worldTransform;
+        var t = this._tintedTexture || this.texture;
+        var wt = transform || this._worldTransform;
         var tx = wt.tx;
         var ty = wt.ty;
         
