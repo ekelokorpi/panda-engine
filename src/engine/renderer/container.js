@@ -455,6 +455,11 @@ game.createClass('Container', {
         var x = local ? -this.parent._worldTransform.tx + this.position.x : this._worldTransform.tx;
         var y = local ? -this.parent._worldTransform.ty + this.position.y : this._worldTransform.ty;
 
+        if (!local) {
+            x += this.anchor.x;
+            y += this.anchor.y;
+        }
+
         if (vector) vector.set(x, y);
         else return new game.Vector(x, y);
     },
