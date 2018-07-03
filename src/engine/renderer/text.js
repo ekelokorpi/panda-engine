@@ -167,14 +167,14 @@ game.createClass('Text', 'Container', {
     fontClass: null,
     /**
         If text height is higher than maxHeight value, text will be scaled down to fit maxHeight. 0 to disable.
-        @propety {Number} maxHeight
-        @defaul 0
+        @property {Number} maxHeight
+        @default 0
     **/
     maxHeight: 0,
     /**
         If text width is higher than maxWidth value, text will be scaled down to fit maxWidth. 0 to disable.
-        @propety {Number} maxWidth
-        @defaul 0
+        @property {Number} maxWidth
+        @default 0
     **/
     maxWidth: 0,
     /**
