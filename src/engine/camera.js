@@ -44,9 +44,9 @@ game.createClass('Camera', {
     /**
         Round camera position.
         @property {Boolean} rounding
-        @default false
+        @default true
     **/
-    rounding: false,
+    rounding: true,
     /**
         Position of the camera sensor.
         @property {Vector} sensorPosition
