@@ -202,7 +202,7 @@ game.createClass('Sprite', 'Container', {
             this._tintedTextureGenerated = true;
             this._tintedTexture = this._generateTintedTexture(this.tint, this.tintAlpha);
         }
-        else if (!this.tint && this._tintedTexture) {
+        else if (!this.tint && this._tintedTexture || this.tintAlpha === 0 && this._tintedTexture) {
             this._destroyTintedTexture();
         }
         
