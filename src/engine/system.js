@@ -379,6 +379,7 @@ game.createClass('System', {
         if (this.scene && this.scene._exit(sceneName)) return;
         if (this.paused) this.paused = false;
         game.TilingSprite.clearCache();
+        game.Sprite._clearTintedTextures();
         this.scene = new game[sceneName](param);
         this._startRunLoop();
     },

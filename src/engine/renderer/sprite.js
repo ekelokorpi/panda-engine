@@ -44,6 +44,16 @@ game.createClass('Sprite', 'Container', {
         @property {Rectangle} tintCrop
     **/
     tintCrop: null,
+    /**
+        @property {Number} _tintAlpha
+        @private
+    **/
+    _tintAlpha: 1,
+    /**
+        @property {String} _tintColor
+        @private
+    **/
+    _tintColor: null,
 
     staticInit: function(texture, props) {
         this.tintCrop = new game.Rectangle();
@@ -64,7 +74,10 @@ game.createClass('Sprite', 'Container', {
         @private
     **/
     _destroyTintedTexture: function() {
-        if (this._tintedTexture) this._tintedTexture.remove();
+        if (this._tintedTexture) {
+            this._tintedTexture.baseTexture.remove();
+            this._tintedTexture.remove();
+        }
         this._tintedTexture = null;
         this._tintedTextureGenerated = false;
     },
@@ -82,8 +95,11 @@ game.createClass('Sprite', 'Container', {
         canvas.width = this.texture.width * game.scale;
         canvas.height = this.texture.height * game.scale;
 
-        context.fillStyle = color.substr(0, 7);
-        context.globalAlpha = alpha || 1;
+        this._tintColor = color;
+        this._tintAlpha = alpha || 1;
+        
+        context.fillStyle = this._tintColor.substr(0, 7);
+        context.globalAlpha = this._tintAlpha;
         var x = this.tintCrop.x * game.scale;
         var y = this.tintCrop.y * game.scale;
         var width = canvas.width - x - this.tintCrop.width * game.scale;
@@ -99,7 +115,9 @@ game.createClass('Sprite', 'Container', {
         this._worldAlpha = alpha;
         this.blendMode = blendMode;
 
-        return game.Texture.fromCanvas(canvas);
+        var texture = game.Texture.fromCanvas(canvas);
+        game.Sprite._tintedTextures.push(texture);
+        return texture;
     },
 
     _getBounds: function(transform) {
@@ -175,7 +193,12 @@ game.createClass('Sprite', 'Container', {
         
         if (!this.texture.width || !this.texture.height) return true;
 
-        if (this.tint && !this._tintedTexture && !this._tintedTextureGenerated) {
+        if (this.tint && !this._tintedTexture && !this._tintedTextureGenerated && this.tintAlpha > 0) {
+            this._tintedTextureGenerated = true;
+            this._tintedTexture = this._generateTintedTexture(this.tint, this.tintAlpha);
+        }
+        else if (this.tint && this.tint !== this._tintColor && this.tintAlpha > 0 || this.tint && this.tintAlpha !== this._tintAlpha && this.tintAlpha > 0) {
+            this._destroyTintedTexture();
             this._tintedTextureGenerated = true;
             this._tintedTexture = this._generateTintedTexture(this.tint, this.tintAlpha);
         }
@@ -246,6 +269,27 @@ game.defineProperties('Sprite', {
         set: function(value) {
             this.scale.y = value / this.texture.height;
         }
+    }
+});
+
+game.addAttributes('Sprite', {
+    /**
+        @attribute {Array} _tintedTextures
+        @private
+    **/
+    _tintedTextures: [],
+    
+    /**
+        @method _clearTintedTextures
+        @static
+        @private
+    **/
+    _clearTintedTextures: function() {
+        for (var i = 0; i < this._tintedTextures.length; i++) {
+            this._tintedTextures[i].baseTexture.remove();
+            this._tintedTextures[i].remove();
+        }
+        this._tintedTextures.length = 0;
     }
 });
 
