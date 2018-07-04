@@ -489,10 +489,15 @@ game.createClass('PhysicsSprite', 'Sprite', {
         this.position = this.body.position;
     },
 
-    addTo: function(container, world) {
-        world = world || game.scene.world;
-        if (!world) throw 'Physics world not found';
-        this.body.addTo(world);
+    /**
+        @method addTo
+        @param {Container} container
+        @param {Physics} physics
+    **/
+    addTo: function(container, physics) {
+        physics = physics || game.scene.world;
+        if (!physics) throw 'addTo: Physics world not defined';
+        this.body.addTo(physics);
         return this.super(container);
     },
 
@@ -507,6 +512,10 @@ game.createClass('PhysicsSprite', 'Sprite', {
         return true;
     },
 
+    /**
+        Removes sprite from it's parent and also body from it's physics world.
+        @method remove
+    **/
     remove: function() {
         this.body.remove();
         return this.super();
