@@ -295,7 +295,7 @@ var game = {
             extend = 'Class';
         }
 
-        if (!this[extend]) throw 'Class ' + extend + ' not found';
+        if (!this[extend]) throw 'createClass: Class ' + extend + ' not found for ' + name;
 
         this[name] = this[extend].extend(content);
         this[name]._name = name;
