@@ -4,6 +4,9 @@
 game.module(
     'engine.renderer.spritesheet'
 )
+.require(
+    'engine.renderer.sprite'
+)
 .body(function() {
 
 /**
