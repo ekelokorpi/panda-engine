@@ -130,6 +130,8 @@ game.createClass('System', {
         this.canvasWidth = this.originalWidth * game.scale;
         this.canvasHeight = this.originalHeight * game.scale;
 
+        if (typeof document === 'undefined') return;
+        
         var visibilityChange;
         if (typeof document.hidden !== 'undefined') {
             visibilityChange = 'visibilitychange';
@@ -335,7 +337,7 @@ game.createClass('System', {
         game.Timer.update();
         game.delta = this.delta = game.Timer.delta / 1000;
 
-        game.input._update();
+        if (game.input) game.input._update();
         this.scene._update();
 
         if (this._newSceneName) this._setSceneNow(this._newSceneName, this._newSceneParam);
@@ -437,6 +439,7 @@ game.createClass('System', {
         @private
     **/
     _updateWindowSize: function() {
+        if (typeof document === 'undefined') return;
         this._windowWidth = game.device.WKWebView ? document.documentElement.clientWidth : window.innerWidth;
         this._windowHeight = game.device.WKWebView ? document.documentElement.clientHeight : window.innerHeight;
         if (game.device.crosswalk && this._windowWidth === 0) {

@@ -105,8 +105,8 @@ game.createClass('Scene', {
             this.backgroundColor = '#000';
         }
 
-        game.input._reset();
-        game.keyboard._reset();
+        if (game.input) game.input._reset();
+        if (game.keyboard) game.keyboard._reset();
 
         game.scene = this;
         
@@ -476,7 +476,7 @@ game.createClass('Scene', {
         @private
     **/
     _updateRenderer: function() {
-        game.renderer._render(this.stage);
+        if (game.renderer) game.renderer._render(this.stage);
     },
 
     /**
