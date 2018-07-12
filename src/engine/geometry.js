@@ -130,6 +130,16 @@ game.createClass('Rectangle', {
         this.height = typeof height === 'number' ? height : this.width;
         this.x = typeof x === 'number' ? x : this.x;
         this.y = typeof y === 'number' ? y : this.y;
+    },
+    
+    /**
+        Swap width and height values.
+        @method swap
+    **/
+    swap: function() {
+        var height = this.height;
+        this.height = this.width;
+        this.width = height;
     }
 });
 
