@@ -9,3 +9,4 @@ media/*
 !media/panda.png
 *.mobileprovision
 *.p12
+plugin
