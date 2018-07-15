@@ -122,6 +122,19 @@ game.createClass('Graphics', 'Container', {
         this._drawShape(shape, true);
         return this;
     },
+    
+    /**
+        @method drawPolygon
+        @param {Array} points List of points.
+        @param {Boolean} [close] Close the polygon.
+        @chainable
+    **/
+    drawPolygon: function(points, close) {
+        var poly = new game.Polygon(points);
+        if (close) poly.close();
+        this._drawShape(poly);
+        return this;
+    },
 
     /**
         @method drawRect
@@ -344,6 +357,13 @@ game.createClass('GraphicsShape', {
             }
             else {
                 context.arc(x, y, shape.radius, 0, Math.PI * 2);
+            }
+        }
+        else if (shape.points) {
+            context.moveTo(0, 0);
+            for (var i = 0; i < shape.points.length; i++) {
+                var point = shape.points[i];
+                context.lineTo(point.x * game.scale, point.y * game.scale);
             }
         }
     }
