@@ -446,6 +446,10 @@ game.createClass('System', {
             this._windowWidth = window.screen.width;
             this._windowHeight = window.screen.height;
         }
+        if (Math.abs(window.orientation) === 90 && game.device.iPhone && game.device.safari) {
+            // Fix iPhone Safari landscape fullscreen
+            this._windowHeight++;
+        }
     }
 });
 
