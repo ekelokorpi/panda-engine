@@ -363,7 +363,14 @@ game.createClass('GraphicsShape', {
             context.moveTo(0, 0);
             for (var i = 0; i < shape.points.length; i++) {
                 var point = shape.points[i];
-                context.lineTo(point.x * game.scale, point.y * game.scale);
+                var x = point.x;
+                var y = point.y;
+                if (x === undefined) {
+                    x = point;
+                    y = shape.points[i + 1];
+                    i++;
+                }
+                context.lineTo(x * game.scale, y * game.scale);
             }
         }
     }

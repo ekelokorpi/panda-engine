@@ -91,15 +91,19 @@ game.createClass('Circle', {
 **/
 game.createClass('Polygon', {
     /**
-        List of points in polygon. Each points is instance of Vector.
+        List of points in polygon. Can be list of numbers or vectors.
         @property {Array} points
     **/
     points: [],
 
     staticInit: function(points) {
         if (!points) return;
-        for (var i = 0; i < points.length; i += 2) {
-            this.points.push(new game.Vector(points[i], points[i + 1]));
+        for (var i = 0; i < points.length; i++) {
+            if (points[i] instanceof game.Vector) this.points.push(points[i]);
+            else {
+                this.points.push(new game.Vector(points[i], points[i + 1]));
+                i++;
+            }
         }
     },
     
