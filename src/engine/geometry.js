@@ -85,6 +85,36 @@ game.createClass('Circle', {
 });
 
 /**
+    @class Polygon
+    @constructor
+    @param {Array} points
+**/
+game.createClass('Polygon', {
+    /**
+        List of points in polygon. Each points is instance of Vector.
+        @property {Array} points
+    **/
+    points: [],
+
+    staticInit: function(points) {
+        if (!points) return;
+        for (var i = 0; i < points.length; i += 2) {
+            this.points.push(new game.Vector(points[i], points[i + 1]));
+        }
+    },
+    
+    /**
+        Close polygon.
+        @method close
+    **/
+    close: function() {
+        if (this.points[0] !== this.points[this.points.length - 1]) {
+            this.points.push(this.points[0]);
+        }
+    }
+});
+
+/**
     @class Rectangle
     @constructor
     @param {Number} width
