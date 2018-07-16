@@ -443,7 +443,10 @@ game.createClass('Keyboard', {
         if (game.Keyboard.preventDefault) event.preventDefault();
         var key = game.Keyboard.keys[event.keyCode];
         if (!key) key = event.keyCode;
-        if (this._keysDown[key]) return;
+        if (this._keysDown[key]) {
+            event.preventDefault();
+            return;
+        }
         this._keysDown[key] = true;
         if (game.scene && game.scene.keydown) {
             var prevent = game.scene.keydown(key, this.down('SHIFT'), this.down('CTRL'), this.down('ALT'));

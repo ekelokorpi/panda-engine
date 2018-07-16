@@ -85,6 +85,40 @@ game.createClass('Circle', {
 });
 
 /**
+    @class Polygon
+    @constructor
+    @param {Array} points
+**/
+game.createClass('Polygon', {
+    /**
+        List of points in polygon. Can be list of numbers or vectors.
+        @property {Array} points
+    **/
+    points: [],
+
+    staticInit: function(points) {
+        if (!points) return;
+        for (var i = 0; i < points.length; i++) {
+            if (points[i] instanceof game.Vector) this.points.push(points[i]);
+            else {
+                this.points.push(new game.Vector(points[i], points[i + 1]));
+                i++;
+            }
+        }
+    },
+    
+    /**
+        Close polygon.
+        @method close
+    **/
+    close: function() {
+        if (this.points[0] !== this.points[this.points.length - 1]) {
+            this.points.push(this.points[0]);
+        }
+    }
+});
+
+/**
     @class Rectangle
     @constructor
     @param {Number} width
@@ -130,6 +164,16 @@ game.createClass('Rectangle', {
         this.height = typeof height === 'number' ? height : this.width;
         this.x = typeof x === 'number' ? x : this.x;
         this.y = typeof y === 'number' ? y : this.y;
+    },
+    
+    /**
+        Swap width and height values.
+        @method swap
+    **/
+    swap: function() {
+        var height = this.height;
+        this.height = this.width;
+        this.width = height;
     }
 });
 

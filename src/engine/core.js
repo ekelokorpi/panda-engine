@@ -99,7 +99,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.8.1',
+    version: '2.9.0',
     /**
         @property {Boolean} _booted
         @private
@@ -254,7 +254,7 @@ var game = {
         var l, c, i;
         if (
             !object || typeof object !== 'object' ||
-            object instanceof HTMLElement ||
+            (typeof document !== 'undefined' && object instanceof HTMLElement) ||
             object instanceof this.Class ||
             (this.Container && object instanceof this.Container)
         ) {
@@ -559,11 +559,11 @@ var game = {
         
         // Required classes
         this.system = new this.System();
-        this.input = new this.Input(this.renderer.canvas);
+        if (this.renderer) this.input = new this.Input(this.renderer.canvas);
 
         // Optional classes
-        if (this.Keyboard) this.keyboard = new this.Keyboard();
-        if (this.Audio) this.audio = new this.Audio();
+        if (this.renderer && this.Keyboard) this.keyboard = new this.Keyboard();
+        if (this.renderer && this.Audio) this.audio = new this.Audio();
         if (this.Pool) this.pool = new this.Pool();
         if (this.config.id && !this.Storage.id) this.Storage.id = this.config.id;
         if (this.Storage && this.Storage.id) this.storage = new this.Storage();
@@ -576,15 +576,17 @@ var game = {
         if (this.Debug && this.Debug.enabled) this.debug = new this.Debug();
 
         // Logo
-        var canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 120 * game.scale;
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(this._logoSource, 0, 0, canvas.width, canvas.height / 2);
-        ctx.rotate(Math.PI);
-        ctx.translate(-canvas.width, -canvas.height);
-        ctx.drawImage(this._logoSource, 0, 0, canvas.width, canvas.height / 2);
-        this.logo = new game.Texture(new game.BaseTexture(canvas));
-
+        if (typeof document !== 'undefined') {
+            var canvas = document.createElement('canvas');
+            canvas.width = canvas.height = 120 * game.scale;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(this._logoSource, 0, 0, canvas.width, canvas.height / 2);
+            ctx.rotate(Math.PI);
+            ctx.translate(-canvas.width, -canvas.height);
+            ctx.drawImage(this._logoSource, 0, 0, canvas.width, canvas.height / 2);
+            this.logo = new game.Texture(new game.BaseTexture(canvas));
+        }
+        
         this.isStarted = true;
         if (!this.system._rotateScreenVisible) this.onStart();
     },
@@ -597,11 +599,12 @@ var game = {
         this._booted = true;
         this._loadNativeExtensions();
         this._loadDeviceInformation();
+        if (typeof window === 'object') {
+            this._normalizeVendorAttribute(window, 'requestAnimationFrame');
+            this._normalizeVendorAttribute(navigator, 'vibrate');
+        }
 
-        this._normalizeVendorAttribute(window, 'requestAnimationFrame');
-        this._normalizeVendorAttribute(navigator, 'vibrate');
-
-        if (document.location.href.match(/\?nocache/) || this.config.disableCache) this._nocache = '?' + Date.now();
+        if (typeof document === 'object' && document.location.href.match(/\?nocache/) || this.config.disableCache) this._nocache = '?' + Date.now();
 
         // Default config
         if (typeof this.config.sourceFolder === 'undefined') this.config.sourceFolder = 'src';
@@ -631,7 +634,7 @@ var game = {
 
         this.module('engine.core');
 
-        if (document.readyState === 'complete') {
+        if (typeof document === 'undefined' || document.readyState === 'complete') {
             this._DOMReady();
         }
         else {
@@ -646,7 +649,7 @@ var game = {
     **/
     _clearGameLoop: function(id) {
         if (this._gameLoops[id]) delete this._gameLoops[id];
-        else window.clearInterval(id);
+        else clearInterval(id);
     },
 
     /**
@@ -655,7 +658,7 @@ var game = {
     **/
     _DOMReady: function() {
         if (this._DOMLoaded) return;
-        if (!document.body) return setTimeout(this._DOMReady.bind(this), 13);
+        if (typeof document === 'object' && !document.body) return setTimeout(this._DOMReady.bind(this), 13);
         this._DOMLoaded = true;
         if (this._gameModuleDefined) this._loadModules();
     },
@@ -701,6 +704,10 @@ var game = {
         @private
     **/
     _loadDeviceInformation: function() {
+        if (typeof window === 'undefined') {
+            this.device.headless = true;
+            return;
+        }
         this.device.pixelRatio = window.devicePixelRatio || 1;
         this.device.screen = {
             width: window.screen.availWidth * this.device.pixelRatio,
@@ -938,7 +945,7 @@ var game = {
             return this.charAt(0).toUpperCase() + this.slice(1);
         };
 
-        if (window.Intl) {
+        if (typeof Intl === 'object') {
             // Natural alphanumerical sort
             var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
             this.compare = collator.compare;
@@ -955,6 +962,12 @@ var game = {
 
         var path = name.replace(/\./g, '/') + '.js' + this._nocache;
         if (this.config.sourceFolder) path = this.config.sourceFolder + '/' + path;
+        
+        if (typeof document === 'undefined') {
+            require('../../' + path);
+            this._scriptLoaded();
+            return;
+        }
 
         var script = document.createElement('script');
         script.type = 'text/javascript';
@@ -1008,7 +1021,8 @@ var game = {
                 }
             }
         }
-
+        
+        if (typeof document === 'undefined') return;
         this._logoSource = document.createElement('img');
         this._logoSource.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAA8BAMAAABfg2ObAAAALVBMVEUAAAD4uABHR0f4uABHR0f4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADOcJEWAAAADXRSTlMAqqpV6UQkUMmUdBvjKrIhowAAAH1JREFUSMdjKLmLB7gz4Ae++DRfIaD5Ll4wqnlU8xDQzCqIDKRI05z3DgUsIEmzHapmgVHNo5qpovkGInkS1uykhApmo2cMGTyaFRgIAMZRzaOaRzUPJs2sEM0BZGlmSDYGAjMG0jUjwKjmUc2jmontlE0gUXMJckNgA2l6ASc7KJOPBNRIAAAAAElFTkSuQmCC';
         this._logoSource.onload = this._readyLogo.bind(this);
@@ -1040,8 +1054,8 @@ var game = {
         @return {Number}
     **/
     _setGameLoop: function(callback) {
-        if (this.System.frameRate) return window.setInterval(callback, 1000 / this.System.frameRate);
-        if (window.requestAnimationFrame) {
+        if (this.System.frameRate) return setInterval(callback, 1000 / this.System.frameRate);
+        if (typeof requestAnimationFrame === 'function') {
             var id = this._gameLoopId++;
             this._gameLoops[id] = true;
 
@@ -1053,7 +1067,7 @@ var game = {
             window.requestAnimationFrame(animate);
             return id;
         }
-        return window.setInterval(callback, 1000 / 60);
+        return setInterval(callback, 1000 / 60);
     },
 
     /**

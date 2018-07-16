@@ -801,6 +801,7 @@ game.createClass('DebugTouch', {
     }
 });
 
+if (typeof document === 'undefined') return;
 var href = document.location.href.toLowerCase();
 if (href.match(/\?debug/)) game.Debug.enabled = true;
 if (href.match(/\?debugdraw/)) {
