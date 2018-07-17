@@ -354,6 +354,7 @@ game.createClass('Loader', 'Scene', {
             };
             for (var i = 0; i < text.length; i++) {
                 if (text[i].length === 0) continue; // Skip empty lines
+                text[i] = text[i].replace(/\s\s+/g, ' ').trim();
                 var lineData = text[i].split(' ');
                 var name = lineData.shift();
                 if (name === 'char' || name === 'kerning' || name === 'page') {
