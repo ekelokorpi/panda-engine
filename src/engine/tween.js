@@ -278,6 +278,20 @@ game.createClass('Tween', {
     resume: function() {
         this.paused = false;
     },
+    
+    /**
+        Reverse tween.
+        @method reverse
+        @param {Boolean} start Force tween to start, if not playing.
+    **/
+    reverse: function(start) {
+        var startValues = this._valuesStart;
+        var endValues = this._valuesEnd;
+        this._valuesStart = endValues;
+        this._valuesEnd = startValues;
+        this.currentTime = this.duration - this.currentTime;
+        if (!this.playing && start) this.start();
+    },
 
     /**
         Start tween.
