@@ -157,7 +157,7 @@ game.createClass('System', {
 
         this._initRenderer();
 
-        if (game.System.hidpi)  {
+        if (game.System.hidpi) {
             this.canvasWidth /= game.device.pixelRatio;
             this.canvasHeight /= game.device.pixelRatio;
         }

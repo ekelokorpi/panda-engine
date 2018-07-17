@@ -99,7 +99,9 @@ game.createClass('Polygon', {
     staticInit: function(points) {
         if (!points) return;
         for (var i = 0; i < points.length; i++) {
-            if (points[i] instanceof game.Vector) this.points.push(points[i]);
+            if (points[i] instanceof game.Vector) {
+                this.points.push(points[i]);
+            }
             else {
                 this.points.push(new game.Vector(points[i], points[i + 1]));
                 i++;
