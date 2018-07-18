@@ -131,6 +131,11 @@ game.createClass('Debug', {
             _renderCachedSprite: function(context) {
                 this.super(context);
                 game.debug._draws++;
+            },
+            
+            _renderCanvas: function(context) {
+                if (game.scene && game.scene.stage === this) return;
+                if (game.Debug.showBounds) game.debug._drawBounds(this);
             }
         });
 
@@ -168,6 +173,7 @@ game.createClass('Debug', {
             _renderCanvas: function(context) {
                 this.super(context);
                 game.debug._draws += this.shapes.length;
+                if (game.Debug.showBounds) game.debug._drawBounds(this);
             }
         });
 
@@ -271,6 +277,25 @@ game.createClass('Debug', {
             context.fill();
             context.stroke();
         }
+    },
+    
+    /**
+        @method _drawBounds
+        @param {Container} container
+        @private
+    **/
+    _drawBounds: function(container) {
+        var context = game.renderer.context;
+        var bounds = container._getBounds();
+        
+        context.globalCompositeOperation = 'source-over';
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = game.Debug.boundAlpha;
+        context.lineWidth = game.Debug.boundLineWidth;
+        context.strokeStyle = game.Debug.boundColor;
+        context.beginPath();
+        context.rect(bounds.x, bounds.y, bounds.width, bounds.height);
+        context.stroke();
     },
 
     /**
@@ -692,6 +717,12 @@ game.addAttributes('Debug', {
         @default false
     **/
     showBodies: false,
+    /**
+        Draw bounds of containers and graphics.
+        @attribute {Boolean} showBounds
+        @default false
+    **/
+    showBounds: false,
     /**
         Draw camera debug.
         @attribute {Boolean} showCamera
