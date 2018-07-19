@@ -22,11 +22,23 @@ game.createClass('Audio', {
     **/
     music: null,
     /**
-        Is audio muted.
+        Is all sounds and music muted.
         @property {Boolean} muted
         @default false
     **/
     muted: false,
+    /**
+        Is music muted.
+        @property {Boolean} mutedMusic
+        @default false
+    **/
+    mutedMusic: false,
+    /**
+        Is all sounds muted.
+        @property {Boolean} mutedSound
+        @default false
+    **/
+    mutedSound: false,
     /**
         Currently playing sounds.
         @property {Array} sounds
@@ -97,13 +109,33 @@ game.createClass('Audio', {
     },
 
     /**
-        Mute all audio.
+        Mute all sounds and music.
         @method mute
     **/
     mute: function() {
         if (!this._mainGain) return;
         this._mainGain.gain.setValueAtTime(0, this._context.currentTime);
         this.muted = true;
+    },
+    
+    /**
+        Mute music.
+        @method muteMusic
+    **/
+    muteMusic: function() {
+        if (!this._musicGain) return;
+        this._musicGain.gain.setValueAtTime(0, this._context.currentTime);
+        this.mutedMusic = true;
+    },
+    
+    /**
+        Mute all sounds.
+        @method muteSound
+    **/
+    muteSound: function() {
+        if (!this._soundGain) return;
+        this._soundGain.gain.setValueAtTime(0, this._context.currentTime);
+        this.mutedSound = true;
     },
 
     /**
@@ -169,6 +201,26 @@ game.createClass('Audio', {
         if (!this._mainGain) return;
         this._mainGain.gain.setValueAtTime(1, this._context.currentTime);
         this.muted = false;
+    },
+    
+    /**
+        Unmute music.
+        @method muteMusic
+    **/
+    unmuteMusic: function() {
+        if (!this._musicGain) return;
+        this._musicGain.gain.setValueAtTime(game.Audio.musicVolume, this._context.currentTime);
+        this.mutedMusic = false;
+    },
+    
+    /**
+        Unmute all sounds.
+        @method muteSound
+    **/
+    unmuteSound: function() {
+        if (!this._soundGain) return;
+        this._soundGain.gain.setValueAtTime(game.Audio.soundVolume, this._context.currentTime);
+        this.mutedSound = false;
     },
 
     /**
@@ -421,7 +473,6 @@ game.createClass('Sound', {
 
     init: function() {
         if (this._gainNode) this._gainNode.connect(game.audio._soundGain);
-        this.volume = game.Audio.soundVolume;
     },
 
     /**
@@ -602,7 +653,7 @@ game.defineProperties('Sound', {
     /**
         Sound volume (0-1).
         @property {Number} volume
-        @default game.Audio.soundVolume
+        @default 1
     **/
     volume: {
         get: function() {
@@ -631,7 +682,6 @@ game.createClass('Music', 'Sound', {
 
     init: function() {
         if (this._gainNode) this._gainNode.connect(game.audio._musicGain);
-        this.volume = game.Audio.musicVolume;
     },
 
     _onStart: function() {
