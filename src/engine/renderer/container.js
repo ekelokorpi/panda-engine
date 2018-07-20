@@ -174,7 +174,6 @@ game.createClass('Container', {
         if (!child) throw 'addChildAt: child undefined';
         this.addChild(child);
         if (index >= 0 && index < this.children.length - 1) {
-            console.log('splicing');
             this.children.splice(this.children.indexOf(child));
             this.children.splice(index, 0, child);
         }
