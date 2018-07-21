@@ -126,7 +126,7 @@ game.createClass('Input', {
             hx += bounds.width * scaleX * aPercX;
             hy += bounds.height * scaleY * aPercY;
             if (hitArea.radius) {
-                var r = hitArea.radius / 2;
+                var r = hitArea.radius;
                 hx += r;
                 hy += r;
                 var a = x - hx;

@@ -361,19 +361,19 @@ game.createClass('Debug', {
         if (hitArea) {
             var wt = container._worldTransform;
             var bounds = container._getBounds();
-            var tx = (bounds.x || wt.tx);
-            var ty = (bounds.y || wt.ty);
+            var tx = typeof bounds.x === 'number' ? bounds.x : wt.tx;
+            var ty = typeof bounds.y === 'number' ? bounds.y : wt.ty;
             var scaleX = Math.abs(wt.a / container._cosCache);
             var scaleY = Math.abs(wt.d / container._cosCache);
-            var aPercX = (container.anchor.x / container.width) || 0;
-            var aPercY = (container.anchor.y / container.height) || 0;
+            var aPercX = (container.anchor.x / container.width) || 0;
+            var aPercY = (container.anchor.y / container.height) || 0;
             var hx = tx + hitArea.x * scaleX;
             var hy = ty + hitArea.y * scaleY;
             hx += bounds.width * scaleX * aPercX;
             hy += bounds.height * scaleY * aPercY;
             if (hitArea.radius) {
                 // Circle
-                var r = hitArea.radius / 2 * game.scale;
+                var r = hitArea.radius * game.scale;
                 context.setTransform(1, 0, 0, 1, hx, hy);
                 context.beginPath();
                 context.arc(r, r, r, 0, Math.PI * 2);
