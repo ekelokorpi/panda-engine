@@ -374,6 +374,8 @@ game.createClass('Debug', {
             if (hitArea.radius) {
                 // Circle
                 var r = hitArea.radius * game.scale;
+                hx += bounds.width / 2 - r;
+                hy += bounds.height / 2 - r;
                 context.setTransform(1, 0, 0, 1, hx, hy);
                 context.beginPath();
                 context.arc(r, r, r, 0, Math.PI * 2);

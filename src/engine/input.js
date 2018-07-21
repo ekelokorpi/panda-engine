@@ -115,8 +115,8 @@ game.createClass('Input', {
         if (hitArea) {
             var wt = container._worldTransform;
             var bounds = container._getBounds();
-            var tx = (bounds.x || wt.tx);
-            var ty = (bounds.y || wt.ty);
+            var tx = typeof bounds.x === 'number' ? bounds.x : wt.tx;
+            var ty = typeof bounds.y === 'number' ? bounds.y : wt.ty;
             var scaleX = Math.abs(wt.a / container._cosCache);
             var scaleY = Math.abs(wt.d / container._cosCache);
             var aPercX = (container.anchor.x / container.width) || 0;
@@ -126,9 +126,9 @@ game.createClass('Input', {
             hx += bounds.width * scaleX * aPercX;
             hy += bounds.height * scaleY * aPercY;
             if (hitArea.radius) {
-                var r = hitArea.radius;
-                hx += r;
-                hy += r;
+                var r = hitArea.radius * game.scale;
+                hx += bounds.width / 2;
+                hy += bounds.height / 2;
                 var a = x - hx;
                 var b = y - hy;
                 var c = Math.sqrt(a * a + b * b);
