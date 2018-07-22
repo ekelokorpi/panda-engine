@@ -81,7 +81,8 @@ game.createClass('Animation', 'Sprite', {
 
     staticInit: function(textures) {
         this.currentAnim = this;
-        this.textures = this.textures || textures;
+        this.textures = this.textures || textures;
+        if (!this.textures || this.textures.length === 0) throw 'Unable to create animation without textures';
 
         if (typeof this.textures === 'string' && this.textures.indexOf('atlas') !== -1) {
             var json = game.getJSON(this.textures);
@@ -122,6 +123,7 @@ game.createClass('Animation', 'Sprite', {
                 var texture = this.textures[i];
                 if (texture.indexOf(frames) === 0) textures.push(texture);
             }
+            if (textures.length === 0) throw 'No textures found starting with ' + frames;
         }
         else if (frames.length) {
             for (var i = 0; i < frames.length; i++) {
