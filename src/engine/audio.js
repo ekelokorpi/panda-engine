@@ -141,10 +141,13 @@ game.createClass('Audio', {
     /**
         @method playMusic
         @param {String} name
+        @param {Boolean} [noLoop] Do not loop the music
         @return {Music}
     **/
-    playMusic: function(name) {
-        var music = new game.Music(name).play();
+    playMusic: function(name, noLoop) {
+        var music = new game.Music(name);
+        if (noLoop) music.loop = false;
+        music.play();
         return music;
     },
 
