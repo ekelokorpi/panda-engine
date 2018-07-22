@@ -150,10 +150,14 @@ game.createClass('Animation', 'Sprite', {
     /**
         Jump to specific frame.
         @method gotoFrame
+        @param {String|Number} name Name of animation or frame index
         @param {Number} frame Frame index
         @chainable
     **/
-    gotoFrame: function(frame) {
+    gotoFrame: function(name, frame) {
+        if (typeof name === 'string') this.currentAnim = this.anims[name] || this;
+        if (typeof name === 'number') frame = name;
+        
         if (!this.currentAnim.textures) throw 'No textures found for animation';
         if (!this.currentAnim.textures[frame]) return;
         this.currentFrame = frame;
