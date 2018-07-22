@@ -185,11 +185,15 @@ game.createClass('Animation', 'Sprite', {
     /**
         Stop animation.
         @method stop
+        @param {String|Number} [name] Name of animation or frame index
         @param {Number} [frame] Frame index
         @chainable
     **/
-    stop: function(frame) {
+    stop: function(name, frame) {
         this.playing = false;
+        this.currentAnim = this.anims[name] || this;
+        
+        if (typeof name === 'number') frame = name;
         if (typeof frame === 'number') this.gotoFrame(frame);
         return this;
     },
