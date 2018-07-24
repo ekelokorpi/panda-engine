@@ -357,6 +357,7 @@ game.createClass('Text', 'Container', {
 
             // End of line
             if (!line.words[curWord]) {
+                if (line.words.length === 0) y += this.fontClass.lineHeight; // Empty line
                 curLine++;
                 if (!this._lines[curLine]) curLine--;
                 curWord = 0;
