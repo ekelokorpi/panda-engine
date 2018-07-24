@@ -283,7 +283,7 @@ game.createClass('Vector', {
         var y1 = x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
         x1 = x1 - this.x;
         y1 = y1 - this.y;
-        return Math.sqrt(x1 * x1+ y1 * y1);
+        return Math.sqrt(x1 * x1 + y1 * y1);
     },
 
     /**
