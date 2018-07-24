@@ -256,16 +256,40 @@ game.createClass('Container', {
     click: function() {},
 
     /**
-        Test if container's bounds are overlapping target's bounds.
+        Test if container's bounds are overlapping target.
         @method hitTest
-        @param {Container} target
+        @param {Container|Vector} target
+        @param {Boolean} isCircle
         @return {Boolean}
     **/
-    hitTest: function(target) {
+    hitTest: function(target, isCircle) {
         if (!target) throw 'hitTest: target undefined';
 
         var a = this._getBounds();
+        
+        if (target instanceof game.Vector) {
+            if (isCircle) {
+                var x = (a.x + a.width / 2) - target.x;
+                var y = (a.y + a.height / 2) - target.y;
+                var dist = Math.sqrt(x * x + y * y);
+                return (dist <= a.width / 2);
+            }
+            return (
+                target.x >= a.x &&
+                target.x <= a.x + a.width &&
+                target.y >= a.y &&
+                target.y <= a.y + a.height
+            );
+        }
+        
         var b = target._getBounds();
+        
+        if (isCircle) {
+            var x = a.x - b.x;
+            var y = a.y - b.y;
+            var dist = Math.sqrt(x * x + y * y);
+            return (dist <= a.width / 2 + b.width / 2);
+        }
 
         return !(
             a.y + a.height / 2 <= b.y - b.height / 2 ||
@@ -389,7 +413,7 @@ game.createClass('Container', {
     },
 
     /**
-        Swap container position with this container.
+        Swap container drawing position with this container.
         @method swap
         @param {Container} container
         @chainable
@@ -402,7 +426,7 @@ game.createClass('Container', {
     },
 
     /**
-        Swap position of two childrens.
+        Swap drawing position of two childrens.
         @method swapChildren
         @param {Container} child
         @param {Container} child2
