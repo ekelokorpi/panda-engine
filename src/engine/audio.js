@@ -607,11 +607,10 @@ game.createClass('Sound', {
     **/
     _fade: function(time, to) {
         if (!this._buffer) return;
-        time = (time || 1000) / 1000;
+        time = (time || 1000) / 1000;
 
         var currTime = this._context.currentTime;
-        if (to === this.volume) this._gainNode.gain.setValueAtTime(0, this._context.currentTime);;
-        var from = this._gainNode.gain.value;
+        var from = to === this.volume ? 0 : this._gainNode.gain.value;
 
         this._gainNode.gain.linearRampToValueAtTime(from, currTime);
         this._gainNode.gain.linearRampToValueAtTime(to, currTime + time);
