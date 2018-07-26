@@ -178,50 +178,33 @@ game.createClass('Graphics', 'Container', {
     },
 
     _getBounds: function() {
-        var sMinX = Infinity;
-        var sMaxX = -Infinity;
-        var sMinY = Infinity;
-        var sMaxY = -Infinity;
-        
-        for (var i = 0; i < this.shapes.length; i++) {
-            var data = this.shapes[i];
-            
-            var sx = data.shape.x;
-            var sy = data.shape.y;
-            
-            if (data.shape.radius) {
-                sx -= data.shape.radius / game.scale;
-                sy -= data.shape.radius / game.scale;
-            }
-            
-            sMinX = Math.min(sMinX, sx);
-            sMinY = Math.min(sMinY, sy);
-            
-            sx = data.shape.x;
-            sy = data.shape.y;
-
-            if (data.shape.radius) {
-                sx += data.shape.radius / game.scale;
-                sy += data.shape.radius / game.scale;
-            }
-            else if (data.shape.width) {
-                sx += data.shape.width / game.scale;
-                sy += data.shape.height / game.scale;
-            }
-            
-            sMaxX = Math.max(sMaxX, sx);
-            sMaxY = Math.max(sMaxY, sy);
-        }
-        
         var wt = this._worldTransform;
         var a = wt.a;
         var b = wt.b;
         var c = wt.c;
         var d = wt.d;
-        var tx = Math.min(wt.tx + sMinX, wt.tx);
-        var ty = Math.min(wt.ty + sMinY, wt.ty);
-        var width = sMaxX - sMinX;
-        var height = sMaxY - sMinY;
+        var tx = wt.tx;
+        var ty = wt.ty;
+        var width = 0;
+        var height = 0;
+
+        for (var i = 0; i < this.shapes.length; i++) {
+            var data = this.shapes[i];
+            var sx = data.shape.x;
+            var sy = data.shape.y;
+
+            if (data.shape.radius) {
+                sx += data.shape.radius / game.scale;
+                sy += data.shape.radius / game.scale;
+            }
+            else {
+                sx += data.shape.width / game.scale;
+                sy += data.shape.height / game.scale;
+            }
+
+            width = Math.max(width, sx);
+            height = Math.max(height, sy);
+        }
 
         var x2 = a * width + tx;
         var y2 = b * width + ty;
