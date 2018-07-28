@@ -408,7 +408,7 @@ game.createClass('Text', 'Container', {
 
         if (!this.maxWidth && !this.maxHeight) return;
 
-        var scale = 0;
+        var scale = 1;
 
         if (this.maxWidth && this.width > this.maxWidth) {
             scale = this.maxWidth / this.width;
@@ -416,8 +416,6 @@ game.createClass('Text', 'Container', {
         if (this.maxHeight && this.height > this.maxHeight) {
             scale = this.maxHeight / this.height;
         }
-
-        scale.limit(0, 1);
 
         this.scale.set(scale);
     }
