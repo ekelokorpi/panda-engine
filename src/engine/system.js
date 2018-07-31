@@ -132,26 +132,7 @@ game.createClass('System', {
 
         if (typeof document === 'undefined') return;
         
-        var visibilityChange;
-        if (typeof document.hidden !== 'undefined') {
-            visibilityChange = 'visibilitychange';
-        }
-        else if (typeof document.mozHidden !== 'undefined') {
-            visibilityChange = 'mozvisibilitychange';
-        }
-        else if (typeof document.msHidden !== 'undefined') {
-            visibilityChange = 'msvisibilitychange';
-        }
-        else if (typeof document.webkitHidden !== 'undefined') {
-            visibilityChange = 'webkitvisibilitychange';
-        }
-        document.addEventListener(visibilityChange, function() {
-            if (game.System.pauseOnHide) {
-                var hidden = !!game._getVendorAttribute(document, 'hidden');
-                if (hidden) game.system.pause(true);
-                else game.system.resume(true);
-            }
-        });
+        document.addEventListener(this._getVisibilityChangeFunction(), this._visibilityChange);
 
         if (game.System.resize) game.System.center = false;
 
@@ -162,8 +143,9 @@ game.createClass('System', {
             this.canvasHeight /= game.device.pixelRatio;
         }
 
-        if (game.device.WKWebView) window.addEventListener('orientationchange', this._onWindowResize.bind(this));
-        else window.addEventListener('resize', this._onWindowResize.bind(this));
+        this._onWindowResizeFunc = this._onWindowResize.bind(this);
+        if (game.device.WKWebView) window.addEventListener('orientationchange', this._onWindowResizeFunc);
+        else window.addEventListener('resize', this._onWindowResizeFunc);
         this._onWindowResize();
     },
 
@@ -250,6 +232,25 @@ game.createClass('System', {
         }
         else this._setSceneNow(sceneName, param);
     },
+    
+    /**
+        @method _getVisibilityChangeFunction
+        @private
+    **/
+    _getVisibilityChangeFunction: function() {
+        if (typeof document.hidden !== 'undefined') {
+            return 'visibilitychange';
+        }
+        else if (typeof document.mozHidden !== 'undefined') {
+            return 'mozvisibilitychange';
+        }
+        else if (typeof document.msHidden !== 'undefined') {
+            return 'msvisibilitychange';
+        }
+        else if (typeof document.webkitHidden !== 'undefined') {
+            return 'webkitvisibilitychange';
+        }
+    },
 
     /**
         @method _hideRotateScreen
@@ -291,6 +292,17 @@ game.createClass('System', {
         }
 
         if (game.isStarted && !game.scene) game.onStart();
+    },
+    
+    /**
+        Remove all event listeners.
+        @method _remove
+        @private
+    **/
+    _remove: function() {
+        document.removeEventListener(this._getVisibilityChangeFunction(), this._visibilityChange);
+        if (game.device.WKWebView) window.removeEventListener('orientationchange', this._onWindowResizeFunc);
+        else window.removeEventListener('resize', this._onWindowResizeFunc);
     },
 
     /**
@@ -449,6 +461,18 @@ game.createClass('System', {
         if (Math.abs(window.orientation) === 90 && game.device.iPhone && game.device.safari) {
             // Fix iPhone Safari landscape fullscreen
             this._windowHeight++;
+        }
+    },
+    
+    /**
+        @method _visibilityChange
+        @private
+    **/
+    _visibilityChange: function() {
+        if (game.System.pauseOnHide) {
+            var hidden = !!game._getVendorAttribute(document, 'hidden');
+            if (hidden) game.system.pause(true);
+            else game.system.resume(true);
         }
     }
 });

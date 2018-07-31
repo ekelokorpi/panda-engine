@@ -67,17 +67,27 @@ game.createClass('Input', {
 
     init: function(canvas) {
         this.mouse = new game.Vector();
+        this._touchstartFunc = this._touchstart.bind(this);
+        this._touchmoveFunc = this._touchmove.bind(this);
+        this._touchendFunc = this._touchend.bind(this);
+        this._mousedownFunc = this._mousedown.bind(this);
+        this._mousemoveFunc = this._mousemove.bind(this);
+        this._mouseoutFunc = this._mouseout.bind(this);
+        this._mouseupFunc = this._mouseup.bind(this);
         var target = game.device.cocoonCanvasPlus ? window : canvas;
-        target.addEventListener('touchstart', this._touchstart.bind(this));
-        target.addEventListener('touchmove', this._touchmove.bind(this));
-        target.addEventListener('touchend', this._touchend.bind(this));
-        target.addEventListener('touchcancel', this._touchend.bind(this));
-        target.addEventListener('mousedown', this._mousedown.bind(this));
-        target.addEventListener('mousemove', this._mousemove.bind(this));
-        target.addEventListener('mouseout', this._mouseout.bind(this));
-        window.addEventListener('blur', this._mouseout.bind(this));
-        window.addEventListener('mouseup', this._mouseup.bind(this));
-        if (game.device.mobile) window.addEventListener('devicemotion', this._devicemotion.bind(this));
+        target.addEventListener('touchstart', this._touchstartFunc);
+        target.addEventListener('touchmove', this._touchmoveFunc);
+        target.addEventListener('touchend', this._touchendFunc);
+        target.addEventListener('touchcancel', this._touchendFunc);
+        target.addEventListener('mousedown', this._mousedownFunc);
+        target.addEventListener('mousemove', this._mousemoveFunc);
+        target.addEventListener('mouseout', this._mouseoutFunc);
+        window.addEventListener('blur', this._mouseoutFunc);
+        window.addEventListener('mouseup', this._mouseupFunc);
+        if (game.device.mobile) {
+            this._devicemotionFunc = this._devicemotion.bind(this);
+            window.addEventListener('devicemotion', this._devicemotionFunc);
+        }
     },
 
     /**
@@ -273,6 +283,25 @@ game.createClass('Input', {
             }
         }
     },
+    
+    /**
+        Remove all event listeners.
+        @method _remove
+        @private
+    **/
+    _remove: function() {
+        var target = game.device.cocoonCanvasPlus ? window : canvas;
+        target.removeEventListener('touchstart', this._touchstartFunc);
+        target.removeEventListener('touchmove', this._touchmoveFunc);
+        target.removeEventListener('touchend', this._touchendFunc);
+        target.removeEventListener('touchcancel', this._touchendFunc);
+        target.removeEventListener('mousedown', this._mousedownFunc);
+        target.removeEventListener('mousemove', this._mousemoveFunc);
+        target.removeEventListener('mouseout', this._mouseoutFunc);
+        window.removeEventListener('blur', this._mouseoutFunc);
+        window.removeEventListener('mouseup', this._mouseupFunc);
+        if (this._devicemotionFunc) window.removeEventListener('devicemotion', this._devicemotionFunc);
+    },
 
     /**
         @method _reset
@@ -417,9 +446,12 @@ game.createClass('Keyboard', {
     _keysDown: [],
 
     init: function() {
-        window.addEventListener('keydown', this._keydown.bind(this));
-        window.addEventListener('keyup', this._keyup.bind(this));
-        window.addEventListener('blur', this._reset.bind(this));
+        this._keydownFunc = this._keydown.bind(this);
+        this._keyupFunc = this._keyup.bind(this);
+        this._resetFunc = this._reset.bind(this);
+        window.addEventListener('keydown', this._keydownFunc);
+        window.addEventListener('keyup', this._keyupFunc);
+        window.addEventListener('blur', this._resetFunc);
     },
 
     /**
@@ -465,6 +497,17 @@ game.createClass('Keyboard', {
         if (!key) key = event.keyCode;
         this._keysDown[key] = false;
         if (game.scene && game.scene.keyup) game.scene.keyup(key);
+    },
+    
+    /**
+        Remove all event listeners.
+        @method _remove
+        @private
+    **/
+    _remove: function() {
+        window.removeEventListener('keydown', this._keydownFunc);
+        window.removeEventListener('keyup', this._keyupFunc);
+        window.removeEventListener('blur', this._resetFunc);
     },
 
     /**
