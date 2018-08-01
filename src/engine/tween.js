@@ -477,11 +477,39 @@ game.addAttributes('Tween', {
     },
 
     /**
+        Easing function for tween. Possible values:
+        Linear.None
+        Quadratic.In
+        Quadratic.Out
+        Quadratic.InOut
+        Cubic.In
+        Cubic.Out
+        Cubic.InOut
+        Quartic.In
+        Quartic.Out
+        Quartic.InOut
+        Quintic.In
+        Quintic.Out
+        Quintic.InOut
+        Sinusoidal.In
+        Sinusoidal.Out
+        Sinusoidal.InOut
+        Exponential.In
+        Exponential.Out
+        Exponential.InOut
+        Circular.In
+        Circular.Out
+        Circular.InOut
+        Elastic.In
+        Elastic.Out
+        Elastic.InOut
+        Back.In
+        Back.Out
+        Back.InOut
+        Bounce.In
+        Bounce.Out
+        Bounce.InOut
         @attribute {Object} Easing
-        @example
-            Linear
-            Quadratic
-            Cubic
     **/
     Easing: {
         Linear: {
