@@ -164,6 +164,7 @@ game.createClass('Input', {
         @private
     **/
     _mousedown: function(event) {
+        if (game.audio && game.audio._context && game.audio._context.state === 'suspended') game.audio._context.resume();
         if (game.Input.focusOnMouseDown) {
             window.focus();
             game.renderer.canvas.focus();
@@ -349,6 +350,7 @@ game.createClass('Input', {
         @private
     **/
     _touchstart: function(event) {
+        if (game.audio && game.audio._context && game.audio._context.state === 'suspended') game.audio._context.resume();
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
             if (this.touches.length === 1 && !game.Input.multitouch) return;
