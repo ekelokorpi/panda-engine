@@ -615,7 +615,9 @@ game.addAttributes('Keyboard', {
         123: 'F12',
         186: 'SEMICOLON',
         187: 'PLUS',
+        188: 'COMMA',
         189: 'MINUS',
+        190: 'PERIOD',
         192: 'GRAVE_ACCENT',
         222: 'SINGLE_QUOTE'
     },
