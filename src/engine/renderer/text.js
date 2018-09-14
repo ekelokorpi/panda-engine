@@ -391,7 +391,7 @@ game.createClass('Text', 'Container', {
             prevChar = charCode;
 
             var charObj = this.fontClass.chars[charCode];
-            if (!charObj) continue;
+            if (!charObj || charCode === 10) continue;
 
             var texture = charObj.texture;
             if (i === 0) x -= charObj.xoffset;
