@@ -102,9 +102,13 @@ game.createClass('Polygon', {
             if (points[i] instanceof game.Vector) {
                 this.points.push(points[i]);
             }
-            else {
+            else if (typeof points[i] === 'number') {
                 this.points.push(new game.Vector(points[i], points[i + 1]));
                 i++;
+            }
+            else {
+                // Bezier curve
+                this.points.push(points[i]);
             }
         }
     },

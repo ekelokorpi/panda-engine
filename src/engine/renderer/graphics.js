@@ -365,10 +365,14 @@ game.createClass('GraphicsShape', {
                 var point = shape.points[i];
                 var x = point.x;
                 var y = point.y;
-                if (x === undefined) {
+                if (x === undefined && point.length === undefined) {
                     x = point;
                     y = shape.points[i + 1];
                     i++;
+                }
+                else if (x === undefined) {
+                    context.bezierCurveTo﻿(point[0], point[1], point[2], point[3], point[4], point[5]);
+                    continue;
                 }
                 context.lineTo(x * game.scale, y * game.scale);
             }
