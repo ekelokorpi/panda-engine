@@ -66,6 +66,11 @@ game.createClass('Debug', {
         @private
     **/
     _frames: 0,
+    /**
+        @property {Array} _hitAreas
+        @private
+    **/
+    _hitAreas: [],
 
     init: function() {
         if (game.Debug.showInfo) {
@@ -136,6 +141,7 @@ game.createClass('Debug', {
             _renderCanvas: function(context) {
                 if (game.scene && game.scene.stage === this) return;
                 if (game.Debug.showBounds) game.debug._drawBounds(this);
+                if (game.Debug.showHitAreas && this.hitArea) game.debug._hitAreas.push(this);
             }
         });
 
@@ -182,6 +188,8 @@ game.createClass('Debug', {
                 this.super(context, transform, rect, offset);
                 game.debug._draws++;
                 if (game.Debug.showSprites) game.debug._drawSprite(this, transform, rect, offset);
+                if (game.Debug.showBounds) game.debug._drawBounds(this);
+                if (game.Debug.showHitAreas && this.hitArea) game.debug._hitAreas.push(this);
             }
         });
 
@@ -344,7 +352,7 @@ game.createClass('Debug', {
         @param {Container} container
     **/
     _drawHitArea: function(container) {
-        if (!container.visible || container.alpha <= 0 || !container.renderable) return;
+        if (!container.visible || container.alpha <= 0 || !container.renderable) return;
 
         var context = game.renderer.context;
         var wt = container._worldTransform;
@@ -411,8 +419,8 @@ game.createClass('Debug', {
         @private
     **/
     _drawHitAreas: function() {
-        for (var i = 0; i < game.input.items.length; i++) {
-            var item = game.input.items[i];
+        for (var i = 0; i < this._hitAreas.length; i++) {
+            var item = this._hitAreas[i];
             this._drawHitArea(item);
         }
     },
@@ -469,6 +477,7 @@ game.createClass('Debug', {
     **/
     _reset: function() {
         this._draws = 0;
+        this._hitAreas.length = 0;
     },
 
     /**
