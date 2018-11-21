@@ -638,6 +638,16 @@ game.createClass('Sound', {
 
 game.defineProperties('Sound', {
     /**
+        Duration of audio (seconds).
+        @property {Number} duration
+    **/
+    duration: {
+        get: function() {
+            if (this._buffer) return this._buffer.duration;
+        }
+    },
+    
+    /**
         Playback rate of audio (speed).
         @property {Number} rate
         @default 1
