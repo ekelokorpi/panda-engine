@@ -463,9 +463,9 @@ game.createClass('Debug', {
         
         context.globalCompositeOperation = 'source-over';
         context.setTransform(wt.a, wt.b, wt.c, wt.d, x, y);
-        context.globalAlpha = game.Debug.boundAlpha;
-        context.lineWidth = game.Debug.boundLineWidth;
-        context.strokeStyle = game.Debug.boundColor;
+        context.globalAlpha = game.Debug.spriteAlpha;
+        context.lineWidth = game.Debug.spriteLineWidth;
+        context.strokeStyle = game.Debug.spriteColor;
         context.beginPath();
         context.rect(tx, ty, width, height);
         context.stroke();
@@ -765,6 +765,24 @@ game.addAttributes('Debug', {
     **/
     showSprites: false,
     /**
+        Alpha of sprites.
+        @attribute {Number} spriteAlpha
+        @default 0.5
+    **/
+    spriteAlpha: 0.5,
+    /**
+        Color of sprites.
+        @attribute {Number} spriteColor
+        @default #00ff00
+    **/
+    spriteColor: '#00ff00',
+    /**
+        Bounds line width.
+        @attribute {Number} spriteLineWidth
+        @default 1
+    **/
+    spriteLineWidth: 1,
+    /**
         Function that is called every time the debug panel is updated.
         @method updatePanel
         @static
@@ -848,9 +866,10 @@ var href = document.location.href.toLowerCase();
 if (href.match(/\?debug/)) game.Debug.enabled = true;
 if (href.match(/\?debugdraw/)) {
     game.Debug.showBodies = true;
-    game.Debug.showSprites = true;
+    game.Debug.showBounds = true;
     game.Debug.showCamera = true;
     game.Debug.showHitAreas = true;
+    game.Debug.showSprites = true;
 }
 if (href.match(/\?debugtouch/)) {
     game.Debug.fakeTouch = true;
