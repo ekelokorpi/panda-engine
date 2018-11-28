@@ -174,7 +174,6 @@ game.createClass('Container', {
         if (!child) throw 'addChildAt: child undefined';
         this.addChild(child);
         if (index >= 0 && index < this.children.length - 1) {
-            console.log('splicing');
             this.children.splice(this.children.indexOf(child));
             this.children.splice(index, 0, child);
         }
@@ -257,23 +256,72 @@ game.createClass('Container', {
     click: function() {},
 
     /**
-        Test if container's bounds are overlapping target's bounds.
+        Hit test container's hitArea against target's hitArea or target vector.
         @method hitTest
-        @param {Container} target
+        @param {Container|Vector} target
         @return {Boolean}
     **/
     hitTest: function(target) {
         if (!target) throw 'hitTest: target undefined';
 
-        var a = this._getBounds();
-        var b = target._getBounds();
+        var aBounds = this._getBounds();
+        var aHitArea = this.hitArea;
 
-        return !(
-            a.y + a.height / 2 <= b.y - b.height / 2 ||
-            a.y - a.height / 2 >= b.y + b.height / 2 ||
-            a.x - a.width / 2 >= b.x + b.width / 2 ||
-            a.x + a.width / 2 <= b.x - b.width / 2
-        );
+        if (target instanceof game.Vector) {
+            var x = aBounds.x + this.anchor.x + aHitArea.x;
+            var y = aBounds.y + this.anchor.y + aHitArea.y;
+            if (aHitArea.width) {
+                // Rectangle
+                return (
+                    target.x >= x &&
+                    target.x <= x + aHitArea.width &&
+                    target.y >= y &&
+                    target.y <= y + aHitArea.height
+                );
+            }
+            else {
+                // Circle
+                var tx = x - target.x;
+                var ty = y - target.y;
+                var dist = Math.sqrt(tx * tx + ty * ty);
+                return (aHitArea.radius > dist);
+            }
+        }
+
+        var bBounds = target._getBounds();
+        var bHitArea = target.hitArea;
+        
+        if (aHitArea.width && bHitArea.width) {
+            // Rectangle vs Rectangle
+            var x1 = aBounds.x + this.anchor.x + aHitArea.x + aHitArea.width / 2;
+            var y1 = aBounds.y + this.anchor.y + aHitArea.y + aHitArea.height / 2;
+            var x2 = bBounds.x + target.anchor.x + bHitArea.x + bHitArea.width / 2;
+            var y2 = bBounds.y + target.anchor.y + bHitArea.y + bHitArea.height / 2;
+            
+            return !(
+                y1 + aHitArea.height / 2 <= y2 - bHitArea.height / 2 ||
+                y1 - aHitArea.height / 2 >= y2 + bHitArea.height / 2 ||
+                x1 - aHitArea.width / 2 >= x2 + bHitArea.width / 2 ||
+                x1 + aHitArea.width / 2 <= x2 - bHitArea.width / 2
+            );
+        }
+        else if (aHitArea.radius && bHitArea.radius) {
+            // Circle vs Circle
+            var x1 = aBounds.x + this.anchor.x + aHitArea.x;
+            var y1 = aBounds.y + this.anchor.y + aHitArea.y;
+            var x2 = bBounds.x + target.anchor.x + bHitArea.x;
+            var y2 = bBounds.y + target.anchor.y + bHitArea.y;
+            var x = x1 - x2;
+            var y = y1 - y2;
+            var dist = Math.sqrt(x * x + y * y);
+            return (aHitArea.radius + bHitArea.radius > dist);
+        }
+        else if (aHitArea.width && bHitArea.radius) {
+            // Rectangle vs Circle
+        }
+        else if (aHitArea.radius && bHitArea.width) {
+            // Circle vs Rectangle
+        }
     },
 
     /**
@@ -390,7 +438,7 @@ game.createClass('Container', {
     },
 
     /**
-        Swap container position with this container.
+        Swap container drawing position with this container.
         @method swap
         @param {Container} container
         @chainable
@@ -403,7 +451,7 @@ game.createClass('Container', {
     },
 
     /**
-        Swap position of two childrens.
+        Swap drawing position of two childrens.
         @method swapChildren
         @param {Container} child
         @param {Container} child2

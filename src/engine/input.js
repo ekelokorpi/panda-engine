@@ -67,17 +67,27 @@ game.createClass('Input', {
 
     init: function(canvas) {
         this.mouse = new game.Vector();
+        this._touchstartFunc = this._touchstart.bind(this);
+        this._touchmoveFunc = this._touchmove.bind(this);
+        this._touchendFunc = this._touchend.bind(this);
+        this._mousedownFunc = this._mousedown.bind(this);
+        this._mousemoveFunc = this._mousemove.bind(this);
+        this._mouseoutFunc = this._mouseout.bind(this);
+        this._mouseupFunc = this._mouseup.bind(this);
         var target = game.device.cocoonCanvasPlus ? window : canvas;
-        target.addEventListener('touchstart', this._touchstart.bind(this));
-        target.addEventListener('touchmove', this._touchmove.bind(this));
-        target.addEventListener('touchend', this._touchend.bind(this));
-        target.addEventListener('touchcancel', this._touchend.bind(this));
-        target.addEventListener('mousedown', this._mousedown.bind(this));
-        target.addEventListener('mousemove', this._mousemove.bind(this));
-        target.addEventListener('mouseout', this._mouseout.bind(this));
-        window.addEventListener('blur', this._mouseout.bind(this));
-        window.addEventListener('mouseup', this._mouseup.bind(this));
-        if (game.device.mobile) window.addEventListener('devicemotion', this._devicemotion.bind(this));
+        target.addEventListener('touchstart', this._touchstartFunc);
+        target.addEventListener('touchmove', this._touchmoveFunc);
+        target.addEventListener('touchend', this._touchendFunc);
+        target.addEventListener('touchcancel', this._touchendFunc);
+        target.addEventListener('mousedown', this._mousedownFunc);
+        target.addEventListener('mousemove', this._mousemoveFunc);
+        target.addEventListener('mouseout', this._mouseoutFunc);
+        window.addEventListener('blur', this._mouseoutFunc);
+        window.addEventListener('mouseup', this._mouseupFunc);
+        if (game.device.mobile) {
+            this._devicemotionFunc = this._devicemotion.bind(this);
+            window.addEventListener('devicemotion', this._devicemotionFunc);
+        }
     },
 
     /**
@@ -115,8 +125,8 @@ game.createClass('Input', {
         if (hitArea) {
             var wt = container._worldTransform;
             var bounds = container._getBounds();
-            var tx = (bounds.x || wt.tx);
-            var ty = (bounds.y || wt.ty);
+            var tx = typeof bounds.x === 'number' ? bounds.x : wt.tx;
+            var ty = typeof bounds.y === 'number' ? bounds.y : wt.ty;
             var scaleX = Math.abs(wt.a / container._cosCache);
             var scaleY = Math.abs(wt.d / container._cosCache);
             var aPercX = (container.anchor.x / container.width) || 0;
@@ -126,9 +136,7 @@ game.createClass('Input', {
             hx += bounds.width * scaleX * aPercX;
             hy += bounds.height * scaleY * aPercY;
             if (hitArea.radius) {
-                var r = hitArea.radius / 2;
-                hx += r;
-                hy += r;
+                var r = hitArea.radius * game.scale;
                 var a = x - hx;
                 var b = y - hy;
                 var c = Math.sqrt(a * a + b * b);
@@ -154,6 +162,7 @@ game.createClass('Input', {
         @private
     **/
     _mousedown: function(event) {
+        if (game.audio && game.audio._context && game.audio._context.state === 'suspended') game.audio._context.resume();
         if (game.Input.focusOnMouseDown) {
             window.focus();
             game.renderer.canvas.focus();
@@ -273,6 +282,25 @@ game.createClass('Input', {
             }
         }
     },
+    
+    /**
+        Remove all event listeners.
+        @method _remove
+        @private
+    **/
+    _remove: function() {
+        var target = game.device.cocoonCanvasPlus ? window : canvas;
+        target.removeEventListener('touchstart', this._touchstartFunc);
+        target.removeEventListener('touchmove', this._touchmoveFunc);
+        target.removeEventListener('touchend', this._touchendFunc);
+        target.removeEventListener('touchcancel', this._touchendFunc);
+        target.removeEventListener('mousedown', this._mousedownFunc);
+        target.removeEventListener('mousemove', this._mousemoveFunc);
+        target.removeEventListener('mouseout', this._mouseoutFunc);
+        window.removeEventListener('blur', this._mouseoutFunc);
+        window.removeEventListener('mouseup', this._mouseupFunc);
+        if (this._devicemotionFunc) window.removeEventListener('devicemotion', this._devicemotionFunc);
+    },
 
     /**
         @method _reset
@@ -320,6 +348,7 @@ game.createClass('Input', {
         @private
     **/
     _touchstart: function(event) {
+        if (game.audio && game.audio._context && game.audio._context.state === 'suspended') game.audio._context.resume();
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
             if (this.touches.length === 1 && !game.Input.multitouch) return;
@@ -417,9 +446,12 @@ game.createClass('Keyboard', {
     _keysDown: [],
 
     init: function() {
-        window.addEventListener('keydown', this._keydown.bind(this));
-        window.addEventListener('keyup', this._keyup.bind(this));
-        window.addEventListener('blur', this._reset.bind(this));
+        this._keydownFunc = this._keydown.bind(this);
+        this._keyupFunc = this._keyup.bind(this);
+        this._resetFunc = this._reset.bind(this);
+        window.addEventListener('keydown', this._keydownFunc);
+        window.addEventListener('keyup', this._keyupFunc);
+        window.addEventListener('blur', this._resetFunc);
     },
 
     /**
@@ -465,6 +497,17 @@ game.createClass('Keyboard', {
         if (!key) key = event.keyCode;
         this._keysDown[key] = false;
         if (game.scene && game.scene.keyup) game.scene.keyup(key);
+    },
+    
+    /**
+        Remove all event listeners.
+        @method _remove
+        @private
+    **/
+    _remove: function() {
+        window.removeEventListener('keydown', this._keydownFunc);
+        window.removeEventListener('keyup', this._keyupFunc);
+        window.removeEventListener('blur', this._resetFunc);
     },
 
     /**
@@ -570,7 +613,9 @@ game.addAttributes('Keyboard', {
         123: 'F12',
         186: 'SEMICOLON',
         187: 'PLUS',
+        188: 'COMMA',
         189: 'MINUS',
+        190: 'PERIOD',
         192: 'GRAVE_ACCENT',
         222: 'SINGLE_QUOTE'
     },

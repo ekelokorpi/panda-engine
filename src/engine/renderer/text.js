@@ -357,6 +357,7 @@ game.createClass('Text', 'Container', {
 
             // End of line
             if (!line.words[curWord]) {
+                if (line.words.length === 0) y += this.fontClass.lineHeight; // Empty line
                 curLine++;
                 if (!this._lines[curLine]) curLine--;
                 curWord = 0;
@@ -390,7 +391,7 @@ game.createClass('Text', 'Container', {
             prevChar = charCode;
 
             var charObj = this.fontClass.chars[charCode];
-            if (!charObj) continue;
+            if (!charObj || charCode === 10) continue;
 
             var texture = charObj.texture;
             if (i === 0) x -= charObj.xoffset;
@@ -407,7 +408,7 @@ game.createClass('Text', 'Container', {
 
         if (!this.maxWidth && !this.maxHeight) return;
 
-        var scale = 0;
+        var scale = 1;
 
         if (this.maxWidth && this.width > this.maxWidth) {
             scale = this.maxWidth / this.width;
@@ -415,8 +416,6 @@ game.createClass('Text', 'Container', {
         if (this.maxHeight && this.height > this.maxHeight) {
             scale = this.maxHeight / this.height;
         }
-
-        scale.limit(0, 1);
 
         this.scale.set(scale);
     }

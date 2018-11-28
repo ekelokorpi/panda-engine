@@ -62,8 +62,9 @@ game.createClass('Sprite', 'Container', {
     },
 
     /**
+        Change texture to sprite.
         @method setTexture
-        @param {Texture|String} texture
+        @param {Texture|String} texture Asset id or instance of Texture
     **/
     setTexture: function(texture) {
         this.texture = texture instanceof game.Texture ? texture : game.Texture.fromAsset(texture);

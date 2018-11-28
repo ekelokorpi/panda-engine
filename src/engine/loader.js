@@ -192,7 +192,9 @@ game.createClass('Loader', 'Scene', {
     **/
     loadImage: function(filePath, callback) {
         game.BaseTexture.fromImage(filePath, function(error) {
-            if (error) callback(error);
+            if (error) {
+                callback(error);
+            }
             else {
                 if (game.Loader.preRender) game.renderer.context.drawImage(this.source, 0, 0);
                 callback();
@@ -354,7 +356,8 @@ game.createClass('Loader', 'Scene', {
             };
             for (var i = 0; i < text.length; i++) {
                 if (text[i].length === 0) continue; // Skip empty lines
-                var lineData = text[i].split(' ');
+                text[i] = text[i].replace(/\s\s+/g, ' ').trim();
+                var lineData = text[i].match(/(?:[^\s"]+|"[^"]*")+/g);
                 var name = lineData.shift();
                 if (name === 'char' || name === 'kerning' || name === 'page') {
                     var fontData = {};

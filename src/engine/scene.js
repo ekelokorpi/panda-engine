@@ -233,6 +233,8 @@ game.createClass('Scene', {
             this._pausedObjects.push(this.objects[i]);
         }
         for (var i = 0; i < this.timers.length; i++) {
+            this.timers[i]._pauseCache = this.timers[i]._pause;
+            this.timers[i].pause();
             this._pausedTimers.push(this.timers[i]);
         }
         for (var i = 0; i < this.tweens.length; i++) {
@@ -299,6 +301,8 @@ game.createClass('Scene', {
             this.objects.push(this._pausedObjects[i]);
         }
         for (var i = 0; i < this._pausedTimers.length; i++) {
+            if (this._pausedTimers[i]._pauseCache > 0) this._pausedTimers[i].pause();
+            else this._pausedTimers[i].resume();
             this.timers.push(this._pausedTimers[i]);
         }
         for (var i = 0; i < this._pausedTweens.length; i++) {

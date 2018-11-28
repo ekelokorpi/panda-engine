@@ -66,6 +66,11 @@ game.createClass('Debug', {
         @private
     **/
     _frames: 0,
+    /**
+        @property {Array} _hitAreas
+        @private
+    **/
+    _hitAreas: [],
 
     init: function() {
         if (game.Debug.showInfo) {
@@ -131,6 +136,12 @@ game.createClass('Debug', {
             _renderCachedSprite: function(context) {
                 this.super(context);
                 game.debug._draws++;
+            },
+            
+            _renderCanvas: function(context) {
+                if (game.scene && game.scene.stage === this) return;
+                if (game.Debug.showBounds) game.debug._drawBounds(this);
+                if (game.Debug.showHitAreas && this.hitArea) game.debug._hitAreas.push(this);
             }
         });
 
@@ -168,6 +179,7 @@ game.createClass('Debug', {
             _renderCanvas: function(context) {
                 this.super(context);
                 game.debug._draws += this.shapes.length;
+                if (game.Debug.showBounds) game.debug._drawBounds(this);
             }
         });
 
@@ -176,6 +188,8 @@ game.createClass('Debug', {
                 this.super(context, transform, rect, offset);
                 game.debug._draws++;
                 if (game.Debug.showSprites) game.debug._drawSprite(this, transform, rect, offset);
+                if (game.Debug.showBounds) game.debug._drawBounds(this);
+                if (game.Debug.showHitAreas && this.hitArea) game.debug._hitAreas.push(this);
             }
         });
 
@@ -272,6 +286,25 @@ game.createClass('Debug', {
             context.stroke();
         }
     },
+    
+    /**
+        @method _drawBounds
+        @param {Container} container
+        @private
+    **/
+    _drawBounds: function(container) {
+        var context = game.renderer.context;
+        var bounds = container._getBounds();
+        
+        context.globalCompositeOperation = 'source-over';
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = game.Debug.boundAlpha;
+        context.lineWidth = game.Debug.boundLineWidth;
+        context.strokeStyle = game.Debug.boundColor;
+        context.beginPath();
+        context.rect(bounds.x, bounds.y, bounds.width, bounds.height);
+        context.stroke();
+    },
 
     /**
         @method _drawCamera
@@ -319,7 +352,7 @@ game.createClass('Debug', {
         @param {Container} container
     **/
     _drawHitArea: function(container) {
-        if (!container.visible || container.alpha <= 0 || !container.renderable) return;
+        if (!container.visible || container.alpha <= 0 || !container.renderable) return;
 
         var context = game.renderer.context;
         var wt = container._worldTransform;
@@ -336,20 +369,20 @@ game.createClass('Debug', {
         if (hitArea) {
             var wt = container._worldTransform;
             var bounds = container._getBounds();
-            var tx = (bounds.x || wt.tx);
-            var ty = (bounds.y || wt.ty);
+            var tx = typeof bounds.x === 'number' ? bounds.x : wt.tx;
+            var ty = typeof bounds.y === 'number' ? bounds.y : wt.ty;
             var scaleX = Math.abs(wt.a / container._cosCache);
             var scaleY = Math.abs(wt.d / container._cosCache);
-            var aPercX = (container.anchor.x / container.width) || 0;
-            var aPercY = (container.anchor.y / container.height) || 0;
+            var aPercX = (container.anchor.x / container.width) || 0;
+            var aPercY = (container.anchor.y / container.height) || 0;
             var hx = tx + hitArea.x * scaleX;
             var hy = ty + hitArea.y * scaleY;
             hx += bounds.width * scaleX * aPercX;
             hy += bounds.height * scaleY * aPercY;
             if (hitArea.radius) {
                 // Circle
-                var r = hitArea.radius / 2 * game.scale;
-                context.setTransform(1, 0, 0, 1, hx, hy);
+                var r = hitArea.radius * game.scale;
+                context.setTransform(1, 0, 0, 1, hx - r, hy - r);
                 context.beginPath();
                 context.arc(r, r, r, 0, Math.PI * 2);
                 context.fill();
@@ -384,8 +417,8 @@ game.createClass('Debug', {
         @private
     **/
     _drawHitAreas: function() {
-        for (var i = 0; i < game.input.items.length; i++) {
-            var item = game.input.items[i];
+        for (var i = 0; i < this._hitAreas.length; i++) {
+            var item = this._hitAreas[i];
             this._drawHitArea(item);
         }
     },
@@ -428,9 +461,9 @@ game.createClass('Debug', {
         
         context.globalCompositeOperation = 'source-over';
         context.setTransform(wt.a, wt.b, wt.c, wt.d, x, y);
-        context.globalAlpha = game.Debug.boundAlpha;
-        context.lineWidth = game.Debug.boundLineWidth;
-        context.strokeStyle = game.Debug.boundColor;
+        context.globalAlpha = game.Debug.spriteAlpha;
+        context.lineWidth = game.Debug.spriteLineWidth;
+        context.strokeStyle = game.Debug.spriteColor;
         context.beginPath();
         context.rect(tx, ty, width, height);
         context.stroke();
@@ -442,6 +475,7 @@ game.createClass('Debug', {
     **/
     _reset: function() {
         this._draws = 0;
+        this._hitAreas.length = 0;
     },
 
     /**
@@ -693,6 +727,12 @@ game.addAttributes('Debug', {
     **/
     showBodies: false,
     /**
+        Draw bounds of containers and graphics.
+        @attribute {Boolean} showBounds
+        @default false
+    **/
+    showBounds: false,
+    /**
         Draw camera debug.
         @attribute {Boolean} showCamera
         @default false
@@ -722,6 +762,24 @@ game.addAttributes('Debug', {
         @default false
     **/
     showSprites: false,
+    /**
+        Alpha of sprites.
+        @attribute {Number} spriteAlpha
+        @default 0.5
+    **/
+    spriteAlpha: 0.5,
+    /**
+        Color of sprites.
+        @attribute {Number} spriteColor
+        @default #00ff00
+    **/
+    spriteColor: '#00ff00',
+    /**
+        Bounds line width.
+        @attribute {Number} spriteLineWidth
+        @default 1
+    **/
+    spriteLineWidth: 1,
     /**
         Function that is called every time the debug panel is updated.
         @method updatePanel
@@ -806,9 +864,10 @@ var href = document.location.href.toLowerCase();
 if (href.match(/\?debug/)) game.Debug.enabled = true;
 if (href.match(/\?debugdraw/)) {
     game.Debug.showBodies = true;
-    game.Debug.showSprites = true;
+    game.Debug.showBounds = true;
     game.Debug.showCamera = true;
     game.Debug.showHitAreas = true;
+    game.Debug.showSprites = true;
 }
 if (href.match(/\?debugtouch/)) {
     game.Debug.fakeTouch = true;

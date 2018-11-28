@@ -99,7 +99,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.9.0',
+    version: '2.9.1dev',
     /**
         @property {Boolean} _booted
         @private
@@ -590,6 +590,19 @@ var game = {
         this.isStarted = true;
         if (!this.system._rotateScreenVisible) this.onStart();
     },
+    
+    /**
+        Stop engine completely.
+        @method start
+        @param {Boolean} removeCanvas Remove canvas
+    **/
+    stop: function(removeCanvas) {
+        this.system._stopRunLoop();
+        if (this.input) this.input._remove();
+        if (this.keyboard) this.keyboard._remove();
+        if (this.system) this.system._remove();
+        if (this.renderer && removeCanvas) this.renderer.canvas.parentElement.removeChild(this.renderer.canvas);
+    },
 
     /**
         @method _boot
@@ -1060,7 +1073,7 @@ var game = {
             this._gameLoops[id] = true;
 
             var animate = function() {
-                if (!game._gameLoops[id]) return;
+                if (!game || !game._gameLoops[id]) return;
                 window.requestAnimationFrame(animate);
                 callback();
             };

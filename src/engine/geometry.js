@@ -99,10 +99,16 @@ game.createClass('Polygon', {
     staticInit: function(points) {
         if (!points) return;
         for (var i = 0; i < points.length; i++) {
-            if (points[i] instanceof game.Vector) this.points.push(points[i]);
-            else {
+            if (points[i] instanceof game.Vector) {
+                this.points.push(points[i]);
+            }
+            else if (typeof points[i] === 'number') {
                 this.points.push(new game.Vector(points[i], points[i + 1]));
                 i++;
+            }
+            else {
+                // Bezier curve
+                this.points.push(points[i]);
             }
         }
     },
@@ -281,7 +287,7 @@ game.createClass('Vector', {
         var y1 = x instanceof game.Vector ? x.y : (y || ((y !== 0) ? x : 0));
         x1 = x1 - this.x;
         y1 = y1 - this.y;
-        return Math.sqrt(x1 * x1+ y1 * y1);
+        return Math.sqrt(x1 * x1 + y1 * y1);
     },
 
     /**
