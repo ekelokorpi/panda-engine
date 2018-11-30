@@ -90,8 +90,8 @@ game.createClass('Sprite', 'Container', {
         @private
     **/
     _generateTintedTexture: function(color, alpha) {
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
+        var canvas = game.Sprite._canvas;
+        var context = game.Sprite._context;
 
         canvas.width = this.texture.width * game.scale;
         canvas.height = this.texture.height * game.scale;
@@ -275,6 +275,16 @@ game.defineProperties('Sprite', {
 
 game.addAttributes('Sprite', {
     /**
+        @attribute {HTMLCanvasElement} _canvas
+        @private
+    **/
+    _canvas: null,
+    /**
+        @attribute {CanvasRenderingContext2D} _context
+        @private
+    **/
+    _context: null,
+    /**
         @attribute {Array} _tintedTextures
         @private
     **/
@@ -293,5 +303,8 @@ game.addAttributes('Sprite', {
         this._tintedTextures.length = 0;
     }
 });
+
+game.Sprite._canvas = document.createElement('canvas');
+game.Sprite._context = game.Sprite._canvas.getContext('2d');
 
 });
