@@ -29,7 +29,7 @@ game.createClass('Input', {
     **/
     mouse: null,
     /**
-        List of current touch identifiers.
+        List of current touches.
         @property {Array} touches
     **/
     touches: [],
@@ -92,7 +92,7 @@ game.createClass('Input', {
 
     /**
         @method _calculateXY
-        @param {MouseEvent|TouchEvent} event
+        @param {MouseEvent|Touch} event
         @private
     **/
     _calculateXY: function(event) {
@@ -110,6 +110,18 @@ game.createClass('Input', {
     **/
     _devicemotion: function(event) {
         this.motion = event;
+    },
+    
+    /**
+        @method _getTouchById
+        @param {Number} id
+        @return {Touch}
+        @private
+    **/
+    _getTouchById: function(id) {
+        for (var i = 0; i < this.touches.length; i++) {
+            if (this.touches[i].identifier === id) return this.touches[i];
+        }
     },
 
     /**
@@ -158,7 +170,7 @@ game.createClass('Input', {
 
     /**
         @method _mousedown
-        @param {MouseEvent|TouchEvent} event
+        @param {MouseEvent|Touch} event
         @private
     **/
     _mousedown: function(event) {
@@ -181,7 +193,7 @@ game.createClass('Input', {
 
     /**
         @method _mousemove
-        @param {MouseEvent|TouchEvent} event
+        @param {MouseEvent|Touch} event
         @private
     **/
     _mousemove: function(event) {
@@ -208,7 +220,7 @@ game.createClass('Input', {
 
     /**
         @method _mouseout
-        @param {MouseEvent|TouchEvent} event
+        @param {MouseEvent|Touch} event
         @private
     **/
     _mouseout: function(event) {
@@ -222,7 +234,7 @@ game.createClass('Input', {
 
     /**
         @method _mouseup
-        @param {MouseEvent|TouchEvent} event
+        @param {MouseEvent|Touch} event
         @private
     **/
     _mouseup: function(event) {
@@ -321,10 +333,10 @@ game.createClass('Input', {
     _touchend: function(event) {
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            if (this.touches.indexOf(touch.identifier) !== -1) {
+            var touch = this._getTouchById(event.changedTouches[i].identifier);
+            if (touch) {
                 this._mouseup(touch);
-                this.touches.erase(touch.identifier);
+                this.touches.splice(this.touches.indexOf(touch), 1);
             }
         }
     },
@@ -337,8 +349,12 @@ game.createClass('Input', {
     _touchmove: function(event) {
         this._preventDefault(event);
         for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            if (this.touches.indexOf(touch.identifier) !== -1) this._mousemove(touch);
+            var touch = this._getTouchById(event.changedTouches[i].identifier);
+            if (touch) {
+                var touchIndex = this.touches.indexOf(touch);
+                this.touches[touchIndex] = event.changedTouches[i];
+                this._mousemove(this.touches[touchIndex]);
+            }
         }
     },
 
@@ -353,7 +369,7 @@ game.createClass('Input', {
         for (var i = 0; i < event.changedTouches.length; i++) {
             if (this.touches.length === 1 && !game.Input.multitouch) return;
             var touch = event.changedTouches[i];
-            this.touches.push(touch.identifier);
+            this.touches.push(touch);
             this._mousedown(touch);
         }
     },
