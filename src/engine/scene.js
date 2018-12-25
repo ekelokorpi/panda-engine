@@ -136,7 +136,7 @@ game.createClass('Scene', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
     **/
     click: function() {},
 
@@ -172,7 +172,7 @@ game.createClass('Scene', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
     **/
     mousedown: function() {},
 
@@ -182,14 +182,14 @@ game.createClass('Scene', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
     **/
     mousemove: function() {},
 
     /**
         Called, when mouse goes out of canvas.
         @method mouseout
-        @param {MouseEvent} event
+        @param {InputEvent} event
     **/
     mouseout: function() {},
     
@@ -199,7 +199,7 @@ game.createClass('Scene', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
     **/
     mouseup: function() {},
 
@@ -357,7 +357,7 @@ game.createClass('Scene', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
         @private
     **/
     _mousedown: function(x, y, id, event) {
@@ -373,7 +373,7 @@ game.createClass('Scene', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
         @private
     **/
     _mousemove: function(x, y, id, event) {
@@ -390,7 +390,7 @@ game.createClass('Scene', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
         @private
     **/
     _mouseup: function(x, y, id, event) {
