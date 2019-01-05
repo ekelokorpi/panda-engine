@@ -251,7 +251,7 @@ game.createClass('Container', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
     **/
     click: function() {},
 
@@ -329,7 +329,7 @@ game.createClass('Container', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
         @return {Boolean} Return true, to skip to next object.
     **/
     mousedown: function() {},
@@ -339,7 +339,7 @@ game.createClass('Container', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
         @return {Boolean} Return true, to skip to next object.
     **/
     mousemove: function() {},
@@ -349,7 +349,7 @@ game.createClass('Container', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
     **/
     mouseout: function() {},
 
@@ -358,7 +358,7 @@ game.createClass('Container', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
     **/
     mouseover: function() {},
 
@@ -367,7 +367,7 @@ game.createClass('Container', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
         @return {Boolean} Return true, to skip to next object.
     **/
     mouseup: function() {},
@@ -377,7 +377,7 @@ game.createClass('Container', {
         @param {Number} x
         @param {Number} y
         @param {Number} id
-        @param {MouseEvent|TouchEvent} event
+        @param {InputEvent} event
     **/
     mouseupoutside: function() {},
 
@@ -581,8 +581,8 @@ game.createClass('Container', {
     _generateCachedSprite: function() {
         this.updateTransform();
 
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
+        var canvas = game.Container._canvas;
+        var context = game.Container._context;
         var bounds = this._getBounds();
 
         canvas.width = (bounds.width / this.scale.x) * game.scale;
@@ -777,6 +777,22 @@ game.createClass('Container', {
         else this.updateTransform();
     }
 });
+
+game.addAttributes('Container', {
+    /**
+        @attribute {HTMLCanvasElement} _canvas
+        @private
+    **/
+    _canvas: null,
+    /**
+        @attribute {CanvasRenderingContext2D} _context
+        @private
+    **/
+    _context: null
+});
+
+game.Container._canvas = document.createElement('canvas');
+game.Container._context = game.Container._canvas.getContext('2d');
 
 game.defineProperties('Container', {
     /**

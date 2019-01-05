@@ -99,7 +99,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.10.0',
+    version: '2.11.0',
     /**
         @property {Boolean} _booted
         @private
@@ -797,6 +797,8 @@ var game = {
         this.device.cocoonCanvasPlus = /CocoonJS/i.test(navigator.browser);
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
         this.device.facebook = /FB/i.test(navigator.userAgent);
+        this.device.panda2 = /Panda2/i.test(navigator.userAgent);
+        this.device.electron = (!this.device.panda2 && /Electron/i.test(navigator.userAgent));
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
         if (this.device.androidTV) this.device.mobile = false;
