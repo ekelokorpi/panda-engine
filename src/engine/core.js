@@ -797,6 +797,8 @@ var game = {
         this.device.cocoonCanvasPlus = /CocoonJS/i.test(navigator.browser);
         this.device.ejecta = /Ejecta/i.test(navigator.userAgent);
         this.device.facebook = /FB/i.test(navigator.userAgent);
+        this.device.panda2 = /Panda2/i.test(navigator.userAgent);
+        this.device.electron = (!this.device.panda2 && /Electron/i.test(navigator.userAgent));
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
         if (this.device.androidTV) this.device.mobile = false;
