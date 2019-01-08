@@ -85,6 +85,136 @@ game.createClass('Circle', {
 });
 
 /**
+    @class Curve
+    @constructor
+    @param {Number} sx
+    @param {Number} sy
+    @param {Number} ex
+    @param {Number} ey
+    @param {Number} h1x
+    @param {Number} h1y
+    @param {Number} h2x
+    @param {Number} h2y
+**/
+game.createClass('Curve', {
+    /**
+        End position of curve.
+        @property {Vector} end
+    **/
+    end: null,
+    /**
+        Position of first control point.
+        @property {Vector} handle1
+    **/
+    handle1: null,
+    /**
+        Position of second control point.
+        @property {Vector} handle2
+    **/
+    handle2: null,
+    /**
+        Start position of curve.
+        @property {Vector} start
+    **/
+    start: null,
+
+    staticInit: function(sx, sy, ex, ey, h1x, h1y, h2x, h2y) {
+        this.start = new game.Vector(sx, sy);
+        if (typeof ex !== 'number') ex = sx;
+        if (typeof ey !== 'number') ey = sy;
+        this.end = new game.Vector(ex, ey);
+        if (typeof h1x !== 'number') h1x = sx;
+        if (typeof h1y !== 'number') h1y = sy;
+        if (typeof h2x !== 'number') h2x = ex;
+        if (typeof h2y !== 'number') h2y = ey;
+        this.handle1 = new game.Vector(h1x, h1y);
+        this.handle2 = new game.Vector(h2x, h2y);
+    },
+
+    /**
+        Get point from curve.
+        @method point
+        @param {Number} percent Location of the point. 0 is start and 1 is the end of the curve.
+        @param {Vector} [out] Optional vector, where the values are set.
+        @return {Vector}
+    **/
+    point: function(percent, out) {
+        out = out || new game.Vector();
+
+        var x = this._interpolate(percent, this.start.x, this.handle1.x, this.handle2.x, this.end.x);
+        var y = this._interpolate(percent, this.start.y, this.handle1.y, this.handle2.y, this.end.y);
+
+        out.set(x, y);
+        return out;
+    },
+
+    /**
+        @method _calcHandle1
+        @param {Number} t
+        @param {Number} p
+        @return {Number}
+        @private
+    **/
+    _calcHandle1: function(t, p) {
+        var k = 1 - t;
+        return 3 * k * k * t * p;
+    },
+
+    /**
+        @method _calcHandle2
+        @param {Number} t
+        @param {Number} p
+        @return {Number}
+        @private
+    **/
+    _calcHandle2: function(t, p) {
+        return 3 * (1 - t) * t * t * p;
+    },
+
+    /**
+        @method _calcEnd
+        @param {Number} t
+        @param {Number} p
+        @return {Number}
+        @private
+    **/
+    _calcEnd: function(t, p) {
+        return t * t * t * p;
+    },
+
+    /**
+        @method _calcStart
+        @param {Number} t
+        @param {Number} p
+        @return {Number}
+        @private
+    **/
+    _calcStart: function(t, p) {
+        var k = 1 - t;
+        return k * k * k * p;
+    },
+
+    /**
+        Get point from curve.
+        @method _interpolate
+        @param {Number} percent
+        @param {Number} s
+        @param {Number} h1
+        @param {Number} h2
+        @param {Number} e
+        @return {Number}
+        @private
+    **/
+    _interpolate: function(percent, s, h1, h2, e) {
+        s = this._calcStart(percent, s);
+        h1 = this._calcHandle1(percent, h1);
+        h2 = this._calcHandle2(percent, h2);
+        e = this._calcEnd(percent, e);
+        return s + h1 + h2 + e;
+    }
+});
+
+/**
     @class Polygon
     @constructor
     @param {Array} points
