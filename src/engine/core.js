@@ -99,7 +99,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.11.0',
+    version: '2.12.0',
     /**
         @property {Boolean} _booted
         @private

@@ -187,8 +187,11 @@ game.createClass('Tween', {
     **/
     easing: function(easing) {
         if (typeof easing === 'string') {
-            easing = easing.split('.');
-            this.easingFunction = game.Tween.Easing[easing[0]][easing[1]];
+            var names = easing.split('.');
+            if (!game.Tween.Easing[names[0]]) throw 'Easing ' + easing + ' not found';
+            var easingFunc = game.Tween.Easing[names[0]][names[1]];
+            if (!easingFunc) throw 'Easing ' + easing + ' not found';
+            this.easingFunction = easingFunc;
         }
         else {
             this.easingFunction = easing;

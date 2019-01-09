@@ -99,6 +99,26 @@ game.createClass('Graphics', 'Container', {
         this._drawShape(shape);
         return this;
     },
+
+    /**
+        Draw bezier curve.
+        @method drawCurve
+        @param {Curve|Number} sx
+        @param {Number} sy
+        @param {Number} ex
+        @param {Number} ey
+        @param {Number} h1x
+        @param {Number} h1y
+        @param {Number} h2x
+        @param {Number} h2y
+        @chainable
+    **/
+    drawCurve: function(sx, sy, ex, ey, h1x, h1y, h2x, h2y) {
+        this.lineWidth = this.lineWidth || 1;
+        var shape = typeof sx === 'number' ? new game.Curve(sx, sy, ex, ey, h1x, h1y, h2x, h2y) : sx;
+        this._drawShape(shape, true);
+        return this;
+    },
     
     /**
         @method drawLine
@@ -325,7 +345,7 @@ game.createClass('GraphicsShape', {
 
         this._renderShape(context);
 
-        if (this.fillColor && this.fillAlpha) context.fill();
+        if (this.fillColor && this.fillAlpha && !this.isLine) context.fill();
         if (this.lineWidth) {
             context.globalAlpha = this.lineAlpha * alpha;
             context.stroke();
@@ -342,7 +362,18 @@ game.createClass('GraphicsShape', {
         var x = shape.x * game.scale;
         var y = shape.y * game.scale;
         
-        if (this.isLine) {
+        if (this.isLine && shape.start) {
+            context.moveTo(shape.start.x * game.scale, shape.start.y * game.scale);
+            context.bezierCurveTo﻿(
+                shape.handle1.x * game.scale,
+                shape.handle1.y * game.scale,
+                shape.handle2.x * game.scale,
+                shape.handle2.y * game.scale,
+                shape.end.x * game.scale,
+                shape.end.y * game.scale
+            );
+        }
+        else if (this.isLine) {
             context.moveTo(x, y);
             context.lineTo(shape.width, shape.height);
         }

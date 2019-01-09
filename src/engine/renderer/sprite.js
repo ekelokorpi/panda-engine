@@ -116,7 +116,9 @@ game.createClass('Sprite', 'Container', {
         this._worldAlpha = alpha;
         this.blendMode = blendMode;
 
-        var texture = game.Texture.fromCanvas(canvas);
+        var texture = game.Texture.fromImage(canvas.toDataURL());
+        texture.width = canvas.width;
+        texture.height = canvas.height;
         game.Sprite._tintedTextures.push(texture);
         return texture;
     },
