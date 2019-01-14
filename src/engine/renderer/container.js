@@ -585,6 +585,8 @@ game.createClass('Container', {
         var context = game.Container._context;
         var bounds = this._getBounds();
 
+        if (bounds.width === 0 || bounds.height === 0) return;
+
         canvas.width = (bounds.width / this.scale.x) * game.scale;
         canvas.height = (bounds.height / this.scale.y) * game.scale;
 
@@ -593,8 +595,10 @@ game.createClass('Container', {
         
         this._renderCanvas(context);
         this._renderChildren(context);
-
-        var texture = game.Texture.fromCanvas(canvas);
+        
+        var texture = game.Texture.fromImage(canvas.toDataURL());
+        texture.width = canvas.width;
+        texture.height = canvas.height;
         var sprite = new game.Sprite(texture);
         sprite._parent = this;
         
