@@ -791,8 +791,10 @@ game.addAttributes('Container', {
     _context: null
 });
 
-game.Container._canvas = document.createElement('canvas');
-game.Container._context = game.Container._canvas.getContext('2d');
+if (typeof document !== 'undefined') {
+    game.Container._canvas = document.createElement('canvas');
+    game.Container._context = game.Container._canvas.getContext('2d');
+}
 
 game.defineProperties('Container', {
     /**

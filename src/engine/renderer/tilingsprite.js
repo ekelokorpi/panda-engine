@@ -273,8 +273,10 @@ game.addAttributes('TilingSprite', {
     }
 });
 
-game.TilingSprite._canvas = document.createElement('canvas');
-game.TilingSprite._context = game.TilingSprite._canvas.getContext('2d');
+if (typeof document !== 'undefined') {
+    game.TilingSprite._canvas = document.createElement('canvas');
+    game.TilingSprite._context = game.TilingSprite._canvas.getContext('2d');
+}
 
 game.defineProperties('TilingSprite', {
     width: {
