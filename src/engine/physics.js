@@ -173,20 +173,22 @@ game.createClass('Body', {
 
     /**
         @method _update
+        @param {Number} [delta]
         @private
     **/
-    _update: function() {
+    _update: function(delta) {
+        delta = delta || game.delta;
         this.last.copy(this.position);
 
         if (this.static) return;
 
-        this.velocity.x += this.world.gravity.x * this.mass * game.delta;
-        this.velocity.y += this.world.gravity.y * this.mass * game.delta;
-        this.velocity.x += this.force.x * game.delta;
-        this.velocity.y += this.force.y * game.delta;
+        this.velocity.x += this.world.gravity.x * this.mass * delta;
+        this.velocity.y += this.world.gravity.y * this.mass * delta;
+        this.velocity.x += this.force.x * delta;
+        this.velocity.y += this.force.y * delta;
 
         if (this.damping > 0 && this.damping < 1) {
-            var damping = Math.pow(1 - this.damping, game.delta);
+            var damping = Math.pow(1 - this.damping, delta);
             this.velocity.x *= damping;
             this.velocity.y *= damping;
         }
@@ -200,8 +202,8 @@ game.createClass('Body', {
             if (this.velocity.y < -this.velocityLimit.y) this.velocity.y = -this.velocityLimit.y;
         }
 
-        this.position.x += this.velocity.x * game.delta;
-        this.position.y += this.velocity.y * game.delta;
+        this.position.x += this.velocity.x * delta;
+        this.position.y += this.velocity.y * delta;
     }
 });
 
