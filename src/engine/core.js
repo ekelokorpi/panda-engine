@@ -398,7 +398,7 @@ var game = {
             var ext = from[key];
             if (
                 typeof ext !== 'object' ||
-                ext instanceof HTMLElement ||
+                (typeof document !== 'undefined' && ext instanceof HTMLElement) ||
                 ext instanceof this.Class ||
                 ext instanceof this.Container
             ) {
