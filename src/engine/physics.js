@@ -234,6 +234,7 @@ game.defineProperties('Body', {
     @constructor
     @param {Number} [x] Gravity x
     @param {Number} [y] Gravity y
+    @param {Boolean} [manualUpdate] Don't update physics automatically
 **/
 game.createClass('Physics', {
     /**
@@ -253,11 +254,11 @@ game.createClass('Physics', {
     **/
     _collisionGroups: {},
 
-    staticInit: function(x, y) {
+    staticInit: function(x, y, manualUpdate) {
         x = typeof x === 'number' ? x : 0;
         y = typeof y === 'number' ? y : 980;
         this.gravity = new game.Vector(x, y);
-        if (game.scene) game.scene.physics.push(this);
+        if (game.scene && !manualUpdate) game.scene.physics.push(this);
     },
 
     /**
