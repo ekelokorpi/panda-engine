@@ -87,14 +87,18 @@ game.createClass('Body', {
         @private
     **/
     _collisionGroup: 0,
-
-    init: function(properties) {
+    
+    staticInit: function() {
         this.force = new game.Vector();
         this.position = new game.Vector();
         this.velocity = new game.Vector();
         this.velocityLimit = new game.Vector(980, 980);
         this.last = new game.Vector();
+    },
+
+    init: function(properties) {
         game.merge(this, properties);
+        return true;
     },
 
     /**
@@ -172,18 +176,20 @@ game.createClass('Body', {
     },
 
     /**
-        @method _update
+        Update body position and velocity.
+        @method update
         @param {Number} [delta]
-        @private
     **/
-    _update: function(delta) {
+    update: function(delta) {
         delta = delta || game.delta;
         this.last.copy(this.position);
 
         if (this.static) return;
-
-        this.velocity.x += this.world.gravity.x * this.mass * delta;
-        this.velocity.y += this.world.gravity.y * this.mass * delta;
+        
+        if (this.world) {
+            this.velocity.x += this.world.gravity.x * this.mass * delta;
+            this.velocity.y += this.world.gravity.y * this.mass * delta;
+        }
         this.velocity.x += this.force.x * delta;
         this.velocity.y += this.force.y * delta;
 
@@ -437,7 +443,7 @@ game.createClass('Physics', {
                 this.bodies.splice(i, 1);
             }
             else {
-                this.bodies[i]._update();
+                this.bodies[i].update();
             }
         }
     },
