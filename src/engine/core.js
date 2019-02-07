@@ -799,6 +799,9 @@ var game = {
         this.device.facebook = /FB/i.test(navigator.userAgent);
         this.device.panda2 = /Panda2/i.test(navigator.userAgent);
         this.device.electron = (!this.device.panda2 && /Electron/i.test(navigator.userAgent));
+        this.device.chrome = /Chrome/i.test(navigator.userAgent);
+        var chromeVer = navigator.userAgent.match(/Chrome\/([\d.]+)/);
+        this.device.chromeVer = chromeVer ? parseInt(chromeVer[1]) : 0;
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
         if (this.device.androidTV) this.device.mobile = false;
