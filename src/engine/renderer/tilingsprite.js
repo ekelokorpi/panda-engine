@@ -101,7 +101,9 @@ game.createClass('TilingSprite', 'Container', {
             }
         }
         
-        var texture = game.Texture.fromCanvas(canvas);
+        var texture = game.Texture.fromImage(canvas.toDataURL());
+        texture.width = canvas.width;
+        texture.height = canvas.height;
         this.tw = texture.width;
         this.th = texture.height;
         game.TilingSprite.cache[this.texture.baseTexture._id] = texture;
