@@ -199,12 +199,14 @@ var game = {
         @method addAsset
         @param {String} filename
         @param {String} [id]
+        @param {Boolean} [noCache] Force to not load file from cache
     **/
-    addAsset: function(filename, id) {
+    addAsset: function(filename, id, noCache) {
         if (!filename) throw 'addAsset: filename undefined';
         if (id && this.paths[id]) return;
         if (this.paths[filename]) return;
         var realPath = this._getFilePath(filename);
+        if (id && noCache) realPath += '?' + Date.now();
         if (id) this.paths[id] = realPath;
         this.paths[filename] = realPath;
         if (this.mediaQueue.indexOf(realPath) === -1) this.mediaQueue.push(realPath);
