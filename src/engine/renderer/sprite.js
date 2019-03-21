@@ -98,7 +98,7 @@ game.createClass('Sprite', 'Container', {
 
         this._tintColor = color;
         this._tintAlpha = alpha || 1;
-        
+
         context.fillStyle = this._tintColor.substr(0, 7);
         context.globalAlpha = this._tintAlpha;
         var x = this.tintCrop.x * game.scale;
@@ -193,7 +193,7 @@ game.createClass('Sprite', 'Container', {
         if (!this.texture.height && this.texture.baseTexture.height) {
             this.texture.height = this.texture.baseTexture.height;
         }
-        
+
         if (!this.texture.width || !this.texture.height) return true;
 
         if (this.tint && !this._tintedTexture && !this._tintedTextureGenerated && this.tintAlpha > 0) {
@@ -208,7 +208,7 @@ game.createClass('Sprite', 'Container', {
         else if (!this.tint && this._tintedTexture || this.tintAlpha === 0 && this._tintedTexture) {
             this._destroyTintedTexture();
         }
-        
+
         context.globalCompositeOperation = this.blendMode;
         context.globalAlpha = this._worldAlpha;
 
@@ -216,10 +216,10 @@ game.createClass('Sprite', 'Container', {
         var wt = transform || this._worldTransform;
         var tx = wt.tx;
         var ty = wt.ty;
-        
+
         if (game.Renderer.roundPixels) {
-            tx = tx | 0;
-            ty = ty | 0;
+            tx = Math.round(tx * game.scale)/game.scale;
+            ty = Math.round(ty * game.scale)/game.scale;
         }
 
         tx *= game.scale;
@@ -291,7 +291,7 @@ game.addAttributes('Sprite', {
         @private
     **/
     _tintedTextures: [],
-    
+
     /**
         @method _clearTintedTextures
         @static
