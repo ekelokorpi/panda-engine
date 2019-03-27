@@ -18,6 +18,11 @@ game.createClass('Timer', {
     **/
     callback: null,
     /**
+        Is timer paused.
+        @property {Boolean} paused
+    **/
+    paused: false,
+    /**
         Should timer repeat.
         @property {Boolean} repeat
     **/
@@ -38,10 +43,10 @@ game.createClass('Timer', {
     **/
     _last: 0,
     /**
-        @property {Number} _pause
+        @property {Number} _pauseTime
         @private
     **/
-    _pause: 0,
+    _pauseTime: 0,
     
     init: function(time) {
         this._last = game.Timer.time;
@@ -66,7 +71,7 @@ game.createClass('Timer', {
     delta: function() {
         var delta = game.Timer.time - this._last;
         this._last = game.Timer.time;
-        return this._pause ? 0 : delta;
+        return this.paused ? 0 : delta;
     },
 
     /**
@@ -74,7 +79,9 @@ game.createClass('Timer', {
         @method pause
     **/
     pause: function() {
-        if (!this._pause) this._pause = game.Timer.time;
+        if (this.paused) return;
+        this._pauseTime = game.Timer.time;
+        this.paused = true;
     },
 
     /**
@@ -83,7 +90,8 @@ game.createClass('Timer', {
     **/
     reset: function() {
         this._base = game.Timer.time;
-        this._pause = 0;
+        this._pauseTime = 0;
+        this.paused = false;
     },
 
     /**
@@ -91,10 +99,10 @@ game.createClass('Timer', {
         @method resume
     **/
     resume: function() {
-        if (this._pause) {
-            this._base += game.Timer.time - this._pause;
-            this._pause = 0;
-        }
+        if (!this.paused) return;
+        this._base += game.Timer.time - this._pauseTime;
+        this._pauseTime = 0;
+        this.paused = false;
     },
     
     /**
@@ -114,7 +122,7 @@ game.createClass('Timer', {
         @return {Number} time
     **/
     time: function() {
-        var time = this._base + this.target - (this._pause || game.Timer.time);
+        var time = this._base + this.target - (this._pauseTime || game.Timer.time);
         return time < 0 ? 0 : time;
     }
 });
