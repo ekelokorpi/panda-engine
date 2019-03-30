@@ -107,7 +107,7 @@ game.createClass('Animation', 'Sprite', {
         Add new animation.
         @method addAnim
         @param {String} name Name of animation.
-        @param {Array|Number|String} frames List of invidual frame indexes or start frame index or name that each frame starts with.
+        @param {Array|Number|String} frames List of invidual frame indexes | List of frame names | Start frame index | Name that each frame starts with.
         @param {Number|Object} [frameCount] Number of frames or animation properties.
         @param {Object} [props] Animation properties.
         @chainable
@@ -127,7 +127,11 @@ game.createClass('Animation', 'Sprite', {
         }
         else if (frames.length) {
             for (var i = 0; i < frames.length; i++) {
-                textures[i] = this.textures[frames[i]];
+                if (typeof frames[i] === 'number') textures[i] = this.textures[frames[i]];
+                else if (typeof frames[i] === 'string') {
+                    var index = this.textures.indexOf(frames[i]);
+                    if (index !== -1) textures[i] = this.textures[index];
+                }
             }
         }
         else if (typeof frames === 'number' && typeof frameCount === 'number') {
