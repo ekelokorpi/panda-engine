@@ -391,7 +391,15 @@ game.createClass('GraphicsShape', {
             }
         }
         else if (shape.points) {
-            context.moveTo(0, 0);
+            if(typeof shape.points[0] === 'number'){
+                context.moveTo(shape.points[0] * game.scale, shape.points[1]);
+            }
+            else if(typeof shape.points[0] === 'object'){
+                context.moveTo(shape.points[0].x * game.scale, shape.points[1].y* game.scale);
+            }
+            else{
+                context.moveTo(0, 0);
+            }
             for (var i = 0; i < shape.points.length; i++) {
                 var point = shape.points[i];
                 var x = point.x;
