@@ -99,7 +99,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.12.0',
+    version: '2.12.1dev',
     /**
         @property {Boolean} _booted
         @private
@@ -199,12 +199,14 @@ var game = {
         @method addAsset
         @param {String} filename
         @param {String} [id]
+        @param {Boolean} [noCache] Force to not load file from cache
     **/
-    addAsset: function(filename, id) {
+    addAsset: function(filename, id, noCache) {
         if (!filename) throw 'addAsset: filename undefined';
         if (id && this.paths[id]) return;
         if (this.paths[filename]) return;
         var realPath = this._getFilePath(filename);
+        if (id && noCache) realPath += '?' + Date.now();
         if (id) this.paths[id] = realPath;
         this.paths[filename] = realPath;
         if (this.mediaQueue.indexOf(realPath) === -1) this.mediaQueue.push(realPath);
@@ -398,7 +400,7 @@ var game = {
             var ext = from[key];
             if (
                 typeof ext !== 'object' ||
-                ext instanceof HTMLElement ||
+                (typeof document !== 'undefined' && ext instanceof HTMLElement) ||
                 ext instanceof this.Class ||
                 ext instanceof this.Container
             ) {
@@ -799,6 +801,9 @@ var game = {
         this.device.facebook = /FB/i.test(navigator.userAgent);
         this.device.panda2 = /Panda2/i.test(navigator.userAgent);
         this.device.electron = (!this.device.panda2 && /Electron/i.test(navigator.userAgent));
+        this.device.chrome = /Chrome/i.test(navigator.userAgent);
+        var chromeVer = navigator.userAgent.match(/Chrome\/([\d.]+)/);
+        this.device.chromeVer = chromeVer ? parseInt(chromeVer[1]) : 0;
 
         this.device.mobile = this.device.iOS || this.device.android || this.device.wp || this.device.wt;
         if (this.device.androidTV) this.device.mobile = false;
@@ -1037,7 +1042,10 @@ var game = {
             }
         }
         
-        if (typeof document === 'undefined') return;
+        if (typeof document === 'undefined') {
+            this.onReady();
+            return;
+        }
         this._logoSource = document.createElement('img');
         this._logoSource.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAA8BAMAAABfg2ObAAAALVBMVEUAAAD4uABHR0f4uABHR0f4uAD4uABHR0dHR0dHR0f4uABHR0f4uABHR0f4uADOcJEWAAAADXRSTlMAqqpV6UQkUMmUdBvjKrIhowAAAH1JREFUSMdjKLmLB7gz4Ae++DRfIaD5Ll4wqnlU8xDQzCqIDKRI05z3DgUsIEmzHapmgVHNo5qpovkGInkS1uykhApmo2cMGTyaFRgIAMZRzaOaRzUPJs2sEM0BZGlmSDYGAjMG0jUjwKjmUc2jmontlE0gUXMJckNgA2l6ASc7KJOPBNRIAAAAAElFTkSuQmCC';
         this._logoSource.onload = this._readyLogo.bind(this);

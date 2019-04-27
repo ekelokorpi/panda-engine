@@ -168,7 +168,7 @@ game.createClass('Input', {
             window.focus();
             game.renderer.canvas.focus();
         }
-        if (!game.scene) return;
+        if (!game.scene || game.system.paused) return;
 
         this._preventDefault(input.event);
         this._calculateXY(input);
@@ -186,7 +186,7 @@ game.createClass('Input', {
         @private
     **/
     _inputmove: function(input) {
-        if (!game.scene) return;
+        if (!game.scene || game.system.paused) return;
 
         this._preventDefault(input.event);
         this._calculateXY(input);
@@ -213,7 +213,7 @@ game.createClass('Input', {
         @private
     **/
     _inputup: function(input) {
-        if (!game.scene) return;
+        if (!game.scene || game.system.paused) return;
 
         this._preventDefault(input.event);
         this._calculateXY(input);
@@ -267,7 +267,7 @@ game.createClass('Input', {
         @private
     **/
     _mouseout: function(event) {
-        if (!game.scene) return;
+        if (!game.scene || game.system.paused) return;
         
         var input = this._mouseInput;
         input.event = event;
