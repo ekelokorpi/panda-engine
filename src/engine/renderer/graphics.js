@@ -119,7 +119,7 @@ game.createClass('Graphics', 'Container', {
         this._drawShape(shape, true);
         return this;
     },
-    
+
     /**
         @method drawLine
         @param {Number} sx Start x
@@ -142,7 +142,7 @@ game.createClass('Graphics', 'Container', {
         this._drawShape(shape, true);
         return this;
     },
-    
+
     /**
         @method drawPolygon
         @param {Array} points List of points.
@@ -361,7 +361,7 @@ game.createClass('GraphicsShape', {
         var shape = this.shape;
         var x = shape.x * game.scale;
         var y = shape.y * game.scale;
-        
+
         if (this.isLine && shape.start) {
             context.moveTo(shape.start.x * game.scale, shape.start.y * game.scale);
             context.bezierCurveTo﻿(
@@ -391,7 +391,15 @@ game.createClass('GraphicsShape', {
             }
         }
         else if (shape.points) {
-            context.moveTo(0, 0);
+            if(typeof shape.points[0] === 'number'){
+                context.moveTo(shape.points[0] * game.scale, shape.points[1]);
+            }
+            else if(typeof shape.points[0] === 'object'){
+                context.moveTo(shape.points[0].x * game.scale, shape.points[1].y* game.scale);
+            }
+            else{
+                context.moveTo(0, 0);
+            }
             for (var i = 0; i < shape.points.length; i++) {
                 var point = shape.points[i];
                 var x = point.x;
