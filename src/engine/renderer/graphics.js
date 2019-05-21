@@ -119,7 +119,7 @@ game.createClass('Graphics', 'Container', {
         this._drawShape(shape, true);
         return this;
     },
-    
+
     /**
         @method drawLine
         @param {Number} sx Start x
@@ -142,7 +142,7 @@ game.createClass('Graphics', 'Container', {
         this._drawShape(shape, true);
         return this;
     },
-    
+
     /**
         @method drawPolygon
         @param {Array} points List of points.
@@ -171,6 +171,36 @@ game.createClass('Graphics', 'Container', {
         var shape = new game.Rectangle(width, height, x, y);
         this._drawShape(shape);
         return this;
+    },
+
+    /**
+     @method drawRoundedRect
+     @param {Number} x
+     @param {Number} y
+     @param {Number} width
+     @param {Number} height
+     @param {Number} rLeftTop
+     @param {Number} rRightTop
+     @param {Number} rLeftBottom
+     @param {Number} rRightBottom
+     @chainable
+     **/
+    drawRoundedRect(x, y, w, h, rLeftTop, rRightTop, rLeftBottom, rRightBottom){
+        if(rRightTop === undefined) rRightTop = rLeftBottom = rRightBottom = rLeftTop;
+        return this.drawPolygon([
+            {x: x + rLeftTop, y: y},
+            {x: x + w - rRightTop, y: y},
+            [x+w-rRightTop/2, y, x+w, y+rRightTop/2, x + w, y + rRightTop],
+
+            {x: x + w, y: y + h - rRightBottom},
+            [x+w, y+h-rRightBottom/2, x+w-rRightBottom/2, y+h, x + w - rRightBottom, y + h],
+
+            {x: x + rLeftBottom, y: y + h},
+            [x+rLeftBottom/2, y+h, x, y+h-rLeftBottom/2, x, y + h - rLeftBottom],
+
+            {x: x, y: y + rLeftTop},
+            [x, y + rLeftTop/2, x+rLeftTop/2, y, x + rLeftTop, y]
+        ]);
     },
 
     /**
@@ -361,7 +391,7 @@ game.createClass('GraphicsShape', {
         var shape = this.shape;
         var x = shape.x * game.scale;
         var y = shape.y * game.scale;
-        
+
         if (this.isLine && shape.start) {
             context.moveTo(shape.start.x * game.scale, shape.start.y * game.scale);
             context.bezierCurveTo﻿(
