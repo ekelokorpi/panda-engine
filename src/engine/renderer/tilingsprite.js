@@ -101,7 +101,9 @@ game.createClass('TilingSprite', 'Container', {
             }
         }
         
-        var texture = game.Texture.fromCanvas(canvas);
+        var texture = game.Texture.fromImage(canvas.toDataURL());
+        texture.width = canvas.width;
+        texture.height = canvas.height;
         this.tw = texture.width;
         this.th = texture.height;
         game.TilingSprite.cache[this.texture.baseTexture._id] = texture;
@@ -175,8 +177,8 @@ game.createClass('TilingSprite', 'Container', {
 
         var scaleX = this._worldTransform.a / this._cosCache;
         var scaleY = this._worldTransform.d / this._cosCache;
-        var tw = this.tw * game.scale;
-        var th = this.th * game.scale;
+        var tw = this.tw;
+        var th = this.th;
         var width = this.width / scaleX * game.scale;
         var height = this.height / scaleY * game.scale;
         var tileX = this.tilePosition.x * game.scale;
@@ -273,8 +275,10 @@ game.addAttributes('TilingSprite', {
     }
 });
 
-game.TilingSprite._canvas = document.createElement('canvas');
-game.TilingSprite._context = game.TilingSprite._canvas.getContext('2d');
+if (typeof document !== 'undefined') {
+    game.TilingSprite._canvas = document.createElement('canvas');
+    game.TilingSprite._context = game.TilingSprite._canvas.getContext('2d');
+}
 
 game.defineProperties('TilingSprite', {
     width: {

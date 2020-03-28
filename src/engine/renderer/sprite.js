@@ -306,7 +306,9 @@ game.addAttributes('Sprite', {
     }
 });
 
-game.Sprite._canvas = document.createElement('canvas');
-game.Sprite._context = game.Sprite._canvas.getContext('2d');
+if (typeof document !== 'undefined') {
+    game.Sprite._canvas = document.createElement('canvas');
+    game.Sprite._context = game.Sprite._canvas.getContext('2d');
+}
 
 });

@@ -277,6 +277,7 @@ game.createClass('Audio', {
             request.open('GET', realPath, true);
             request.responseType = 'arraybuffer';
             request.onload = this._decode.bind(this, request, path, callback);
+            request.onerror = this._error.bind(this, path, callback);
             request.send();
         }
     },
