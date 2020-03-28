@@ -280,6 +280,37 @@ game.createClass('Physics', {
     },
 
     /**
+        Perform collision for body.
+        @method collide
+        @param {Body} body
+    **/
+    collide: function(body) {
+        var g, i, b, group;
+
+        for (g = 0; g < body.collideAgainst.length; g++) {
+            body._collides.length = 0;
+            group = this._collisionGroups[body.collideAgainst[g]];
+            
+            if (!group) continue;
+
+            for (i = group.length - 1; i >= 0; i--) {
+                if (!group) break;
+                b = group[i];
+                if (body !== b) {
+                    if (this.hitTest(body, b)) {
+                        body._collides.push(b);
+                    }
+                }
+            }
+            for (i = body._collides.length - 1; i >= 0; i--) {
+                if (this.hitResponse(body, body._collides[i])) {
+                    body.afterCollide(body._collides[i]);
+                }
+            }
+        }
+    },
+
+    /**
         Hit response a versus b.
         @method hitResponse
         @param {Body} a
@@ -386,37 +417,6 @@ game.createClass('Physics', {
         this._collisionGroups[body.collisionGroup] = this._collisionGroups[body.collisionGroup] || [];
         if (this._collisionGroups[body.collisionGroup].indexOf(body) !== -1) return;
         this._collisionGroups[body.collisionGroup].push(body);
-    },
-
-    /**
-        @method _collide
-        @param {Body} body
-        @private
-    **/
-    _collide: function(body) {
-        var g, i, b, group;
-
-        for (g = 0; g < body.collideAgainst.length; g++) {
-            body._collides.length = 0;
-            group = this._collisionGroups[body.collideAgainst[g]];
-            
-            if (!group) continue;
-
-            for (i = group.length - 1; i >= 0; i--) {
-                if (!group) break;
-                b = group[i];
-                if (body !== b) {
-                    if (this.hitTest(body, b)) {
-                        body._collides.push(b);
-                    }
-                }
-            }
-            for (i = body._collides.length - 1; i >= 0; i--) {
-                if (this.hitResponse(body, body._collides[i])) {
-                    body.afterCollide(body._collides[i]);
-                }
-            }
-        }
     },
 
     /**
