@@ -460,7 +460,7 @@ game.createClass('Physics', {
             }
             for (j = 0; j < this._collisionGroups[i].length; j++) {
                 if (this._collisionGroups[i][j] && this._collisionGroups[i][j].collideAgainst.length > 0) {
-                    this._collide(this._collisionGroups[i][j]);
+                    this.collide(this._collisionGroups[i][j]);
                 }
             }
         }
