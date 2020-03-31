@@ -452,6 +452,7 @@ game.createClass('System', {
     **/
     _updateWindowSize: function() {
         if (typeof document === 'undefined') return;
+        if (game.device.android && window.innerHeight - this._windowHeight === 24) return; // Fix Android 6 screen size bug
         this._windowWidth = game.device.WKWebView ? document.documentElement.clientWidth : window.innerWidth;
         this._windowHeight = game.device.WKWebView ? document.documentElement.clientHeight : window.innerHeight;
         if (game.device.crosswalk && this._windowWidth === 0) {
