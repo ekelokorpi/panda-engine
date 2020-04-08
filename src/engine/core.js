@@ -791,6 +791,12 @@ var game = {
         this.device.xbox = /Xbox/i.test(navigator.userAgent);
         this.device.xboxOne = /Xbox One/i.test(navigator.userAgent);
 
+        // VR
+        this.device.oculus = /Oculus/i.test(navigator.userAgent);
+        this.device.oculusQuest = (this.device.oculus && /Quest/i.test(navigator.userAgent));
+        this.device.oculusGo = (this.device.oculus && /Pacific/i.test(navigator.userAgent));
+        this.device.gearVR = (this.device.oculus && /SAMSUNG/i.test(navigator.userAgent));
+
         // Others
         this.device.safari = /Safari/i.test(navigator.userAgent);
         this.device.opera = /Opera/i.test(navigator.userAgent) || /OPR/i.test(navigator.userAgent);
