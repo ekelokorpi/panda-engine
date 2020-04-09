@@ -445,6 +445,12 @@ game.createClass('SystemText', 'Container', {
     **/
     align: 'left',
     /**
+        Baseline alignment.
+        @property {String} baseline
+        @default alphabetic
+    **/
+    baseline: 'alphabetic',
+    /**
         Color of the text.
         @property {String} color
         @default #fff
@@ -481,6 +487,7 @@ game.createClass('SystemText', 'Container', {
         context.fillStyle = this.color;
         context.font = this.size * game.scale + 'px ' + this.font;
         context.textAlign = this.align;
+        context.textBaseline = this.baseline;
         context.fillText(this.text, 0, 0);
     }
 });
