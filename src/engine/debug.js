@@ -494,7 +494,7 @@ game.createClass('Debug', {
 
         this._frames++;
 
-        var now = Date.now();
+        var now = performance.now();
         if (now >= this.last + game.Debug.panelUpdate) {
             this.fps = Math.round(this._frames * 1000 / (now - this.last));
             this.last = now;
