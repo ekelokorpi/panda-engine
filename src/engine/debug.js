@@ -133,11 +133,6 @@ game.createClass('Debug', {
         if (game.device.cocoonCanvasPlus) return;
 
         game.Container.inject({
-            _renderCachedSprite: function(context) {
-                this.super(context);
-                game.debug._draws++;
-            },
-            
             _renderCanvas: function(context) {
                 if (game.scene && game.scene.stage === this) return;
                 if (game.Debug.showBounds) game.debug._drawBounds(this);
