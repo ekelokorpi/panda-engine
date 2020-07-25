@@ -133,11 +133,6 @@ game.createClass('Debug', {
         if (game.device.cocoonCanvasPlus) return;
 
         game.Container.inject({
-            _renderCachedSprite: function(context) {
-                this.super(context);
-                game.debug._draws++;
-            },
-            
             _renderCanvas: function(context) {
                 if (game.scene && game.scene.stage === this) return;
                 if (game.Debug.showBounds) game.debug._drawBounds(this);
@@ -494,7 +489,7 @@ game.createClass('Debug', {
 
         this._frames++;
 
-        var now = Date.now();
+        var now = performance.now();
         if (now >= this.last + game.Debug.panelUpdate) {
             this.fps = Math.round(this._frames * 1000 / (now - this.last));
             this.last = now;

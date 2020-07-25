@@ -540,7 +540,7 @@ game.createClass('Sound', {
         
         this._source.buffer = this._buffer;
         this._source.loop = this.loop;
-        if (this._source.playbackRate) this._source.playbackRate.setValueAtTime(this.rate, this._context.currentTime);
+        if (this._source.playbackRate && this._context) this._source.playbackRate.setValueAtTime(this.rate, this._context.currentTime);
         this._source.onended = this._onComplete.bind(this);
         if (this._source.connect) {
             this._source.connect(this._gainNode);

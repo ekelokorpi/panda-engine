@@ -109,8 +109,9 @@ game.createClass('Loader', 'Scene', {
         }
 
         if (game.Loader.text) {
-            this.loaderText = new game.SystemText(game.Loader.text, { size: 14 / game.scale, align: 'center', color: game.Loader.textColor });
-            this.loaderText.position.set(game.width / 2, game.height - size / game.scale);
+            var size = game.Loader.textSize / game.scale;
+            this.loaderText = new game.SystemText(game.Loader.text, { size: size, align: 'center', color: game.Loader.textColor, baseline: 'bottom' });
+            this.loaderText.position.set(game.width / 2, game.height - size - 8);
             this.loaderText.addTo(this.stage);
         }
 
@@ -445,7 +446,7 @@ game.createClass('Loader', 'Scene', {
         }
 
         var waitTime = game.Loader.minTime - (game.Timer.time - this._startTime);
-        if (waitTime > 0) game.Timer.add(waitTime, this.onComplete.bind(this));
+        if (waitTime > 0 && this.scene) game.Timer.add(waitTime, this.onComplete.bind(this));
         else this.onComplete();
     },
 
@@ -590,7 +591,7 @@ game.addAttributes('Loader', {
     **/
     showPercent: true,
     /**
-        Text to show on bottom of the loader
+        Text to show on bottom of the loader.
         @attribute {String} text
         @default 'Made with Panda 2 - www.panda2.io'
     **/
@@ -600,7 +601,13 @@ game.addAttributes('Loader', {
         @attribute {String} textColor
         @default #fff
     **/
-    textColor: '#fff'
+    textColor: '#fff',
+    /**
+        Size of bottom loader text.
+        @attribute {String} textSize
+        @default 14
+    **/
+    textSize: 14
 });
 
 });

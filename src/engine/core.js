@@ -99,7 +99,7 @@ var game = {
         Engine version.
         @property {String} version
     **/
-    version: '2.13.1',
+    version: '2.14.0',
     /**
         @property {Boolean} _booted
         @private
@@ -790,6 +790,12 @@ var game = {
         this.device.wiiu = /Nintendo WiiU/i.test(navigator.userAgent);
         this.device.xbox = /Xbox/i.test(navigator.userAgent);
         this.device.xboxOne = /Xbox One/i.test(navigator.userAgent);
+
+        // VR
+        this.device.oculus = /Oculus/i.test(navigator.userAgent);
+        this.device.oculusQuest = (this.device.oculus && /Quest/i.test(navigator.userAgent));
+        this.device.oculusGo = (this.device.oculus && /Pacific/i.test(navigator.userAgent));
+        this.device.gearVR = (this.device.oculus && /SAMSUNG/i.test(navigator.userAgent));
 
         // Others
         this.device.safari = /Safari/i.test(navigator.userAgent);

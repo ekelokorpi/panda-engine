@@ -744,6 +744,30 @@ game.createClass('Container', {
             child._render(context);
         }
     },
+    
+    /**
+        @method _renderToContext
+        @param {CanvasRenderingContext2D} context
+        @param {Number} [x]
+        @param {Number} [y]
+        @private
+    **/
+    _renderToContext: function(context, x, y) {
+        this.updateTransform();
+        
+        var bounds = this._getBounds();
+
+        if (bounds.width === 0 || bounds.height === 0) return false;
+
+        this._worldTransform.reset();
+        this._worldTransform.tx = x || 0;
+        this._worldTransform.ty = y || 0;
+        this._updateChildTransform();
+        
+        this._renderCanvas(context);
+        this._renderChildren(context);
+        return true;
+    },
 
     /**
         @method _setStageReference

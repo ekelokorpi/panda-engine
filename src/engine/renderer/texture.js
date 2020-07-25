@@ -154,7 +154,11 @@ game.addAttributes('BaseTexture', {
         if (!baseTexture) {
             var source = document.createElement('img');
             if (this.crossOrigin) source.crossOrigin = this.crossOrigin;
-            source.src = path + game._nocache;
+            
+            var sourcePath = path;
+            if (path.indexOf('data:image') === -1) sourcePath += game._nocache;
+            source.src = sourcePath;
+            
             baseTexture = new game.BaseTexture(source, loadCallback);
             baseTexture._id = path;
             this.cache[path] = baseTexture;
