@@ -40,6 +40,10 @@ game.createClass('Graphics', 'Container', {
     **/
     lineWidth: 0,
     /**
+     @property {String} lineCap
+     **/
+    lineCap: 'butt',
+    /**
         @property {String} blendMode
         @default source-over
     **/
@@ -119,7 +123,7 @@ game.createClass('Graphics', 'Container', {
         this._drawShape(shape, true);
         return this;
     },
-    
+
     /**
         @method drawLine
         @param {Number} sx Start x
@@ -142,7 +146,7 @@ game.createClass('Graphics', 'Container', {
         this._drawShape(shape, true);
         return this;
     },
-    
+
     /**
         @method drawPolygon
         @param {Array} points List of points.
@@ -193,7 +197,7 @@ game.createClass('Graphics', 'Container', {
         @private
     **/
     _drawShape: function(shape, isLine) {
-        var data = new game.GraphicsShape(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, shape, isLine);
+        var data = new game.GraphicsShape(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, shape, isLine, this.lineCap);
         this.shapes.push(data);
     },
 
@@ -316,11 +320,15 @@ game.createClass('GraphicsShape', {
     **/
     lineWidth: 0,
     /**
+     @property {String} lineCap
+     **/
+    lineCap: 'butt',
+    /**
         @property {Arc|Circle|Rectangle} shape
     **/
     shape: null,
 
-    staticInit: function(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, shape, isLine) {
+    staticInit: function(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, shape, isLine, lineCap) {
         this.lineWidth = lineWidth;
         this.lineColor = lineColor;
         this.lineAlpha = lineAlpha;
@@ -328,6 +336,7 @@ game.createClass('GraphicsShape', {
         this.fillAlpha = fillAlpha;
         this.shape = shape;
         this.isLine = isLine || this.isLine;
+        this.lineCap = lineCap || this.lineCap;
     },
 
     /**
@@ -341,6 +350,7 @@ game.createClass('GraphicsShape', {
         context.fillStyle = this.fillColor;
         context.strokeStyle = this.lineColor;
         context.lineWidth = this.lineWidth * game.scale;
+        context.lineCap = this.lineCap;
         context.beginPath();
 
         this._renderShape(context);
@@ -361,7 +371,7 @@ game.createClass('GraphicsShape', {
         var shape = this.shape;
         var x = shape.x * game.scale;
         var y = shape.y * game.scale;
-        
+
         if (this.isLine && shape.start) {
             context.moveTo(shape.start.x * game.scale, shape.start.y * game.scale);
             context.bezierCurveTo﻿(
