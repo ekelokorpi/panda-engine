@@ -50,11 +50,11 @@ game.createClass('Font', {
             var common = data.common;
             var chars = data.chars;
         }
-        
+
         this.baseTexture = game.BaseTexture.fromImage(game._getFilePath(image));
         if (data.getElementsByTagName) this.lineHeight = parseInt(common.getAttribute('lineHeight'));
         else this.lineHeight = parseInt(common.lineHeight);
-        
+
         for (var i = 0; i < chars.length; i++) {
             if (data.getElementsByTagName) {
                 var xadvance = parseInt(chars[i].getAttribute('xadvance'));
@@ -64,7 +64,7 @@ game.createClass('Font', {
                 var xadvance = parseInt(chars[i].xadvance);
                 var id = parseInt(chars[i].id);
             }
-            
+
             if (id === 32) {
                 this.spaceWidth = xadvance;
                 continue;
@@ -118,7 +118,7 @@ game.addAttributes('Font', {
         else {
             var face = data.info.face;
         }
-        
+
         var font = game.Font.cache[face];
 
         if (!font) {
@@ -234,7 +234,7 @@ game.createClass('Text', 'Container', {
     **/
     updateText: function() {
         if (!this.fontClass) return;
-        
+
         this.removeAll();
 
         var SPACE = 0;
@@ -247,7 +247,7 @@ game.createClass('Text', 'Container', {
 
         for (var i = 0; i < this.text.length; i++) {
             var charCode = this.text.charCodeAt(i);
-            
+
             // Space or line break
             if (charCode === 32 || charCode === 10) {
                 if (curWordWidth > 0) {
@@ -457,6 +457,18 @@ game.createClass('SystemText', 'Container', {
     **/
     color: '#fff',
     /**
+     StrokeColor of the text.
+     @property {String} color
+     @default #000
+     **/
+    strokeColor: '#000',
+    /**
+     Width of the text stroke.
+     @property {Number} color
+     @default 0
+     **/
+    lineWidth: 0,
+    /**
         Font used for the text.
         @property {String} font
         @default Arial
@@ -489,6 +501,11 @@ game.createClass('SystemText', 'Container', {
         context.textAlign = this.align;
         context.textBaseline = this.baseline;
         context.fillText(this.text, 0, 0);
+        if(this.lineWidth){
+            context.strokeStyle = this.strokeColor;
+            context.lineWidth = this.lineWidth;
+            context.strokeText(this.text, 0, 0);
+        }
     }
 });
 
