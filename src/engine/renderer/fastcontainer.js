@@ -66,8 +66,8 @@ game.createClass('FastContainer', 'Container', {
             var y = cwt.ty * game.scale;
 
             if (game.Renderer.roundPixels) {
-                x = x | 0;
-                y = y | 0;
+                tx = Math.round(tx * game.scale)/game.scale;
+                ty = Math.round(ty * game.scale)/game.scale;
             }
 
             context.setTransform(cwt.a, cwt.b, cwt.c, cwt.d, x, y);
